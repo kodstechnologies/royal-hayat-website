@@ -659,12 +659,12 @@ const BookAppointment = () => {
                                 ))}
                               </div>
                               {doc.hideBooking !== true && (
-                                <div className={`flex items-center gap-1.5 mb-3 ${doc.availableOnline !== false ? "text-green-600" : "text-destructive"}`}>
-                                  <div className={`w-1.5 h-1.5 rounded-full ${doc.availableOnline !== false ? "bg-green-500" : "bg-destructive"}`} />
+                                <div className={`flex items-center gap-1.5 mb-3 ${doc.availableOnline !== false ? "text-green-600" : "text-gray-500"}`}>
+                                  <div className={`w-1.5 h-1.5 rounded-full ${doc.availableOnline !== false ? "bg-green-500" : "bg-muted-foreground"}`} />
                                   <span className="font-body text-[10px]">
                                     {doc.availableOnline !== false
-                                      ? (isAr ? "متاح للحجز" : "Available")
-                                      : (isAr ? "غير متاح حالياً" : "Currently Unavailable")}
+                                      ? (isAr ? "متاح للحجز" : "Book Online")
+                                      : (isAr ? "غير متاح حالياً" : "Request Appointment")}
                                   </span>
                                 </div>
                               )}

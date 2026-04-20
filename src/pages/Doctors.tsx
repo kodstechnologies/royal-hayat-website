@@ -47,7 +47,7 @@ const DoctorCard = ({ doc }: { doc: Doctor }) => {
               <span className="font-body text-[10px]">
                 {doc.availableOnline !== false
                   ? (lang === "ar" ? "متاح للحجز الإلكتروني" : "Book Online")
-                  : (lang === "ar" ? "غير متاح للحجز الإلكتروني" : "Not Available")}
+                  : (lang === "ar" ? "غير متاح للحجز الإلكتروني" : "Not Available for Online Booking")}
               </span>
             </div>
           )}

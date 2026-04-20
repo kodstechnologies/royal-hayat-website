@@ -50,7 +50,7 @@ const FeaturedDoctors = () => {
             className="absolute right-0 md:-right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon">
             <ChevronRight className="w-5 h-5" />
           </button>
-          <div className="max-w-[280px] md:max-w-full lg:max-w-[1032px] mx-auto overflow-hidden">
+          <div className="max-w-[280px] md:max-w-[768px] xl:max-w-[1032px] mx-auto overflow-hidden">
             <div ref={scrollRef} className="flex gap-6 overflow-x-auto pb-6 scrollbar-hide snap-x snap-mandatory" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
               {featured.map((doc) => (
                 <Link

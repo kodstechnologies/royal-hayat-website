@@ -354,10 +354,10 @@ const Header = () => {
               <div className="flex flex-col items-end gap-2">
                 <div className="flex flex-wrap items-center justify-end gap-x-4 gap-y-1 font-body text-xs text-muted-foreground">
                   <a href="tel:+96525360555" className="inline-flex items-center gap-1 hover:text-primary transition-colors">
-                    <Phone className="w-3.5 h-3.5" /> +965 2536 0000
+                    <Phone className="w-3.5 h-3.5" />  +965 0000 2536
                   </a>
                   <a href="mailto:info@royalehayat.com" className="inline-flex items-center gap-1 hover:text-primary transition-colors">
-                    <MapPin className="w-3.5 h-3.5" /> info@royalehayat.com
+                    <Mail className="w-3.5 h-3.5" /> info@royalehayat.com
                   </a>
                 </div>
                 {/* Language capsule toggle EN | العربية — below phone / contact line */}
@@ -396,7 +396,7 @@ const Header = () => {
           </Link>
 
           {/* Desktop nav - evenly spaced */}
-          <nav className="hidden xl:flex items-center flex-1 justify-between">
+          <nav className="hidden lg:flex items-center flex-1 justify-between">
             {navItems.map((item) => {
               const NavIcon = item.icon;
               return (
@@ -432,13 +432,25 @@ const Header = () => {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 8 }}
                       transition={{ duration: 0.2 }}
-                      className={`absolute top-full mt-2 ${item.hasDropdown === "patients" ? "w-[680px]" : "w-[480px]"} bg-popover border border-border rounded-2xl shadow-2xl z-50 p-6 ${lang === "ar" ? "right-0" : "left-1/2 -translate-x-1/2"}`}
-                      style={{ maxWidth: 'calc(100vw - 2rem)' }}
+                      className={`absolute top-full mt-2 bg-popover border border-border rounded-2xl shadow-2xl z-50 p-6 ${
+                        lang === "ar"
+                          ? "right-0"
+                          : item.hasDropdown === "patients"
+                            ? "left-1/2 -translate-x-[42%]"
+                            : "left-1/2 -translate-x-1/2"
+                      }`}
+                      style={{
+                        width: item.hasDropdown === "patients"
+                          ? "min(520px, calc(100vw - 2rem))"
+                          : item.hasDropdown === "workwithus"
+                            ? "min(360px, calc(100vw - 2rem))"
+                            : "min(460px, calc(100vw - 2rem))",
+                      }}
                     >
                       <p className="text-xs tracking-[0.2em] uppercase font-body text-accent mb-4">
                         {item.hasDropdown === "patients" ? t("patientsVisitorsDropdownTitle") : item.label}
                       </p>
-                      <div className={`grid ${item.hasDropdown === "patients" ? "grid-cols-2" : "grid-cols-1"} gap-2`}>
+                      <div className={`grid ${item.hasDropdown === "patients" ? "grid-cols-1 xl:grid-cols-2" : "grid-cols-1"} gap-2`}>
                         {getSubLinks(item.hasDropdown).map((sub) => (
                           sub.href.startsWith("/") ? (
                             <Link
@@ -512,10 +524,34 @@ const Header = () => {
               {t("login")}
             </button>
 
+            {/* Language capsule for mobile/tablet */}
+            <div className="flex md:hidden items-center bg-muted/40 rounded-full border border-border p-0.5">
+              <button
+                onClick={() => setLang("en")}
+                className={`rounded-full font-semibold tracking-wide transition-all duration-300 leading-none flex items-center justify-center px-2 h-7 text-[10px] ${lang === "en"
+                  ? "bg-accent text-accent-foreground shadow-sm"
+                  : "bg-transparent text-muted-foreground hover:bg-background/60"
+                  }`}
+                aria-label="English"
+              >
+                EN
+              </button>
+              <button
+                onClick={() => setLang("ar")}
+                className={`rounded-full font-semibold transition-all duration-300 leading-none flex items-center justify-center px-2 h-7 text-[10px] ${lang === "ar"
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "bg-transparent text-muted-foreground hover:bg-background/60"
+                  }`}
+                aria-label="العربية"
+              >
+                العربية
+              </button>
+            </div>
+
 
 
             <button
-              className="xl:hidden w-8 h-8 md:w-10 md:h-10 flex items-center justify-center text-foreground flex-shrink-0"
+              className="lg:hidden w-8 h-8 md:w-10 md:h-10 flex items-center justify-center text-foreground flex-shrink-0"
               onClick={() => setMenuOpen(!menuOpen)}
               aria-label="Toggle menu"
             >
@@ -531,7 +567,7 @@ const Header = () => {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="xl:hidden bg-popover border-t border-border overflow-hidden"
+              className="lg:hidden bg-popover border-t border-border overflow-hidden"
             >
               <nav className="flex flex-col py-4 px-6">
                 {navItems.map((item) => {

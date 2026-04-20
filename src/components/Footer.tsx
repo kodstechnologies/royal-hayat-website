@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Phone, Mail, MapPin, Clock, Ambulance } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, Ambulance, Send } from "lucide-react";
 import logo from "@/assets/rhh-logo-full.png";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -70,7 +70,7 @@ const Footer = () => {
             <h4 className="text-primary-foreground font-body text-xs tracking-[0.3em] uppercase mb-6">{t("contact")}</h4>
             <div className="space-y-4 font-body text-sm">
               <div className="flex items-start gap-3">
-                <Mail className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
+                <Send  className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
                 <div>
                   <Link to="/contact-us" className="text-primary-foreground font-medium hover:text-accent transition-colors">
                     {t("contactUsFooter")}

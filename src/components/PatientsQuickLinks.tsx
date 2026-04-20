@@ -1,20 +1,21 @@
-import { Heart, ClipboardList, ShieldCheck, Bed, ScrollText, MapPin, FileText } from "lucide-react";
+import { Heart, ClipboardList, ShieldCheck, Bed, ScrollText, MapPin, Baby } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const PatientsQuickLinks = () => {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
 
   const links = [
     { icon: Heart, label: t("nursing"), href: "/patients-visitors" },
     { icon: ClipboardList, label: t("admissionInfo"), href: "/patients-visitors" },
     { icon: ShieldCheck, label: t("healthInsurance"), href: "/patients-visitors" },
     { icon: Bed, label: t("duringYourStay"), href: "/patients-visitors" },
+    { icon: Bed, label: lang === "ar" ? "باقات غرف الولادة" : "Birthing Room Packages", href: "/patients-visitors?tab=rooms-package" },
     { icon: ScrollText, label: t("patientBillOfRights"), href: "/patients-visitors" },
     { icon: MapPin, label: t("internationalPatient"), href: "/international-patient" },
-    // { icon: FileText, label: t("medicalRecordsForm"), href: "/patients-visitors" },
+    { icon: Baby, label: lang === "ar" ? "نظام أمان الرضّع" : "Infant Security", href: "/infant-security" },
   ];
 
   return (

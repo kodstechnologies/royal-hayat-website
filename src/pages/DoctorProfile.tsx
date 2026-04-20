@@ -170,12 +170,26 @@ const DoctorProfile = () => {
 
                   {/* Availability Badge */}
                   {doctor.hideBooking !== true && (
-                    <div className={`flex items-center gap-1.5 mb-4 justify-center ${isOnlineAvailable ? "text-green-600" : "text-destructive"}`}>
-                      <div className={`w-2 h-2 rounded-full ${isOnlineAvailable ? "bg-green-500" : "bg-destructive"}`} />
+                    <div className={`flex items-center gap-1.5 mb-4 justify-center ${
+                      isOnlineAvailable
+                        ? "text-green-600"
+                        : fromBooking
+                          ? "text-muted-foreground"
+                          : "text-red-500"
+                    }`}>
+                      <div className={`w-2 h-2 rounded-full ${
+                        isOnlineAvailable
+                          ? "bg-green-500"
+                          : fromBooking
+                            ? "bg-muted-foreground"
+                            : "bg-red-500"
+                      }`} />
                       <span className="font-body text-xs">
                         {isOnlineAvailable
                           ? (lang === "ar" ? "متاح للحجز الإلكتروني" : "Book Online")
-                          : (lang === "ar" ? "غير متاح للحجز الإلكتروني" : "Not Available")}
+                          : fromBooking
+                            ? (lang === "ar" ? "طلب موعد" : "Request Appointment")
+                            : (lang === "ar" ? "غير متاح للحجز الإلكتروني" : "Not Available for Online Booking")}
                       </span>
                     </div>
                   )}
@@ -189,7 +203,7 @@ const DoctorProfile = () => {
                           onClick={handleBookSlot}
                           className="w-full bg-primary text-primary-foreground py-3 rounded-xl font-body text-sm tracking-wider uppercase hover:bg-primary/90 transition-colors text-center"
                         >
-                          {lang === "ar" ? "احجز الموعد" : "Book Slot"}
+                          {lang === "ar" ? "احجز الموعد" : "Continue with the appointment"}
                         </motion.button>
                       ) : (
                         <motion.button

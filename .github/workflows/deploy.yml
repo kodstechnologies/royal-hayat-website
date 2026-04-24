@@ -1,4 +1,4 @@
-name: Deploy Vite App to EC2
+name: Deploy Website
 
 on:
   push:
@@ -6,38 +6,70 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  build-deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      # 📥 Checkout
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: 18
+      # 📦 Install dependencies
+      - name: Install dependencies
+        run: npm install
 
-    - name: Install dependencies
-      run: npm install
+      # 🏗️ Build project
+      - name: Build project
+        run: npm run build
 
-    - name: Build project
-      run: npm run build
+      # 🔑 Take ownership (fix permission issue)
+      - name: Fix permissions before deploy
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            sudo chown -R ubuntu:ubuntu /home/ubuntu/royal-hayat-website
 
-    - name: Deploy dist to EC2
-      uses: appleboy/scp-action@v0.1.7
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ubuntu
-        key: ${{ secrets.EC2_KEY }}
-        source: "dist/*"
-        target: "/home/ubuntu/royal-hayat-website/dist"
+      # 🧹 Remove old build (clean properly)
+      - name: Clean old build
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            rm -rf /home/ubuntu/royal-hayat-website/dist
 
-    - name: Restart Nginx
-      uses: appleboy/ssh-action@v1.0.0
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ubuntu
-        key: ${{ secrets.EC2_KEY }}
-        script: |
-          sudo systemctl restart nginx
+      # 🚀 Copy new build (FIXED PATH)
+      - name: Copy new build
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_KEY }}
+          source: "dist/*"
+          target: "/home/ubuntu/royal-hayat-website/"
+
+      # 🔐 Set correct permissions for nginx
+      - name: Fix permissions for nginx
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            sudo chown -R www-data:www-data /home/ubuntu/royal-hayat-website
+            sudo chmod -R 755 /home/ubuntu/royal-hayat-website
+
+      # 🔄 Restart nginx
+      - name: Restart nginx
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            sudo nginx -t
+            sudo systemctl restart nginx

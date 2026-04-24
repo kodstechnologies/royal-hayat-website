@@ -366,6 +366,12 @@ const HospitalityServices = ({
       {/* ===== AL LIWAN CAFÉ ===== */}
       {section === "cafe" && <section className="py-6">
         <div className="container mx-auto px-6 max-w-6xl">
+          <div className="lg:hidden flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
+              <Coffee className="w-6 h-6 text-accent" />
+            </div>
+            <h2 className="text-2xl font-serif text-foreground">{t("alLiwanCafe")}</h2>
+          </div>
           <div className="grid lg:grid-cols-2 gap-10 items-start">
             <div className="relative order-2 lg:order-2">
               <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
@@ -412,9 +418,9 @@ const HospitalityServices = ({
               </div>
             </div>
 
-            <ScrollAnimationWrapper className="order-1 lg:order-1">
+            <ScrollAnimationWrapper className="order-3 lg:order-1">
               <div>
-                <div className="flex items-center gap-3 mb-4">
+                <div className="hidden lg:flex items-center gap-3 mb-4">
                   <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
                     <Coffee className="w-6 h-6 text-accent" />
                   </div>
@@ -942,8 +948,14 @@ const HospitalityServices = ({
       {/* ===== AL LIWAN CAFÉ (Show All Order) ===== */}
       {showAll && <section className="py-6 bg-white">
         <div className="container mx-auto px-6 max-w-6xl">
+          <div className="lg:hidden flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
+              <Coffee className="w-6 h-6 text-accent" />
+            </div>
+            <h2 className="text-2xl font-serif text-foreground">{t("alLiwanCafe")}</h2>
+          </div>
           <div className="grid lg:grid-cols-2 gap-10 items-start">
-            <div className="relative">
+            <div className="relative order-2 lg:order-1">
               <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
                 <AnimatePresence mode="wait">
                   <motion.div
@@ -988,9 +1000,9 @@ const HospitalityServices = ({
               </div>
             </div>
 
-            <ScrollAnimationWrapper>
+            <ScrollAnimationWrapper className="order-3 lg:order-2">
               <div>
-                <div className="flex items-center gap-3 mb-4">
+                <div className="hidden lg:flex items-center gap-3 mb-4">
                   <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
                     <Coffee className="w-6 h-6 text-accent" />
                   </div>

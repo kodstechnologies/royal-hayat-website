@@ -621,7 +621,7 @@ const PatientsVisitors = () => {
                 </p>
 
                 {/* Video Placeholder */}
-                <div className="mb-10 rounded-2xl overflow-hidden border border-border/50 bg-muted/30">
+                {/* <div className="mb-10 rounded-2xl overflow-hidden border border-border/50 bg-muted/30">
                   <div className="aspect-video flex items-center justify-center bg-muted/50">
                     <div className="text-center">
                       <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
@@ -631,7 +631,7 @@ const PatientsVisitors = () => {
                       <p className="font-body text-xs text-muted-foreground">{lang === "ar" ? "سيتم إضافة الفيديو قريباً" : "Video coming soon"}</p>
                     </div>
                   </div>
-                </div>
+                </div> */}
 
                 <div className="bg-popover border border-border/50 rounded-2xl p-6 mb-6">
                   <h3 className="font-serif text-lg text-foreground mb-4">{lang === "ar" ? "أمان متقدم للرضّع" : "Advanced Infant Security"}</h3>

@@ -236,12 +236,12 @@ const HospitalityServices = ({
             </a>
           </div>
 
-          <div className="mt-10 aspect-video bg-muted/30 rounded-2xl border border-border flex items-center justify-center">
+          {/* <div className="mt-10 aspect-video bg-muted/30 rounded-2xl border border-border flex items-center justify-center">
             <div className="text-center">
               <Video className="w-10 h-10 text-muted-foreground/50 mx-auto mb-2" />
               <p className="font-body text-sm text-muted-foreground">{isAr ? "فيديو ترويجي للخدمات الفاخرة قريباً" : "Luxury Services promotional video coming soon"}</p>
             </div>
-          </div>
+          </div> */}
         </div>
       </section>}
 
@@ -366,8 +366,8 @@ const HospitalityServices = ({
       {/* ===== AL LIWAN CAFÉ ===== */}
       {section === "cafe" && <section className="py-6">
         <div className="container mx-auto px-6 max-w-6xl">
-          <div className="space-y-10">
-            <div className="relative max-w-4xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-10 items-start">
+            <div className="relative order-2 lg:order-2">
               <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
                 <AnimatePresence mode="wait">
                   <motion.div
@@ -412,9 +412,9 @@ const HospitalityServices = ({
               </div>
             </div>
 
-            <ScrollAnimationWrapper>
-              <div className="max-w-4xl mx-auto text-center">
-                <div className="inline-flex items-center gap-3 mb-4">
+            <ScrollAnimationWrapper className="order-1 lg:order-1">
+              <div>
+                <div className="flex items-center gap-3 mb-4">
                   <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
                     <Coffee className="w-6 h-6 text-accent" />
                   </div>
@@ -425,7 +425,7 @@ const HospitalityServices = ({
                     ? "مقهى الليوان هو صالة قهوة ومطعم ترحيبي يقع في ردهة مستشفى رويال حياة. يقدم طعاماً محضراً طازجاً وحلويات شهية في بيئة راقية، مع جلسات مريحة وخدمة واي فاي مجانية للضيوف."
                     : "Al Liwan Café is a welcoming coffee lounge and diner located in the lobby of Royale Hayat Hospital. It offers freshly prepared food and delectable desserts in a sophisticated setting, complemented by comfortable seating and complimentary Wi-Fi."}
                 </p>
-                <div className="space-y-2 mb-5 text-left">
+                <div className="space-y-2 mb-5">
                   {(isAr
                     ? ["عصائر طازجة ومجموعة متنوعة من السموذي", "برغر وسلطات وساندويتشات ولفائف", "تشكيلة يومية من الكعك والبسكويت", "قهوة متخصصة ومجموعة متنوعة من الشاي"]
                     : ["Fresh juices and a wide smoothie selection", "Burgers, salads, sandwiches, and wraps", "Daily assortment of cakes and cookies", "Specialty coffee and tea selections"]).map((item, i) => (
@@ -447,8 +447,8 @@ const HospitalityServices = ({
       {/* ===== ELEMENTS SPA ===== */}
       {section === "spa" && <section className="py-6 bg-primary/5">
         <div className="container mx-auto px-6 max-w-6xl">
-          <div className="space-y-10">
-            <div className="relative max-w-4xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-10 items-start">
+            <div className="relative">
               <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
                 <AnimatePresence mode="wait">
                   <motion.div
@@ -494,8 +494,8 @@ const HospitalityServices = ({
             </div>
 
             <ScrollAnimationWrapper>
-              <div className="max-w-4xl mx-auto text-center">
-                <div className="inline-flex items-center gap-3 mb-4">
+              <div>
+                <div className="flex items-center gap-3 mb-4">
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                     <Sparkles className="w-6 h-6 text-primary" />
                   </div>
@@ -506,7 +506,7 @@ const HospitalityServices = ({
                     ? "سبا إليمنتس، بالتعاون مع فنادق ومنتجعات بانيان تري الحائزة على جوائز، يجلب جوهر العلاجات التقليدية وتقاليد العافية الشاملة إلى مستشفى رويال حياة."
                     : "Elements Spa, in collaboration with the award-winning Banyan Tree Hotels & Resorts, brings the essence of time-honored remedies and holistic wellness traditions to Royale Hayat Hospital."}
                 </p>
-                <div className="mb-5 text-left">
+                <div className="mb-5">
                   <h4 className="font-serif text-base text-foreground mb-3">{isAr ? "خدماتنا تشمل:" : "Our Services Include:"}</h4>
                   <div className="space-y-2">
                     {(isAr
@@ -552,8 +552,8 @@ const HospitalityServices = ({
 
           <motion.div key={activeSuite} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}>
             {activeSuite !== 0 ? (
-              <div className="space-y-10">
-                <div className="relative max-w-4xl mx-auto">
+              <div className="grid lg:grid-cols-2 gap-10 items-start">
+                <div className="relative">
                   <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
                     <AnimatePresence mode="wait">
                       <motion.div
@@ -594,7 +594,7 @@ const HospitalityServices = ({
                   </div>
                 </div>
 
-                <div className="max-w-4xl mx-auto text-center">
+                <div>
                   <h3 className="text-xl font-serif text-foreground mb-2">{currentSuite.name}</h3>
                   <p className="font-body text-xs text-accent tracking-wide uppercase mb-4">{currentSuite.area}</p>
                   <p className="font-body text-sm text-muted-foreground leading-relaxed mb-6">{currentSuite.desc}</p>
@@ -638,7 +638,7 @@ const HospitalityServices = ({
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-center gap-2 mt-6">
+                  <div className="flex items-center gap-2 mt-6">
                     <Phone className="w-4 h-4 text-accent" />
                     <p className="font-body text-sm text-foreground">{isAr ? "للحجز والمزيد من المعلومات، اتصل:" : "For bookings and more information, please call:"} <a href={`tel:${currentSuite.phone}`} className="text-accent hover:underline font-semibold">{currentSuite.phone}</a></p>
                   </div>
@@ -648,7 +648,27 @@ const HospitalityServices = ({
               <>
                 {/* Row 1: Text left, Image right (like Al Liwan Café) */}
                 <div className="grid lg:grid-cols-2 gap-10 items-start">
-                  <div>
+                  <div className="rounded-2xl overflow-hidden border border-border shadow-md h-[340px] order-2 lg:order-2">
+                    {activeSuite === 0 ? (
+                      <iframe
+                        src="https://tour.panoee.net/iframe/royaleorchid"
+                        title="Royale Orchid Suite 360 Tour"
+                        width="100%"
+                        height="340px"
+                        frameBorder="0"
+                        allowFullScreen
+                        className="w-full h-full"
+                      ></iframe>
+                    ) : (
+                      <div className="w-full h-full bg-muted/30 flex items-center justify-center">
+                        <div className="text-center">
+                          <Image className="w-8 h-8 text-muted-foreground/50 mx-auto mb-2" />
+                          <p className="font-body text-xs text-muted-foreground">{isAr ? "صور الجناح قريباً" : `${currentSuite.name} images coming soon`}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="order-1 lg:order-1">
                     <h3 className="text-xl font-serif text-foreground mb-2">{currentSuite.name}</h3>
                     <p className="font-body text-xs text-accent tracking-wide uppercase mb-4">{currentSuite.area}</p>
                     <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">{currentSuite.desc}</p>
@@ -682,31 +702,11 @@ const HospitalityServices = ({
                       </div>
                     )}
                   </div>
-                  <div className="rounded-2xl overflow-hidden border border-border shadow-md h-[340px]">
-                    {activeSuite === 0 ? (
-                      <iframe
-                        src="https://tour.panoee.net/iframe/royaleorchid"
-                        title="Royale Orchid Suite 360 Tour"
-                        width="100%"
-                        height="340px"
-                        frameBorder="0"
-                        allowFullScreen
-                        className="w-full h-full"
-                      ></iframe>
-                    ) : (
-                      <div className="w-full h-full bg-muted/30 flex items-center justify-center">
-                        <div className="text-center">
-                          <Image className="w-8 h-8 text-muted-foreground/50 mx-auto mb-2" />
-                          <p className="font-body text-xs text-muted-foreground">{isAr ? "صور الجناح قريباً" : `${currentSuite.name} images coming soon`}</p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
                 </div>
 
-                {/* Additional carousel + centered content for Royale Orchid */}
-                <div className="space-y-10 mt-16">
-                  <div className="relative max-w-4xl mx-auto">
+                {/* Additional carousel + details for Royale Orchid */}
+                <div className="grid lg:grid-cols-2 gap-10 items-start mt-16">
+                  <div className="relative">
                     <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
                       <AnimatePresence mode="wait">
                         <motion.div
@@ -747,11 +747,10 @@ const HospitalityServices = ({
                     </div>
                   </div>
 
-                  <div className="max-w-4xl mx-auto text-center">
-                    <h3 className="text-xl font-serif text-foreground mb-2">{currentSuite.name}</h3>
+                  <div>
                     <p className="font-body text-xs text-accent tracking-wide uppercase mb-4">{currentSuite.area}</p>
 
-                    <div className="mb-6 text-left">
+                    <div className="mb-6">
                       <h4 className="font-serif text-base text-foreground mb-3">
                         {isAr ? "المرافق والتجهيزات:" : "In-Suite Features & Amenities:"}
                       </h4>
@@ -766,7 +765,7 @@ const HospitalityServices = ({
                     </div>
 
                     {currentSuite.hospitality && (
-                      <div className="mb-6 text-left">
+                      <div className="mb-6">
                         <h4 className="font-serif text-base text-foreground mb-2">
                           {isAr ? "خدمات الضيافة المتميزة:" : "Premium Hospitality Services:"}
                         </h4>
@@ -781,7 +780,7 @@ const HospitalityServices = ({
                       </div>
                     )}
 
-                    <div className="flex items-center justify-center gap-2 mt-6">
+                    <div className="flex items-center gap-2 mt-6">
                       <Phone className="w-4 h-4 text-accent" />
                       <p className="font-body text-sm text-foreground">
                         {isAr ? "للحجز والمزيد من المعلومات، اتصل:" : "For bookings and more information, please call:"}{" "}
@@ -858,8 +857,8 @@ const HospitalityServices = ({
       {/* ===== ELEMENTS SPA (Show All Order) ===== */}
       {showAll && <section className="py-6 bg-primary/5">
         <div className="container mx-auto px-6 max-w-6xl">
-          <div className="space-y-10">
-            <div className="relative max-w-4xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-10 items-start">
+            <div className="relative order-2 lg:order-2">
               <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
                 <AnimatePresence mode="wait">
                   <motion.div
@@ -904,9 +903,9 @@ const HospitalityServices = ({
               </div>
             </div>
 
-            <ScrollAnimationWrapper>
-              <div className="max-w-4xl mx-auto text-center">
-                <div className="inline-flex items-center gap-3 mb-4">
+            <ScrollAnimationWrapper className="order-1 lg:order-1">
+              <div>
+                <div className="flex items-center gap-3 mb-4">
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                     <Sparkles className="w-6 h-6 text-primary" />
                   </div>
@@ -917,7 +916,7 @@ const HospitalityServices = ({
                     ? "سبا إليمنتس، بالتعاون مع فنادق ومنتجعات بانيان تري الحائزة على جوائز، يجلب جوهر العلاجات التقليدية وتقاليد العافية الشاملة إلى مستشفى رويال حياة."
                     : "Elements Spa, in collaboration with the award-winning Banyan Tree Hotels & Resorts, brings the essence of time-honored remedies and holistic wellness traditions to Royale Hayat Hospital."}
                 </p>
-                <div className="mb-5 text-left">
+                <div className="mb-5">
                   <h4 className="font-serif text-base text-foreground mb-3">{isAr ? "خدماتنا تشمل:" : "Our Services Include:"}</h4>
                   <div className="space-y-2">
                     {(isAr
@@ -938,13 +937,13 @@ const HospitalityServices = ({
             </ScrollAnimationWrapper>
           </div>
         </div>
-      </section>}
+      </section>} 
 
       {/* ===== AL LIWAN CAFÉ (Show All Order) ===== */}
       {showAll && <section className="py-6 bg-white">
         <div className="container mx-auto px-6 max-w-6xl">
-          <div className="space-y-10">
-            <div className="relative max-w-4xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-10 items-start">
+            <div className="relative">
               <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
                 <AnimatePresence mode="wait">
                   <motion.div
@@ -990,8 +989,8 @@ const HospitalityServices = ({
             </div>
 
             <ScrollAnimationWrapper>
-              <div className="max-w-4xl mx-auto text-center">
-                <div className="inline-flex items-center gap-3 mb-4">
+              <div>
+                <div className="flex items-center gap-3 mb-4">
                   <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
                     <Coffee className="w-6 h-6 text-accent" />
                   </div>
@@ -1002,7 +1001,7 @@ const HospitalityServices = ({
                     ? "مقهى الليوان هو صالة قهوة ومطعم ترحيبي يقع في ردهة مستشفى رويال حياة. يقدم طعاماً محضراً طازجاً وحلويات شهية في بيئة راقية، مع جلسات مريحة وخدمة واي فاي مجانية للضيوف."
                     : "Al Liwan Café is a welcoming coffee lounge and diner located in the lobby of Royale Hayat Hospital. It offers freshly prepared food and delectable desserts in a sophisticated setting, complemented by comfortable seating and complimentary Wi-Fi."}
                 </p>
-                <div className="space-y-2 mb-5 text-left">
+                <div className="space-y-2 mb-5">
                   {(isAr
                     ? ["عصائر طازجة ومجموعة متنوعة من السموذي", "برغر وسلطات وساندويتشات ولفائف", "تشكيلة يومية من الكعك والبسكويت", "قهوة متخصصة ومجموعة متنوعة من الشاي"]
                     : ["Fresh juices and a wide smoothie selection", "Burgers, salads, sandwiches, and wraps", "Daily assortment of cakes and cookies", "Specialty coffee and tea selections"]).map((item, i) => (
@@ -1025,13 +1024,13 @@ const HospitalityServices = ({
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-10 items-center">
 
-            <div className="aspect-video bg-muted/30 rounded-2xl border border-border flex items-center justify-center">
+            <div className="aspect-video bg-muted/30 rounded-2xl border border-border flex items-center justify-center order-2 lg:order-2">
               <div className="text-center">
                 <Image className="w-8 h-8 text-muted-foreground/50 mx-auto mb-2" />
                 <p className="font-body text-xs text-muted-foreground">{isAr ? "معرض الصور قريباً" : "Photography portfolio coming soon"}</p>
               </div>
             </div>
-            <ScrollAnimationWrapper>
+            <ScrollAnimationWrapper className="order-1 lg:order-1">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
                   <Baby className="w-6 h-6 text-accent" />

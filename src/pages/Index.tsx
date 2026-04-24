@@ -46,7 +46,7 @@ const Index = () => {
       <WhyRoyaleHayat />
       <HospitalityBanner />
       <AlSafwaSpotlight />
-      <AwardsSection />
+      {/* <AwardsSection /> */}
       <PatientsQuickLinks />
       <TestimonialsSection />
       <Footer />

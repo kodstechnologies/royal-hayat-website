@@ -18,12 +18,12 @@ const Footer = () => {
   ];
 
   const deptNames = [
-    { en: "Obstetrics & Gynecology", ar: "التوليد وأمراض النساء" },
-    { en: "Pediatrics", ar: "طب الأطفال" },
-    { en: "Internal Medicine", ar: "الطب الباطني" },
-    { en: "General & Laparoscopic Surgery", ar: "الجراحة العامة والمنظار" },
-    { en: "Royale Hayat Dental", ar: "عيادة رويال حياة للأسنان" },
-    { en: "Dermatology", ar: "الأمراض الجلدية" },
+    { en: "Obstetrics & Gynecology", ar: "التوليد وأمراض النساء", slug: "obstetrics-gynecology" },
+    { en: "Pediatrics", ar: "طب الأطفال", slug: "pediatrics" },
+    { en: "Internal Medicine", ar: "الطب الباطني", slug: "internal-medicine" },
+    { en: "General & Laparoscopic Surgery", ar: "الجراحة العامة والمنظار", slug: "general-laparoscopic-surgery" },
+    { en: "Royale Hayat Dental", ar: "عيادة رويال حياة للأسنان", slug: "dental-clinic" },
+    { en: "Dermatology", ar: "الأمراض الجلدية", slug: "dermatology" },
   ];
 
   return (
@@ -69,7 +69,7 @@ const Footer = () => {
             <h4 className="text-primary-foreground font-body text-xs tracking-[0.3em] uppercase mb-6">{t("departments")}</h4>
             <nav className="flex flex-col gap-3">
               {deptNames.map((d) => (
-                <Link key={d.en} to="/medical-services" className="text-primary-foreground/70 font-body text-sm hover:text-accent transition-colors">
+                <Link key={d.en} to={`/medical-services/${d.slug}`} className="text-primary-foreground/70 font-body text-sm hover:text-accent transition-colors">
                   {lang === "ar" ? d.ar : d.en}
                 </Link>
               ))}

@@ -3447,7 +3447,7 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-fatima-sultan',
-    image: '/images/doctors/fatima-sultan.png',
+    image: '/images/doctors/fatima-sultan34.png',
 
     name: 'Dr. Fatima Sultan', nameAr: 'د. فاطمـة سلطـان',
     specialty: 'Obstetrics & Gynecology', specialtyAr: 'أمراض النساء والولادة',

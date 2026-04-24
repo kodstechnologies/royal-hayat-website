@@ -42,7 +42,7 @@ const ChairmanMessage = () => {
               <p className="font-body text-sm text-muted-foreground leading-relaxed mb-1 text-justify">
                 {lang === "ar" ? "مع أطيب التمنيات،" : "With best wishes,"}
               </p>
-              <p className="font-body text-lg text-muted-foreground leading-relaxed">{t("chairmanName")}</p>
+              <p className="font-body text-xl md:text-2xl text-muted-foreground leading-relaxed">{t("chairmanName")}</p>
               <p className="font-body text-sm text-muted-foreground leading-relaxed">{t("chairmanTitle")}</p>
             </div>
           </motion.div>

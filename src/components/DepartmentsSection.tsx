@@ -14,7 +14,16 @@ import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 const DepartmentsSection = () => {
   const getDeptDoctors = (deptName: string) => {
     const aliases = deptDoctorAliases[deptName] || [deptName];
-    return allDoctors.filter((doc) => aliases.some(a => doc.department.includes(a) || doc.specialty.includes(a)));
+    const matchedDoctors = allDoctors.filter((doc) =>
+      aliases.some((a) => doc.department.includes(a) || doc.specialty.includes(a))
+    );
+
+    return [...matchedDoctors].sort((a, b) =>
+      (lang === "ar" ? a.nameAr : a.name).localeCompare(
+        lang === "ar" ? b.nameAr : b.name,
+        lang === "ar" ? "ar" : "en"
+      )
+    );
   };
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [selectedSubByDept, setSelectedSubByDept] = useState<Record<number, string>>({});

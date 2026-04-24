@@ -3544,7 +3544,7 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-nourah-al-ibrahim', //////////////
-    image: '/images/doctors/dr-noura.png',
+    image: '/images/doctors/noura34.png',
 
     name: 'Dr. Nourah Al Ibrahim', nameAr: 'د. نـوره الإبراهيـم',
     specialty: 'Obstetrics & Gynecology', specialtyAr: 'أمراض النساء والولادة',
@@ -3570,7 +3570,7 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-salma-ibrahim',
-    image: '/images/doctors/salma-ibrahim.png',
+    image: '/images/doctors/salma-ibrahim34.png',
 
     name: 'Dr. Salma Ibrahim', nameAr: 'د. سلمى ابراهيم',
     specialty: 'Obstetrics & Gynecology', specialtyAr: 'أمراض النساء والولادة',

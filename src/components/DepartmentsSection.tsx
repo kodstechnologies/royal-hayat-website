@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { doctors as allDoctors } from "@/data/doctors";
 import { departments, deptDoctorAliases, type Department } from "@/data/departments";
+import { departmentDetails } from "@/data/departmentDetails";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 
 
@@ -15,6 +16,7 @@ const DepartmentsSection = () => {
     return allDoctors.filter((doc) => aliases.some(a => doc.department.includes(a) || doc.specialty.includes(a)));
   };
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [selectedSubByDept, setSelectedSubByDept] = useState<Record<number, string>>({});
   const doctorScrollRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
@@ -53,6 +55,19 @@ const DepartmentsSection = () => {
 
   const handleToggle = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
+  };
+
+  const slugify = (value: string) =>
+    value
+      .toLowerCase()
+      .replace(/&/g, "and")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+
+  const getSubSlug = (deptSlug: string, subName: string) => {
+    const detail = departmentDetails.find((d) => d.slug === deptSlug);
+    const matched = detail?.subDepartments?.find((s) => s.name.toLowerCase() === subName.toLowerCase());
+    return matched?.slug ?? slugify(subName);
   };
 
   const selectedDept = openIndex !== null ? departments[openIndex] : null;
@@ -102,6 +117,7 @@ const DepartmentsSection = () => {
             (sortedFilteredDepts).map((dept) => {
               const origIdx = getOriginalIndex(dept);
               const isExpanded = openIndex === origIdx;
+              const selectedSubSlug = selectedSubByDept[origIdx];
 
               return (
                 <motion.div
@@ -164,6 +180,11 @@ const DepartmentsSection = () => {
                             <p className="text-muted-foreground font-body text-sm leading-relaxed">
                               {lang === "ar" ? dept.descAr : dept.desc}
                             </p>
+                            <Link to={`/medical-services/${dept.slug}`} className="inline-flex w-full justify-end items-center gap-1.5 text-primary font-body text-xs tracking-wide hover:text-accent transition-colors
+                            
+                         ">
+                              {t("Read More")} <ArrowRight className="w-3.5 h-3.5" />
+                            </Link>
                           </div>
                         </div>
                       </div>
@@ -180,12 +201,22 @@ const DepartmentsSection = () => {
                                 </p>
                                 <div className="flex flex-wrap gap-2">
                                   {dept.subs.map((sub) => (
-                                    <span
+                                    <button
                                       key={sub.name}
-                                      className="px-3 py-1.5 rounded-full text-xs font-body bg-secondary/50 text-foreground border border-border/30"
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        const subSlug = getSubSlug(dept.slug, sub.name);
+                                        setSelectedSubByDept((prev) => ({ ...prev, [origIdx]: subSlug }));
+                                      }}
+                                      className={`px-3 py-1.5 rounded-full text-xs font-body border transition-colors ${
+                                        selectedSubSlug === getSubSlug(dept.slug, sub.name)
+                                          ? "bg-primary text-primary-foreground border-primary"
+                                          : "bg-secondary/50 text-foreground border-border/30 hover:bg-secondary"
+                                      }`}
                                     >
                                       {lang === "ar" ? sub.nameAr : sub.name}
-                                    </span>
+                                    </button>
                                   ))}
                                 </div>
                               </>
@@ -291,6 +322,16 @@ const DepartmentsSection = () => {
                                 </div>
                               </div>
                             </div>
+                            {dept.subs && dept.subs.length > 0 && selectedSubSlug && (
+                              <div className="mt-4 text-center">
+                                <Link
+                                  to={`/medical-services/${dept.slug}/${selectedSubSlug}`}
+                                  className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-full font-body text-xs tracking-[0.15em] uppercase hover:bg-primary/90 transition-colors"
+                                >
+                                  {t("learnMore")} <ArrowRight className="w-3.5 h-3.5" />
+                                </Link>
+                              </div>
+                            )}
                           </div>
                         ) : (
                           <p className="text-muted-foreground font-body text-xs italic mt-auto">
@@ -300,12 +341,12 @@ const DepartmentsSection = () => {
 
                         {/* View Full Details Link */}
                         <div className="mt-6 pt-4 border-t border-border/30">
-                          <Link
+                          {/* <Link
                             to={`/medical-services/${dept.slug}`}
                             className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-full font-body text-xs tracking-[0.15em] uppercase hover:bg-primary/90 transition-colors"
                           >
                             {t("learnMore")} <ArrowRight className="w-3.5 h-3.5" />
-                          </Link>
+                          </Link> */}
                         </div>
                       </div>
                     </motion.div>

@@ -250,11 +250,11 @@ const DepartmentDetail = () => {
       </section>
 
       {/* Image/Video Placeholder */}
-      <section className="container mx-auto px-6 py-8">
+      {/* <section className="container mx-auto px-6 py-8">
         <div className="aspect-video bg-muted/30 rounded-2xl border border-border/50 flex items-center justify-center">
           <p className="text-muted-foreground font-body text-sm">Department Image / Video</p>
         </div>
-      </section>
+      </section> */}
 
       {/* Content Sections */}
       <section className="py-8 md:py-12">
@@ -310,13 +310,13 @@ const DepartmentDetail = () => {
       </section>
 
       {/* Image/Video Placeholder 2 */}
-      {displayDept.sections.length > 2 && (
+      {/* {displayDept.sections.length > 2 && (
         <section className="container mx-auto px-6 py-4">
           <div className="aspect-[4/3] md:aspect-video max-w-3xl mx-auto bg-muted/30 rounded-2xl border border-border/50 flex items-center justify-center">
             <p className="text-muted-foreground font-body text-sm">Gallery / Video Content</p>
           </div>
         </section>
-      )}
+      )} */}
 
       {/* Sub-Departments */}
       {!activeSub && dept.subDepartments && dept.subDepartments.length > 0 && (

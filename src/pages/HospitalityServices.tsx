@@ -3,10 +3,10 @@ import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import ChatButton from "@/components/ChatButton";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
-import { Crown, Utensils, Sparkles, Flower2, Coffee, Phone, CheckCircle2, Baby, Image, Video, Bed, Star } from "lucide-react";
+import { Crown, Utensils, Sparkles, Flower2, Coffee, Phone, CheckCircle2, Baby, Image, Video, Bed, Star, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 // @ts-ignore
 import ReactPannellum from "react-pannellum";
 import { useSearchParams, Link } from "react-router-dom";
@@ -25,6 +25,100 @@ const HospitalityServices = ({ gardeniaHallImages, alJouriHallImages }: Hospital
   const show = (s: string) => showAll || section === s;
   const [activeHall, setActiveHall] = useState("gardenia");
   const [activeSuite, setActiveSuite] = useState(0);
+  const [suiteSlide, setSuiteSlide] = useState(0);
+  const [orchidSlide, setOrchidSlide] = useState(0);
+  const orchidSuiteImages = [
+    "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776942128/DSC08664_nlaap5.jpg",
+    "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776942138/DSC08673_vojwry.jpg",
+    "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776942143/DSC08672_ubs2ca.jpg",
+    "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776942182/DSC08687_z3gvtd.jpg",
+    "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776942278/DSC08688_upvgue.jpg",
+    "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776942280/DSC08691_z9yijg.jpg",
+    "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776942287/DSC08695_s9cbl3.jpg",
+    "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776942313/DSC08698_raphu7.jpg",
+    "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776942314/DSC08710_yomu0q.jpg"
+  ];
+  const suiteCarouselImagesByIndex: Record<number, string[]> = {
+    1: [
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776948608/DSC08493_jlrmzf.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776948610/DSC08502_dcahkd.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776948614/DSC08561_d3kuke.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776948615/DSC08506_hmumk0.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776948619/DSC08588_zgvst4.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776948620/DSC08570_jc4ply.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776948616/DSC08554_pxevou.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776948622/DSC08513_qk9cwx.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776948623/DSC08517_kz7wnv.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776948623/DSC08534_qelfjq.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776948631/DSC08608_yt9anl.jpg"
+    ],
+    2: [
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776948216/DSC08721_bdez9o.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776948217/DSC08726_l9maev.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776948218/DSC08734_neveao.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776948222/DSC08754_rpfxtg.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776948223/DSC08771_ykq1x7.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776948224/DSC08767_yg4smn.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776948227/DSC08793_rzkoyu.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776948227/DSC08737_mj7z85.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776948228/DSC08747_btjh9v.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776948228/DSC08750_kjgyeg.jpg"
+    ],
+    3: [
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776947830/DSC08328_qbensg.jpg  ",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776947830/DSC08298_xbmqxm.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776947832/DSC08277_drjwfi.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776947838/DSC08332_moneaf.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776947839/DSC08335_dnaqrp.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776947841/DSC08316_a92ung.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776947845/DSC08294_j5ggsf.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776947846/DSC08302_dxchtu.jpg"
+    ],
+    4: [
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776946405/DSC08353_xiv5vw.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776946413/DSC08360_okofcu.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776946419/DSC08375_smjff2.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776946498/DSC08382_jtv4sq.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776946507/DSC08388_je9e59.jpg"
+    ],
+    5: [
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776945676/DSC08428_zep0ci.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776945693/DSC08431_svpbrm.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776945715/DSC08437_ggyhog.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776945724/DSC08443_ap2dhb.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776945732/DSC08466_k3hcu9.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776945732/DSC08466_k3hcu9.jpg",
+      
+    ],
+    6: [
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776941478/1_aza1am.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776941481/2_qnolrs.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776941489/3_guz4n4.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776941495/4_o8t25v.jpg",
+      "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776941496/5_p5i047.jpg",
+    ],
+  };
+  const activeSuiteImages = suiteCarouselImagesByIndex[activeSuite] ?? suiteCarouselImagesByIndex[6];
+
+  useEffect(() => {
+    if (activeSuite === 0) return;
+    const timer = window.setInterval(() => {
+      setSuiteSlide((prev) => (prev + 1) % activeSuiteImages.length);
+    }, 4500);
+    return () => window.clearInterval(timer);
+  }, [activeSuite, activeSuiteImages.length]);
+
+  useEffect(() => {
+    setSuiteSlide(0);
+  }, [activeSuite]);
+
+  useEffect(() => {
+    if (activeSuite !== 0) return;
+    const timer = window.setInterval(() => {
+      setOrchidSlide((prev) => (prev + 1) % orchidSuiteImages.length);
+    }, 4500);
+    return () => window.clearInterval(timer);
+  }, [activeSuite, orchidSuiteImages.length]);
 
   const hallsNav = [
     { id: "gardenia", label: isAr ? "قاعة غاردينيا" : "Gardenia Banquet Hall" },
@@ -411,105 +505,269 @@ const HospitalityServices = ({ gardeniaHallImages, alJouriHallImages }: Hospital
           </div>
 
           <motion.div key={activeSuite} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}>
-            {/* Row 1: Text left, Image right (like Al Liwan Café) */}
-            <div className="grid lg:grid-cols-2 gap-10 items-start">
-              <div>
-                <h3 className="text-xl font-serif text-foreground mb-2">{currentSuite.name}</h3>
-                <p className="font-body text-xs text-accent tracking-wide uppercase mb-4">{currentSuite.area}</p>
-                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">{currentSuite.desc}</p>
-
-                {currentSuite.highlights && (
-                  <div className="space-y-2 mb-4">
-                    {currentSuite.highlights.map((h, i) => (
-                      <div key={i} className="flex items-center gap-3">
-                        <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
-                        <span className="font-body text-sm text-foreground">{h}</span>
-                      </div>
-                    ))}
+            {activeSuite !== 0 ? (
+              <div className="space-y-10">
+                <div className="relative max-w-4xl mx-auto">
+                  <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
+                    <img
+                      src={activeSuiteImages[suiteSlide]}
+                      alt={isAr ? `صورة ${currentSuite.name} ${suiteSlide + 1}` : `${currentSuite.name} image ${suiteSlide + 1}`}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
                   </div>
-                )}
-
-                {currentSuite.extraDesc && (
-                  <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">{currentSuite.extraDesc}</p>
-                )}
-
-                {currentSuite.dimensions && (
-                  <div className="mb-4">
-                    <h4 className="font-serif text-base text-foreground mb-2">{isAr ? "أبعاد الجناح:" : "Suite Dimensions:"}</h4>
-                    <div className="space-y-1">
-                      {currentSuite.dimensions.map((d, i) => (
-                        <div key={i} className="flex items-center gap-3">
-                          <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
-                          <span className="font-body text-sm text-foreground">{d}</span>
-                        </div>
-                      ))}
-                    </div>
+                  <button
+                    onClick={() => setSuiteSlide((prev) => (prev - 1 + activeSuiteImages.length) % activeSuiteImages.length)}
+                    aria-label={isAr ? "السابق" : "Previous"}
+                    className="absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={() => setSuiteSlide((prev) => (prev + 1) % activeSuiteImages.length)}
+                    aria-label={isAr ? "التالي" : "Next"}
+                    className="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                  <div className="flex items-center justify-center gap-3 mt-5">
+                    <span className="font-body text-xs text-muted-foreground tracking-widest">
+                      {String(suiteSlide + 1).padStart(2, "0")} / {String(activeSuiteImages.length).padStart(2, "0")}
+                    </span>
                   </div>
-                )}
-              </div>
-              <div className="rounded-2xl overflow-hidden border border-border shadow-md h-[340px]">
-                {activeSuite === 0 ? (
-                  <iframe
-                    src="https://tour.panoee.net/iframe/royaleorchid"
-                    title="Royale Orchid Suite 360 Tour"
-                    width="100%"
-                    height="340px"
-                    frameBorder="0"
-                    allowFullScreen
-                    className="w-full h-full"
-                  ></iframe>
-                ) : (
-                  <div className="w-full h-full bg-muted/30 flex items-center justify-center">
-                    <div className="text-center">
-                      <Image className="w-8 h-8 text-muted-foreground/50 mx-auto mb-2" />
-                      <p className="font-body text-xs text-muted-foreground">{isAr ? "صور الجناح قريباً" : `${currentSuite.name} images coming soon`}</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Row 2: Video left, Amenities right (like Elements Spa) */}
-            <div className="grid lg:grid-cols-2 gap-10 items-start mt-16">
-              <div className="aspect-video bg-muted/30 rounded-2xl border border-border flex items-center justify-center order-2 lg:order-1">
-                <div className="text-center">
-                  <Video className="w-8 h-8 text-muted-foreground/50 mx-auto mb-2" />
-                  <p className="font-body text-xs text-muted-foreground">{isAr ? "فيديو الجناح قريباً" : `${currentSuite.name} video coming soon`}</p>
-                </div>
-              </div>
-              <div className="order-1 lg:order-2">
-                <h4 className="font-serif text-base text-foreground mb-3">
-                  {isAr ? "المرافق والتجهيزات:" : currentSuite.dimensions ? "In-Suite Features & Amenities:" : "Specifications & Amenities:"}
-                </h4>
-                <div className="space-y-2 mb-4">
-                  {currentSuite.amenities.map((a, i) => (
-                    <div key={i} className="flex items-start gap-3">
-                      <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
-                      <span className="font-body text-sm text-foreground">{a}</span>
-                    </div>
-                  ))}
                 </div>
 
-                {currentSuite.hospitality && (
-                  <div className="mb-4">
-                    <h4 className="font-serif text-base text-foreground mb-2">{isAr ? "خدمات الضيافة المتميزة:" : "Premium Hospitality Services:"}</h4>
-                    <div className="space-y-2">
-                      {currentSuite.hospitality.map((h, i) => (
+                <div className="max-w-4xl mx-auto text-center">
+                  <h3 className="text-xl font-serif text-foreground mb-2">{currentSuite.name}</h3>
+                  <p className="font-body text-xs text-accent tracking-wide uppercase mb-4">{currentSuite.area}</p>
+                  <p className="font-body text-sm text-muted-foreground leading-relaxed mb-6">{currentSuite.desc}</p>
+
+                  {currentSuite.highlights && (
+                    <div className="space-y-2 mb-6 text-left">
+                      {currentSuite.highlights.map((h, i) => (
                         <div key={i} className="flex items-center gap-3">
-                          <Star className="w-4 h-4 text-accent flex-shrink-0" />
+                          <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
                           <span className="font-body text-sm text-foreground">{h}</span>
                         </div>
                       ))}
                     </div>
-                  </div>
-                )}
+                  )}
 
-                <div className="flex items-center gap-2 mt-6">
-                  <Phone className="w-4 h-4 text-accent" />
-                  <p className="font-body text-sm text-foreground">{isAr ? "للحجز والمزيد من المعلومات، اتصل:" : "For bookings and more information, please call:"} <a href={`tel:${currentSuite.phone}`} className="text-accent hover:underline font-semibold">{currentSuite.phone}</a></p>
+                  {currentSuite.dimensions && (
+                    <div className="mb-6 text-left">
+                      <h4 className="font-serif text-base text-foreground mb-2">{isAr ? "أبعاد الجناح:" : "Suite Dimensions:"}</h4>
+                      <div className="space-y-1">
+                        {currentSuite.dimensions.map((d, i) => (
+                          <div key={i} className="flex items-center gap-3">
+                            <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
+                            <span className="font-body text-sm text-foreground">{d}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="mb-6 text-left">
+                    <h4 className="font-serif text-base text-foreground mb-3">
+                      {isAr ? "المرافق والتجهيزات:" : "In-Suite Features & Amenities:"}
+                    </h4>
+                    <div className="space-y-2 mb-4">
+                      {currentSuite.amenities.map((a, i) => (
+                        <div key={i} className="flex items-start gap-3">
+                          <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
+                          <span className="font-body text-sm text-foreground">{a}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-center gap-2 mt-6">
+                    <Phone className="w-4 h-4 text-accent" />
+                    <p className="font-body text-sm text-foreground">{isAr ? "للحجز والمزيد من المعلومات، اتصل:" : "For bookings and more information, please call:"} <a href={`tel:${currentSuite.phone}`} className="text-accent hover:underline font-semibold">{currentSuite.phone}</a></p>
+                  </div>
                 </div>
               </div>
-            </div>
+            ) : (
+              <>
+                {/* Row 1: Text left, Image right (like Al Liwan Café) */}
+                <div className="grid lg:grid-cols-2 gap-10 items-start">
+                  <div>
+                    <h3 className="text-xl font-serif text-foreground mb-2">{currentSuite.name}</h3>
+                    <p className="font-body text-xs text-accent tracking-wide uppercase mb-4">{currentSuite.area}</p>
+                    <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">{currentSuite.desc}</p>
+
+                    {currentSuite.highlights && (
+                      <div className="space-y-2 mb-4">
+                        {currentSuite.highlights.map((h, i) => (
+                          <div key={i} className="flex items-center gap-3">
+                            <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
+                            <span className="font-body text-sm text-foreground">{h}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {currentSuite.extraDesc && (
+                      <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">{currentSuite.extraDesc}</p>
+                    )}
+
+                    {currentSuite.dimensions && (
+                      <div className="mb-4">
+                        <h4 className="font-serif text-base text-foreground mb-2">{isAr ? "أبعاد الجناح:" : "Suite Dimensions:"}</h4>
+                        <div className="space-y-1">
+                          {currentSuite.dimensions.map((d, i) => (
+                            <div key={i} className="flex items-center gap-3">
+                              <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
+                              <span className="font-body text-sm text-foreground">{d}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="rounded-2xl overflow-hidden border border-border shadow-md h-[340px]">
+                    {activeSuite === 0 ? (
+                      <iframe
+                        src="https://tour.panoee.net/iframe/royaleorchid"
+                        title="Royale Orchid Suite 360 Tour"
+                        width="100%"
+                        height="340px"
+                        frameBorder="0"
+                        allowFullScreen
+                        className="w-full h-full"
+                      ></iframe>
+                    ) : (
+                      <div className="w-full h-full bg-muted/30 flex items-center justify-center">
+                        <div className="text-center">
+                          <Image className="w-8 h-8 text-muted-foreground/50 mx-auto mb-2" />
+                          <p className="font-body text-xs text-muted-foreground">{isAr ? "صور الجناح قريباً" : `${currentSuite.name} images coming soon`}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Row 2: Video left, Amenities right (like Elements Spa) */}
+                <div className="grid lg:grid-cols-2 gap-10 items-start mt-16">
+                  <div className="aspect-video bg-muted/30 rounded-2xl border border-border flex items-center justify-center order-2 lg:order-1">
+                    <div className="text-center">
+                      <Video className="w-8 h-8 text-muted-foreground/50 mx-auto mb-2" />
+                      <p className="font-body text-xs text-muted-foreground">{isAr ? "فيديو الجناح قريباً" : `${currentSuite.name} video coming soon`}</p>
+                    </div>
+                  </div>
+                  <div className="order-1 lg:order-2">
+                    <h4 className="font-serif text-base text-foreground mb-3">
+                      {isAr ? "المرافق والتجهيزات:" : currentSuite.dimensions ? "In-Suite Features & Amenities:" : "Specifications & Amenities:"}
+                    </h4>
+                    <div className="space-y-2 mb-4">
+                      {currentSuite.amenities.map((a, i) => (
+                        <div key={i} className="flex items-start gap-3">
+                          <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
+                          <span className="font-body text-sm text-foreground">{a}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {currentSuite.hospitality && (
+                      <div className="mb-4">
+                        <h4 className="font-serif text-base text-foreground mb-2">{isAr ? "خدمات الضيافة المتميزة:" : "Premium Hospitality Services:"}</h4>
+                        <div className="space-y-2">
+                          {currentSuite.hospitality.map((h, i) => (
+                            <div key={i} className="flex items-center gap-3">
+                              <Star className="w-4 h-4 text-accent flex-shrink-0" />
+                              <span className="font-body text-sm text-foreground">{h}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="flex items-center gap-2 mt-6">
+                      <Phone className="w-4 h-4 text-accent" />
+                      <p className="font-body text-sm text-foreground">{isAr ? "للحجز والمزيد من المعلومات، اتصل:" : "For bookings and more information, please call:"} <a href={`tel:${currentSuite.phone}`} className="text-accent hover:underline font-semibold">{currentSuite.phone}</a></p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Additional carousel + centered content for Royale Orchid */}
+                <div className="space-y-10 mt-16">
+                  <div className="relative max-w-4xl mx-auto">
+                    <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
+                      <img
+                        src={orchidSuiteImages[orchidSlide]}
+                        alt={isAr ? `صورة ${currentSuite.name} ${orchidSlide + 1}` : `${currentSuite.name} image ${orchidSlide + 1}`}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                    </div>
+                    <button
+                      onClick={() => setOrchidSlide((prev) => (prev - 1 + orchidSuiteImages.length) % orchidSuiteImages.length)}
+                      aria-label={isAr ? "السابق" : "Previous"}
+                      className="absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md"
+                    >
+                      <ChevronLeft className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={() => setOrchidSlide((prev) => (prev + 1) % orchidSuiteImages.length)}
+                      aria-label={isAr ? "التالي" : "Next"}
+                      className="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md"
+                    >
+                      <ChevronRight className="w-5 h-5" />
+                    </button>
+                    <div className="flex items-center justify-center gap-3 mt-5">
+                      <span className="font-body text-xs text-muted-foreground tracking-widest">
+                        {String(orchidSlide + 1).padStart(2, "0")} / {String(orchidSuiteImages.length).padStart(2, "0")}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="max-w-4xl mx-auto text-center">
+                    <h3 className="text-xl font-serif text-foreground mb-2">{currentSuite.name}</h3>
+                    <p className="font-body text-xs text-accent tracking-wide uppercase mb-4">{currentSuite.area}</p>
+
+                    <div className="mb-6 text-left">
+                      <h4 className="font-serif text-base text-foreground mb-3">
+                        {isAr ? "المرافق والتجهيزات:" : "In-Suite Features & Amenities:"}
+                      </h4>
+                      <div className="space-y-2 mb-4">
+                        {currentSuite.amenities.map((a, i) => (
+                          <div key={i} className="flex items-start gap-3">
+                            <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
+                            <span className="font-body text-sm text-foreground">{a}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {currentSuite.hospitality && (
+                      <div className="mb-6 text-left">
+                        <h4 className="font-serif text-base text-foreground mb-2">
+                          {isAr ? "خدمات الضيافة المتميزة:" : "Premium Hospitality Services:"}
+                        </h4>
+                        <div className="space-y-2">
+                          {currentSuite.hospitality.map((h, i) => (
+                            <div key={i} className="flex items-center gap-3">
+                              <Star className="w-4 h-4 text-accent flex-shrink-0" />
+                              <span className="font-body text-sm text-foreground">{h}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="flex items-center justify-center gap-2 mt-6">
+                      <Phone className="w-4 h-4 text-accent" />
+                      <p className="font-body text-sm text-foreground">
+                        {isAr ? "للحجز والمزيد من المعلومات، اتصل:" : "For bookings and more information, please call:"}{" "}
+                        <a href={`tel:${currentSuite.phone}`} className="text-accent hover:underline font-semibold">
+                          {currentSuite.phone}
+                        </a>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
 
             {currentSuite.hall && (
               <div className="bg-popover border border-border/50 rounded-2xl p-6 mt-16">

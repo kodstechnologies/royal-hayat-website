@@ -47,7 +47,7 @@ const HospitalityBanner = () => {
           <ScrollAnimationWrapper direction="right" className="lg:w-1/2">
             <div className="rounded-2xl overflow-hidden shadow-xl">
               <img
-                src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&h=400&fit=crop"
+                src="https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776940549/DSC08659_fyiftq.jpg"
                 alt="VIP Hospital Suite"
                 className="w-full h-72 object-cover"
                 loading="lazy"

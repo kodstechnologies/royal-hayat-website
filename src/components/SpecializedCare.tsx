@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { doctors, Doctor } from "@/data/doctors";
 import { deptDoctorAliases } from "@/data/departments";
+import { departmentDetails } from "@/data/departmentDetails";
 
 interface ServiceItem {
   num: string;
@@ -223,6 +224,7 @@ const SpecializedCare = () => {
   const { t, lang } = useLanguage();
   const navigate = useNavigate();
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const [selectedSubByService, setSelectedSubByService] = useState<Record<string, string>>({});
   const scrollRef = useRef<HTMLDivElement>(null);
   const INITIAL_COUNT = 6;
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
@@ -269,6 +271,30 @@ const SpecializedCare = () => {
 
   const isInFirstSix = (origIdx: number) => origIdx < INITIAL_COUNT;
 
+  const slugify = (value: string) =>
+    value
+      .toLowerCase()
+      .replace(/&/g, "and")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+
+  const getDepartmentSlug = (service: ServiceItem) => {
+    const matchedDept = departmentDetails.find(
+      (d) =>
+        d.name.toLowerCase() === service.name.toLowerCase() ||
+        d.name.toLowerCase() === service.department.toLowerCase()
+    );
+    return matchedDept?.slug;
+  };
+
+  const getSubSlug = (service: ServiceItem, subName: string) => {
+    const departmentSlug = getDepartmentSlug(service);
+    if (!departmentSlug) return slugify(subName);
+    const dept = departmentDetails.find((d) => d.slug === departmentSlug);
+    const matchedSub = dept?.subDepartments?.find((sub) => sub.name.toLowerCase() === subName.toLowerCase());
+    return matchedSub?.slug ?? slugify(subName);
+  };
+
   return (
     <section className="py-16 md:py-20 bg-background" id="services" ref={sectionRef}>
       <div className="container mx-auto px-4 md:px-6">
@@ -292,6 +318,8 @@ const SpecializedCare = () => {
             const isExpanded = expandedIndex === origIdx;
             const deptDoctors = getDeptDoctors(s.department);
             const showImageCard = isInFirstSix(origIdx);
+            const selectedSubSlug = selectedSubByService[s.num];
+            const departmentSlug = getDepartmentSlug(s);
 
             return (
               <motion.div
@@ -385,7 +413,20 @@ const SpecializedCare = () => {
                             <p className="text-muted-foreground font-body text-sm leading-relaxed">
                               {lang === "ar" ? s.descAr : s.desc}
                             </p>
+                            {departmentSlug && (
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  navigate(`/medical-services/${departmentSlug}`);
+                                }}
+                                className="inline-flex w-full justify-end items-center gap-1.5 text-primary font-body text-xs tracking-wide hover:text-accent transition-colors mt-3"
+                              >
+                                {t("learnMore")} <ArrowRight className="w-3.5 h-3.5" />
+                              </button>
+                            )}
                           </div>
+                         
                         </div>
                       </div>
 
@@ -401,12 +442,22 @@ const SpecializedCare = () => {
                                 </p>
                                 <div className="flex flex-wrap gap-2">
                                   {s.subspecialties.map((sub) => (
-                                    <span
+                                    <button
                                       key={sub.name}
-                                      className="px-3 py-1.5 rounded-full text-xs font-body bg-secondary/50 text-foreground border border-border/30"
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        const subSlug = getSubSlug(s, sub.name);
+                                        setSelectedSubByService((prev) => ({ ...prev, [s.num]: subSlug }));
+                                      }}
+                                      className={`px-3 py-1.5 rounded-full text-xs font-body border transition-colors ${
+                                        selectedSubSlug === getSubSlug(s, sub.name)
+                                          ? "bg-primary text-primary-foreground border-primary"
+                                          : "bg-secondary/50 text-foreground border-border/30 hover:bg-secondary"
+                                      }`}
                                     >
                                       {lang === "ar" ? sub.nameAr : sub.name}
-                                    </span>
+                                    </button>
                                   ))}
                                 </div>
                               </>
@@ -513,13 +564,15 @@ const SpecializedCare = () => {
                                 ))}
                               </div>
                             </div>
-                            <div className="mt-6 pt-4 border-t border-border/30">
-                              <button
-                                onClick={() => navigate("/doctors")}
-                                className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground font-body text-xs tracking-[0.15em] uppercase rounded-full hover:bg-primary/90 transition-colors"
-                              >
-                                {lang === "ar" ? "اعرف المزيد" : "Read More"} <ArrowRight className="w-3.5 h-3.5" />
-                              </button>
+                            <div className="mt-6 pt-4 border-t border-border/30 flex justify-center">
+                              {s.subspecialties.length > 0 && selectedSubSlug && departmentSlug && (
+                                <button
+                                  onClick={() => navigate(`/medical-services/${departmentSlug}/${selectedSubSlug}`)}
+                                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground font-body text-xs tracking-[0.15em] uppercase rounded-full hover:bg-primary/90 transition-colors"
+                                >
+                                  {t("learnMore")} <ArrowRight className="w-3.5 h-3.5" />
+                                </button>
+                              )}
                             </div>
                           </div>
                         )}

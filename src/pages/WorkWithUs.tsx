@@ -3,150 +3,153 @@ import Footer from "@/components/Footer";
 import ChatButton from "@/components/ChatButton";
 import ScrollToTop from "@/components/ScrollToTop";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
+import LifePhotoCarousel from "@/components/LifePhotoCarousel.tsx";
+import type { LifePhoto } from "@/components/LifePhotoCarousel.tsx";
+import VoicesFromOurPeople from "@/components/VoicesFromOurPeople.tsx";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Heart, Users, Clock, GraduationCap, Shield, Award, AlertTriangle, Mail, MapPin, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
-import { useRef, useState } from "react";
+import {
+  Heart, Sparkles, HandHeart, GraduationCap, Globe2, Award,
+  MapPin, Clock, ArrowUpRight,
+} from "lucide-react";
+import { useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 
+/* ------------------------------------------------------------------ */
+/* OPEN POSITIONS — sourced 1:1 from https://royalehayat.com/careers/ */
+/* ------------------------------------------------------------------ */
 const categories = [
   "View All",
   "Hospitality / Guest Services",
+  "La Cosmetique Royale",
   "Marketing & Communications",
   "Nursing Support",
   "Quality & Patient Safety",
   "Royale Home Health",
-  "Service Excellence",
-  "Medical",
-  "Administrative",
+  "Specialist Doctors",
+  "Surgical Services",
 ];
 
 const openPositions = [
   {
+    title: "Registrar – Plastic Surgeon",
+    category: "La Cosmetique Royale",
+    location: "On-Site",
+    type: "Full-Time",
+    desc: "Candidates applying should have minimum Two years of experience as Plastic Surgery Registrar.",
+  },
+  {
     title: "Floor Coordinator only Female, Bilingual (Arabic & English)",
     category: "Hospitality / Guest Services",
-    location: "On-site",
-    type: "Full-time",
-    desc: "Royale Hayat Hospital have devoted considerable effort to applying established strategies for quality improvement thus they created a position of Floor coordinator",
+    location: "On-Site",
+    type: "Full-Time",
+    desc: "Royale Hayat Hospital have devoted considerable effort to applying established strategies for quality improvement thus they created a position of Floor coordinator.",
   },
   {
-    title: "Guest Relations Officer",
-    category: "Hospitality / Guest Services",
-    location: "On-site",
-    type: "Full-time",
-    desc: "Provide outstanding hospitality and patient experience throughout the hospital premises.",
-  },
-  {
-    title: "Marketing Specialist – Digital & Social Media",
-    category: "Marketing & Communications",
-    location: "On-site",
-    type: "Full-time",
-    desc: "Drive digital marketing campaigns, manage social media channels, and enhance brand visibility for the hospital.",
-  },
-  {
-    title: "Content Writer – Arabic & English",
-    category: "Marketing & Communications",
-    location: "On-site",
-    type: "Full-time",
-    desc: "Create compelling bilingual content for website, social media, press releases, and patient education materials.",
-  },
-  {
-    title: "Registered Nurse – ICU",
-    category: "Nursing Support",
-    location: "On-site",
-    type: "Full-time",
-    desc: "Provide critical care nursing in the Intensive Care Unit with advanced monitoring and patient assessment skills.",
-  },
-  {
-    title: "Registered Nurse – Labor & Delivery",
-    category: "Nursing Support",
-    location: "On-site",
-    type: "Full-time",
-    desc: "Deliver compassionate care to mothers during labor, delivery, and postpartum recovery.",
-  },
-  {
-    title: "Nurse Manager – Surgical Ward",
-    category: "Nursing Support",
-    location: "On-site",
-    type: "Full-time",
-    desc: "Lead and manage the surgical ward nursing team, ensuring high standards of patient care and safety.",
-  },
-  {
-    title: "Quality Improvement Coordinator",
+    title: "Birth Registration Assistant (Bilingual – Arabic & English, only local candidate)",
     category: "Quality & Patient Safety",
-    location: "On-site",
-    type: "Full-time",
-    desc: "Implement quality improvement initiatives and monitor patient safety indicators across departments.",
+    location: "On-Site",
+    type: "Full-Time",
+    desc: "Birth Registration Clerk shall ensure complete documentation of Birth, Death, Sick Leave, Maternity Leave and other patient related records as per MOH guidelines and protocols.",
   },
   {
-    title: "Patient Safety Officer",
-    category: "Quality & Patient Safety",
-    location: "On-site",
-    type: "Full-time",
-    desc: "Oversee incident reporting, risk assessments, and safety protocols to ensure the highest standards of patient care.",
-  },
-  {
-    title: "Home Health Nurse",
+    title: "Registered Nurse for Home Care Dept",
     category: "Royale Home Health",
-    location: "Field",
-    type: "Full-time",
-    desc: "Provide professional nursing care to patients in their homes, including wound care, medication management, and health education.",
+    location: "On-Site",
+    type: "Full-Time",
+    desc: "To ensure the safe provision of nursing services in collaboration with the patient/family and the multidisciplinary health care team.",
   },
   {
-    title: "Home Health Physiotherapist",
-    category: "Royale Home Health",
-    location: "Field",
-    type: "Full-time",
-    desc: "Deliver physiotherapy rehabilitation programs to patients recovering at home after surgery or illness.",
+    title: "Registered Nurse for Labor and Delivery Department – Local (Female with MOH Licence)",
+    category: "Nursing Support",
+    location: "On-Site",
+    type: "Full-Time",
+    desc: "Registered Nurse for Labor and Delivery Department - Local (Female with MOH Licence).",
   },
   {
-    title: "Service Excellence Trainer",
-    category: "Service Excellence",
-    location: "On-site",
-    type: "Full-time",
-    desc: "Design and deliver training programs that elevate service standards and patient experience across all departments.",
+    title: "Anesthesia – Specialist",
+    category: "Specialist Doctors",
+    location: "On-Site",
+    type: "Full-Time",
+    desc: "Assesses and prepare patients for Anesthesia.",
   },
   {
-    title: "Consultant Cardiologist",
-    category: "Medical",
-    location: "On-site",
-    type: "Full-time",
-    desc: "Provide expert cardiac consultations, diagnostics, and treatment plans in a state-of-the-art cardiology department.",
+    title: "Registrar – Internal Medicine",
+    category: "Specialist Doctors",
+    location: "On-Site",
+    type: "Full-Time",
+    desc: "Active Listening, Critical Thinking, Active Learning, Monitoring, and Quality control Analysis.",
   },
   {
-    title: "Specialist – Obstetrics & Gynecology",
-    category: "Medical",
-    location: "On-site",
-    type: "Full-time",
-    desc: "Deliver comprehensive women's health services including prenatal care, high-risk pregnancies, and gynecological procedures.",
+    title: "Registrar – Obstetrician and Gynecologist",
+    category: "Specialist Doctors",
+    location: "On-Site",
+    type: "Full-Time",
+    desc: "To attend casualty cases and give emergency treatment, do the necessary admission procedures.",
   },
   {
-    title: "Pediatrician",
-    category: "Medical",
-    location: "On-site",
-    type: "Full-time",
-    desc: "Provide expert medical care for infants, children, and adolescents in outpatient and inpatient settings.",
+    title: "Consultant Pediatrician",
+    category: "Specialist Doctors",
+    location: "On-Site",
+    type: "Full-Time",
+    desc: "Contribution to the daytime weekly attending rota and covering clinic. Clinic will be both by appointment and emergency walk-ins.",
   },
   {
-    title: "Human Resources Coordinator",
-    category: "Administrative",
-    location: "On-site",
-    type: "Full-time",
-    desc: "Support HR operations including recruitment, onboarding, employee relations, and benefits administration.",
+    title: "Registered Nurse for Cosmetic Center – Local (Female with MOH License & Laser Exp)",
+    category: "Nursing Support",
+    location: "On-Site",
+    type: "Full-Time",
+    desc: "Responsible for the nursing care of patients according to their scope of practice in liaison with Medical Staff and Allied Health Professionals.",
   },
   {
-    title: "Medical Records Specialist",
-    category: "Administrative",
-    location: "On-site",
-    type: "Full-time",
-    desc: "Manage and maintain accurate medical records, ensuring compliance with healthcare regulations and standards.",
+    title: "Consultant Neonatologist",
+    category: "Specialist Doctors",
+    location: "On-Site",
+    type: "Full-Time",
+    desc: "Candidates applying should have minimum Five years of experience in SCBU/NICU.",
+  },
+  {
+    title: "Brand Manager",
+    category: "Marketing & Communications",
+    location: "On-Site",
+    type: "Full-Time",
+    desc: "The Brand Manager develops and executes strategies to enhance RHH's brand image. Responsibilities include managing social media campaigns, supervising team members, coordinating publicity for doctors.",
+  },
+  {
+    title: "Anesthesia Technician – Local (Female with MOH)",
+    category: "Surgical Services",
+    location: "On-Site",
+    type: "Full-Time",
+    desc: "Responsible for providing care to patients undergoing anesthesia in liaison with Medical Staff and Allied Health Professionals.",
   },
 ];
 
-const WorkWithUs = () => {
+type WorkWithUsProps = {
+  staffActivitiesImages: string[];
+  galaDinnerImages: string[];
+  hospitalityWeekImages: string[];
+  rhhQuizImages: string[];
+};
+
+const toCarouselPhotos = (label: string, images: string[]): LifePhoto[] => {
+  if (images.length === 0) {
+    return [{ alt: `${label} — 1` }];
+  }
+  return images.map((src, index) => ({
+    src,
+    alt: `${label} — ${index + 1}`,
+  }));
+};
+
+const WorkWithUs = ({
+  staffActivitiesImages,
+  galaDinnerImages,
+  hospitalityWeekImages,
+  rhhQuizImages,
+}: WorkWithUsProps) => {
   const { lang } = useLanguage();
+  const isAr = lang === "ar";
   const [activeCategory, setActiveCategory] = useState("View All");
-  const categoryScrollRef = useRef<HTMLDivElement>(null);
   const [searchParams] = useSearchParams();
   const section = searchParams.get("section");
   const showAll = !section;
@@ -156,21 +159,50 @@ const WorkWithUs = () => {
     ? openPositions
     : openPositions.filter(p => p.category === activeCategory);
 
-  const scrollCategories = (direction: "left" | "right") => {
-    if (!categoryScrollRef.current) return;
-    categoryScrollRef.current.scrollBy({
-      left: direction === "left" ? -260 : 260,
-      behavior: "smooth",
-    });
-  };
-
-  const cultureItems = [
-    { icon: Heart, title: lang === "ar" ? "ثقافة الرعاية" : "Culture of Care", desc: lang === "ar" ? "نحن نؤمن بأن رعاية فريقنا تؤدي إلى رعاية أفضل لمرضانا." : "We believe caring for our team leads to better care for our patients." },
-    { icon: Users, title: lang === "ar" ? "فريق متنوع" : "Diverse Team", desc: lang === "ar" ? "فريق متعدد الثقافات يضم أكثر من 600 متخصص من جميع أنحاء العالم." : "A multicultural team of 600+ professionals from around the world." },
-    { icon: Clock, title: lang === "ar" ? "التوازن بين العمل والحياة" : "Work-Life Balance", desc: lang === "ar" ? "جداول مرنة وبرامج دعم للموظفين لضمان رفاهيتك." : "Flexible schedules and employee support programs to ensure your well-being." },
-    { icon: GraduationCap, title: lang === "ar" ? "التعلم المستمر" : "Continuous Learning", desc: lang === "ar" ? "برامج تدريب وتطوير مستمرة لنمو حياتك المهنية." : "Ongoing training and development programs to grow your career." },
-    { icon: Shield, title: lang === "ar" ? "بيئة آمنة" : "Safe Environment", desc: lang === "ar" ? "معايير أمان عالمية وبيئة عمل داعمة." : "World-class safety standards and a supportive work environment." },
-    { icon: Award, title: lang === "ar" ? "التقدير والمكافآت" : "Recognition & Rewards", desc: lang === "ar" ? "برامج تقدير الموظفين والمكافآت التنافسية." : "Employee recognition programs and competitive compensation." },
+  /* --- Work Culture / People Promise from the uploaded document --- */
+  const beliefPillars = [
+    {
+      icon: Heart,
+      title: isAr ? "الرحمة قبل الإجراء" : "Compassion Before Procedure",
+      desc: isAr
+        ? "قد ينسى الناس ما قلناه، لكنهم لن ينسوا أبداً كيف جعلناهم يشعرون. يوجّه هذا الإيمان كيف نرعى ونعمل ونعامل بعضنا البعض."
+        : "People may forget what we said, but they will never forget how we made them feel. That belief guides how we care, how we work, and how we treat one another.",
+    },
+    {
+      icon: Sparkles,
+      title: isAr ? "الاحترافية تلتقي باللطف" : "Professionalism Meets Kindness",
+      desc: isAr
+        ? "تلتقي المعايير بالتعاطف، ويحمل العمل هدفاً. الشفاء ليس فقط بالطب، بل بالتجربة."
+        : "Standards meet empathy, and work carries purpose. Healing is not only about medicine, but about experience.",
+    },
+    // {
+    //   icon: HandHeart,
+    //   title: isAr ? "وعدنا للناس" : "Our People Promise",
+    //   desc: isAr
+    //     ? "يبدأ وعدنا للمرضى بوعدنا لفريقنا. مكان عمل يُحترم فيه الموظفون ويُوثَق بهم ويُدعمون."
+    //     : "Our promise to patients begins with our promise to our people — a workplace where employees are respected, trusted, and supported.",
+    // },
+    {
+      icon: GraduationCap,
+      title: isAr ? "التعلّم والنمو" : "Learning & Growth",
+      desc: isAr
+        ? "نستثمر بشكل متعمد في التدريب المستمر، والاطلاع على المعايير الدولية، والتعاون بين التخصصات وفرص النمو بثقة."
+        : "We invest deliberately in continuous training, exposure to international standards, cross-disciplinary collaboration, and opportunities to grow with confidence.",
+    },
+    {
+      icon: Globe2,
+      title: isAr ? "ننتمي معاً" : "Where We Belong Together",
+      desc: isAr
+        ? "فريق متنوع متعدد الثقافات تجمعه الكرامة والاحترام والانتماء. ندعم الرفاهية والمرونة والتوازن."
+        : "A diverse, multicultural team united by dignity, respect, and belonging. We support wellbeing, resilience, and balance.",
+    },
+    {
+      icon: Award,
+      title: isAr ? "التقدير والامتنان" : "Recognition & Appreciation",
+      desc: isAr
+        ? "لا يمر الجهد والتميّز والسلوك الأخلاقي دون أن يُلاحظ — لأن التقدير مهم، والرعاية تستحق أن تُكرَّم."
+        : "Effort, excellence, and ethical conduct never go unnoticed — because appreciation matters, and care deserves to be recognized.",
+    },
   ];
 
   return (
@@ -179,81 +211,189 @@ const WorkWithUs = () => {
 
       {/* Hero */}
       <section className="py-16 md:py-24 bg-primary/5">
-        <div className="container mx-auto px-6 text-center">
-          <ScrollAnimationWrapper>
-            <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">{lang === "ar" ? "انضم إلى فريقنا" : "Careers"}</p>
-            <h1 className="text-4xl md:text-5xl font-serif text-foreground mb-4">
-              {section === "positions" ? (lang === "ar" ? "الوظائف المتاحة" : "Open Positions")
-                : section === "culture" ? (lang === "ar" ? "ثقافة العمل" : "Work Culture")
-                : (lang === "ar" ? "اعمل معنا" : "Work With Us")}
-            </h1>
-            <p className="text-muted-foreground font-body text-sm max-w-xl mx-auto">
-              {lang === "ar" ? "انضم إلى فريق رويال حياة وكن جزءاً من رحلة التميز في الرعاية الصحية." : "Join the Royale Hayat team and be part of a journey of healthcare excellence."}
-            </p>
-          </ScrollAnimationWrapper>
-        </div>
-      </section>
-
-
-      {/* Work Culture */}
-      {showSection("culture") && (
-      <section className="py-16 bg-background">
         <div className="container mx-auto px-6">
           <ScrollAnimationWrapper>
-            {showAll && <div className="text-center mb-10">
-              <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">{lang === "ar" ? "ثقافة العمل" : "Work Culture"}</p>
-              <h2 className="text-2xl md:text-3xl font-serif text-foreground">{lang === "ar" ? "لماذا تعمل في رويال حياة؟" : "Why Work at Royale Hayat?"}</h2>
-            </div>}
-          </ScrollAnimationWrapper>
+            <div className="text-center max-w-4xl mx-auto">
+              <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">
+                {isAr ? "الحياة في رويال حياة" : "Life at Royale Hayat Hospital"}
+              </p>
+              <h1 className="text-4xl md:text-5xl font-serif text-foreground mb-6 leading-tight">
+                {section === "positions" ? (isAr ? "الوظائف المتاحة" : "Open Positions")
+                  : section === "culture" ? (isAr ? "ثقافة العمل" : "Work Culture")
+                  : (isAr ? "اعمل معنا" : "Work With Us")}
+              </h1>
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto">
-            {cultureItems.map((item, i) => (
-              <motion.div key={item.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}
-                className="bg-popover border border-border/50 rounded-2xl p-6 text-center">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                  <item.icon className="w-6 h-6 text-primary" />
-                </div>
-                <h3 className="font-serif text-base text-foreground mb-2">{item.title}</h3>
-                <p className="font-body text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
-              </motion.div>
-            ))}
-          </div>
+            <div className="max-w-3xl mx-auto space-y-5 text-foreground font-body text-base leading-relaxed">
+              <p>
+                {isAr
+                  ? "في مستشفى رويال حياة، نؤمن بفكرة بسيطة: قد ينسى الناس ما قلناه، لكنهم لن ينسوا أبداً كيف جعلناهم يشعرون كمرضى، أو أفراد عائلة، أو زملاء."
+                  : "At Royale Hayat Hospital, we hold a simple belief: people may forget what we said, but they will never forget how we made them feel as patients, family members, or colleagues."}
+              </p>
+              <p>
+                {isAr
+                  ? "يوجّه هذا الإيمان كيف نرعى، وكيف نعمل، وكيف نعامل بعضنا البعض. كل يوم، تقدّم فرقنا رعاية آمنة وحديثة وعالية الجودة بتعاطف وراحة — لأن الشفاء ليس فقط بالطب، بل بالتجربة."
+                  : "That belief guides how we care, how we work, and how we treat one another. Every day, our teams deliver safe, modern, quality care with compassion and comfort—because healing is not only about medicine, but about experience."}
+              </p>
+              <p>
+                {isAr
+                  ? "هنا، تلتقي الاحترافية باللطف. تلتقي المعايير بالتعاطف. ويحمل العمل هدفاً. إذا كان هذا الإيمان يلامسك، فأنت تنتمي إلى هنا بالفعل."
+                  : "Here, professionalism meets kindness. Standards meet empathy. And work carries purpose. If this belief resonates with you, you already belong here."}
+              </p>
+            </div>
+          </ScrollAnimationWrapper>
         </div>
       </section>
+
+      {/* Our People Promise — narrative from document */}
+      {showSection("culture") && (
+        <section className="py-14 bg-background">
+          <div className="container mx-auto px-6 max-w-3xl">
+            <ScrollAnimationWrapper>
+              <h2 className="text-2xl md:text-3xl font-serif text-foreground text-center mb-3">
+                {isAr ? "«وعدنا للناس»" : "‘Our People Promise’"}
+              </h2>
+              <p className="text-center text-accent font-body text-sm mb-8 italic">
+                {isAr
+                  ? "يبدأ وعدنا للمرضى بوعدنا لفريقنا"
+                  : "Our promise to patients begins with our promise to our people"}
+              </p>
+              <div className="space-y-5 font-body text-base text-foreground leading-relaxed">
+                <p>
+                  {isAr
+                    ? "نَعِد بمكان عمل يُحترم فيه الموظفون ويُوثَق بهم ويُدعَمون — لا تُحدّدهم الألقاب، بل تُقدَّر احترافيتهم ونزاهتهم وإسهامهم."
+                    : "We promise a workplace where employees are respected, trusted, and supported not defined by titles, but valued for their professionalism, integrity, and contribution."}
+                </p>
+                <p>
+                  {isAr
+                    ? "نستثمر بشكل متعمد في التعلّم والتطوير، عبر التدريب المستمر، والاطلاع على المعايير الدولية، والتعاون بين التخصصات، وفرص النمو بثقة."
+                    : "We invest deliberately in learning and development, through continuous training, exposure to international standards, collaboration across disciplines, and opportunities to grow with confidence."}
+                </p>
+                <p>
+                  {isAr
+                    ? "نؤمن أن التميّز يُبنى من خلال التعلّم — ويُصان من خلال الثقة. وعدنا بسيط: سنساعدك على النمو، وسنُقدّر جهدك، وسنسير معك وأنت تبني مسيرة مهنية تفخر بها."
+                    : "We believe excellence is built through learning—and sustained through trust. Our promise is simple: we will help you grow, we will recognize your effort, and we will walk with you as you build a career you can be proud of."}
+                </p>
+              </div>
+            </ScrollAnimationWrapper>
+          </div>
+        </section>
       )}
 
-      {/* Open Positions with Category Tabs */}
+      {/* Where We Belong Together */}
+      {showSection("culture") && (
+        <section className="py-14 bg-secondary/10">
+          <div className="container mx-auto px-6 max-w-3xl">
+            <ScrollAnimationWrapper>
+              <h2 className="text-2xl md:text-3xl font-serif text-foreground text-center mb-8">
+                {isAr ? "«ننتمي معاً.»" : "‘Where We Belong Together.’"}
+              </h2>
+              <div className="space-y-5 font-body text-base text-foreground leading-relaxed">
+                <p>
+                  {isAr
+                    ? "العمل في رويال حياة يعني أن تكون جزءاً من فريق متنوّع متعدد الثقافات، تجمعه الغاية والرعاية."
+                    : "Working at Royale Hayat means being part of a diverse, multicultural team united by purpose and care."}
+                </p>
+                <p>
+                  {isAr
+                    ? "نُدرك المتطلبات العاطفية للرعاية الصحية وندعم الرفاهية والمرونة والتوازن. يأتي فريقنا من ثقافات وخلفيات متعددة، ومع ذلك يجمعهم الاحترام والكرامة والانتماء."
+                    : "We recognize the emotional demands of healthcare and support wellbeing, resilience, and balance. Our people come from many cultures and backgrounds, yet are connected by respect, dignity, and belonging."}
+                </p>
+                <p>
+                  {isAr
+                    ? "لا يمر الجهد والتميّز هنا دون أن يُلاحظ — لأن التقدير مهم، والرعاية تستحق أن تُكرَّم. في رويال حياة، الأمر أكثر من مجرد عمل. إنه مكان للانتماء وللشعور بالقيمة."
+                    : "Effort and excellence never go unnoticed here—because appreciation matters, and care deserves to be recognized. At Royale Hayat, it’s more than work. It’s a place to belong and be valued."}
+                </p>
+              </div>
+            </ScrollAnimationWrapper>
+          </div>
+        </section>
+      )}
+
+   
+
+      {/* Recognition & Appreciation gallery */}
+      {showSection("culture") && (
+        <LifePhotoCarousel
+          variant="muted"
+          title={isAr ? "التقدير والامتنان" : "Recognition & Appreciation"}
+          subtitle={isAr
+            ? "موظف الشهر، تكريمات الإنجاز، وامتنان يومي — لأن الجهد يستحق أن يُرى."
+            : "Employee of the Month, achievement honors, and everyday gratitude — because effort deserves to be seen."}
+          photos={toCarouselPhotos("Recognition & Appreciation", [])}
+        />
+      )}
+
+      {/* Staff Activities (includes Volley Ball Tournament photos) */}
+      {showSection("culture") && (
+        <LifePhotoCarousel
+          title={isAr ? "أنشطة الموظفين — بطولة الكرة الطائرة" : "Staff Activities — Volley Ball Tournament"}
+          subtitle={isAr
+            ? "يُعترف بالإنجازات — لأن الجهد والتميّز والسلوك الأخلاقي أمور تهم."
+            : "Achievements are acknowledged—because effort, excellence, and ethical conduct matter."}
+          photos={toCarouselPhotos("Staff Activities — Volley Ball Tournament", staffActivitiesImages)}
+        />
+      )}
+
+      {/* Event Galleries */}
+      {showSection("culture") && (
+        <>
+          <LifePhotoCarousel
+            variant="muted"
+            title={isAr ? "حفل العشاء السنوي" : "Gala Dinner"}
+            subtitle={isAr ? "ليلة من الأناقة، الامتنان والاحتفال." : "A night of elegance, gratitude and celebration."}
+            photos={toCarouselPhotos("Gala Dinner", galaDinnerImages)}
+          />
+          <LifePhotoCarousel
+            title={isAr ? "أسبوع الضيافة" : "Hospitality Week"}
+            subtitle={isAr ? "أسبوع مكرّس لروح الضيافة التي تميّز رويال حياة." : "A week devoted to the hospitality spirit that defines Royale Hayat."}
+            photos={toCarouselPhotos("Hospitality Week", hospitalityWeekImages)}
+          />
+          <LifePhotoCarousel
+            variant="muted"
+            title={isAr ? "مسابقة RHH" : "RHH Quiz"}
+            subtitle={isAr ? "مرح ومنافسة ودي بين الفرق." : "Fun, friendly competition across teams."}
+            photos={toCarouselPhotos("RHH Quiz", rhhQuizImages)}
+          />
+        </>
+      )}
+
+      {/* Voices from Our People (Testimonials) */}
+      {showSection("culture") && <VoicesFromOurPeople />}
+
+      {/* Explore Careers heading */}
+      {showSection("culture") && (
+        <section className="py-12 bg-background text-center">
+          <div className="container mx-auto px-6">
+            <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground">
+              {isAr ? "اكتشف الوظائف في مستشفى رويال حياة" : "Explore Careers at Royale Hayat Hospital"}
+            </h2>
+          </div>
+        </section>
+      )}
+
+      {/* Open Positions */}
       {showSection("positions") && (
-      <section className="py-16 bg-secondary/10">
-        <div className="container mx-auto px-6">
-          <ScrollAnimationWrapper>
-            {showAll && <div className="text-center mb-8">
-              <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">
-                {lang === "ar" ? "انضم إلى شبكتنا" : "Join Our Network!"}
-              </p>
-              <h2 className="text-2xl md:text-3xl font-serif text-foreground">{lang === "ar" ? "الوظائف المتاحة" : "Open Positions"}</h2>
-              <p className="text-muted-foreground font-body text-sm max-w-xl mx-auto mt-3">
-                {lang === "ar" ? "استعرض الوظائف المتاحة وتقدم للانضمام إلى فريقنا." : "Browse available positions and apply to join our team."}
-              </p>
-            </div>}
-          </ScrollAnimationWrapper>
+        <section className="py-16 bg-secondary/10" id="open-positions">
+          <div className="container mx-auto px-6">
+            <ScrollAnimationWrapper>
+              <div className="text-center mb-8">
+                <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">
+                  {isAr ? "انضم إلى شبكتنا" : "Join Our Network!"}
+                </p>
+                <h2 className="text-2xl md:text-3xl font-serif text-foreground">
+                  {isAr ? "الوظائف المتاحة" : "Open Positions"}
+                </h2>
+                <p className="text-muted-foreground font-body text-sm max-w-xl mx-auto mt-3">
+                  {isAr
+                    ? "اكتشف الفرص الحالية وابدأ مسيرتك المهنية معنا اليوم."
+                    : "Explore current opportunities and launch your career with us today."}
+                </p>
+              </div>
+            </ScrollAnimationWrapper>
 
-          {/* Category filter tabs - horizontal scrollable with arrows */}
-          <div className="relative mb-8 flex items-center">
-            <button
-              type="button"
-              onClick={() => scrollCategories("left")}
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-sm"
-              aria-label={lang === "ar" ? "تمرير الفئات لليسار" : "Scroll categories left"}
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-
-            <div
-              ref={categoryScrollRef}
-              className="mx-10 flex items-center gap-2 overflow-x-auto py-1 scrollbar-hide"
-              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-            >
+            {/* Category filter tabs */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-8 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               {categories.map((cat) => (
                 <button
                   key={cat}
@@ -269,96 +409,61 @@ const WorkWithUs = () => {
               ))}
             </div>
 
-            <button
-              type="button"
-              onClick={() => scrollCategories("right")}
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-sm"
-              aria-label={lang === "ar" ? "تمرير الفئات لليمين" : "Scroll categories right"}
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-
-          {/* Job cards */}
-          <div className="max-w-5xl mx-auto space-y-5">
-            {filtered.map((pos, i) => (
-              <motion.div
-                key={pos.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.05 }}
-                className="bg-popover border border-border/50 rounded-2xl p-6 md:p-8 hover:shadow-lg transition-shadow"
-              >
-                <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-                  <div className="flex-1">
-                    <h3 className="font-serif text-lg md:text-xl text-foreground mb-2">{pos.title}</h3>
-                    <div className="flex flex-wrap items-center gap-2 mb-3">
-                      <span className="inline-block px-3 py-1 bg-secondary/30 text-foreground text-[11px] font-body rounded tracking-wide">
-                        {pos.category.toUpperCase()}
-                      </span>
+            {/* Job cards */}
+            <div className="max-w-5xl mx-auto space-y-5">
+              {filtered.map((pos) => {
+                const originalIndex = openPositions.findIndex(p => p.title === pos.title);
+                return (
+                  <motion.div
+                    key={pos.title}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4 }}
+                    className="bg-popover border border-border/50 rounded-2xl p-6 md:p-8 hover:shadow-lg transition-shadow"
+                  >
+                    <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                      <div className="flex-1">
+                        <h3 className="font-serif text-lg md:text-xl text-foreground mb-2">{pos.title}</h3>
+                        <div className="flex flex-wrap items-center gap-2 mb-3">
+                          <span className="inline-block px-3 py-1 bg-secondary/30 text-foreground text-[11px] font-body rounded tracking-wide">
+                            {pos.category.toUpperCase()}
+                          </span>
+                        </div>
+                        <p className="font-body text-sm text-muted-foreground leading-relaxed">{pos.desc}</p>
+                      </div>
+                      <div className="flex flex-col items-end gap-3 flex-shrink-0">
+                        <Link
+                          to={`/job-application?job=${originalIndex}`}
+                          className="inline-flex items-center gap-1 text-accent font-body text-sm font-semibold hover:underline"
+                        >
+                          {isAr ? "تقدم الآن" : "Apply Now"} <ArrowUpRight className="w-4 h-4" />
+                        </Link>
+                        <div className="flex items-center gap-4 text-xs font-body text-muted-foreground">
+                          <span className="inline-flex items-center gap-1">
+                            <MapPin className="w-3.5 h-3.5" /> {pos.location.toUpperCase()}
+                          </span>
+                          <span className="inline-flex items-center gap-1">
+                            <Clock className="w-3.5 h-3.5" /> {pos.type.toUpperCase()}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <p className="font-body text-sm text-muted-foreground leading-relaxed">{pos.desc}</p>
-                  </div>
-                  <div className="flex flex-col items-end gap-3 flex-shrink-0">
-                    <Link
-                      to={`/job-application?job=${i}`}
-                      className="inline-flex items-center gap-1 text-accent font-body text-sm font-semibold hover:underline"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      {lang === "ar" ? "تقدم الآن" : "Apply Now"} <ArrowUpRight className="w-4 h-4" />
-                    </Link>
-                    <div className="flex items-center gap-4 text-xs font-body text-muted-foreground">
-                      <span className="inline-flex items-center gap-1">
-                        <MapPin className="w-3.5 h-3.5" /> {pos.location.toUpperCase()}
-                      </span>
-                      <span className="inline-flex items-center gap-1">
-                        <Clock className="w-3.5 h-3.5" /> {pos.type.toUpperCase()}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                  </motion.div>
+                );
+              })}
+            </div>
 
-          <div className="text-center mt-10">
-            <p className="font-body text-sm text-muted-foreground">
-              {lang === "ar" ? "لا ترى الوظيفة المناسبة؟ أرسل سيرتك الذاتية إلى" : "Don't see the right fit? Send your CV to"}{" "}
-              <a href="mailto:hr@royalehayat.com" className="text-primary hover:text-accent transition-colors font-semibold">hr@royalehayat.com</a>
-            </p>
-          </div>
-        </div>
-      </section>
-      )}
-
-      {/* Notice to the Public - always visible at bottom */}
-      <section className="py-12 bg-accent/5">
-        <div className="container mx-auto px-6">
-          <div className="max-w-3xl mx-auto bg-popover border border-accent/30 rounded-2xl p-6 md:p-8">
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-full bg-accent/15 flex items-center justify-center flex-shrink-0">
-                <AlertTriangle className="w-6 h-6 text-accent" />
-              </div>
-              <div>
-                <h2 className="font-serif text-lg text-foreground mb-3">{lang === "ar" ? "إشعار للعموم" : "Notice to the Public"}</h2>
-                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
-                  {lang === "ar"
-                    ? "قام مستشفى رويال حياة، الكويت، بتعيين \"LEADPEC FIRMA PVT Ltd, Delhi, India\" رسمياً كوكالة التوظيف لتوظيف الممرضين والطاقم الطبي أو أي موظفين إداريين في مؤسستنا."
-                    : "Royale Hayat Hospital, Kuwait, has officially appointed \"LEADPEC FIRMA PVT Ltd, Delhi, India\" as the recruitment agency for recruiting Nurses, Medical staff, or any Administrative Staff to our organization."}
-                </p>
-                <div className="flex items-center gap-2">
-                  <Mail className="w-4 h-4 text-primary" />
-                  <p className="font-body text-sm text-foreground">
-                    {lang === "ar" ? "لمزيد من المعلومات، يرجى التواصل مع قسم الموارد البشرية على" : "For further more information, please contact our Human Resources department at"}{" "}
-                    <a href="mailto:hr@royalehayat.com" className="text-accent hover:underline font-semibold">hr@royalehayat.com</a>
-                  </p>
-                </div>
-              </div>
+            <div className="text-center mt-10">
+              <p className="font-body text-sm text-muted-foreground">
+                {isAr ? "لا ترى الوظيفة المناسبة؟ أرسل سيرتك الذاتية إلى" : "Don't see the right fit? Send your CV to"}{" "}
+                <a href="mailto:hr@royalehayat.com" className="text-primary hover:text-accent transition-colors font-semibold">hr@royalehayat.com</a>
+              </p>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
+
 
       <Footer />
       <ChatButton />

@@ -192,7 +192,7 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-ahmed-al-qallaf',
-    image: '/images/doctors/ahmed-al-qalaf.png',
+    image: '/images/doctors/ahmad34.png',
     name: 'Dr. Ahmed Al Qallaf', nameAr: 'د. أحمد القلاف',
     specialty: 'Internal Medicine', specialtyAr: 'الطب الباطني',
     department: 'Internal Medicine', departmentAr: 'الطب الباطني',
@@ -890,7 +890,7 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-sulaiman-almazeedi',
-    image: '/images/doctors/sulaiman-almazeedi.png',
+    image: '/images/doctors/sulaiman34.png',
     name: 'Dr. Sulaiman Almazeedi', nameAr: 'د. سليمان المزيدي',
     specialty: 'General Surgery', specialtyAr: 'الجراحة العامة',
     department: 'General Surgery', departmentAr: 'الجراحة العامة',
@@ -1181,7 +1181,7 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-suraj-v-davis',
-    image: '/images/doctors/suraj1.png',
+    image: '/images/doctors/Suraj34.png',
     name: 'Dr. Suraj V. Davis', nameAr: 'د. سوراج دايفس',
     specialty: 'Dermatology', specialtyAr: 'الأمراض الجلدية',
     department: 'Dermatology', departmentAr: 'الأمراض الجلدية',
@@ -1369,7 +1369,7 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-gie-vandehult',
-    image: '/images/doctors/Gie.png',
+    image: '/images/doctors/Gie34.png',
     name: 'Dr. Gie Vandehult', nameAr: 'د. جي فاندهولت',
     specialty: 'La Cosmetique', specialtyAr: 'التجميل',
     department: 'La Cosmetique', departmentAr: 'التجميل',
@@ -1538,7 +1538,7 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-mohammad-razzak',
-    image: '/images/doctors/mohamad-razzak.png',
+    image: '/images/doctors/razzak34.png',
 
     name: 'Dr. Mohammad Razzak', nameAr: 'د. محمد عبدالرزاق',
     specialty: 'La Cosmetique', specialtyAr: 'التجميل',
@@ -2506,7 +2506,7 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-mazen-alessa',
-    image: '/images/doctors/mazen-alessa.png',
+    image: '/images/doctors/Mazen34.png',
 
     name: 'Dr. Mazen Alessa', nameAr: 'د. مــازن العيســى',
     specialty: 'Neonatal', specialtyAr: 'حديثي الولادة',
@@ -4201,7 +4201,7 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-hanafi-abdelsalam',
-    image: '/images/doctors/Hanafi.png',
+    image: '/images/doctors/Hanafi34.png',
 
     name: 'Dr. Hanafi Abdelsalam', nameAr: 'د. حنفي عبدالسلام',
     specialty: 'ENT (Ear, Nose & Throat)', specialtyAr: 'الأنف والأذن والحنجرة',

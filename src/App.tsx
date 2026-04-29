@@ -21,6 +21,7 @@ import WorkWithUs from "./pages/WorkWithUs.tsx";
 import InternationalPatient from "./pages/InternationalPatient.tsx";
 import AppointmentRequest from "./pages/AppointmentRequest.tsx";
 import ContactUs from "./pages/ContactUs.tsx";
+import VerifyNationalId from "./pages/VerifyNationalId.tsx";
 import FAQ from "./pages/FAQ.tsx";
 import MedicalRepVisitBooking from "./pages/MedicalRepVisitBooking.tsx";
 import MedicalRecordsRequest from "./pages/MedicalRecordsRequest.tsx";
@@ -272,6 +273,7 @@ const App = () => (
             <Route path="/in-room-events" element={<InRoomEvents galleryImages={inRoomEventGalleryImages} />} />
             <Route path="/job-application" element={<JobApplication />} />
             <Route path="/csr" element={<CSR />} />
+            <Route path="/verify-national-id" element={<VerifyNationalId />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

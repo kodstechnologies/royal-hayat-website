@@ -1,18 +1,19 @@
-import { useMemo, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { ArrowRight, CheckCircle2, XCircle, Loader2, RefreshCcw } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ChatButton from "@/components/ChatButton";
 import ScrollToTop from "@/components/ScrollToTop";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { getIdentityStatus, startIdentityVerification } from "../../api/identity";
 
 const VerifyNationalId = () => {
   const { lang, t } = useLanguage();
 
   const [nationalId, setNationalId] = useState("");
   const [error, setError] = useState<string>("");
-  const [phase, setPhase] = useState<"idle" | "starting" | "polling" | "done" | "failed">("idle");
+  const [phase, setPhase] = useState<"idle" | "starting" | "checking" | "done" | "failed">("idle");
   const [operationId, setOperationId] = useState<string>("");
   const [isVerified, setIsVerified] = useState<boolean | null>(null);
   const [personName, setPersonName] = useState<string>("");
@@ -28,32 +29,13 @@ const VerifyNationalId = () => {
     return "";
   };
 
-  const basicAuthHeader = useMemo(() => {
-    // Temporary direct frontend integration (will expose credentials).
-    // Replace with backend proxy in production.
-    const user = "api_test_1";
-    const pass = "rfftkXyvjB9tHUdc";
-    return `Basic ${btoa(`${user}:${pass}`)}`;
-  }, []);
-
-  const startUrl = useMemo(() => {
-    const baseurl = "https://idcap.buyvest.co/"; // matches your Postman env
-    return `${baseurl}authenticate/start/push-notification`;
-  }, []);
-
-  const pollStatusUrlFromOperationId = (opId: string) => {
-    const baseurl = "https://idcap.buyvest.co/"; // matches your Postman env
-    return `${baseurl}status/${encodeURIComponent(opId)}`;
-  };
-
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     const err = validate();
     setError(err);
     if (err) return;
 
-    // Start SharperIntegration authentication from the frontend.
-    // Note: this will require CORS to be allowed by SharperIntegration.
+    // Frontend -> backend -> SharperIntegration
     void (async () => {
       try {
         setPhase("starting");
@@ -62,95 +44,23 @@ const VerifyNationalId = () => {
         setPersonName("");
         setOperationId("");
 
-        const payload = {
+        const payload: {
+          civilId: string;
+          callbackUrl?: string;
+          serviceName: { ar: string; en: string };
+          reason: { ar: string; en: string };
+        } = {
           civilId: nationalId.trim(),
-          callbackUrl: "http://18.158.98.55:3000/api/callback",
           serviceName: { ar: "تجربة", en: "Service Test" },
-          reason: { ar: "تجربة", en: "test" },
+          reason: { ar: "تجربة", en: "test" }
         };
-
-        const startResp = await fetch(startUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: basicAuthHeader,
-          },
-          body: JSON.stringify(payload),
-        });
-
-        // Even on errors, SharperIntegration may return Problem Details JSON.
-        const startJson = await startResp
-          .clone()
-          .json()
-          .catch(() => null);
-
-        if (!startResp.ok) {
-          const detail =
-            (startJson as any)?.detail ||
-            (startJson as any)?.message ||
-            `${startResp.status} ${startResp.statusText}`;
-          throw new Error(detail);
-        }
-
-        const opId: string | undefined = (startJson as any)?.operationId;
-        const statusUrl: string | undefined = (startJson as any)?.urls?.status;
+        const startData = await startIdentityVerification(payload);
+        const opId: string | undefined = startData?.operationId;
         if (!opId) throw new Error(lang === "ar" ? "لم يتم استلام operationId" : "Missing operationId");
 
         setOperationId(opId);
-        setPhase("polling");
-
-        const maxAttempts = 60; // ~2 minutes at 2s interval
-        const intervalMs = 2000;
-
-        for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-          const pollUrl = statusUrl ?? pollStatusUrlFromOperationId(opId);
-          const pollResp = await fetch(pollUrl, {
-            method: "GET",
-            headers: { Authorization: basicAuthHeader },
-          });
-
-          // Per docs: 204 No Content while operation is incomplete.
-          if (pollResp.status === 204) {
-            await new Promise((r) => setTimeout(r, intervalMs));
-            continue;
-          }
-
-          const pollJson = await pollResp.json().catch(() => null);
-
-          if (!pollResp.ok) {
-            const detail =
-              (pollJson as any)?.detail ||
-              (pollJson as any)?.message ||
-              `${pollResp.status} ${pollResp.statusText}`;
-            throw new Error(detail);
-          }
-
-          const payloadResult = (pollJson as any)?.payload ?? pollJson;
-          const success: boolean | undefined = payloadResult?.success;
-
-          setIsVerified(success === true);
-
-          const nameObj = payloadResult?.name;
-          const nameEn =
-            nameObj?.english ??
-            nameObj?.en ??
-            nameObj?.English ??
-            (typeof nameObj === "string" ? nameObj : "");
-
-          const nameAr =
-            nameObj?.arabic ??
-            nameObj?.ar ??
-            nameObj?.Arabic ??
-            (typeof nameObj === "string" ? nameObj : "");
-
-          setPersonName((lang === "ar" ? nameAr : nameEn) || "");
-
-          setPhase("done");
-          return;
-        }
-
-        setPhase("failed");
-        setError(lang === "ar" ? "انتهت مهلة التحقق. حاول مرة أخرى." : "Verification timed out. Please try again.");
+        // Callback-first flow: after starting, user can click "Check Status".
+        setPhase("idle");
       } catch (err: any) {
         setPhase("failed");
         setError(
@@ -159,6 +69,43 @@ const VerifyNationalId = () => {
             : lang === "ar"
               ? "تعذر بدء التحقق. يرجى المحاولة مرة أخرى."
               : "Failed to start verification. Please try again."
+        );
+      }
+    })();
+  };
+
+  const onCheckStatus = () => {
+    if (!operationId) return;
+
+    void (async () => {
+      try {
+        setPhase("checking");
+        setError("");
+
+        const statusData = await getIdentityStatus(operationId);
+        if (statusData?.status === "pending") {
+          setIsVerified(null);
+          setPersonName("");
+          setPhase("idle");
+          setError(lang === "ar" ? "الحالة ما زالت قيد الانتظار" : "Status is still pending");
+          return;
+        }
+
+        setIsVerified(statusData?.verified === true);
+
+        const nameEn = statusData?.personName?.english || "";
+        const nameAr = statusData?.personName?.arabic || "";
+        setPersonName((lang === "ar" ? nameAr : nameEn) || "");
+
+        setPhase("done");
+      } catch (err: any) {
+        setPhase("failed");
+        setError(
+          typeof err?.message === "string"
+            ? err.message
+            : lang === "ar"
+              ? "تعذر جلب الحالة. يرجى المحاولة مرة أخرى."
+              : "Failed to fetch status. Please try again."
         );
       }
     })();
@@ -216,13 +163,13 @@ const VerifyNationalId = () => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
               type="submit"
-              disabled={phase === "starting" || phase === "polling"}
+              disabled={phase === "starting" || phase === "checking"}
               className="w-full bg-primary text-primary-foreground py-3.5 rounded-xl font-body text-sm tracking-widest uppercase hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
             >
-              {phase === "starting" || phase === "polling" ? (
+              {phase === "starting" ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  {lang === "ar" ? "جارِ التحقق..." : "Verifying..."}
+                  {lang === "ar" ? "جارِ البدء..." : "Starting..."}
                 </>
               ) : (
                 <>
@@ -231,6 +178,42 @@ const VerifyNationalId = () => {
                 </>
               )}
             </motion.button>
+
+            {operationId && (
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.97 }}
+                type="button"
+                onClick={onCheckStatus}
+                disabled={phase === "checking" || phase === "starting"}
+                className="w-full bg-secondary/40 text-foreground py-3.5 rounded-xl font-body text-sm tracking-widest uppercase hover:bg-secondary/60 transition-all flex items-center justify-center gap-2"
+              >
+                {phase === "checking" ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    {lang === "ar" ? "جارِ التحقق من الحالة..." : "Checking status..."}
+                  </>
+                ) : (
+                  <>
+                    {lang === "ar" ? "تحقق من الموافقة" : "Check Approval"}
+                    <RefreshCcw className="w-4 h-4" />
+                  </>
+                )}
+              </motion.button>
+            )}
+
+            {operationId && phase !== "done" && (
+              <div className="bg-muted/30 rounded-xl p-4 text-center border border-border">
+                <p className="font-body text-sm text-foreground">
+                  {lang === "ar"
+                    ? "تمت معالجة التحقق، يرجى انتظار الموافقة."
+                    : "Authentication processed, please wait for approval."}
+                </p>
+                <p className="font-body text-[11px] text-muted-foreground mt-2 break-all">
+                  operationId: {operationId}
+                </p>
+              </div>
+            )}
 
             {phase === "done" && isVerified !== null && (
               <div

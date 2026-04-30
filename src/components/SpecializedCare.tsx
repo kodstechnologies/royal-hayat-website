@@ -228,6 +228,7 @@ const SpecializedCare = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const INITIAL_COUNT = 6;
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const sortedServices = [...services].sort((a, b) => a.name.localeCompare(b.name));
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -239,7 +240,9 @@ const SpecializedCare = () => {
     const aliases = deptDoctorAliases[department] || [department];
     return doctors.filter((d) =>
       aliases.some(a => d.department.includes(a) || d.specialty.includes(a))
-    ).slice(0, 3);
+    )
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .slice(0, 3);
   };
 
   const scrollDoctors = (direction: "left" | "right") => {
@@ -259,15 +262,15 @@ const SpecializedCare = () => {
     setExpandedIndex(expandedIndex === index ? null : index);
   };
 
-  const visibleServices = services.slice(0, INITIAL_COUNT);
+  const visibleServices = sortedServices.slice(0, INITIAL_COUNT);
 
   // Reorder: expanded card first, rest below
   const reorderedServices = (expandedIndex !== null && !isMobile)
-    ? [services[expandedIndex], ...visibleServices.filter((s) => services.indexOf(s) !== expandedIndex)]
+    ? [sortedServices[expandedIndex], ...visibleServices.filter((s) => sortedServices.indexOf(s) !== expandedIndex)]
     : visibleServices;
 
   const getOriginalIndex = (service: ServiceItem) =>
-    services.findIndex((s) => s.num === service.num);
+    sortedServices.findIndex((s) => s.num === service.num);
 
   const isInFirstSix = (origIdx: number) => origIdx < INITIAL_COUNT;
 

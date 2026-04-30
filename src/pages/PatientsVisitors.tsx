@@ -27,7 +27,7 @@ const PatientsVisitors = () => {
   const sectionClass = "scroll-mt-[calc(var(--header-height,76px)+2rem)]";
 
   return (
-    <div className="min-h-screen bg-background pt-[var(--header-height,56px)] overflow-x-hidden flex flex-col">
+    <div className="min-h-screen bg-background pt-[var(--header-height,56px)] overflow-x-hidden flex flex-col [&_.text-accent]:text-[#816107]">
       <Header />
 
       {/* Hero */}

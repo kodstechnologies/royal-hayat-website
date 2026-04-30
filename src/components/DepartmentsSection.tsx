@@ -12,7 +12,9 @@ import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 const DepartmentsSection = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [selectedSubByDept, setSelectedSubByDept] = useState<Record<number, string>>({});
-  const [departments] = useState<Department[]>(staticDepartments);
+  const [departments] = useState<Department[]>(
+    staticDepartments.filter((dept) => dept.name !== "Allergy & Immunology")
+  );
   const doctorScrollRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
@@ -240,11 +242,6 @@ const DepartmentsSection = () => {
                                 </div>
                               </>
                             )}
-                            {(!dept.subs || dept.subs.length === 0) && (
-                              <p className="text-muted-foreground font-body text-sm leading-relaxed max-w-lg">
-                                {lang === "ar" ? dept.descAr : dept.desc}
-                              </p>
-                            )}
                           </div>
                           <button
                             onClick={() => setOpenIndex(null)}
@@ -257,7 +254,7 @@ const DepartmentsSection = () => {
                         {/* Doctor Cards — matching DoctorsSection style */}
                         {deptDoctors.length > 0 ? (
                           <div className="mt-auto">
-                            <p className="text-accent text-xs tracking-[0.2em] uppercase font-body mb-4">
+                            <p className="text-accent text-center text-xl tracking-[0.2em] uppercase font-body font-semibold mb-4">
                               {lang === "ar" ? "أطباء القسم" : "Department Doctors"}
                             </p>
                             <div className="relative max-w-[576px] mx-auto lg:mt-6">

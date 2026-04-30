@@ -15,7 +15,14 @@ import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
 const FeaturedDoctors = () => {
   const { lang } = useLanguage();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const featured = doctors.slice(0, 10);
+  const featured = [...doctors]
+    .sort((a, b) =>
+      (lang === "ar" ? a.nameAr : a.name).localeCompare(
+        lang === "ar" ? b.nameAr : b.name,
+        lang === "ar" ? "ar" : "en"
+      )
+    )
+    .slice(0, 10);
 
   const scroll = (dir: "left" | "right") => {
     if (scrollRef.current) {
@@ -127,7 +134,7 @@ const HomeHealthPreview = () => {
 
 const MedicalServices = () => {
   return (
-    <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
+    <div className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107]">
       <Header />
       <DepartmentsSection />
       <FeaturedDoctors />

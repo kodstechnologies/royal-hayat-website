@@ -49,8 +49,10 @@ const HospitalityBanner = () => {
               <img
                 src="https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776940549/DSC08659_fyiftq.jpg"
                 alt="VIP Hospital Suite"
-                className="w-full h-72 object-cover"
+                className="w-full h-auto"
                 loading="lazy"
+                width={1280}
+                height={960}
               />
             </div>
           </ScrollAnimationWrapper>

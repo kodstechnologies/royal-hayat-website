@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { ChevronLeft, ChevronRight, ImageIcon } from "lucide-react";
+import { ChevronLeft, ChevronRight, ImageIcon, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -30,6 +30,7 @@ const LifePhotoCarousel = ({ title, subtitle, photos, interval = 4500, variant =
   const { lang } = useLanguage();
   const [index, setIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const total = photos.length;
 
   const next = useCallback(() => setIndex((p) => (p + 1) % total), [total]);
@@ -66,14 +67,20 @@ const LifePhotoCarousel = ({ title, subtitle, photos, interval = 4500, variant =
             <AnimatePresence mode="wait">
               <motion.div
                 key={index}
-                initial={{ opacity: 0, scale: 1.02 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.98 }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
+                initial={{ x: 36 }}
+                animate={{ x: 0 }}
+                exit={{ x: -36 }}
+                transition={{ duration: 0.35, ease: "easeInOut" }}
                 className="absolute inset-0"
               >
                 {current?.src ? (
-                  <img src={current.src} alt={current.alt} className="w-full h-full object-cover" loading="lazy" />
+                  <img
+                    src={current.src}
+                    alt={current.alt}
+                    className="w-full h-full object-cover cursor-zoom-in"
+                    loading="lazy"
+                    onClick={() => setLightboxImage(current.src!)}
+                  />
                 ) : (
                   <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-primary/5 via-background to-accent/5 text-muted-foreground">
                     <ImageIcon className="w-12 h-12 mb-3 opacity-40" />
@@ -119,6 +126,33 @@ const LifePhotoCarousel = ({ title, subtitle, photos, interval = 4500, variant =
           </div>
         </div>
       </div>
+
+      <AnimatePresence>
+        {lightboxImage && (
+          <motion.div
+            className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setLightboxImage(null)}
+          >
+            <button
+              type="button"
+              onClick={() => setLightboxImage(null)}
+              className="absolute top-5 right-5 w-10 h-10 rounded-full bg-background/20 text-white hover:bg-background/35 transition-colors flex items-center justify-center"
+              aria-label={isAr ? "إغلاق الصورة" : "Close image"}
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <img
+              src={lightboxImage}
+              alt={isAr ? "صورة مكبرة" : "Enlarged image"}
+              className="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };

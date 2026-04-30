@@ -3,7 +3,7 @@ import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import ChatButton from "@/components/ChatButton";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
-import { Crown, Utensils, Sparkles, Flower2, Coffee, Phone, CheckCircle2, Baby, Image, Video, Bed, Star, ChevronLeft, ChevronRight } from "lucide-react";
+import { Crown, Utensils, Sparkles, Flower2, Coffee, Phone, CheckCircle2, Baby, Image, Video, Bed, Star, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useEffect, useState } from "react";
@@ -40,6 +40,7 @@ const HospitalityServices = ({
   const [orchidSlide, setOrchidSlide] = useState(0);
   const [spaSlide, setSpaSlide] = useState(0);
   const [cafeSlide, setCafeSlide] = useState(0);
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const activeSuiteImages = suiteCarouselImagesByIndex[activeSuite] ?? suiteCarouselImagesByIndex[6];
 
   useEffect(() => {
@@ -190,7 +191,7 @@ const HospitalityServices = ({
   const currentSuite = suitesData[activeSuite];
 
   return (
-    <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
+    <div className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107]">
       <Header />
 
       {/* Hero */}
@@ -203,7 +204,7 @@ const HospitalityServices = ({
                 : section === "suites" ? (isAr ? "الأجنحة الفاخرة" : " Suites")
                   : section === "spa" ? (isAr ? "سبا إليمنتس" : "Elements Spa")
                     : section === "cafe" ? (isAr ? "مقهى الليوان" : "Al Liwan Café")
-                      : t("luxuryServices")}
+                      : (isAr ? "خدمات الضيافة" : "Hospitality Services")}
             </h1>
           </ScrollAnimationWrapper>
         </div>
@@ -211,7 +212,7 @@ const HospitalityServices = ({
 
       {/* Introduction */}
       {showAll && <section className="py-4">
-        <div className="container mx-auto px-6 max-w-6xl">
+        <div className="container mx-auto px-6 max-w-7xl">
           <ScrollAnimationWrapper>
             <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-6">{isAr ? "مقدمة" : "Introduction"}</h2>
             <div className="space-y-4 font-body text-sm text-muted-foreground leading-relaxed">
@@ -247,7 +248,7 @@ const HospitalityServices = ({
 
       {/* ===== OUR LUXURY HALLS ===== */}
       {show("halls") && <section className="py-6 bg-white">
-        <div className="container mx-auto px-6 max-w-6xl">
+        <div className="container mx-auto px-6 max-w-7xl">
           <ScrollAnimationWrapper>
             {showAll && <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-2 text-center">{isAr ? "القاعات الفاخرة" : "Halls"}</h2>}
             <div className={`flex justify-center gap-2 flex-wrap ${showAll ? 'mt-6' : 'mt-2'} mb-10`}>
@@ -270,8 +271,9 @@ const HospitalityServices = ({
                       <img
                         src={src}
                         alt={isAr ? `صورة قاعة غاردينيا ${index + 1}` : `Gardenia Banquet Hall image ${index + 1}`}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover cursor-zoom-in"
                         loading="lazy"
+                        onClick={() => setLightboxImage(src)}
                       />
                     </div>
                   ))}
@@ -326,8 +328,9 @@ const HospitalityServices = ({
                       <img
                         src={src}
                         alt={isAr ? `صورة قاعة الجوري ${index + 1}` : `Al Jouri Banquet Hall image ${index + 1}`}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover cursor-zoom-in"
                         loading="lazy"
+                        onClick={() => setLightboxImage(src)}
                       />
                     </div>
                   ))}
@@ -374,21 +377,22 @@ const HospitalityServices = ({
           </div>
           <div className="grid lg:grid-cols-2 gap-10 items-start">
             <div className="relative order-2 lg:order-2">
-              <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
-                <AnimatePresence mode="wait">
+              <div className="relative aspect-[5/4] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
+                <AnimatePresence initial={false}>
                   <motion.div
                     key={`cafe-section-${cafeSlide}`}
-                    initial={{ opacity: 0, scale: 1.02 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.98 }}
-                    transition={{ duration: 0.6, ease: "easeOut" }}
+                    initial={{ x: 36 }}
+                    animate={{ x: 0 }}
+                    exit={{ x: -36 }}
+                    transition={{ duration: 0.35, ease: "easeInOut" }}
                     className="absolute inset-0"
                   >
                     <img
                       src={cafeImages[cafeSlide]}
                       alt={isAr ? `مقهى الليوان ${cafeSlide + 1}` : `Al Liwan Cafe image ${cafeSlide + 1}`}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover cursor-zoom-in"
                       loading="lazy"
+                      onClick={() => setLightboxImage(cafeImages[cafeSlide])}
                     />
                   </motion.div>
                 </AnimatePresence>
@@ -452,24 +456,25 @@ const HospitalityServices = ({
 
       {/* ===== ELEMENTS SPA ===== */}
       {section === "spa" && <section className="py-6 bg-primary/5">
-        <div className="container mx-auto px-6 max-w-6xl">
+        <div className="container mx-auto px-6 max-w-7xl">
           <div className="grid lg:grid-cols-2 gap-10 items-start">
             <div className="relative">
-              <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
-                <AnimatePresence mode="wait">
+              <div className="relative aspect-[5/4] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
+                <AnimatePresence initial={false}>
                   <motion.div
                     key={`spa-section-${spaSlide}`}
-                    initial={{ opacity: 0, scale: 1.02 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.98 }}
-                    transition={{ duration: 0.6, ease: "easeOut" }}
+                    initial={{ x: 36 }}
+                    animate={{ x: 0 }}
+                    exit={{ x: -36 }}
+                    transition={{ duration: 0.35, ease: "easeInOut" }}
                     className="absolute inset-0"
                   >
                     <img
                       src={spaImages[spaSlide]}
                       alt={isAr ? `سبا إليمنتس ${spaSlide + 1}` : `Elements Spa image ${spaSlide + 1}`}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover cursor-zoom-in"
                       loading="lazy"
+                      onClick={() => setLightboxImage(spaImages[spaSlide])}
                     />
                   </motion.div>
                 </AnimatePresence>
@@ -539,7 +544,7 @@ const HospitalityServices = ({
 
       {/* ===== OUR LUXURY SUITES ===== */}
       {show("suites") && <section className="py-6 bg-primary/5">
-        <div className="container mx-auto px-6 max-w-6xl">
+        <div className="container mx-auto px-6 max-w-7xl">
           <ScrollAnimationWrapper>
             {showAll && <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-2 text-center">{isAr ? "الأجنحة الفاخرة" : "Suites"}</h2>}
             <p className="text-muted-foreground font-body text-sm text-center mb-8 max-w-xl mx-auto">
@@ -560,21 +565,22 @@ const HospitalityServices = ({
             {activeSuite !== 0 ? (
               <div className="grid lg:grid-cols-2 gap-10 items-start">
                 <div className="relative">
-                  <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
-                    <AnimatePresence mode="wait">
+                  <div className="relative aspect-[5/4] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
+                    <AnimatePresence initial={false}>
                       <motion.div
                         key={`suite-${activeSuite}-${suiteSlide}`}
-                        initial={{ opacity: 0, scale: 1.02 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.98 }}
-                        transition={{ duration: 0.6, ease: "easeOut" }}
+                        initial={{ x: 36 }}
+                        animate={{ x: 0 }}
+                        exit={{ x: -36 }}
+                        transition={{ duration: 0.35, ease: "easeInOut" }}
                         className="absolute inset-0"
                       >
                         <img
                           src={activeSuiteImages[suiteSlide]}
                           alt={isAr ? `صورة ${currentSuite.name} ${suiteSlide + 1}` : `${currentSuite.name} image ${suiteSlide + 1}`}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover cursor-zoom-in"
                           loading="lazy"
+                          onClick={() => setLightboxImage(activeSuiteImages[suiteSlide])}
                         />
                       </motion.div>
                     </AnimatePresence>
@@ -713,21 +719,22 @@ const HospitalityServices = ({
                 {/* Additional carousel + details for Royale Orchid */}
                 <div className="grid lg:grid-cols-2 gap-10 items-start mt-16">
                   <div className="relative">
-                    <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
-                      <AnimatePresence mode="wait">
+                    <div className="relative aspect-[5/4] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
+                      <AnimatePresence initial={false}>
                         <motion.div
                           key={`orchid-${orchidSlide}`}
-                          initial={{ opacity: 0, scale: 1.02 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0.98 }}
-                          transition={{ duration: 0.6, ease: "easeOut" }}
+                          initial={{ x: 36 }}
+                          animate={{ x: 0 }}
+                          exit={{ x: -36 }}
+                          transition={{ duration: 0.35, ease: "easeInOut" }}
                           className="absolute inset-0"
                         >
                           <img
                             src={orchidSuiteImages[orchidSlide]}
                             alt={isAr ? `صورة ${currentSuite.name} ${orchidSlide + 1}` : `${currentSuite.name} image ${orchidSlide + 1}`}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover cursor-zoom-in"
                             loading="lazy"
+                            onClick={() => setLightboxImage(orchidSuiteImages[orchidSlide])}
                           />
                         </motion.div>
                       </AnimatePresence>
@@ -865,21 +872,22 @@ const HospitalityServices = ({
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-10 items-start">
             <div className="relative order-2 lg:order-2">
-              <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
-                <AnimatePresence mode="wait">
+              <div className="relative aspect-[5/4] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
+                <AnimatePresence initial={false}>
                   <motion.div
                     key={`spa-showall-${spaSlide}`}
-                    initial={{ opacity: 0, scale: 1.02 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.98 }}
-                    transition={{ duration: 0.6, ease: "easeOut" }}
+                    initial={{ x: 36 }}
+                    animate={{ x: 0 }}
+                    exit={{ x: -36 }}
+                    transition={{ duration: 0.35, ease: "easeInOut" }}
                     className="absolute inset-0"
                   >
                     <img
                       src={spaImages[spaSlide]}
                       alt={isAr ? `سبا إليمنتس ${spaSlide + 1}` : `Elements Spa image ${spaSlide + 1}`}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover cursor-zoom-in"
                       loading="lazy"
+                      onClick={() => setLightboxImage(spaImages[spaSlide])}
                     />
                   </motion.div>
                 </AnimatePresence>
@@ -947,7 +955,7 @@ const HospitalityServices = ({
 
       {/* ===== AL LIWAN CAFÉ (Show All Order) ===== */}
       {showAll && <section className="py-6 bg-white">
-        <div className="container mx-auto px-6 max-w-6xl">
+        <div className="container mx-auto px-6 max-w-7xl">
           <div className="lg:hidden flex items-center gap-3 mb-4">
             <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
               <Coffee className="w-6 h-6 text-accent" />
@@ -956,21 +964,22 @@ const HospitalityServices = ({
           </div>
           <div className="grid lg:grid-cols-2 gap-10 items-start">
             <div className="relative order-2 lg:order-1">
-              <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
-                <AnimatePresence mode="wait">
+              <div className="relative aspect-[5/4] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
+                <AnimatePresence initial={false}>
                   <motion.div
                     key={`cafe-showall-${cafeSlide}`}
-                    initial={{ opacity: 0, scale: 1.02 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.98 }}
-                    transition={{ duration: 0.6, ease: "easeOut" }}
+                    initial={{ x: 36 }}
+                    animate={{ x: 0 }}
+                    exit={{ x: -36 }}
+                    transition={{ duration: 0.35, ease: "easeInOut" }}
                     className="absolute inset-0"
                   >
                     <img
                       src={cafeImages[cafeSlide]}
                       alt={isAr ? `مقهى الليوان ${cafeSlide + 1}` : `Al Liwan Cafe image ${cafeSlide + 1}`}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover cursor-zoom-in"
                       loading="lazy"
+                      onClick={() => setLightboxImage(cafeImages[cafeSlide])}
                     />
                   </motion.div>
                 </AnimatePresence>
@@ -1063,6 +1072,33 @@ const HospitalityServices = ({
           </div>
         </div>
       </section>}
+      <AnimatePresence>
+        {lightboxImage && (
+          <motion.div
+            className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setLightboxImage(null)}
+          >
+            <button
+              type="button"
+              onClick={() => setLightboxImage(null)}
+              className="absolute top-5 right-5 w-10 h-10 rounded-full bg-background/20 text-white hover:bg-background/35 transition-colors flex items-center justify-center"
+              aria-label={isAr ? "إغلاق الصورة" : "Close image"}
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <img
+              src={lightboxImage}
+              alt={isAr ? "صورة مكبرة" : "Enlarged image"}
+              className="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <Footer />
       <ChatButton />
       <ScrollToTop />

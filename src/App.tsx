@@ -67,7 +67,7 @@ const spaImages = [
   "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1777007124/DSC09782_l7ovv0.jpg",
   "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1777007126/DSC09747_zoavmx.jpg",
   "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1777007129/DSC09509_cazmhp.jpg",
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1777007129/DSC09785_z64plx.jpg",
+  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1777545090/DSC09785_q78zcb.jpg",
   "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1777007132/DSC09603_zcdl5j.jpg",
   "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1777007134/DSC09813_okeyuc.jpg",
   "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1777007139/DSC09646_ri5pbt.jpg",

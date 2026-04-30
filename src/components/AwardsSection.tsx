@@ -38,10 +38,10 @@ const AwardsSection = () => {
       <div className="container mx-auto px-6">
         <ScrollAnimationWrapper>
           <div className="text-center mb-12">
-            <div className="w-10 h-0.5 bg-accent mx-auto mb-3" />
-            <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-2">{t("recognition")}</p>
+            <div className="w-10 h-0.5 bg-[#D8B656] mx-auto mb-3" />
+            <p className="text-[#D8B656] text-xs tracking-[0.3em] uppercase font-body mb-2">{t("recognition")}</p>
             <h2 className="text-3xl md:text-4xl font-serif text-primary-foreground">
-              {t("certificatesAwards")} <span className="text-accent italic">{t("awards")}</span>
+              {t("certificatesAwards")} <span className="text-[#D8B656] italic">{t("awards")}</span>
             </h2>
           </div>
         </ScrollAnimationWrapper>
@@ -60,14 +60,14 @@ const AwardsSection = () => {
               <div className="w-40 h-40 md:w-64 md:h-64 rounded-xl bg-white flex items-center justify-center mb-5 p-4 md:p-5">
                 <img src={featured.image} alt={featured.name} className="max-w-full max-h-full object-contain" />
               </div>
-              <span className="inline-block px-4 py-1.5 rounded-full bg-accent/20 text-accent text-xs font-body tracking-wider mb-3">
+              <span className="inline-block px-4 py-1.5 rounded-full bg-[#D8B656]/20 text-[#D8B656] text-xs font-body tracking-wider mb-3">
                 {featured.year}
               </span>
               <h3 className="text-lg md:text-xl font-serif text-white mb-2">
                 {lang === "ar" ? featured.nameAr : featured.name}
               </h3>
               {featured.source && (
-                <p className="text-accent font-body text-sm mb-2">
+                <p className="text-[#D8B656] font-body text-sm mb-2">
                   {lang === "ar" ? featured.sourceAr : featured.source}
                 </p>
               )}
@@ -86,7 +86,7 @@ const AwardsSection = () => {
                   <motion.div
                     whileHover={{ scale: 1.03, y: -2 }}
                     onClick={() => setActiveIndex(awards.indexOf(a))}
-                    className="bg-white/8 backdrop-blur-sm border border-secondary/10 rounded-xl p-4 md:p-5 hover:border-accent/30 transition-all cursor-pointer h-full flex flex-row sm:flex-col items-center sm:justify-center text-center gap-4 sm:gap-0"
+                    className="bg-white/8 backdrop-blur-sm border border-secondary/10 rounded-xl p-4 md:p-5 hover:border-[#D8B656]/30 transition-all cursor-pointer h-full flex flex-row sm:flex-col items-center sm:justify-center text-center gap-4 sm:gap-0"
                   >
                     <div className="w-20 h-20 sm:w-44 sm:h-44 rounded-lg bg-white flex items-center justify-center sm:mb-4 p-3 sm:p-4 flex-shrink-0">
                       <img src={a.image} alt={a.name} className="max-w-full max-h-full object-contain" />
@@ -113,10 +113,10 @@ const AwardsSection = () => {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 + i * 0.1 }}
-                    className="bg-accent/10 border border-accent/20 rounded-xl px-4 py-3 md:py-4 flex items-center gap-3"
+                    className="bg-[#D8B656]/10 border border-[#D8B656]/20 rounded-xl px-4 py-3 md:py-4 flex items-center gap-3"
                   >
-                    <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
-                      <Icon className="w-5 h-5 text-accent" />
+                    <div className="w-10 h-10 rounded-full bg-[#D8B656]/20 flex items-center justify-center flex-shrink-0">
+                      <Icon className="w-5 h-5 text-[#D8B656]" />
                     </div>
                     <div className="text-left">
                       <p className="text-white font-serif text-lg leading-tight">{a.stat}</p>
@@ -135,7 +135,7 @@ const AwardsSection = () => {
         <div className="flex items-center justify-center gap-3 mt-10">
           <div className="flex gap-1.5">
             {awards.map((_, i) => (
-              <button key={i} onClick={() => setActiveIndex(i)} className={`h-2 rounded-full transition-all duration-300 ${i === activeIndex ? "bg-accent w-7" : "bg-white/20 w-2 hover:bg-white/40"}`} />
+              <button key={i} onClick={() => setActiveIndex(i)} className={`h-2 rounded-full transition-all duration-300 ${i === activeIndex ? "bg-[#D8B656] w-7" : "bg-white/20 w-2 hover:bg-white/40"}`} />
             ))}
           </div>
         </div>

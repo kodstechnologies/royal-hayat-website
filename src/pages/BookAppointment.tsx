@@ -14,6 +14,7 @@ import ScrollToTop from "@/components/ScrollToTop";
 import ChatButton from "@/components/ChatButton";
 import { doctors as allRealDoctors } from "@/data/doctors";
 import { departments, deptDoctorAliases } from "@/data/departments";
+import { getIdentityStatus, startIdentityVerification } from "../../api/identity";
 
 
 // All doctors flat for "know your doctor" path - filter out non-bookable doctors
@@ -100,6 +101,14 @@ const BookAppointment = () => {
   const [patientDob, setPatientDob] = useState("");
   const [patientGender, setPatientGender] = useState("");
   const [patientErrors, setPatientErrors] = useState<Record<string, string>>({});
+  const [showReturningPatientModal, setShowReturningPatientModal] = useState(false);
+  const [nationalId, setNationalId] = useState("");
+  const [nationalIdError, setNationalIdError] = useState("");
+  const [isVerifyingNationalId, setIsVerifyingNationalId] = useState(false);
+  const [verifiedPersonName, setVerifiedPersonName] = useState<{ english: string; arabic: string } | null>(null);
+  const [verifyOperationId, setVerifyOperationId] = useState<string | null>(null);
+  const [isCheckingApproval, setIsCheckingApproval] = useState(false);
+  const [verifyStatusMessage, setVerifyStatusMessage] = useState("");
 
   // Symptom path
   const [symptomText, setSymptomText] = useState("");
@@ -166,8 +175,8 @@ const BookAppointment = () => {
   const steps = [
     { label: isAr ? "القسم" : "Department", icon: Building2 },
     { label: isAr ? "الطبيب" : "Doctor", icon: User },
-    { label: isAr ? "المواعيد" : "Time Slots", icon: Clock },
     { label: isAr ? "بيانات المريض" : "Patient Info", icon: ClipboardList },
+    { label: isAr ? "المواعيد" : "Time Slots", icon: Clock },
     { label: isAr ? "تأكيد" : "Confirm", icon: CheckCircle2 },
   ];
 
@@ -188,19 +197,128 @@ const BookAppointment = () => {
     switch (step) {
       case 0: return selectedDept !== null;
       case 1: return selectedDoctor !== null;
-      case 2: return selectedDate !== "" && selectedSlot !== null;
-      case 3: return patientType === "new" && patientName.trim() !== "" && /^\d{8}$/.test(patientPhone.trim()) && patientDob !== "" && patientGender !== "";
+      case 2:
+        if (patientType === "returning") return patientName.trim() !== "";
+        return patientType === "new" && patientName.trim() !== "" && /^\d{8}$/.test(patientPhone.trim()) && patientDob !== "" && patientGender !== "";
+      case 3: return selectedDate !== "" && selectedSlot !== null;
       default: return true;
     }
   };
 
   const handleNext = () => {
-    if (step === 3) {
-      if (patientType !== "new") return;
-      if (!validatePatientDetails()) return;
+    if (step === 2) {
+      if (patientType === "new" && !validatePatientDetails()) return;
+      if (!patientType) return;
     }
     if (step === 4) { setBooked(true); return; }
     setStep((s) => Math.min(s + 1, 4));
+  };
+
+  const extractVerifiedName = (source: any) => {
+    const payload = source?.raw?.payload || source?.raw || source?.identityData?.payload || source?.identityData || {};
+    return {
+      english: payload?.name?.english || payload?.name?.en || "",
+      arabic: payload?.name?.arabic || payload?.name?.ar || "",
+    };
+  };
+
+  const handleNationalIdVerify = async () => {
+    const civilId = nationalId.trim();
+    if (!/^\d{12}$/.test(civilId)) {
+      setNationalIdError(isAr ? "أدخل رقمًا مدنيًا صحيحًا (12 رقم)" : "Enter a valid National ID (12 digits)");
+      return;
+    }
+    setIsVerifyingNationalId(true);
+    setNationalIdError("");
+    setVerifiedPersonName(null);
+    setVerifyOperationId(null);
+    setVerifyStatusMessage("");
+    try {
+      const response = await startIdentityVerification({
+        civilId,
+        serviceName: { ar: "تجربة", en: "Service Test" },
+        reason: { ar: "تجربة", en: "test" }
+      });
+      const names = extractVerifiedName(response);
+      const hasName = Boolean(names.english || names.arabic);
+      if (response?.verified === true && hasName) {
+        setVerifiedPersonName(names);
+        const pickedName = isAr ? (names.arabic || names.english) : (names.english || names.arabic);
+        setPatientName(pickedName);
+        setPatientType("returning");
+        setShowReturningPatientModal(false);
+        return;
+      }
+      if (response?.operationId) {
+        setVerifyOperationId(response.operationId);
+        setVerifyStatusMessage(
+          isAr
+            ? "تمت معالجة التحقق، يرجى انتظار الموافقة ثم اضغط تحقق من الموافقة."
+            : "Authentication processed, please wait for approval and click Check Approval."
+        );
+        return;
+      }
+      setNationalIdError(
+        isAr
+          ? "تعذر التحقق حالياً. أكمل التحقق في تطبيق هويتي ثم أعد المحاولة."
+          : "Could not verify right now. Complete Hawyti authentication and try again."
+      );
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "";
+      setNationalIdError(
+        message || (isAr ? "فشل التحقق من الرقم المدني" : "Failed to verify National ID")
+      );
+    } finally {
+      setIsVerifyingNationalId(false);
+    }
+  };
+
+  const handleCheckApproval = async () => {
+    if (!verifyOperationId) return;
+    setIsCheckingApproval(true);
+    setNationalIdError("");
+    try {
+      const statusData = await getIdentityStatus(verifyOperationId);
+      if (statusData?.status === "pending") {
+        setVerifyStatusMessage(
+          isAr ? "الحالة ما زالت قيد الانتظار." : "Status is still pending."
+        );
+        return;
+      }
+      const names = extractVerifiedName(statusData);
+      const hasName = Boolean(names.english || names.arabic);
+      if (!hasName) {
+        setNationalIdError(isAr ? "تمت الموافقة ولكن لا يوجد اسم متاح حالياً." : "Approved but no name is available yet.");
+        return;
+      }
+      setVerifiedPersonName(names);
+      const pickedName = isAr ? (names.arabic || names.english) : (names.english || names.arabic);
+      setPatientName(pickedName);
+      setPatientType("returning");
+      setShowReturningPatientModal(false);
+      setVerifyOperationId(null);
+      setVerifyStatusMessage("");
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "";
+      setNationalIdError(
+        message || (isAr ? "تعذر جلب حالة الموافقة." : "Failed to fetch approval status.")
+      );
+    } finally {
+      setIsCheckingApproval(false);
+    }
+  };
+
+  const goToInitialBookingScreen = () => {
+    setShowReturningPatientModal(false);
+    setBookingPath(null);
+    setStep(0);
+    setPatientType(null);
+    setPatientName("");
+    setNationalId("");
+    setNationalIdError("");
+    setVerifiedPersonName(null);
+    setVerifyOperationId(null);
+    setVerifyStatusMessage("");
   };
 
   const handleBack = () => {
@@ -717,85 +835,15 @@ const BookAppointment = () => {
             </motion.div>
           )}
 
-          {/* STEP 2: TIME SLOTS */}
+          {/* STEP 2: PATIENT INFO */}
           {step === 2 && (
-            <motion.div key="s2" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.35 }}>
-              <div className="max-w-3xl mx-auto">
-                <div className="bg-popover rounded-2xl p-6 md:p-8 border border-border shadow-sm">
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
-                      <Calendar className="w-5 h-5 text-accent" />
-                    </div>
-                    <div>
-                      <h2 className="text-xl font-serif text-foreground">{isAr ? "اختر الموعد" : "Select Date & Time"}</h2>
-                      <p className="text-muted-foreground font-body text-xs">{isAr ? "اختر التاريخ والوقت المناسب لك" : "Pick a date and available time slot"}</p>
-                    </div>
-                  </div>
-
-                  {/* Date picker */}
-                  <p className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-3">{isAr ? "التاريخ" : "Date"}</p>
-                  <div className="flex gap-2 flex-wrap justify-center mb-8">
-                    {availableDates.map((d) => (
-                      <button key={d.value} onClick={() => { setSelectedDate(d.value); setSelectedSlot(null); }}
-                        className={`px-4 py-2.5 rounded-xl border font-body text-xs transition-all ${selectedDate === d.value
-                          ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                          : "bg-background border-border text-foreground hover:border-accent/50"}`}>
-                        {d.label}
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* Time slots */}
-                  {selectedDate && (
-                    <>
-                      <p className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-3">{isAr ? "الوقت المتاح" : "Available Times"}</p>
-                      <div className="mb-3">
-                        <p className="font-body text-[10px] text-accent uppercase tracking-widest mb-2">{isAr ? "صباحاً" : "Morning"}</p>
-                        <div className="flex flex-wrap justify-center gap-2 mb-5">
-                          {timeSlots.filter(s => parseInt(s) < 13).map((slot) => (
-                            <button key={slot} onClick={() => { setSelectedSlot(slot); setStep(3); }}
-                              className={`px-4 py-2.5 rounded-xl border font-body text-xs transition-all ${selectedSlot === slot
-                                ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                                : "bg-background border-border text-foreground hover:border-accent/50"}`}>
-                              {formatSlot(slot)}
-                            </button>
-                          ))}
-                        </div>
-                        <p className="font-body text-[10px] text-accent uppercase tracking-widest mb-2">{isAr ? "مساءً" : "Afternoon"}</p>
-                        <div className="flex flex-wrap justify-center gap-2">
-                          {timeSlots.filter(s => parseInt(s) >= 14).map((slot) => (
-                            <button key={slot} onClick={() => { setSelectedSlot(slot); setStep(3); }}
-                              className={`px-4 py-2.5 rounded-xl border font-body text-xs transition-all ${selectedSlot === slot
-                                ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                                : "bg-background border-border text-foreground hover:border-accent/50"}`}>
-                              {formatSlot(slot)}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    </>
-                  )}
-
-                  {!selectedDate && (
-                    <div className="text-center py-8 text-muted-foreground font-body text-sm">
-                      <Clock className="w-8 h-8 mx-auto mb-2 opacity-30" />
-                      {isAr ? "اختر تاريخاً لعرض المواعيد المتاحة" : "Select a date to see available time slots"}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {/* STEP 3: PATIENT INFO */}
-          {step === 3 && (
             <motion.div key="s2" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.35 }}>
               <div className="max-w-3xl mx-auto">
                 {!patientType && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
                     <motion.button whileHover={{ y: -4 }} whileTap={{ scale: 0.98 }}
                       onClick={() => {
-                        window.open("https://afyati.royalehayat.com", "_blank");
+                        setShowReturningPatientModal(true);
                       }}
                       className="bg-popover rounded-2xl p-8 border border-border text-center transition-all hover:border-primary/40">
                       <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
@@ -895,11 +943,105 @@ const BookAppointment = () => {
                   </div>
                 )}
 
+                {patientType === "returning" && (
+                  <div className="bg-popover rounded-2xl p-5 sm:p-8 border border-border shadow-sm">
+                    <h2 className="text-xl font-serif text-foreground mb-2">
+                      {isAr ? "تأكيد بيانات المريض" : "Confirm Patient Details"}
+                    </h2>
+                    <p className="font-body text-sm text-muted-foreground">
+                      {isAr ? "الحجز باسم" : "Booking for"}{" "}
+                      <span className="text-foreground font-medium">{patientName}</span>
+                    </p>
+                    <div className="mt-5 flex gap-3">
+                      <button
+                        onClick={() => setStep(3)}
+                        className="flex-1 bg-primary text-primary-foreground px-3 py-2.5 rounded-lg font-body text-xs tracking-widest uppercase hover:bg-primary/90 transition-colors inline-flex items-center justify-center text-center"
+                      >
+                        {isAr ? "متابعة" : "Proceed"}
+                      </button>
+                      <button
+                        onClick={goToInitialBookingScreen}
+                        className="flex-1 bg-secondary/40 text-foreground px-3 py-2.5 rounded-lg font-body text-xs tracking-widest uppercase hover:bg-secondary/60 transition-colors inline-flex items-center justify-center text-center"
+                      >
+                        {isAr ? "إلغاء" : "Cancel"}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 {patientType && (
                   <button onClick={() => setPatientType(null)} className="mt-4 font-body text-xs text-muted-foreground hover:text-foreground transition-colors">
                     ← {t("changeSelection")}
                   </button>
                 )}
+              </div>
+            </motion.div>
+          )}
+
+          {/* STEP 3: TIME SLOTS */}
+          {step === 3 && (
+            <motion.div key="s3" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.35 }}>
+              <div className="max-w-3xl mx-auto">
+                <div className="bg-popover rounded-2xl p-6 md:p-8 border border-border shadow-sm">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
+                      <Calendar className="w-5 h-5 text-accent" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-serif text-foreground">{isAr ? "اختر الموعد" : "Select Date & Time"}</h2>
+                      <p className="text-muted-foreground font-body text-xs">{isAr ? "اختر التاريخ والوقت المناسب لك" : "Pick a date and available time slot"}</p>
+                    </div>
+                  </div>
+
+                  <p className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-3">{isAr ? "التاريخ" : "Date"}</p>
+                  <div className="flex gap-2 flex-wrap justify-center mb-8">
+                    {availableDates.map((d) => (
+                      <button key={d.value} onClick={() => { setSelectedDate(d.value); setSelectedSlot(null); }}
+                        className={`px-4 py-2.5 rounded-xl border font-body text-xs transition-all ${selectedDate === d.value
+                          ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                          : "bg-background border-border text-foreground hover:border-accent/50"}`}>
+                        {d.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {selectedDate && (
+                    <>
+                      <p className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-3">{isAr ? "الوقت المتاح" : "Available Times"}</p>
+                      <div className="mb-3">
+                        <p className="font-body text-[10px] text-accent uppercase tracking-widest mb-2">{isAr ? "صباحاً" : "Morning"}</p>
+                        <div className="flex flex-wrap justify-center gap-2 mb-5">
+                          {timeSlots.filter(s => parseInt(s) < 13).map((slot) => (
+                            <button key={slot} onClick={() => { setSelectedSlot(slot); setStep(4); }}
+                              className={`px-4 py-2.5 rounded-xl border font-body text-xs transition-all ${selectedSlot === slot
+                                ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                                : "bg-background border-border text-foreground hover:border-accent/50"}`}>
+                              {formatSlot(slot)}
+                            </button>
+                          ))}
+                        </div>
+                        <p className="font-body text-[10px] text-accent uppercase tracking-widest mb-2">{isAr ? "مساءً" : "Afternoon"}</p>
+                        <div className="flex flex-wrap justify-center gap-2">
+                          {timeSlots.filter(s => parseInt(s) >= 14).map((slot) => (
+                            <button key={slot} onClick={() => { setSelectedSlot(slot); setStep(4); }}
+                              className={`px-4 py-2.5 rounded-xl border font-body text-xs transition-all ${selectedSlot === slot
+                                ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                                : "bg-background border-border text-foreground hover:border-accent/50"}`}>
+                              {formatSlot(slot)}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {!selectedDate && (
+                    <div className="text-center py-8 text-muted-foreground font-body text-sm">
+                      <Clock className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                      {isAr ? "اختر تاريخاً لعرض المواعيد المتاحة" : "Select a date to see available time slots"}
+                    </div>
+                  )}
+                </div>
               </div>
             </motion.div>
           )}
@@ -924,9 +1066,13 @@ const BookAppointment = () => {
                       { label: t("doctor"), value: selectedDoctorObj?.name || "", icon: User },
                       { label: isAr ? "التاريخ والوقت" : "Date & Time", value: selectedDate && selectedSlot ? `${formattedSelectedDate}  •  ${formatSlot(selectedSlot)}` : "", icon: Clock },
                       { label: t("patient"), value: patientName, icon: ClipboardList },
-                      { label: t("phone"), value: `${patientCountryCode} ${patientPhone}`, icon: Stethoscope },
-                      { label: isAr ? "تاريخ الميلاد" : "Date of Birth", value: formattedDob, icon: User },
-                      { label: t("gender"), value: patientGender === "male" ? t("male") : t("female"), icon: User },
+                      ...(patientType === "new"
+                        ? [
+                            { label: t("phone"), value: `${patientCountryCode} ${patientPhone}`, icon: Stethoscope },
+                            { label: isAr ? "تاريخ الميلاد" : "Date of Birth", value: formattedDob, icon: User },
+                            { label: t("gender"), value: patientGender === "male" ? t("male") : t("female"), icon: User },
+                          ]
+                        : [])
                     ].map((row) => (
                       <div key={row.label} className="flex items-start gap-4 py-3 border-b border-border last:border-0">
                         <div className="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
@@ -953,7 +1099,7 @@ const BookAppointment = () => {
             <ArrowLeft className="w-4 h-4" />
             {step === 0 ? t("backToHome") : t("previous")}
           </motion.button>
-          {step >= 2 && !(step === 3 && !patientType) && step !== 2 && (
+          {step >= 2 && !(step === 2 && !patientType) && !(step === 2 && patientType === "returning") && step !== 3 && (
             <motion.button
               whileHover={canProceed() ? { scale: 1.03 } : {}}
               whileTap={canProceed() ? { scale: 0.97 } : {}}
@@ -972,6 +1118,101 @@ const BookAppointment = () => {
           )}
         </div>
       </div>
+      {showReturningPatientModal && (
+        <div
+          className="fixed inset-0 z-[70] flex items-center justify-center bg-foreground/40 backdrop-blur-sm p-4"
+          onClick={() => setShowReturningPatientModal(false)}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.97 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="w-full max-w-lg rounded-2xl border border-border bg-popover shadow-2xl p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="font-serif text-xl text-foreground mb-2">
+              {isAr ? "التحقق من الرقم المدني" : "National ID Verification"}
+            </h3>
+            <p className="font-body text-xs text-muted-foreground mb-4">
+              {isAr ? "أدخل الرقم المدني للتحقق من بيانات المريض المسجل." : "Enter National ID to verify registered patient details."}
+            </p>
+
+            <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
+              {isAr ? "الرقم المدني" : "National ID"} <span className="text-destructive">*</span>
+            </label>
+            <input
+              type="text"
+              inputMode="numeric"
+              value={nationalId}
+              onChange={(e) => {
+                setNationalId(e.target.value.replace(/\D/g, "").slice(0, 12));
+                setNationalIdError("");
+                setVerifiedPersonName(null);
+              }}
+              placeholder={isAr ? "ادخل 12 رقم" : "Enter 12 digits"}
+              className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 ${nationalIdError ? "border-destructive" : "border-border"}`}
+            />
+            {nationalIdError && <p className="font-body text-xs text-destructive mt-1">{nationalIdError}</p>}
+
+            <button
+              onClick={handleNationalIdVerify}
+              disabled={isVerifyingNationalId}
+              className="w-full mt-4 bg-primary text-primary-foreground px-4 py-3 rounded-xl font-body text-xs tracking-widest uppercase hover:bg-primary/90 transition-colors disabled:opacity-70 inline-flex items-center justify-center text-center"
+            >
+              {isVerifyingNationalId ? (isAr ? "جارِ الفحص..." : "Verifying...") : (isAr ? "تحقق" : "Verify")}
+            </button>
+
+            {verifyOperationId && (
+              <button
+                onClick={handleCheckApproval}
+                disabled={isCheckingApproval || isVerifyingNationalId}
+                className="w-full mt-3 bg-secondary/40 text-foreground px-4 py-3 rounded-xl font-body text-xs tracking-widest uppercase hover:bg-secondary/60 transition-colors disabled:opacity-70 inline-flex items-center justify-center text-center"
+              >
+                {isCheckingApproval
+                  ? (isAr ? "جارِ التحقق..." : "Checking...")
+                  : (isAr ? "تحقق من الموافقة" : "Check Approval")}
+              </button>
+            )}
+            {verifyStatusMessage && (
+              <p className="font-body text-xs text-muted-foreground mt-2">{verifyStatusMessage}</p>
+            )}
+
+            {verifiedPersonName && (
+              <div className="mt-4 rounded-xl border border-border bg-muted/30 p-4">
+                <p className="font-body text-sm text-foreground">
+                  {isAr ? "تم التحقق بنجاح" : "Verified successfully"}
+                </p>
+                <p className="font-body text-xs text-muted-foreground mt-1">
+                  {isAr ? "الحجز باسم" : "Booking for"}{" "}
+                  <span className="text-foreground font-medium">
+                    {isAr ? (verifiedPersonName.arabic || verifiedPersonName.english) : (verifiedPersonName.english || verifiedPersonName.arabic)}
+                  </span>
+                </p>
+                <div className="mt-4 flex gap-3">
+                  <button
+                    onClick={() => {
+                      const pickedName = isAr ? (verifiedPersonName.arabic || verifiedPersonName.english) : (verifiedPersonName.english || verifiedPersonName.arabic);
+                      setPatientName(pickedName);
+                      setPatientType("returning");
+                      setShowReturningPatientModal(false);
+                      setVerifyOperationId(null);
+                      setVerifyStatusMessage("");
+                    }}
+                    className="flex-1 bg-primary text-primary-foreground px-3 py-2.5 rounded-lg font-body text-xs tracking-widest uppercase hover:bg-primary/90 transition-colors inline-flex items-center justify-center text-center"
+                  >
+                    {isAr ? "متابعة" : "Proceed"}
+                  </button>
+                  <button
+                    onClick={goToInitialBookingScreen}
+                    className="flex-1 bg-secondary/40 text-foreground px-3 py-2.5 rounded-lg font-body text-xs tracking-widest uppercase hover:bg-secondary/60 transition-colors inline-flex items-center justify-center text-center"
+                  >
+                    {isAr ? "إلغاء" : "Cancel"}
+                  </button>
+                </div>
+              </div>
+            )}
+          </motion.div>
+        </div>
+      )}
       <Footer />
       <ScrollToTop />
       <ChatButton />

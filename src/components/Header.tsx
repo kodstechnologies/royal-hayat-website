@@ -514,13 +514,6 @@ const Header = () => {
             >
               {t("bookAppointment")}
             </Link>
-            <Link
-              to="/verify-national-id"
-              className={`hidden sm:inline-flex items-center justify-center h-8 md:h-9 bg-primary text-primary-foreground rounded-full font-body tracking-wide hover:bg-primary/90 transition-colors duration-300 ${lang === "ar" ? "px-2.5 text-[9px]" : "px-3.5 text-[11px]"
-                }`}
-            >
-              {lang === "ar" ? "التحقق" : "Verify"}
-            </Link>
 
             <button
               onClick={() => setShowMedRecordsModal(true)}
@@ -663,13 +656,6 @@ const Header = () => {
                   </div>
                   );
                 })}
-                <Link
-                  to="/verify-national-id"
-                  className="text-primary font-body text-sm tracking-wide py-3 border-b border-border/50 hover:text-accent transition-colors"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  {lang === "ar" ? "التحقق" : "Verify"}
-                </Link>
                 <Link
                   to="/book-appointment"
                   className="text-primary font-body text-sm tracking-wide py-3 border-b border-border/50 hover:text-accent transition-colors"

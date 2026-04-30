@@ -18,7 +18,7 @@ const StatsRow = () => {
           {stats.map((stat, i) => (
             <ScrollAnimationWrapper key={stat.labelKey} delay={i * 0.15}>
               <div className="text-center">
-                <p className="text-4xl md:text-5xl font-serif text-accent mb-2">{stat.value}</p>
+                <p className="text-4xl md:text-5xl font-serif text-[#816107] mb-2">{stat.value}</p>
                 <p className="text-xs tracking-[0.2em] uppercase font-body text-muted-foreground">{t(stat.labelKey)}</p>
               </div>
             </ScrollAnimationWrapper>

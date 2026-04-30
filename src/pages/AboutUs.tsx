@@ -200,7 +200,7 @@ const AboutUs = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
+    <div className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107]">
       <Header />
 
       {/* Hero */}

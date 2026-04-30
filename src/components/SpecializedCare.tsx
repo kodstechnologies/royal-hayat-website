@@ -228,7 +228,9 @@ const SpecializedCare = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const INITIAL_COUNT = 6;
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const sortedServices = [...services].sort((a, b) => a.name.localeCompare(b.name));
+  const sortedServices = [...services]
+    .filter((service) => service.name !== "Allergy & Immunology")
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);

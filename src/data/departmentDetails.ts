@@ -298,7 +298,7 @@ export const departmentDetails: DepartmentDetail[] = [
       { title: "Newborn Screening", content: "Early detection of disorders." },
       { title: "Endocrinology & Diabetes Management", content: "Care for hormonal imbalances." },
       { title: "Pediatric ENT", content: "Treatment for ENT-related conditions." },
-      { title: "Immunology & Allergy Services", content: "Comprehensive allergy and asthma care." },
+      // { title: "Immunology & Allergy Services", content: "Comprehensive allergy and asthma care." },
       {
         title: "Pediatric Intensive Care Unit (PICU)",
         content: "At Royale Hayat Hospital, we know that a PICU admission can be stressful. Our goal is to provide top-tier clinical care in a compassionate, supportive environment for your family.",

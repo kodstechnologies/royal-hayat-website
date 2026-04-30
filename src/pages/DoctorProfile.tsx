@@ -258,7 +258,7 @@ const DoctorProfile = () => {
               {doctor.qualifications && doctor.qualifications.length > 0 && (
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
                   className="bg-popover rounded-2xl border border-border/50 p-5 md:p-6 shadow-sm">
-                  <h2 className="text-xl md:text-2xl font-serif text-primary italic font-bold mb-5">
+                  <h2 className="text-xl md:text-2xl font-serif text-primary  font-bold mb-5">
                     {lang === "ar" ? "المؤهلات:" : "QUALIFICATIONS:"}
                   </h2>
                   <ul className="space-y-3 list-disc pl-6">
@@ -272,7 +272,7 @@ const DoctorProfile = () => {
               {/* Experienced In */}
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
                 className="bg-popover rounded-2xl border border-border/50 p-5 md:p-6 shadow-sm">
-                <h2 className="text-xl md:text-2xl font-serif text-primary italic font-bold mb-5">
+                <h2 className="text-xl md:text-2xl font-serif text-primary  font-bold mb-5">
                   {lang === "ar" ? "الخبرات:" : "EXPERIENCED IN:"}
                 </h2>
                 <ul className="space-y-3 list-disc pl-6">

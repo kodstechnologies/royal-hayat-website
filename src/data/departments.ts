@@ -180,13 +180,13 @@ export const departments: Department[] = [
     descAr: "تقع صيدلية رويال حياة في الطابق الأرضي، ويعمل بها صيادلة مؤهلون تأهيلاً عالياً متاحون على مدار الساعة طوال أيام الأسبوع لتقديم إرشادات الخبراء لجميع احتياجاتك الطبية.",
     img: "https://images.unsplash.com/photo-1585435557343-3b092031a831?w=400&h=250&fit=crop",
   },
-  {
-    id: 21, icon: Pill, category: "Allergy & Immunology",
-    name: "Allergy & Immunology", nameAr: "صيدلية رويال حياة", slug: "royale-hayat-pharmacy",
-    desc: "Conveniently located on the ground floor, Royale Pharmacy is staffed by highly qualified pharmacists available 24/7 to provide expert guidance for all your medicinal needs.",
-    descAr: "تقع صيدلية رويال حياة في الطابق الأرضي، ويعمل بها صيادلة مؤهلون تأهيلاً عالياً متاحون على مدار الساعة طوال أيام الأسبوع لتقديم إرشادات الخبراء لجميع احتياجاتك الطبية.",
-    img: "https://res.cloudinary.com/dwhc8kzpv/image/upload/q_auto/f_auto/v1776342352/1_mdfoqz.jpg",
-  },
+  // {
+  //   id: 21, icon: Pill, category: "Allergy & Immunology",
+  //   name: "Allergy & Immunology", nameAr: "صيدلية رويال حياة", slug: "royale-hayat-pharmacy",
+  //   desc: "Conveniently located on the ground floor, Royale Pharmacy is staffed by highly qualified pharmacists available 24/7 to provide expert guidance for all your medicinal needs.",
+  //   descAr: "تقع صيدلية رويال حياة في الطابق الأرضي، ويعمل بها صيادلة مؤهلون تأهيلاً عالياً متاحون على مدار الساعة طوال أيام الأسبوع لتقديم إرشادات الخبراء لجميع احتياجاتك الطبية.",
+  //   img: "https://res.cloudinary.com/dwhc8kzpv/image/upload/q_auto/f_auto/v1776342352/1_mdfoqz.jpg",
+  // },
   {
     id: 22, icon: Activity, category: "Physiotherapy",
     name: "Physiotherapy", nameAr: "العلاج الطبيعي", slug: "physiotherapy",

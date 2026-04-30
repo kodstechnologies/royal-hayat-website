@@ -78,7 +78,7 @@ const AppointmentRequest = () => {
             <div className="space-y-5">
                 {[
                   { label: t("patient"), value: form.fullName, icon: User },
-                  { label: t("phone"), value: `${form.countryCode} ${form.phone}`, icon: Phone },
+                  { label: t("phone number"), value: `${form.countryCode} ${form.phone}`, icon: Phone },
                   { label: lang === "ar" ? "تاريخ الميلاد" : "Date of Birth", value: formattedDob || (lang === "ar" ? "غير متوفر" : "Not provided"), icon: Calendar },
                   { label: t("gender"), value: genderLabel, icon: User },
                   {

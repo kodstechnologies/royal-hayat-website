@@ -90,7 +90,7 @@ const HeroSection = () => {
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.2 }}
-                className="text-accent font-body text-sm md:text-base italic leading-relaxed mb-5 max-w-xl text-left"
+                className="text-[#A67C00] font-body text-sm md:text-base italic leading-relaxed mb-5 max-w-xl text-left"
               >
                 {t("heroIntro")}
               </motion.p>

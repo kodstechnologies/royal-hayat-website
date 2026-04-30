@@ -1155,12 +1155,12 @@ const BookAppointment = () => {
                     {isAr ? "مريض مسجل" : "Registered Patient"}
                   </p>
                   <h3 className="font-serif text-xl text-foreground">
-                    {isAr ? "التحقق من الرقم المدني" : "National ID Verification"}
+                    {isAr ? "التحقق من الرقم المدني" : "Kuwait Civil ID Verification"}
                   </h3>
                   <p className="font-body text-xs text-muted-foreground mt-1">
                     {isAr
                       ? "أدخل الرقم المدني لإحضار الاسم ومتابعة الحجز."
-                      : "Enter National ID to fetch name and continue booking."}
+                      : "Please enter your Kuwait Civil ID to retrieve your details and continue booking."}
                   </p>
                 </div>
                 <button

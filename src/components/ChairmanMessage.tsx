@@ -22,7 +22,7 @@ const ChairmanMessage = () => {
             className="bg-popover rounded-2xl p-8 md:p-10 border border-border/50 relative text-start">
             <Quote className="w-8 h-8 text-accent/20 absolute top-6 start-6" />
             <p className="font-body text-sm md:text-sm text-foreground leading-relaxed mb-6 relative z-10 text-justify">{lang === "ar" ? "عزيزي المريض / الزائر،" : "Dear Patient / Visitor,"}</p>
-            <p className="font-body text-sm md:text-sm text-foreground leading-relaxed mb-6 relative z-10 text-justify">
+            <p className="font-body text-sm text-muted-foreground leading-relaxed mb-6 relative z-10 text-justify">
               {t("chairmanQuote")}
             </p>
             <div className="space-y-4 mb-6">

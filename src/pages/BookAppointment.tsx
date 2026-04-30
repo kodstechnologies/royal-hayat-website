@@ -175,7 +175,7 @@ const BookAppointment = () => {
     const errors: Record<string, string> = {};
     if (!patientName.trim()) errors.name = isAr ? "الاسم الكامل مطلوب" : "Full name is required";
     if (!patientPhone.trim()) errors.phone = isAr ? "رقم الهاتف مطلوب" : "Phone number is required";
-    else if (!/^\d{7,15}$/.test(patientPhone.trim())) errors.phone = isAr ? "أدخل رقم هاتف صحيح" : "Enter a valid phone number";
+    else if (!/^\d{8}$/.test(patientPhone.trim())) errors.phone = isAr ? "أدخل رقم هاتف مكون من 8 أرقام" : "Enter an 8-digit phone number";
     if (!patientDob) errors.dob = isAr ? "تاريخ الميلاد مطلوب" : "Date of birth is required";
     else if (new Date(patientDob) > new Date()) errors.dob = isAr ? "أدخل تاريخ ميلاد صحيحاً" : "Enter a valid date of birth";
     if (!patientGender) errors.gender = isAr ? "الجنس مطلوب" : "Gender is required";
@@ -189,7 +189,7 @@ const BookAppointment = () => {
       case 0: return selectedDept !== null;
       case 1: return selectedDoctor !== null;
       case 2: return selectedDate !== "" && selectedSlot !== null;
-      case 3: return patientType === "new" && patientName.trim() !== "" && patientPhone.trim() !== "" && patientDob !== "" && patientGender !== "";
+      case 3: return patientType === "new" && patientName.trim() !== "" && /^\d{8}$/.test(patientPhone.trim()) && patientDob !== "" && patientGender !== "";
       default: return true;
     }
   };
@@ -854,7 +854,10 @@ const BookAppointment = () => {
                             <option value="+20">+20</option><option value="+91">+91</option><option value="+44">+44</option><option value="+1">+1</option>
                           </select>
                           <input type="tel" value={patientPhone}
-                            onChange={(e) => { setPatientPhone(e.target.value.replace(/\D/g, "")); setPatientErrors(prev => ({ ...prev, phone: "" })); }}
+                            onChange={(e) => { setPatientPhone(e.target.value.replace(/\D/g, "").slice(0, 8)); setPatientErrors(prev => ({ ...prev, phone: "" })); }}
+                            inputMode="numeric"
+                            maxLength={8}
+                            pattern="\d{8}"
                             placeholder={t("phonePlaceholder")}
                             className={`flex-1 px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all ${patientErrors.phone ? "border-destructive" : "border-border"}`} />
                         </div>

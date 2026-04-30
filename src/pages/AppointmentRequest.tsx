@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { ClipboardList, CheckCircle2, ArrowRight, ArrowLeft, User, Phone, Calendar, Building2 } from "lucide-react";
+import { ClipboardList, CheckCircle2, ArrowRight, ArrowLeft, User, Phone, Calendar } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ChatButton from "@/components/ChatButton";
@@ -8,14 +8,6 @@ import ScrollToTop from "@/components/ScrollToTop";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { doctors as allDoctors } from "@/data/doctors";
-const departments = [
-  "Obstetrics & Gynecology", "Pediatrics", "Internal Medicine", "Cardiology",
-  "Orthopedics", "Dermatology", "Ophthalmology", "ENT", "Neurology",
-  "General Surgery", "Pulmonology", "Gastroenterology", "Urology",
-  "Psychiatry", "Nephrology", "Endocrinology", "Oncology", "Dental Clinic",
-  "Plastic & Cosmetic Surgery", "IVF & Reproductive Medicine", "Physiotherapy",
-  "Rheumatology", "Allergy & Immunology", "Pain Management"
-];
 
 const AppointmentRequest = () => {
   const { lang, t } = useLanguage();
@@ -40,7 +32,7 @@ const AppointmentRequest = () => {
     const e: Record<string, string> = {};
     if (!form.fullName.trim()) e.fullName = lang === "ar" ? "الاسم مطلوب" : "Full name is required";
     if (!form.phone.trim()) e.phone = lang === "ar" ? "رقم الهاتف مطلوب" : "Phone number is required";
-    else if (!/^\d{7,15}$/.test(form.phone.trim())) e.phone = lang === "ar" ? "رقم هاتف غير صحيح" : "Enter a valid phone number";
+    else if (!/^\d{8}$/.test(form.phone.trim())) e.phone = lang === "ar" ? "أدخل رقم هاتف مكون من 8 أرقام" : "Enter an 8-digit phone number";
     if (!form.dateOfBirth) e.dateOfBirth = lang === "ar" ? "تاريخ الميلاد مطلوب" : "Date of birth is required";
     if (!form.gender) e.gender = lang === "ar" ? "الجنس مطلوب" : "Gender is required";
     // department validation removed
@@ -57,6 +49,14 @@ const AppointmentRequest = () => {
     setForm(prev => ({ ...prev, [field]: value }));
     setErrors(prev => ({ ...prev, [field]: "" }));
   };
+
+  const formattedDob = form.dateOfBirth ? form.dateOfBirth.split("-").reverse().join("/") : "";
+  const genderLabel =
+    form.gender === "male"
+      ? t("male")
+      : form.gender === "female"
+        ? t("female")
+        : (lang === "ar" ? "غير محدد" : "Not specified");
 
   if (submitted) {
     return (
@@ -75,10 +75,28 @@ const AppointmentRequest = () => {
           </p>
           <div className="bg-popover rounded-2xl border border-border p-6 text-start mb-6">
             <h3 className="font-serif text-lg text-foreground mb-4">{t("appointmentDetails")}</h3>
-            <div className="space-y-3 font-body text-sm">
-              <div className="flex items-start gap-2"><User className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" /><div><p className="text-muted-foreground text-xs">{t("patient")}</p><p className="text-foreground font-medium">{form.fullName}</p></div></div>
-              <div className="flex items-start gap-2"><Phone className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" /><div><p className="text-muted-foreground text-xs">{t("phone")}</p><p className="text-foreground font-medium">{form.countryCode} {form.phone}</p></div></div>
-              <div className="flex items-start gap-2"><Building2 className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" /><div><p className="text-muted-foreground text-xs">{t("department")}</p><p className="text-foreground font-medium">{form.department}</p></div></div>
+            <div className="space-y-5">
+                {[
+                  { label: t("patient"), value: form.fullName, icon: User },
+                  { label: t("phone"), value: `${form.countryCode} ${form.phone}`, icon: Phone },
+                  { label: lang === "ar" ? "تاريخ الميلاد" : "Date of Birth", value: formattedDob || (lang === "ar" ? "غير متوفر" : "Not provided"), icon: Calendar },
+                  { label: t("gender"), value: genderLabel, icon: User },
+                  {
+                    label: lang === "ar" ? "ملاحظات إضافية" : "Additional Notes",
+                    value: form.message.trim() || (lang === "ar" ? "لا توجد ملاحظات" : "No additional notes"),
+                    icon: ClipboardList
+                  },
+                ].map((row) => (
+                  <div key={row.label} className="flex items-start gap-2.5 py-3 border-b border-border last:border-0">
+                    <div className="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
+                      <row.icon className="w-4 h-4 text-accent" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-body text-xs text-muted-foreground uppercase tracking-wider">{row.label}</p>
+                      <p className="font-body text-sm text-foreground font-medium whitespace-pre-line break-words">{row.value}</p>
+                    </div>
+                  </div>
+                ))}
             </div>
           </div>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -171,7 +189,10 @@ const AppointmentRequest = () => {
                   <option value="+973">+973</option><option value="+968">+968</option><option value="+974">+974</option>
                   <option value="+20">+20</option><option value="+91">+91</option><option value="+44">+44</option><option value="+1">+1</option>
                 </select>
-                <input type="tel" value={form.phone} onChange={(e) => updateField("phone", e.target.value.replace(/\D/g, ""))}
+                <input type="tel" value={form.phone} onChange={(e) => updateField("phone", e.target.value.replace(/\D/g, "").slice(0, 8))}
+                  inputMode="numeric"
+                  maxLength={8}
+                  pattern="\d{8}"
                   placeholder={t("phonePlaceholder")}
                   className={`flex-1 px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 ${errors.phone ? "border-destructive" : "border-border"}`} />
               </div>

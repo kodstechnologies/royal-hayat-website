@@ -33,7 +33,7 @@ const HeroSection = () => {
       {/* Video – minimal overlay so video is prominent */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <iframe
-          src="https://www.youtube.com/embed/MT6T0YmWkfk?autoplay=1&mute=1&loop=1&playlist=MT6T0YmWkfk&controls=0&showinfo=0&modestbranding=1&rel=0&disablekb=1&iv_load_policy=3&playsinline=1&vq=hd1080"
+          src="https://royal-hayat.s3.eu-central-1.amazonaws.com/static/RHH+VIDEO+(1).mp4"
           title="Hero Background"
           allow="autoplay; encrypted-media"
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"

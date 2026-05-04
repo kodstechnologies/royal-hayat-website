@@ -147,43 +147,67 @@ const BookAppointment = () => {
     fetchSlots();
   }, [specialityCode, providerCode, serviceCode, selectedDate]);
 
-  const timeSlots = fetchedSlots.map(s => s.start_time);
-
-  const formatSlot = (time: string) => {
-    // API returns HH:mm:ss, we want HH:mm AM/PM
-    const [hStr, mStr] = time.split(":");
-    const h = parseInt(hStr);
-    const m = parseInt(mStr);
+  const timeSlots = fetchedSlots.map(s => s.slot_from_time).filter(Boolean);
+  const formatSlotRange = (slot: Slot) => {
+    if (!slot.slot_from_time || !slot.slot_from_time.includes(":")) return "";
     
+    const parseTime = (t: string) => {
+      const [hStr, mStr] = t.split(":");
+      return { h: parseInt(hStr), m: parseInt(mStr) };
+    };
+
     const fmt = (hh: number, mm: number) => {
       const suffix = hh < 12 ? "AM" : "PM";
       const hh12 = hh % 12 === 0 ? 12 : hh % 12;
       return `${hh12}:${String(mm).padStart(2, "0")} ${suffix}`;
     };
-    
-    // Find the end time for this slot from the fetchedSlots
-    const slot = fetchedSlots.find(s => s.start_time === time);
-    if (slot && slot.end_time) {
-      const [ehStr, emStr] = slot.end_time.split(":");
-      const eh = parseInt(ehStr);
-      const em = parseInt(emStr);
-      return `${fmt(h, m)} – ${fmt(eh, em)}`;
+
+    const start = parseTime(slot.slot_from_time);
+    let end;
+    if (slot.slot_to_time && slot.slot_to_time.includes(":")) {
+      end = parseTime(slot.slot_to_time);
+    } else {
+      // Fallback: +30 min
+      const m = start.m + 30;
+      end = { h: m >= 60 ? start.h + 1 : start.h, m: m >= 60 ? m - 60 : m };
     }
 
-    // Fallback to +30 min if end_time is not available
-    const endM = m + 30;
-    const endH = endM >= 60 ? h + 1 : h;
-    const endMin = endM >= 60 ? endM - 60 : endM;
-    return `${fmt(h, m)} – ${fmt(endH, endMin)}`;
+    return `${fmt(start.h, start.m)} – ${fmt(end.h, end.m)}`;
+  };
+
+  const formatTimeString = (time: string | null) => {
+    if (!time || !time.includes(":")) return time || "";
+    const [hStr, mStr] = time.split(":");
+    const h = parseInt(hStr);
+    const m = parseInt(mStr);
+    const suffix = h < 12 ? "AM" : "PM";
+    const h12 = h % 12 === 0 ? 12 : h % 12;
+    return `${h12}:${String(m).padStart(2, "0")} ${suffix}`;
+  };
+
+  const slotsByPeriod = {
+    morning: fetchedSlots.filter((s) => {
+      if (!s.slot_from_time || !s.slot_from_time.includes(":")) return false;
+      return parseInt(s.slot_from_time.split(":")[0]) < 12;
+    }),
+    afternoon: fetchedSlots.filter((s) => {
+      if (!s.slot_from_time || !s.slot_from_time.includes(":")) return false;
+      const h = parseInt(s.slot_from_time.split(":")[0]);
+      return h >= 12 && h < 17;
+    }),
+    evening: fetchedSlots.filter((s) => {
+      if (!s.slot_from_time || !s.slot_from_time.includes(":")) return false;
+      return parseInt(s.slot_from_time.split(":")[0]) >= 17;
+    }),
   };
 
   // Get next 7 days (excluding Fridays = day 5)
   const availableDates = (() => {
     const dates: { value: string; label: string }[] = [];
     const d = new Date();
-    d.setDate(d.getDate() + 1); // start from tomorrow
+    d.setDate(d.getDate() + 1);
     while (dates.length < 7) {
-      if (d.getDay() !== 5) { // skip Friday
+      if (d.getDay() !== 5) {
         dates.push({
           value: d.toISOString().split("T")[0],
           label: d.toLocaleDateString(lang === "ar" ? "ar-KW" : "en-GB", { weekday: "short", day: "numeric", month: "short" }),
@@ -1215,18 +1239,18 @@ const BookAppointment = () => {
                       </div>
                       <div className="max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          {timeSlots.map((slot) => (
-                            <button
-                              key={slot}
-                              onClick={() => { setSelectedSlot(slot); setStep(4); }}
-                              className={`p-4 rounded-xl border text-sm font-body transition-all text-center ${selectedSlot === slot
-                                ? "bg-primary text-primary-foreground border-primary shadow-md"
-                                : "bg-background border-border hover:border-accent/40 hover:bg-accent/5 text-foreground"
-                                }`}
-                            >
-                              {formatSlot(slot)}
-                            </button>
-                          ))}
+                            {fetchedSlots.map((slot) => (
+                              <button
+                                key={slot.slot_booking_id || slot.slot_from_time}
+                                onClick={() => { setSelectedSlot(slot.slot_from_time); setStep(4); }}
+                                className={`p-4 rounded-xl border text-sm font-body transition-all text-center ${selectedSlot === slot.slot_from_time
+                                  ? "bg-primary text-primary-foreground border-primary shadow-md"
+                                  : "bg-background border-border hover:border-accent/40 hover:bg-accent/5 text-foreground"
+                                  }`}
+                              >
+                                {formatSlotRange(slot)}
+                              </button>
+                            ))}
                         </div>
                       </div>
                     </>
@@ -1271,7 +1295,7 @@ const BookAppointment = () => {
                     {[
                       { label: t("department"), value: selectedDeptObj?.name || selectedDoctorObj?.specialty || "", icon: Building2 },
                       { label: t("doctor"), value: selectedDoctorObj?.name || "", icon: User },
-                      { label: isAr ? "التاريخ والوقت" : "Date & Time", value: selectedDate && selectedSlot ? `${formattedSelectedDate}  •  ${formatSlot(selectedSlot)}` : "", icon: Clock },
+                      { label: isAr ? "التاريخ والوقت" : "Date & Time", value: selectedDate && selectedSlot ? `${formattedSelectedDate}  •  ${formatTimeString(selectedSlot)}` : "", icon: Clock },
                       { label: t("patient"), value: patientName.trim() || "—", icon: ClipboardList },
                       ...(patientType === "new"
                         ? [

@@ -13,9 +13,9 @@ export interface AvailabilityParams {
 
 export interface Slot {
   slot_booking_id: string;
-  start_time: string;
-  end_time: string;
-  date: string;
+  slot_from_time: string;
+  slot_to_time: string;
+  slot_date: string;
 }
 
 export interface AvailabilityResponse {

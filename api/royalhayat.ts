@@ -52,7 +52,7 @@ export const getCareProviders = async (specialityCode: string) => {
 };
 
 export const bookAppointment = async (payload: BookAppointmentPayload) => {
-  const response = await api.post("/api/v1/royal-hayat/book", payload);
+  const response = await api.post("/api/v1/royal-hayat/appointments/book", payload);
   return response.data;
 };
 
@@ -71,6 +71,6 @@ export const getPatient = async (params: { nationalid: string }) => {
       }
     };
   }
-  const response = await api.get("/api/v1/royal-hayat/patient", { params });
+  const response = await api.get("/api/v1/royal-hayat/patients", { params });
   return response.data;
 };

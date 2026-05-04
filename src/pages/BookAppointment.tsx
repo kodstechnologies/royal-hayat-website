@@ -59,6 +59,8 @@ const BookAppointment = () => {
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [bookingError, setBookingError] = useState<string | null>(null);
+  const [specialities, setSpecialities] = useState<any[]>([]);
+  const [isLoadingSlots, setIsLoadingSlots] = useState(false);
 
   // Fetch specialities on mount to enable mapping
   useEffect(() => {

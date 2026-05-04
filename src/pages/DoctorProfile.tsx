@@ -95,7 +95,7 @@ const DoctorProfile = () => {
     return aliases.some((a) => doctor.department.includes(a) || doctor.specialty.includes(a));
   });
 
-  /** Resume booking: department + doctor pre-filled. Step 3 = time slots (step 2 patient details temporarily skipped in BookAppointment). */
+  /** Resume booking at patient type step: department + doctor pre-filled, then time slots after details. */
   const goToBookAppointmentPatientInfo = () => {
     navigate("/book-appointment", {
       state: {
@@ -106,7 +106,7 @@ const DoctorProfile = () => {
         selectedDoctor: doctor.id,
         isRequestMode: doctor.availableOnline === false,
         canBookSlot: doctor.availableOnline !== false,
-        step: 3,
+        step: 2,
       },
     });
   };

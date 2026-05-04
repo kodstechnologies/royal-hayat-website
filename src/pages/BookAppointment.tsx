@@ -22,9 +22,6 @@ import { departments, deptDoctorAliases } from "@/data/departments";
 // All doctors flat for "know your doctor" path - filter out non-bookable doctors
 const allDoctorsFlat = allRealDoctors.filter(d => !d.hideBooking);
 
-/** TEMP: Skip patient-details (step 2) — go straight to time slots after doctor. Set to `false` to restore "Confirm Patient Details" / patient forms. */
-const SKIP_PATIENT_DETAILS_STEP = true;
-
 // ─── COMPONENT ───────────────────────────────────────────────────────────────
 
 const BookAppointment = () => {
@@ -36,13 +33,7 @@ const BookAppointment = () => {
 
   const locState = (location.state as any) ?? {};
 
-  const initialStep = (() => {
-    const s = locState.step ?? 0;
-    if (SKIP_PATIENT_DETAILS_STEP && s === 2) return 3;
-    return s;
-  })();
-
-  const [step, setStep] = useState<number>(initialStep);
+  const [step, setStep] = useState<number>(locState.step ?? 0);
   const [bookingPath, setBookingPath] = useState<"primary" | "doctor" | "symptoms" | null>(locState.bookingPath ?? null);
 
   // Step 0: Department
@@ -209,8 +200,8 @@ const BookAppointment = () => {
       case 0: return selectedDept !== null;
       case 1: return selectedDoctor !== null;
       case 2:
-        if (SKIP_PATIENT_DETAILS_STEP) return true;
-        if (patientType === "returning") return patientName.trim() !== "";
+        // Returning patients skip the name form and jump to time slots from the card.
+        if (patientType === "returning") return true;
         return patientType === "new" && patientName.trim() !== "" && /^\d{8}$/.test(patientPhone.trim()) && patientDob !== "" && patientGender !== "";
       case 3: return selectedDate !== "" && selectedSlot !== null;
       default: return true;
@@ -218,7 +209,7 @@ const BookAppointment = () => {
   };
 
   const handleNext = () => {
-    if (step === 2 && !SKIP_PATIENT_DETAILS_STEP) {
+    if (step === 2) {
       if (patientType === "new" && !validatePatientDetails()) return;
       if (!patientType) return;
     }
@@ -352,9 +343,10 @@ const BookAppointment = () => {
       setBookingPath(null);
       return;
     }
-    if (SKIP_PATIENT_DETAILS_STEP && step === 3) {
-      setStep(1);
-      return;
+    if (step === 3 && patientType === "returning") {
+      setPatientType(null);
+      setPatientName("");
+      setPatientErrors({});
     }
     setStep((s) => Math.max(s - 1, 0));
   };
@@ -678,10 +670,7 @@ const BookAppointment = () => {
           {steps.map((s, i) => (
             <div key={s.label} className="flex items-center">
               <motion.button
-                onClick={() => {
-                  if (SKIP_PATIENT_DETAILS_STEP && i === 2) return;
-                  if (i < step) setStep(i);
-                }}
+                onClick={() => i < step && setStep(i)}
                 disabled={i > step}
                 whileHover={i < step ? { scale: 1.05 } : {}}
                 className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-xs font-body tracking-wide transition-all duration-300 ${i === step ? "bg-primary text-primary-foreground shadow-md"
@@ -868,15 +857,14 @@ const BookAppointment = () => {
             </motion.div>
           )}
 
-          {/* STEP 2: PATIENT INFO — entire block skipped while SKIP_PATIENT_DETAILS_STEP is true; see DoctorProfile resume step */}
-          {!SKIP_PATIENT_DETAILS_STEP && step === 2 && (
+          {/* STEP 2: PATIENT INFO — registered at Royal Hayat vs first-time visitor, then time slots */}
+          {step === 2 && (
             <motion.div key="s2" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.35 }}>
               <div className="max-w-3xl mx-auto">
                 {!patientType && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
                     <motion.button whileHover={{ y: -4 }} whileTap={{ scale: 0.98 }}
                       onClick={() => {
-                        // Skip civil ID modal — go straight to patient info (step 2 returning)
                         setNationalId("");
                         setNationalIdError("");
                         setVerifiedPersonName(null);
@@ -885,17 +873,16 @@ const BookAppointment = () => {
                         setPatientErrors({});
                         setPatientName("");
                         setPatientType("returning");
+                        /* Skip "Confirm Patient Details" — go straight to time slots */
+                        setStep(3);
                       }}
                       className="bg-popover rounded-2xl p-8 border border-border text-center transition-all hover:border-primary/40">
                       <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                         <LogIn className="w-7 h-7 text-primary" />
                       </div>
                       <h3 className="font-serif text-lg text-foreground mb-2">{t("registeredPatient")}</h3>
-                      {/* <p className="font-body text-xs text-muted-foreground">
-                        {isAr ? "سيتم توجيهك إلى بوابة عافيتي" : "You will be redirected to Afiyati Portal"}
-                      </p> */}
                       <p className="font-body text-xs text-muted-foreground">
-                        {isAr ? "أدخل بياناتك للمتابعة" : "Enter your details to continue"}
+                        {isAr ? "اختر موعدك في الخطوة التالية" : "Choose your appointment time next"}
                       </p>
                     </motion.button>
                     <motion.button whileHover={{ y: -4 }} whileTap={{ scale: 0.98 }}
@@ -987,7 +974,9 @@ const BookAppointment = () => {
                   </div>
                 )}
 
-                {patientType === "returning" && (
+                {/* COMMENTED OUT: "Confirm Patient Details" for returning patients — card above jumps straight to time slots.
+                    Restore by removing the `false &&` guard and removing `setStep(3)` from the registered-patient card onClick. */}
+                {false && patientType === "returning" && (
                   <div className="bg-popover rounded-2xl p-5 sm:p-8 border border-border shadow-sm">
                     <h2 className="text-xl font-serif text-foreground mb-2">
                       {isAr ? "تأكيد بيانات المريض" : "Confirm Patient Details"}
@@ -1013,6 +1002,7 @@ const BookAppointment = () => {
                     </div>
                     <div className="mt-5 flex gap-3">
                       <button
+                        type="button"
                         onClick={() => {
                           if (!patientName.trim()) {
                             setPatientErrors((prev) => ({
@@ -1029,6 +1019,7 @@ const BookAppointment = () => {
                         {isAr ? "متابعة" : "Proceed"}
                       </button>
                       <button
+                        type="button"
                         onClick={goToInitialBookingScreen}
                         className="flex-1 bg-secondary/40 text-foreground px-3 py-2.5 rounded-lg font-body text-xs tracking-widest uppercase hover:bg-secondary/60 transition-colors inline-flex items-center justify-center text-center"
                       >

@@ -859,9 +859,9 @@ const BookAppointment = () => {
                         <LogIn className="w-7 h-7 text-primary" />
                       </div>
                       <h3 className="font-serif text-lg text-foreground mb-2">{t("registeredPatient")}</h3>
-                      <p className="font-body text-xs text-muted-foreground">
+                      {/* <p className="font-body text-xs text-muted-foreground">
                         {isAr ? "سيتم توجيهك إلى بوابة عافيتي" : "You will be redirected to Afiyati Portal"}
-                      </p>
+                      </p> */}
                     </motion.button>
                     <motion.button whileHover={{ y: -4 }} whileTap={{ scale: 0.98 }}
                       onClick={() => setPatientType("new")}

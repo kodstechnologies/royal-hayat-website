@@ -1,5 +1,4 @@
-import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft, Stethoscope, Globe, Award, Star, Quote, GraduationCap, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
 import Header from "@/components/Header";
@@ -8,10 +7,6 @@ import ChatButton from "@/components/ChatButton";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { doctors } from "@/data/doctors";
 import { departments, deptDoctorAliases } from "@/data/departments";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-
-
 const patientFeedback = [
   {
     name: "Sara Al-Mutairi", nameAr: "سارة المطيري",
@@ -62,8 +57,6 @@ const DoctorProfile = () => {
   const { lang, t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
-  const [showModal, setShowModal] = useState(false);
-
   const bookingReturnState = (location.state as any) ?? {};
   const fromBooking = Boolean(bookingReturnState?.fromBookAppointment || bookingReturnState?.step != null);
 
@@ -102,7 +95,8 @@ const DoctorProfile = () => {
     return aliases.some((a) => doctor.department.includes(a) || doctor.specialty.includes(a));
   });
 
-  const handleBookSlot = () => {
+  /** Resume booking at patient info (step 2): department + doctor pre-filled from this profile */
+  const goToBookAppointmentPatientInfo = () => {
     navigate("/book-appointment", {
       state: {
         ...bookingReturnState,
@@ -110,26 +104,11 @@ const DoctorProfile = () => {
         bookingPath: bookingReturnState?.bookingPath ?? "primary",
         selectedDept: bookingReturnState?.selectedDept ?? inferredDept?.id ?? null,
         selectedDoctor: doctor.id,
-        isRequestMode: false,
+        isRequestMode: doctor.availableOnline === false,
+        canBookSlot: doctor.availableOnline !== false,
         step: 2,
       },
     });
-  };
-
-  const handleBookAppointment = () => {
-    if (isOnlineAvailable) {
-      setShowModal(true);
-    }
-  };
-
-  const handleRegisteredYes = () => {
-    setShowModal(false);
-    window.open("https://afyati.royalehayat.com", "_blank");
-  };
-
-  const handleRegisteredNo = () => {
-    setShowModal(false);
-    navigate("/appointment-request");
   };
 
   return (
@@ -200,7 +179,7 @@ const DoctorProfile = () => {
                         <motion.button
                           whileHover={{ scale: 1.03 }}
                           whileTap={{ scale: 0.97 }}
-                          onClick={handleBookSlot}
+                          onClick={goToBookAppointmentPatientInfo}
                           className="w-full bg-primary text-primary-foreground py-3 rounded-xl font-body text-sm tracking-wider uppercase hover:bg-primary/90 transition-colors text-center"
                         >
                           {lang === "ar" ? "احجز الموعد" : "Continue with the appointment"}
@@ -219,7 +198,7 @@ const DoctorProfile = () => {
                       <motion.button
                         whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.97 }}
-                        onClick={handleBookAppointment}
+                        onClick={goToBookAppointmentPatientInfo}
                         className="w-full bg-primary text-primary-foreground py-3 rounded-xl font-body text-sm tracking-wider uppercase hover:bg-primary/90 transition-colors text-center"
                       >
                         {t("bookAppointment")}
@@ -325,37 +304,6 @@ const DoctorProfile = () => {
           </div>
         </div>
       </section>
-
-      {/* Registered Patient Modal */}
-      <Dialog open={showModal} onOpenChange={setShowModal}>
-        <DialogContent className="sm:max-w-md rounded-2xl">
-          <DialogHeader className="text-center">
-            <DialogTitle className="text-xl font-serif text-foreground">
-              {t("areYouRegistered")}
-            </DialogTitle>
-            <DialogDescription className="text-muted-foreground font-body text-sm mt-2">
-              {lang === "ar"
-                ? "يرجى اختيار ما ينطبق عليك للمتابعة"
-                : "Please select the option that applies to you to continue"}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex flex-col sm:flex-row gap-3 mt-4 justify-center">
-            <Button
-              onClick={handleRegisteredYes}
-              className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl py-6 text-base font-body tracking-wide text-center"
-            >
-              {t("yes")}
-            </Button>
-            <Button
-              onClick={handleRegisteredNo}
-              variant="outline"
-              className="flex-1 border-primary text-primary hover:bg-primary hover:text-primary-foreground rounded-xl py-6 text-base font-body tracking-wide text-center"
-            >
-              {t("no")}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
 
       <Footer />
       <ChatButton />

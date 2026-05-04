@@ -89,11 +89,7 @@ const HeroSection = () => {
           muted          /* must start muted for autoplay to work in all browsers */
           playsInline
           onClick={handleVideoClick}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer"
-          style={{
-            width: 'max(100%, 177.78vh)',
-            height: 'max(100%, 56.25vw)',
-          }}
+          className="absolute inset-0 w-full h-full object-cover cursor-pointer"
         />
 
         {/* Paused overlay removed — no visible button when paused */}
@@ -145,14 +141,13 @@ const HeroSection = () => {
                 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-serif leading-[1.15] tracking-tight mb-4 md:mb-6"
               >
                 <span className="text-foreground block">{t("exceptionalCare")}</span>
-                <span className="text-primary italic block mt-2">{t("everyStage")}</span>
-                <span className="text-foreground block mt-2">{t("everyAge")}</span>
+                <span className="text-primary block mt-2">{t("everyStage")} {t("everyAge")}</span>
               </motion.h1>
               <motion.p
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.2 }}
-                className="text-[#A67C00] font-body text-sm md:text-base italic leading-relaxed mb-5 max-w-xl text-left"
+                className="text-[#A67C00] font-body text-sm md:text-base leading-relaxed mb-5 max-w-xl text-left"
               >
                 {t("heroIntro")}
               </motion.p>
@@ -160,7 +155,7 @@ const HeroSection = () => {
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.3 }}
-                className="text-muted-foreground font-body text-sm md:text-base leading-relaxed mb-5 max-w-xl text-left"
+                className="text-muted-foreground font-body text-sm md:text-base leading-relaxed mb-5 max-w-xl text-left whitespace-pre-line"
               >
                 {t("heroDesc")}
               </motion.p>
@@ -168,7 +163,7 @@ const HeroSection = () => {
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.38 }}
-                className="text-gray-400 font-serif text-lg md:text-xl italic mb-8 max-w-xl"
+                className="text-gray-400 font-serif text-lg md:text-xl mb-8 max-w-xl"
               >
                 {t("heroTagline")}
               </motion.p>
@@ -179,7 +174,7 @@ const HeroSection = () => {
                 className="flex flex-wrap gap-4 pointer-events-auto"
               >
                 <a
-                  href="#departments"
+                  href="/medical-services"
                   className="inline-flex items-center gap-3 border border-secondary text-foreground px-8 py-4 rounded-lg font-body text-sm tracking-widest uppercase hover:bg-secondary/30 transition-all duration-300 hover:scale-[1.03] active:scale-[0.97]"
                 >
                   {t("exploreServices")}

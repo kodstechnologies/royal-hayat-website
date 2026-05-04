@@ -107,15 +107,17 @@ const DepartmentRow = ({ department, departmentAr, docs }: { department: string;
   const deptDesc = departmentDescriptions[department];
 
   return (
-    <div className="mb-12">
-      <div className="mb-5">
-        <h3 className="text-xl md:text-2xl font-serif text-foreground">
+    <div className="mb-14">
+      <div className="max-w-[1192px] mx-auto mb-6">
+        <h3 className="text-2xl font-serif text-foreground mb-3">
           {lang === "ar" ? departmentAr : department}
         </h3>
         {deptDesc && (
-          <p className="text-muted-foreground font-body text-xs mt-1 line-clamp-2">
-            {lang === "ar" ? deptDesc.ar : deptDesc.en}
-          </p>
+          <div className="bg-popover border border-border/50 rounded-2xl p-4 md:p-5 shadow-sm">
+            <p className="text-muted-foreground font-body text-base leading-relaxed">
+              {lang === "ar" ? deptDesc.ar : deptDesc.en}
+            </p>
+          </div>
         )}
       </div>
       <div className="relative group/carousel">

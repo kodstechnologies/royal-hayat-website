@@ -22,6 +22,9 @@ import { departments, deptDoctorAliases } from "@/data/departments";
 // All doctors flat for "know your doctor" path - filter out non-bookable doctors
 const allDoctorsFlat = allRealDoctors.filter(d => !d.hideBooking);
 
+/** TEMP: Skip patient-details (step 2) — go straight to time slots after doctor. Set to `false` to restore "Confirm Patient Details" / patient forms. */
+const SKIP_PATIENT_DETAILS_STEP = true;
+
 // ─── COMPONENT ───────────────────────────────────────────────────────────────
 
 const BookAppointment = () => {
@@ -33,7 +36,13 @@ const BookAppointment = () => {
 
   const locState = (location.state as any) ?? {};
 
-  const [step, setStep] = useState<number>(locState.step ?? 0);
+  const initialStep = (() => {
+    const s = locState.step ?? 0;
+    if (SKIP_PATIENT_DETAILS_STEP && s === 2) return 3;
+    return s;
+  })();
+
+  const [step, setStep] = useState<number>(initialStep);
   const [bookingPath, setBookingPath] = useState<"primary" | "doctor" | "symptoms" | null>(locState.bookingPath ?? null);
 
   // Step 0: Department
@@ -200,6 +209,7 @@ const BookAppointment = () => {
       case 0: return selectedDept !== null;
       case 1: return selectedDoctor !== null;
       case 2:
+        if (SKIP_PATIENT_DETAILS_STEP) return true;
         if (patientType === "returning") return patientName.trim() !== "";
         return patientType === "new" && patientName.trim() !== "" && /^\d{8}$/.test(patientPhone.trim()) && patientDob !== "" && patientGender !== "";
       case 3: return selectedDate !== "" && selectedSlot !== null;
@@ -208,7 +218,7 @@ const BookAppointment = () => {
   };
 
   const handleNext = () => {
-    if (step === 2) {
+    if (step === 2 && !SKIP_PATIENT_DETAILS_STEP) {
       if (patientType === "new" && !validatePatientDetails()) return;
       if (!patientType) return;
     }
@@ -340,6 +350,10 @@ const BookAppointment = () => {
   const handleBack = () => {
     if (step === 0 && bookingPath) {
       setBookingPath(null);
+      return;
+    }
+    if (SKIP_PATIENT_DETAILS_STEP && step === 3) {
+      setStep(1);
       return;
     }
     setStep((s) => Math.max(s - 1, 0));
@@ -664,7 +678,10 @@ const BookAppointment = () => {
           {steps.map((s, i) => (
             <div key={s.label} className="flex items-center">
               <motion.button
-                onClick={() => i < step && setStep(i)}
+                onClick={() => {
+                  if (SKIP_PATIENT_DETAILS_STEP && i === 2) return;
+                  if (i < step) setStep(i);
+                }}
                 disabled={i > step}
                 whileHover={i < step ? { scale: 1.05 } : {}}
                 className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-xs font-body tracking-wide transition-all duration-300 ${i === step ? "bg-primary text-primary-foreground shadow-md"
@@ -851,8 +868,8 @@ const BookAppointment = () => {
             </motion.div>
           )}
 
-          {/* STEP 2: PATIENT INFO */}
-          {step === 2 && (
+          {/* STEP 2: PATIENT INFO — entire block skipped while SKIP_PATIENT_DETAILS_STEP is true; see DoctorProfile resume step */}
+          {!SKIP_PATIENT_DETAILS_STEP && step === 2 && (
             <motion.div key="s2" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.35 }}>
               <div className="max-w-3xl mx-auto">
                 {!patientType && (
@@ -1127,7 +1144,7 @@ const BookAppointment = () => {
                       { label: t("department"), value: selectedDeptObj?.name || selectedDoctorObj?.specialty || "", icon: Building2 },
                       { label: t("doctor"), value: selectedDoctorObj?.name || "", icon: User },
                       { label: isAr ? "التاريخ والوقت" : "Date & Time", value: selectedDate && selectedSlot ? `${formattedSelectedDate}  •  ${formatSlot(selectedSlot)}` : "", icon: Clock },
-                      { label: t("patient"), value: patientName, icon: ClipboardList },
+                      { label: t("patient"), value: patientName.trim() || "—", icon: ClipboardList },
                       ...(patientType === "new"
                         ? [
                             { label: t("phone"), value: `${patientCountryCode} ${patientPhone}`, icon: Stethoscope },

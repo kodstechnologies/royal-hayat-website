@@ -5,8 +5,10 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ChatButton from "@/components/ChatButton";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { doctors } from "@/data/doctors";
+import { useEffect, useMemo, useState } from "react";
+import { doctors, type Doctor } from "@/data/doctors";
 import { departments, deptDoctorAliases } from "@/data/departments";
+import { getDoctorById } from "@/api/doctors";
 const patientFeedback = [
   {
     name: "Sara Al-Mutairi", nameAr: "سارة المطيري",
@@ -68,7 +70,101 @@ const DoctorProfile = () => {
     }
   };
 
-  const doctor = doctors.find((d) => d.id === id);
+  const staticDoctor = useMemo(() => doctors.find((d) => d.id === id) ?? null, [id]);
+  const [doctor, setDoctor] = useState<Doctor | null>(staticDoctor);
+  const [loadingDoctor, setLoadingDoctor] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!id) {
+      setDoctor(null);
+      return;
+    }
+    if (staticDoctor) {
+      setDoctor(staticDoctor);
+      return;
+    }
+
+    const mapApiDoctorToProfile = (raw: Record<string, unknown>): Doctor => {
+      const name = String(raw.name ?? "");
+      const specialty = String(raw.specialty ?? "");
+      const title = String(raw.title ?? "");
+      const initials = String(raw.initials ?? (name.replace(/^Dr\.?\s*/i, "").slice(0, 2) || "DR")).toUpperCase();
+      const qualifications = Array.isArray(raw.qualifications) ? (raw.qualifications as string[]) : [];
+      const qualificationsAr = Array.isArray(raw.qualificationsAr) ? (raw.qualificationsAr as string[]) : qualifications;
+      const expertise = Array.isArray(raw.expertise) ? (raw.expertise as string[]) : [];
+      const expertiseAr = Array.isArray(raw.expertiseAr) ? (raw.expertiseAr as string[]) : expertise;
+      const languages = Array.isArray(raw.languages) ? (raw.languages as string[]) : [];
+      const languagesAr = Array.isArray(raw.languagesAr) ? (raw.languagesAr as string[]) : languages;
+      const symptoms = Array.isArray(raw.symptoms) ? (raw.symptoms as string[]) : [];
+      const bio = String(raw.bio ?? "");
+
+      return {
+        id: String(raw._id ?? raw.id ?? id),
+        name,
+        nameAr: String(raw.nameAr ?? name),
+        specialty,
+        specialtyAr: String(raw.specialtyAr ?? specialty),
+        department: String(raw.departmentName ?? raw.department ?? ""),
+        departmentAr: String(raw.departmentAr ?? raw.departmentNameAr ?? raw.departmentName ?? raw.department ?? ""),
+        title,
+        titleAr: String(raw.titleAr ?? title),
+        bio,
+        bioAr: String(raw.bioAr ?? bio),
+        qualifications,
+        qualificationsAr,
+        expertise,
+        expertiseAr,
+        languages,
+        languagesAr,
+        initials,
+        color: typeof raw.color === "string" ? raw.color : "#4A1423",
+        symptoms,
+        image: typeof raw.image === "string" ? raw.image : "",
+        availableOnline: raw.availableOnline === true,
+        hideBooking: raw.isActive === false,
+      };
+    };
+
+    (async () => {
+      try {
+        setLoadingDoctor(true);
+        const res = await getDoctorById(id);
+        const payload =
+          (res && typeof res === "object" && "data" in (res as Record<string, unknown>)
+            ? (res as { data?: unknown }).data
+            : res) ?? {};
+        if (cancelled) return;
+        if (payload && typeof payload === "object") {
+          setDoctor(mapApiDoctorToProfile(payload as Record<string, unknown>));
+        } else {
+          setDoctor(null);
+        }
+      } catch {
+        if (!cancelled) setDoctor(null);
+      } finally {
+        if (!cancelled) setLoadingDoctor(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id, staticDoctor]);
+
+  if (loadingDoctor) {
+    return (
+      <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
+        <Header />
+        <div className="container mx-auto px-6 py-24 text-center">
+          <h1 className="text-3xl font-serif text-foreground mb-4">
+            {lang === "ar" ? "جاري تحميل بيانات الطبيب..." : "Loading doctor profile..."}
+          </h1>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!doctor) {
     return (

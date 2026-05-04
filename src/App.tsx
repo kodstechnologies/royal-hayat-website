@@ -167,8 +167,9 @@ const workWithUsStaffActivitiesImages: string[] = [
   "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776946819/DSC00820_mn9o0l.jpg",
   "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776946844/DSC00827_ha5hjd.jpg",
   "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776946857/DSC00850_toqbup.jpg",
-
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776947464/DSC00967_1_avtbcf.jpg"
+  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1777900376/3_gnnyzr.jpg",
+  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776947464/DSC00967_1_avtbcf.jpg",
+  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1777900554/5_jvir2i.jpg"
 ];
 const workWithUsGalaDinnerImages: string[] = [
   "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1777285681/DSC08126_wppstv.jpg",
@@ -210,7 +211,7 @@ const workWithUsHospitalityWeekImages: string[] = [
   "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1777287624/6_tbyu3i.jpg",
   "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1777287624/7_cgiufp.jpg"
 ];
-const workWithUsRhhQuizImages: string[] =  [
+const workWithUsRhhQuizImages: string[] = [
   "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776936376/DSC07156_qsfg84.jpg",
   "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776936381/DSC07159_d7zezu.jpg",
   "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776936399/DSC07164_zzzwsl.jpg",

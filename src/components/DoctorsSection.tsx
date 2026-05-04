@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { ChevronLeft, ChevronRight, Stethoscope } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -6,6 +6,11 @@ import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Doctor } from "@/data/doctors";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { getCatagoriesWithDepartmentsAndDoctors } from "@/api/catagory";
+import {
+  mapCategoriesToGroupedMedicalDepartments,
+  collectFeaturedDoctorsFromGrouped,
+} from "@/utils/mapMedicalCatalogFromApi";
 
 const DoctorCard = ({ doc }: { doc: Doctor }) => {
   const { lang } = useLanguage();
@@ -57,13 +62,42 @@ const DoctorCard = ({ doc }: { doc: Doctor }) => {
   );
 };
 
-const DoctorsSection = ({ featuredDoctors }: { featuredDoctors: Doctor[] }) => {
+const DoctorsSection = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const [featuredDoctors, setFeaturedDoctors] = useState<Doctor[]>([]);
   const { lang, t } = useLanguage();
   const isMobile = useIsMobile();
+
+  const hasDoctors = useMemo(() => featuredDoctors.length > 0, [featuredDoctors]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      setLoadError(false);
+      try {
+        const categories = await getCatagoriesWithDepartmentsAndDoctors();
+        const grouped = mapCategoriesToGroupedMedicalDepartments(categories);
+        const doctorsFromApi = collectFeaturedDoctorsFromGrouped(grouped, 12);
+        if (!cancelled) setFeaturedDoctors(doctorsFromApi);
+      } catch {
+        if (!cancelled) {
+          setLoadError(true);
+          setFeaturedDoctors([]);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const checkScroll = useCallback(() => {
     if (scrollRef.current) {
@@ -129,6 +163,19 @@ const DoctorsSection = ({ featuredDoctors }: { featuredDoctors: Doctor[] }) => {
           </ScrollAnimationWrapper>
         </div>
 
+        {loading ? (
+          <div className="text-center py-16 text-sm text-muted-foreground font-body">
+            {lang === "ar" ? "جاري تحميل الأطباء..." : "Loading doctors..."}
+          </div>
+        ) : loadError ? (
+          <div className="text-center py-16 text-sm text-muted-foreground font-body">
+            {lang === "ar" ? "تعذر تحميل الأطباء حالياً." : "Could not load doctors right now."}
+          </div>
+        ) : !hasDoctors ? (
+          <div className="text-center py-16 text-sm text-muted-foreground font-body">
+            {lang === "ar" ? "لا يوجد أطباء متاحون حالياً." : "No doctors are available right now."}
+          </div>
+        ) : (
         <div className="relative group" onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)}>
           <button
             onClick={() => handleManualInteraction("left")}
@@ -172,6 +219,7 @@ const DoctorsSection = ({ featuredDoctors }: { featuredDoctors: Doctor[] }) => {
             </div>
           </div>
         </div>
+        )}
       </div>
     </section>
   );

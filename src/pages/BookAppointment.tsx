@@ -16,7 +16,7 @@ import { doctors as allRealDoctors } from "@/data/doctors";
 import { departments, deptDoctorAliases } from "@/data/departments";
 // TEMP: national ID / civil ID modal flow disabled — uncomment when re-enabling identity verification
 // // TEMP: civil ID verification disabled — uncomment when re-enabling
-// import { getIdentityStatus, startIdentityVerification } from "../../api/identity";
+// import { getIdentityStatus, startIdentityVerification } from "@/api/identity";
 
 
 // All doctors flat for "know your doctor" path - filter out non-bookable doctors

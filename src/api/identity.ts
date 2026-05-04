@@ -66,4 +66,3 @@ export const getIdentityStatus = async (operationId: string): Promise<IdentitySt
   const response = await api.get(`/api/v1/identity/status/${encodeURIComponent(operationId)}`);
   return (response.data as ApiEnvelope<IdentityStatusResponse>)?.data;
 };
-

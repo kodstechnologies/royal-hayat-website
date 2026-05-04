@@ -14,7 +14,15 @@ export interface Department {
   slug: string;
   icon: LucideIcon;
   category: string;
-  subs?: { name: string; nameAr: string }[];
+  subs?: {
+    name: string;
+    nameAr: string;
+    subspecialityId?: string;
+    description?: string;
+    customBlocks?: { subHeading?: string; explanations: string[] }[];
+  }[];
+  /** Optional rich sections from API (`CustomExplainantion` → mapped as explanations for UI). */
+  departmentContentBlocks?: { subHeading?: string; explanations: string[] }[];
 }
 
 export const departments: Department[] = [

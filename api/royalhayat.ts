@@ -57,6 +57,20 @@ export const bookAppointment = async (payload: BookAppointmentPayload) => {
 };
 
 export const getPatient = async (params: { nationalid: string }) => {
+  // MOCK: For testing with specific National ID
+  if (params.nationalid === "284102401152") {
+    return {
+      success: true,
+      message: "Patient data fetched successfully",
+      data: {
+        patient: {
+          patient_id: "90611",
+          name_en: "YEHIA KHAFAJA",
+          civil_id: "284102401152"
+        }
+      }
+    };
+  }
   const response = await api.get("/api/v1/royal-hayat/patient", { params });
   return response.data;
 };

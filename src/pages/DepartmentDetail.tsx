@@ -402,26 +402,26 @@ const DepartmentDetail = () => {
       {dept.slug === "home-health" && !activeSub && (
         <section className="pb-12">
           <div className="container mx-auto px-6">
-            <div className="max-w-4xl mx-auto">
-              <div className="bg-popover border border-border/50 rounded-2xl p-6 md:p-8">
-                <h3 className="font-serif text-xl text-foreground mb-4">
-                  {/* {lang === "ar" ? "تواصل معنا" : "Contact Details"} */}
+            <div className="max-w-2xl mx-auto">
+              <div className="bg-popover border border-border/50 rounded-2xl p-6 md:p-8 text-center">
+                <h3 className="font-serif text-xl text-foreground mb-6">
+                  {lang === "ar" ? "استفسر الآن" : "Enquire Now"}
                 </h3>
-                <div className="space-y-3 font-body text-sm text-foreground">
-                  <div className="flex items-center gap-2">
-                    <MessageCircle className="w-4 h-4 text-muted-foreground" />
-                    <p>
-                      <span className="text-muted-foreground">{lang === "ar" ? "واتساب:" : "WhatsApp:"}</span>{" "}
-                      <a href="https://wa.me/96566320717" className="hover:text-accent transition-colors">+965 66320717</a>
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Phone className="w-4 h-4 text-muted-foreground" />
-                    <p>
-                      <span className="text-muted-foreground">{lang === "ar" ? "للاستفسار اتصل:" : "For inquiry call:"}</span>{" "}
-                      <a href="tel:+96525360500" className="hover:text-accent transition-colors">+965 25360500</a>
-                    </p>
-                  </div>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <a
+                    href="https://wa.me/96566320717"
+                    className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-full font-body text-xs tracking-[0.15em] uppercase hover:bg-primary/90 transition-colors"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    {lang === "ar" ? "واتساب: 66320717 965+" : "WhatsApp: +965 66320717"}
+                  </a>
+                  <a
+                    href="tel:+96525360500"
+                    className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-full font-body text-xs tracking-[0.15em] uppercase hover:bg-primary/90 transition-colors"
+                  >
+                    <Phone className="w-4 h-4" />
+                    {lang === "ar" ? "اتصال: 25360500 965+" : "Call: +965 25360500"}
+                  </a>
                 </div>
               </div>
             </div>

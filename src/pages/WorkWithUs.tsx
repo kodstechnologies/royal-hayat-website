@@ -271,21 +271,26 @@ console.log("jobs----",jobs);
       <Header />
 
       {/* Hero */}
-      <section className="py-16 md:py-24 bg-primary/5">
-        <div className="container mx-auto px-6">
-          <ScrollAnimationWrapper>
-            <div className="text-center max-w-4xl mx-auto">
-              <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">
-                {isAr ? "الحياة في رويال حياة" : "Life at Royale Hayat Hospital"}
-              </p>
-              <h1 className="text-4xl md:text-5xl font-serif text-foreground mb-6 leading-tight">
-                {section === "positions" ? (isAr ? "الوظائف المتاحة" : "Open Positions")
-                  : section === "culture" ? (isAr ? "ثقافة العمل" : "Work Culture")
-                  : (isAr ? "اعمل معنا" : "Work With Us")}
-              </h1>
-            </div>
+      <section className="py-0 bg-primary/5 overflow-hidden">
+        <div className="grid lg:grid-cols-2 gap-0 items-stretch min-h-[480px]">
 
-            <div className="max-w-3xl mx-auto space-y-5 text-foreground font-body text-base leading-relaxed">
+          {/* LEFT — image, full bleed */}
+          <div className="hidden lg:block relative overflow-hidden min-h-[480px]">
+            <img
+              src="/images/Life at Royale hayat Hospital.jpg.jpeg"
+              alt={isAr ? "الحياة في رويال حياة" : "Life at Royale Hayat Hospital"}
+              className="absolute inset-0 w-full h-full object-cover object-center"
+            />
+          </div>
+
+          {/* RIGHT — content */}
+          <ScrollAnimationWrapper className="flex flex-col justify-center py-16 md:py-24 px-8 md:px-14 lg:px-16">
+            <h1 className="text-4xl md:text-5xl font-serif text-primary mb-6 leading-tight">
+              {section === "positions"
+                ? (isAr ? "الوظائف المتاحة" : "Open Positions")
+                : (isAr ? "الحياة في مستشفى رويال حياة" : "Life at Royale Hayat Hospital")}
+            </h1>
+            <div className="space-y-4 font-body text-sm text-foreground leading-relaxed">
               <p>
                 {isAr
                   ? "في مستشفى رويال حياة، نؤمن بفكرة بسيطة: قد ينسى الناس ما قلناه، لكنهم لن ينسوا أبداً كيف جعلناهم يشعرون كمرضى، أو أفراد عائلة، أو زملاء."
@@ -303,6 +308,7 @@ console.log("jobs----",jobs);
               </p>
             </div>
           </ScrollAnimationWrapper>
+
         </div>
       </section>
 

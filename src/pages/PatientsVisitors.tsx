@@ -40,7 +40,7 @@ const PatientsVisitors = () => {
                 : tab === "admission" ? (lang === "ar" ? "معلومات القبول" : "Admission Information")
                   : tab === "insurance" ? (lang === "ar" ? "التأمين الصحي" : "Health Insurance")
                     : tab === "during-stay" ? (lang === "ar" ? "أثناء إقامتك" : "During Your Stay")
-                      : tab === "rooms-package" ? (lang === "ar" ? "باقات الغرف" : "Birthing Rooms Package")
+                      : tab === "rooms-package" ? (lang === "ar" ? "باقات الغرف" : "Birthing Suites Packages")
                         : tab === "bill-of-rights" ? (lang === "ar" ? "وثيقة حقوق المريض" : "Patient Bill of Rights")
                           : (lang === "ar" ? "معلومات للمرضى والزوار" : "Information for Patients & Visitors")}
             </h1>

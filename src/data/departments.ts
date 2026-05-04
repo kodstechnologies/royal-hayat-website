@@ -115,7 +115,7 @@ export const departments: Department[] = [
     name: "Dental Clinic", nameAr: "عيادة الأسنان", slug: "dental-clinic",
     desc: "Exceptional dental care in a luxurious setting with specialized dentists using advanced technology for all ages.",
     descAr: "رعاية أسنان استثنائية في بيئة فاخرة مع أطباء متخصصين.",
-    img: "https://res.cloudinary.com/dwhc8kzpv/image/upload/q_auto/f_auto/v1776341941/3_hjykck.jpg",
+    img: "/images/Department/Dental.jpg",
   },
   {
     id: 12, icon: Pill, category: "Wellness",
@@ -164,7 +164,7 @@ export const departments: Department[] = [
     name: "Royale Home Health", nameAr: "رويال للرعاية المنزلية", slug: "home-health",
     desc: "Royale Home Health is an exclusive extension of Royale Hayat Hospital, offering exceptional health and wellness support delivered directly to your home.",
     descAr: "رويال للرعاية المنزلية هي امتداد حصري لمستشفى رويال حياة، تقدم دعماً استثنائياً للصحة والعافية مباشرة في منزلك.",
-    img: "https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?w=400&h=250&fit=crop",
+    img: "/images/Department/home-health.jpg",
   },
   {
     id: 19, icon: Shield, category: "Premium",
@@ -178,7 +178,7 @@ export const departments: Department[] = [
     name: "Royale Hayat Pharmacy", nameAr: "صيدلية رويال حياة", slug: "royale-hayat-pharmacy",
     desc: "Conveniently located on the ground floor, Royale Pharmacy is staffed by highly qualified pharmacists available 24/7 to provide expert guidance for all your medicinal needs.",
     descAr: "تقع صيدلية رويال حياة في الطابق الأرضي، ويعمل بها صيادلة مؤهلون تأهيلاً عالياً متاحون على مدار الساعة طوال أيام الأسبوع لتقديم إرشادات الخبراء لجميع احتياجاتك الطبية.",
-    img: "https://images.unsplash.com/photo-1585435557343-3b092031a831?w=400&h=250&fit=crop",
+    img: "/images/Department/Pharmacy.jpg",
   },
   // {
   //   id: 21, icon: Pill, category: "Allergy & Immunology",

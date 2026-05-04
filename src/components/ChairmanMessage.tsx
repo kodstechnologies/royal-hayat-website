@@ -9,45 +9,79 @@ const ChairmanMessage = () => {
   const { lang, t } = useLanguage();
 
   return (
-    <section className="pb-16 pt-4 bg-secondary/10" ref={ref} id="chairman">
-      <div className="container mx-auto px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={isInView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.6 }}>
-            <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">{t("aMessageFrom")}</p>
-            <h2 className="text-2xl md:text-3xl font-body text-foreground mb-2">{t("theChairman")}</h2>
-            <p className="font-body text-sm text-muted-foreground mb-8">{lang === "ar" ? "مرحباً بكم في مستشفى رويال حياة" : "Welcome To Royale Hayat Hospital"}</p>
-          </motion.div>
+    <section className="pb-0 pt-0 bg-secondary/10" ref={ref} id="chairman">
 
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={isInView ? { opacity: 1, scale: 1 } : {}} transition={{ duration: 0.6, delay: 0.2 }}
-            className="bg-popover rounded-2xl p-8 md:p-10 border border-border/50 relative text-start">
-            <Quote className="w-8 h-8 text-accent/20 absolute top-6 start-6" />
-            <p className="font-body text-sm md:text-sm text-foreground leading-relaxed mb-6 relative z-10 text-justify">{lang === "ar" ? "عزيزي المريض / الزائر،" : "Dear Patient / Visitor,"}</p>
-            <p className="font-body text-sm text-muted-foreground leading-relaxed mb-6 relative z-10 text-justify">
-              {t("chairmanQuote")}
+      {/* Full-width two-column layout — no card, no max-width */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={isInView ? { opacity: 1, y: 0 } : {}}
+        transition={{ duration: 0.7, delay: 0.2 }}
+        className={`flex flex-col md:flex-row w-full ${lang === "ar" ? "md:flex-row-reverse" : ""}`}
+      >
+        {/* LEFT — Photo placeholder */}
+        <div className="md:w-[38%] lg:w-[35%] flex-shrink-0 bg-primary/10 min-h-[480px] md:min-h-[600px] flex items-end justify-center relative overflow-hidden">
+          {/* Placeholder — swap src when ready */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-primary/30">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-20 h-20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5.121 17.804A9 9 0 1118.88 6.196M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <p className="font-body text-xs tracking-widest uppercase">Photo Coming Soon</p>
+          </div>
+
+          {/* Name badge at bottom */}
+          <div className="relative z-10 w-full bg-gradient-to-t from-primary/80 via-primary/40 to-transparent pt-20 pb-8 px-8">
+            <p className="font-serif text-xl text-primary-foreground leading-tight">
+              {t("chairmanName")}
             </p>
-            <div className="space-y-4 mb-6">
-              {t("chairmanFullMessage").split("\n\n").map((paragraph, i) => (
-                <p key={i} className="font-body text-sm text-muted-foreground leading-relaxed text-justify">
-                  {paragraph}
-                </p>
-              ))}
-            </div>
-            <p className="font-body text-sm text-muted-foreground leading-relaxed mb-2 text-justify">
+            <p className="font-body text-xs text-primary-foreground/80 mt-1 leading-snug">
+              {t("chairmanTitle")}
+            </p>
+          </div>
+        </div>
+
+        {/* RIGHT — Message content, full height, no card bg */}
+        <div className="flex-1 bg-secondary/20 px-10 md:px-14 lg:px-20 py-14 flex flex-col justify-center relative">
+          {/* Decorative quote */}
+          <Quote className="w-14 h-14 text-accent/10 absolute top-8 end-8" />
+
+          {/* Greeting */}
+          <p className="font-body text-sm font-semibold text-foreground mb-6 relative z-10">
+            {lang === "ar" ? "عزيزي المريض / الزائر،" : "Dear Patient / Visitor,"}
+          </p>
+
+          {/* Opening quote */}
+          <p className="font-body text-sm text-muted-foreground leading-relaxed mb-6 relative z-10 text-justify">
+            {t("chairmanQuote")}
+          </p>
+
+          {/* Full message paragraphs */}
+          <div className="space-y-4 mb-8 relative z-10">
+            {t("chairmanFullMessage").split("\n\n").map((paragraph, i) => (
+              <p key={i} className="font-body text-sm text-muted-foreground leading-relaxed text-justify">
+                {paragraph}
+              </p>
+            ))}
+          </div>
+
+          {/* Closing */}
+          <div className="relative z-10 border-t border-border/40 pt-6">
+            <p className="font-body text-sm text-muted-foreground mb-1">
               {lang === "ar" ? "مع أطيب التمنيات،" : "Kindest regards,"}
             </p>
-            <p className="font-body text-sm text-muted-foreground leading-relaxed mb-6 text-justify">
-              {lang === "ar" ? "مستشفى رويال حياة ...وجهتك لصحة أفضل والاحتفاء بالحياة!" : "Royale Hayat Hospital ...your destination for better health and to celebrate life!"}
+            <p className="font-body text-xs text-accent mb-5">
+              {lang === "ar"
+                ? "مستشفى رويال حياة ...وجهتك لصحة أفضل والاحتفاء بالحياة!"
+                : "Royale Hayat Hospital ...your destination for better health and to celebrate life!"}
             </p>
-            <div>
-              <p className="font-body text-sm text-muted-foreground leading-relaxed mb-1 text-justify">
-                {lang === "ar" ? "مع أطيب التمنيات،" : "With best wishes,"}
-              </p>
-              <p className="font-body text-xl md:text-2xl text-muted-foreground leading-relaxed">{t("chairmanName")}</p>
-              <p className="font-body text-sm text-muted-foreground leading-relaxed">{t("chairmanTitle")}</p>
-            </div>
-          </motion.div>
+            <p className="font-body text-sm text-muted-foreground mb-0.5">
+              {lang === "ar" ? "مع أطيب التمنيات،" : "With best wishes,"}
+            </p>
+            <p className="font-serif text-2xl text-foreground">{t("chairmanName")}</p>
+            <p className="font-body text-xs text-muted-foreground mt-1">{t("chairmanTitle")}</p>
+          </div>
         </div>
-      </div>
+
+      </motion.div>
     </section>
   );
 };

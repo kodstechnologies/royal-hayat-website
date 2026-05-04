@@ -3,7 +3,7 @@ import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import ChatButton from "@/components/ChatButton";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
-import { Crown, Utensils, Sparkles, Flower2, Coffee, Phone, CheckCircle2, Baby, Image, Video, Bed, Star, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { Crown, Utensils, Sparkles, Flower2, Coffee, Phone, CheckCircle2, Baby, Image, Video, Bed, Star, ChevronLeft, ChevronRight, X, Gift, UtensilsCrossed, UserCheck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useEffect, useState } from "react";
@@ -18,6 +18,7 @@ type HospitalityServicesProps = {
   spaImages: string[];
   cafeImages: string[];
   suiteCarouselImagesByIndex: Record<number, string[]>;
+  inRoomEventGalleryImages: string[];
 };
 
 const HospitalityServices = ({
@@ -27,6 +28,7 @@ const HospitalityServices = ({
   spaImages,
   cafeImages,
   suiteCarouselImagesByIndex,
+  inRoomEventGalleryImages,
 }: HospitalityServicesProps) => {
   const { lang, t } = useLanguage();
   const isAr = lang === "ar";
@@ -35,12 +37,21 @@ const HospitalityServices = ({
   const showAll = !section;
   const show = (s: string) => showAll || section === s;
   const [activeHall, setActiveHall] = useState("gardenia");
+  const [gardeniaSlide, setGardeniaSlide] = useState(0);
+  const [alJouriSlide, setAlJouriSlide] = useState(0);
   const [activeSuite, setActiveSuite] = useState(0);
   const [suiteSlide, setSuiteSlide] = useState(0);
   const [orchidSlide, setOrchidSlide] = useState(0);
   const [spaSlide, setSpaSlide] = useState(0);
   const [cafeSlide, setCafeSlide] = useState(0);
+  const [inRoomSlide, setInRoomSlide] = useState(0);
+  const [babySlide, setBabySlide] = useState(0);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+
+  const babyImages = [
+    "/images/baby/baby1.jpg",
+    "/images/baby/baby2.jpg",
+  ];
   const activeSuiteImages = suiteCarouselImagesByIndex[activeSuite] ?? suiteCarouselImagesByIndex[6];
 
   useEffect(() => {
@@ -78,6 +89,14 @@ const HospitalityServices = ({
     }, 4500);
     return () => window.clearInterval(timer);
   }, [cafeImages.length]);
+
+  useEffect(() => {
+    if (babyImages.length <= 1) return;
+    const timer = window.setInterval(() => {
+      setBabySlide((prev) => (prev + 1) % babyImages.length);
+    }, 4500);
+    return () => window.clearInterval(timer);
+  }, [babyImages.length]);
 
   const hallsNav = [
     { id: "gardenia", label: isAr ? "قاعة غاردينيا" : "Gardenia Banquet Hall" },
@@ -203,7 +222,7 @@ const HospitalityServices = ({
               {section === "halls" ? (isAr ? "القاعات الفاخرة" : " Halls")
                 : section === "suites" ? (isAr ? "الأجنحة الفاخرة" : " Suites")
                   : section === "spa" ? (isAr ? "سبا إليمنتس" : "Elements Spa")
-                    : section === "cafe" ? (isAr ? "مقهى الليوان" : "Al Liwan Café")
+                    : section === "cafe" ? (isAr ? "بيسترو الليوان" : "Al Liwan Bistro")
                       : (isAr ? "خدمات الضيافة" : "Hospitality Services")}
             </h1>
           </ScrollAnimationWrapper>
@@ -264,56 +283,99 @@ const HospitalityServices = ({
           {/* Gardenia */}
           {activeHall === "gardenia" && (
             <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} key="gardenia">
-              <div className="space-y-8">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {gardeniaHallImages.map((src, index) => (
-                    <div key={src} className="aspect-[4/3] rounded-xl border border-border overflow-hidden bg-muted/20">
-                      <img
-                        src={src}
-                        alt={isAr ? `صورة قاعة غاردينيا ${index + 1}` : `Gardenia Banquet Hall image ${index + 1}`}
-                        className="w-full h-full object-cover cursor-zoom-in"
-                        loading="lazy"
-                        onClick={() => setLightboxImage(src)}
-                      />
-                    </div>
-                  ))}
+              <div className="grid lg:grid-cols-2 gap-10 items-start">
+                {/* LEFT — carousel */}
+                <div className="relative">
+                  <div className="relative aspect-[5/4] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
+                    <AnimatePresence initial={false}>
+                      <motion.div
+                        key={`gardenia-${gardeniaSlide}`}
+                        initial={{ x: 36 }}
+                        animate={{ x: 0 }}
+                        exit={{ x: -36 }}
+                        transition={{ duration: 0.35, ease: "easeInOut" }}
+                        className="absolute inset-0"
+                      >
+                        <img
+                          src={gardeniaHallImages[gardeniaSlide]}
+                          alt={isAr ? `قاعة غاردينيا ${gardeniaSlide + 1}` : `Gardenia Banquet Hall image ${gardeniaSlide + 1}`}
+                          className="w-full h-full object-cover cursor-zoom-in"
+                          loading="lazy"
+                          onClick={() => setLightboxImage(gardeniaHallImages[gardeniaSlide])}
+                        />
+                      </motion.div>
+                    </AnimatePresence>
+                  </div>
+                  <button
+                    onClick={() => setGardeniaSlide((prev) => (prev - 1 + gardeniaHallImages.length) % gardeniaHallImages.length)}
+                    aria-label={isAr ? "السابق" : "Previous"}
+                    disabled={gardeniaHallImages.length <= 1}
+                    className="absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={() => setGardeniaSlide((prev) => (prev + 1) % gardeniaHallImages.length)}
+                    aria-label={isAr ? "التالي" : "Next"}
+                    disabled={gardeniaHallImages.length <= 1}
+                    className="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                  <div className="flex items-center justify-center gap-3 mt-5">
+                    <span className="font-body text-xs text-muted-foreground tracking-widest">
+                      {String(gardeniaSlide + 1).padStart(2, "0")} / {String(gardeniaHallImages.length).padStart(2, "0")}
+                    </span>
+                  </div>
                 </div>
 
-                <div>
-                  <h3 className="text-xl font-serif text-foreground mb-4">{isAr ? "قاعة غاردينيا" : "Gardenia Banquet Hall"}</h3>
-                  <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
-                    {isAr
-                      ? "قاعة غاردينيا هي مكاننا الرئيسي، مصممة بعناية لاستيعاب التجمعات المتوسطة إلى الكبيرة في بيئة أنيقة ومتعددة الاستخدامات. بسعة تصل إلى 150 ضيفاً بتنسيق المسرح، توفر هذه القاعة مساحة استثنائية لمجموعة متنوعة من الفعاليات."
-                      : "The Gardenia Banquet Hall is our premier venue, thoughtfully designed to accommodate medium to large gatherings in an elegant and versatile setting. With a generous seating capacity of up to 150 guests in theatre-style configuration, this hall offers an exceptional space for a wide variety of events."}
-                  </p>
-                  <h4 className="font-serif text-base text-foreground mb-3">{isAr ? "مثالية لـ:" : "Ideal for:"}</h4>
-                  <div className="space-y-2 mb-6">
-                    {(isAr ? ["احتفالات المواليد", "ندوات العافية", "المؤتمرات الطبية", "المناسبات العائلية والمناسبات الخاصة"] : ["Birth celebrations", "Wellness seminars", "Medical conferences", "Family milestones and special occasions"]).map((item, i) => (
-                      <div key={i} className="flex items-center gap-3">
-                        <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
-                        <span className="font-body text-sm text-foreground">{item}</span>
-                      </div>
-                    ))}
+                {/* RIGHT — content */}
+                <ScrollAnimationWrapper>
+                  <div>
+                    <h3 className="text-xl font-serif text-foreground mb-4">{isAr ? "قاعة غاردينيا" : "Gardenia Banquet Hall"}</h3>
+                    <p className="font-body text-sm text-muted-foreground leading-relaxed mb-5">
+                      {isAr
+                        ? "قاعة غاردينيا هي مكاننا الرئيسي، مصممة بعناية لاستيعاب التجمعات المتوسطة إلى الكبيرة في بيئة أنيقة ومتعددة الاستخدامات. بسعة تصل إلى 150 ضيفاً بتنسيق المسرح، توفر هذه القاعة مساحة استثنائية لمجموعة متنوعة من الفعاليات."
+                        : "The Gardenia Banquet Hall is our premier venue, thoughtfully designed to accommodate medium to large gatherings in an elegant and versatile setting. With a generous seating capacity of up to 150 guests in theatre-style configuration, this hall offers an exceptional space for a wide variety of events."}
+                    </p>
+                    <h4 className="font-serif text-base text-foreground mb-3">{isAr ? "مثالية لـ:" : "Ideal for:"}</h4>
+                    <div className="space-y-2 mb-5">
+                      {(isAr
+                        ? ["احتفالات المواليد", "ندوات العافية", "المؤتمرات الطبية", "المناسبات العائلية والمناسبات الخاصة"]
+                        : ["Birth celebrations", "Wellness seminars", "Medical conferences", "Family milestones and special occasions"]
+                      ).map((item, i) => (
+                        <div key={i} className="flex items-center gap-3">
+                          <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
+                          <span className="font-body text-sm text-foreground">{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <h4 className="font-serif text-base text-foreground mb-3">{isAr ? "أنماط التجهيز المتاحة:" : "Available Setup Styles:"}</h4>
+                    <div className="space-y-2 mb-5">
+                      {(isAr
+                        ? ["ديوانية", "مسرح", "شكل U", "فصل دراسي", "كباريه", "طاولات مستديرة"]
+                        : ["Diwaniya", "Theatre", "U-Shape", "Classroom", "Cabaret", "Round Tables"]
+                      ).map((item, i) => (
+                        <div key={i} className="flex items-center gap-3">
+                          <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
+                          <span className="font-body text-sm text-foreground">{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <p className="font-body text-sm text-muted-foreground leading-relaxed mb-5">
+                      {isAr
+                        ? "بتصميمها المرن وديكورها الداخلي المذهل وخدمتها الشخصية، تضمن قاعة غاردينيا تجربة راقية وسلسة لفعاليتك."
+                        : "With its flexible layout, stunning interior, and personalized service, the Gardenia Banquet Hall guarantees a refined and seamless experience for your event."}
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <Phone className="w-4 h-4 text-accent" />
+                      <p className="font-body text-sm text-foreground">
+                        {isAr ? "للحجز والمزيد من المعلومات، اتصل:" : "For bookings and more information, please call:"}{" "}
+                        <a href="tel:+96525360573" className="text-accent hover:underline font-semibold">+96525360573</a>
+                      </p>
+                    </div>
                   </div>
-                  <h4 className="font-serif text-base text-foreground mb-3">{isAr ? "أنماط التجهيز المتاحة:" : "Available Setup Styles:"}</h4>
-                  <div className="space-y-2 mb-6">
-                    {(isAr ? ["ديوانية", "مسرح", "شكل U", "فصل دراسي", "كباريه", "طاولات مستديرة"] : ["Diwaniya", "Theatre", "U-Shape", "Classroom", "Cabaret", "Round Tables"]).map((item, i) => (
-                      <div key={i} className="flex items-center gap-3">
-                        <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
-                        <span className="font-body text-sm text-foreground">{item}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
-                    {isAr
-                      ? "بتصميمها المرن وديكورها الداخلي المذهل وخدمتها الشخصية، تضمن قاعة غاردينيا تجربة راقية وسلسة لفعاليتك."
-                      : "With its flexible layout, stunning interior, and personalized service, the Gardenia Banquet Hall guarantees a refined and seamless experience for your event."}
-                  </p>
-                  <div className="flex items-center gap-2 mt-4">
-                    <Phone className="w-4 h-4 text-accent" />
-                    <p className="font-body text-sm text-foreground">{isAr ? "للحجز والمزيد من المعلومات، اتصل:" : "For bookings and more information, please call:"} <a href="tel:+96525360573" className="text-accent hover:underline font-semibold">+96525360573</a></p>
-                  </div>
-                </div>
+                </ScrollAnimationWrapper>
               </div>
             </motion.div>
           )}
@@ -321,42 +383,82 @@ const HospitalityServices = ({
           {/* Al Jouri */}
           {activeHall === "aljouri" && (
             <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} key="aljouri">
-              <div className="space-y-8">
-                <div className="grid grid-cols-2 gap-4">
-                  {alJouriHallImages.map((src, index) => (
-                    <div key={src} className="aspect-[4/3] rounded-xl border border-border overflow-hidden bg-muted/20">
-                      <img
-                        src={src}
-                        alt={isAr ? `صورة قاعة الجوري ${index + 1}` : `Al Jouri Banquet Hall image ${index + 1}`}
-                        className="w-full h-full object-cover cursor-zoom-in"
-                        loading="lazy"
-                        onClick={() => setLightboxImage(src)}
-                      />
-                    </div>
-                  ))}
+              <div className="grid lg:grid-cols-2 gap-10 items-start">
+                {/* LEFT — carousel */}
+                <div className="relative">
+                  <div className="relative aspect-[5/4] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
+                    <AnimatePresence initial={false}>
+                      <motion.div
+                        key={`aljouri-${alJouriSlide}`}
+                        initial={{ x: 36 }}
+                        animate={{ x: 0 }}
+                        exit={{ x: -36 }}
+                        transition={{ duration: 0.35, ease: "easeInOut" }}
+                        className="absolute inset-0"
+                      >
+                        <img
+                          src={alJouriHallImages[alJouriSlide]}
+                          alt={isAr ? `قاعة الجوري ${alJouriSlide + 1}` : `Al Jouri Banquet Hall image ${alJouriSlide + 1}`}
+                          className="w-full h-full object-cover cursor-zoom-in"
+                          loading="lazy"
+                          onClick={() => setLightboxImage(alJouriHallImages[alJouriSlide])}
+                        />
+                      </motion.div>
+                    </AnimatePresence>
+                  </div>
+                  <button
+                    onClick={() => setAlJouriSlide((prev) => (prev - 1 + alJouriHallImages.length) % alJouriHallImages.length)}
+                    aria-label={isAr ? "السابق" : "Previous"}
+                    disabled={alJouriHallImages.length <= 1}
+                    className="absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={() => setAlJouriSlide((prev) => (prev + 1) % alJouriHallImages.length)}
+                    aria-label={isAr ? "التالي" : "Next"}
+                    disabled={alJouriHallImages.length <= 1}
+                    className="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                  <div className="flex items-center justify-center gap-3 mt-5">
+                    <span className="font-body text-xs text-muted-foreground tracking-widest">
+                      {String(alJouriSlide + 1).padStart(2, "0")} / {String(alJouriHallImages.length).padStart(2, "0")}
+                    </span>
+                  </div>
                 </div>
 
-                <div>
-                  <h3 className="text-xl font-serif text-foreground mb-4">{isAr ? "قاعة الجوري" : "Al Jouri Banquet Hall"}</h3>
-                  <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
-                    {isAr
-                      ? "للمناسبات الأكثر حميمية، تقدم قاعة الجوري أجواءً دافئة ومرحبة، مما يجعلها الخيار المثالي للفعاليات الأصغر حجماً حيث التواصل الشخصي والراحة هما الأولوية."
-                      : "For more intimate occasions, Al Jouri Hall offers a warm and inviting atmosphere, making it the ideal choice for smaller-scale events where personal connection and comfort are paramount."}
-                  </p>
-                  <h4 className="font-serif text-base text-foreground mb-3">{isAr ? "مثالية لـ:" : "Ideal for:"}</h4>
-                  <div className="space-y-2 mb-6">
-                    {(isAr ? ["حتى 100 ضيف", "التجمعات غير الرسمية", "النقاشات", "ترتيبات الجلوس التقليدية التي تعزز المحادثة والدفء"] : ["Up to 100 guests", "Casual gatherings", "Discussions", "Traditional seating arrangements that foster conversation and warmth"]).map((item, i) => (
-                      <div key={i} className="flex items-center gap-3">
-                        <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
-                        <span className="font-body text-sm text-foreground">{item}</span>
-                      </div>
-                    ))}
+                {/* RIGHT — content */}
+                <ScrollAnimationWrapper>
+                  <div>
+                    <h3 className="text-xl font-serif text-foreground mb-4">{isAr ? "قاعة الجوري" : "Al Jouri Banquet Hall"}</h3>
+                    <p className="font-body text-sm text-muted-foreground leading-relaxed mb-5">
+                      {isAr
+                        ? "للمناسبات الأكثر حميمية، تقدم قاعة الجوري أجواءً دافئة ومرحبة، مما يجعلها الخيار المثالي للفعاليات الأصغر حجماً حيث التواصل الشخصي والراحة هما الأولوية."
+                        : "For more intimate occasions, Al Jouri Hall offers a warm and inviting atmosphere, making it the ideal choice for smaller-scale events where personal connection and comfort are paramount."}
+                    </p>
+                    <h4 className="font-serif text-base text-foreground mb-3">{isAr ? "مثالية لـ:" : "Ideal for:"}</h4>
+                    <div className="space-y-2 mb-5">
+                      {(isAr
+                        ? ["حتى 100 ضيف", "التجمعات غير الرسمية", "النقاشات", "ترتيبات الجلوس التقليدية التي تعزز المحادثة والدفء"]
+                        : ["Up to 100 guests", "Casual gatherings", "Discussions", "Traditional seating arrangements that foster conversation and warmth"]
+                      ).map((item, i) => (
+                        <div key={i} className="flex items-center gap-3">
+                          <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
+                          <span className="font-body text-sm text-foreground">{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Phone className="w-4 h-4 text-accent" />
+                      <p className="font-body text-sm text-foreground">
+                        {isAr ? "للحجز والمزيد من المعلومات، اتصل:" : "For bookings and more information, please call:"}{" "}
+                        <a href="tel:+96525360573" className="text-accent hover:underline font-semibold">+96525360573</a>
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2 mt-4">
-                    <Phone className="w-4 h-4 text-accent" />
-                    <p className="font-body text-sm text-foreground">{isAr ? "للحجز والمزيد من المعلومات، اتصل:" : "For bookings and more information, please call:"} <a href="tel:+96525360573" className="text-accent hover:underline font-semibold">+96525360573</a></p>
-                  </div>
-                </div>
+                </ScrollAnimationWrapper>
               </div>
             </motion.div>
           )}
@@ -366,7 +468,7 @@ const HospitalityServices = ({
         </div>
       </section>}
 
-      {/* ===== AL LIWAN CAFÉ ===== */}
+      {/* ===== AL LIWAN BISTRO ===== */}
       {section === "cafe" && <section className="py-6">
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="lg:hidden flex items-center gap-3 mb-4">
@@ -389,7 +491,7 @@ const HospitalityServices = ({
                   >
                     <img
                       src={cafeImages[cafeSlide]}
-                      alt={isAr ? `مقهى الليوان ${cafeSlide + 1}` : `Al Liwan Cafe image ${cafeSlide + 1}`}
+                      alt={isAr ? `بيسترو الليوان ${cafeSlide + 1}` : `Al Liwan Bistro image ${cafeSlide + 1}`}
                       className="w-full h-full object-cover cursor-zoom-in"
                       loading="lazy"
                       onClick={() => setLightboxImage(cafeImages[cafeSlide])}
@@ -430,23 +532,20 @@ const HospitalityServices = ({
                   </div>
                   <h2 className="text-2xl md:text-3xl font-serif text-foreground">{t("alLiwanCafe")}</h2>
                 </div>
-                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-5">
+                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
                   {isAr
-                    ? "مقهى الليوان هو صالة قهوة ومطعم ترحيبي يقع في ردهة مستشفى رويال حياة. يقدم طعاماً محضراً طازجاً وحلويات شهية في بيئة راقية، مع جلسات مريحة وخدمة واي فاي مجانية للضيوف."
-                    : "Al Liwan Café is a welcoming coffee lounge and diner located in the lobby of Royale Hayat Hospital. It offers freshly prepared food and delectable desserts in a sophisticated setting, complemented by comfortable seating and complimentary Wi-Fi."}
+                    ? "في قلب الردهة، يقدم بيسترو الليوان (مطعم وصالة) أجواءً مدعوة حيث تملأ روائح الأطباق المحضرة طازجاً والحلويات المصنوعة يدوياً الهواء برفق. استرخِ في مساحة راقية محاطة بديكورات أنيقة وأصوات الموسيقى الحية الهادئة، مما يخلق أجواءً هادئة وترحيبية."
+                    : "At the heart of the lobby, Al Liwan Bistro (Restaurant & Lounge) offers an inviting setting where the aromas of freshly prepared dishes and handcrafted desserts gently fill the air. Relax in a sophisticated space, surrounded by elegant interiors and the soft sounds of live music, creating a calm and welcoming atmosphere."}
                 </p>
-                <div className="space-y-2 mb-5">
-                  {(isAr
-                    ? ["عصائر طازجة ومجموعة متنوعة من السموذي", "برغر وسلطات وساندويتشات ولفائف", "تشكيلة يومية من الكعك والبسكويت", "قهوة متخصصة ومجموعة متنوعة من الشاي"]
-                    : ["Fresh juices and a wide smoothie selection", "Burgers, salads, sandwiches, and wraps", "Daily assortment of cakes and cookies", "Specialty coffee and tea selections"]).map((item, i) => (
-                      <div key={i} className="flex items-center gap-3">
-                        <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
-                        <span className="font-body text-sm text-foreground">{item}</span>
-                      </div>
-                    ))}
-                </div>
+                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
+                  {isAr
+                    ? "استمتع بتجربة طعام راقية تضم تخصصات عربية إلى جانب تشكيلة مختارة من المأكولات الدولية. تشمل القائمة عصائر طازجة، سموذي، برغر راقي، سلطات، ساندويتشات ولفائف. أتمم تجربتك بقطعة كيك أو معجنات طازجة مع قهوة متخصصة أو شاي."
+                    : "Enjoy a refined dining experience featuring Arabian specialties alongside a curated selection of international cuisine. The menu includes freshly squeezed juices, smoothies, gourmet burgers, salads, sandwiches, and wraps. Complete your experience with a slice of cake or a freshly baked pastry, paired with specialty coffees and teas."}
+                </p>
                 <p className="font-body text-sm text-muted-foreground leading-relaxed">
-                  {isAr ? "مواعيد العمل اليومية: 8:00 صباحاً - 11:00 مساءً." : "Open daily: 8:00 a.m. - 11:00 p.m."}
+                  {isAr
+                    ? "مفتوح يومياً من 8 صباحاً حتى 11 مساءً، بيسترو الليوان وجهة مثالية للإفطار والغداء والعشاء أو وجبة خفيفة في أي وقت من اليوم."
+                    : "Open daily from 8 a.m. to 11 p.m., Al Liwan Bistro is an ideal destination for breakfast, lunch, dinner, or a light bite at any time of day."}
                 </p>
               </div>
             </ScrollAnimationWrapper>
@@ -510,7 +609,7 @@ const HospitalityServices = ({
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                     <Sparkles className="w-6 h-6 text-primary" />
                   </div>
-                  <h2 className="text-2xl md:text-3xl font-serif text-foreground">{isAr ? "سبا إليمنتس من بانيان تري" : "Elements Spa by Banyan Tree"}</h2>
+                  <h2 className="text-2xl md:text-3xl font-serif text-foreground">{isAr ? "سبا إليمنتس من بانيان تري" : "Elements Spa by (Banyan Tree)"}</h2>
                 </div>
                 <p className="font-body text-sm text-muted-foreground leading-relaxed mb-5">
                   {isAr
@@ -658,7 +757,7 @@ const HospitalityServices = ({
               </div>
             ) : (
               <>
-                {/* Row 1: Text left, Image right (like Al Liwan Café) */}
+                {/* Row 1: Text left, Image right (like Al Liwan Bistro) */}
                 <div className="grid lg:grid-cols-2 gap-10 items-start">
                   <div className="rounded-2xl overflow-hidden border border-border shadow-md h-[340px] order-2 lg:order-2">
                     {activeSuite === 0 ? (
@@ -841,29 +940,134 @@ const HospitalityServices = ({
         </div>
       </section>}
 
-      {/* In-Room Event Services Preview */}
+      {/* In-Suite Celebration Experiences — compact two-column */}
       {showAll && <section className="py-6 bg-muted/20">
         <div className="container mx-auto px-6 max-w-6xl">
-          <ScrollAnimationWrapper>
-            <div className="bg-popover border border-border/50 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center gap-6">
-              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                <Sparkles className="w-8 h-8 text-primary" />
-              </div>
-              <div className="flex-1 text-center md:text-start">
-                <h3 className="text-xl md:text-2xl font-serif text-foreground mb-2">
-                  {isAr ? "خدمات الفعاليات في الغرف" : "In-Room Event Services"}
-                </h3>
-                <p className="font-body text-sm text-muted-foreground leading-relaxed">
-                  {isAr
-                    ? "اجعل لحظاتك الخاصة لا تُنسى مع خدمات الفعاليات المخصصة في غرفتك — من احتفالات المواليد إلى باقات الزهور والترتيبات الشخصية."
-                    : "Make your special moments unforgettable with personalized in-room event services — from newborn celebrations to floral arrangements and custom setups."}
-                </p>
-              </div>
-              <Link to="/in-room-events" className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-full font-body text-xs tracking-[0.15em] uppercase hover:bg-primary/90 transition-colors flex-shrink-0">
-                {isAr ? "استكشف المزيد" : "Explore More"}
-              </Link>
+          {/* Mobile header */}
+          <div className="lg:hidden flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <Sparkles className="w-6 h-6 text-primary" />
             </div>
-          </ScrollAnimationWrapper>
+            <h2 className="text-2xl font-serif text-foreground">
+              {isAr ? "تجارب الاحتفال داخل الجناح" : "In-Suite Celebration Experiences"}
+            </h2>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-10 items-start">
+            {/* LEFT — image carousel */}
+            <div className="relative order-1">
+              <div className="relative aspect-[5/4] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
+                <AnimatePresence initial={false}>
+                  <motion.div
+                    key={`inroom-${inRoomSlide}`}
+                    initial={{ x: 36 }}
+                    animate={{ x: 0 }}
+                    exit={{ x: -36 }}
+                    transition={{ duration: 0.35, ease: "easeInOut" }}
+                    className="absolute inset-0"
+                  >
+                    {inRoomEventGalleryImages.length > 0 ? (
+                      <img
+                        src={inRoomEventGalleryImages[inRoomSlide]}
+                        alt={isAr ? `فعالية في الغرفة ${inRoomSlide + 1}` : `In-room event ${inRoomSlide + 1}`}
+                        className="w-full h-full object-cover cursor-zoom-in"
+                        loading="lazy"
+                        onClick={() => setLightboxImage(inRoomEventGalleryImages[inRoomSlide])}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-muted/30">
+                        <div className="text-center">
+                          <Image className="w-10 h-10 text-muted-foreground/50 mx-auto mb-2" />
+                          <p className="font-body text-xs text-muted-foreground">{isAr ? "صور قريباً" : "Photos coming soon"}</p>
+                        </div>
+                      </div>
+                    )}
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+              <button
+                onClick={() => setInRoomSlide((prev) => (prev - 1 + inRoomEventGalleryImages.length) % inRoomEventGalleryImages.length)}
+                aria-label={isAr ? "السابق" : "Previous"}
+                disabled={inRoomEventGalleryImages.length <= 1}
+                className="absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => setInRoomSlide((prev) => (prev + 1) % inRoomEventGalleryImages.length)}
+                aria-label={isAr ? "التالي" : "Next"}
+                disabled={inRoomEventGalleryImages.length <= 1}
+                className="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+              {inRoomEventGalleryImages.length > 1 && (
+                <div className="flex items-center justify-center gap-3 mt-5">
+                  <span className="font-body text-xs text-muted-foreground tracking-widest">
+                    {String(inRoomSlide + 1).padStart(2, "0")} / {String(inRoomEventGalleryImages.length).padStart(2, "0")}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* RIGHT — content */}
+            <ScrollAnimationWrapper className="order-2">
+              <div>
+                {/* Desktop header */}
+                <div className="hidden lg:flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Sparkles className="w-6 h-6 text-primary" />
+                  </div>
+                  <h2 className="text-2xl md:text-3xl font-serif text-foreground">
+                    {isAr ? "خدمات الفعاليات في الغرف" : "In-Room Event Services"}
+                  </h2>
+                </div>
+
+                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-5">
+                  {isAr
+                    ? "تفضل احتفالاً أكثر خصوصية وحميمية؟ نقدم الفرصة المثالية لاستضافة لحظات لا تُنسى في راحة وأناقة جناحك."
+                    : "Prefer a more private and intimate celebration? We offer the perfect opportunity to host unforgettable moments right within the comfort and elegance of your suite."}
+                </p>
+
+                {/* 3 services compact */}
+                <div className="space-y-3 mb-5">
+                  {[
+                    { icon: Gift,           title: isAr ? "التصميم والديكور المخصص" : "Custom Design & Décor",  desc: isAr ? "بالونات، زهور، إضاءة وأقمشة مصممة خصيصاً لمناسبتك." : "Balloons, flowers, lighting and fabrics tailored to your occasion." },
+                    { icon: UtensilsCrossed, title: isAr ? "المأكولات الراقية" : "Gourmet Catering",            desc: isAr ? "أطباق مختارة من مطبخنا الراقي، من المقبلات إلى الحلويات." : "Curated dishes from our kitchen, from appetizers to desserts." },
+                    { icon: UserCheck,      title: isAr ? "خدمة الخادم الشخصي" : "Butler Service",             desc: isAr ? "خدمة احترافية من الاستقبال حتى التنظيف." : "Professional service from reception to cleanup." },
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <item.icon className="w-4 h-4 text-primary" />
+                      </div>
+                      <div>
+                        <p className="font-body text-sm font-semibold text-foreground">{item.title}</p>
+                        <p className="font-body text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Occasions */}
+                <div className="space-y-2 mb-5">
+                  {(isAr
+                    ? ["احتفالات المواليد الجدد", "أعياد الميلاد والذكرى السنوية", "حفلات الاستقبال والتجمعات العائلية", "مفاجآت شخصية للمرضى والضيوف"]
+                    : ["Newborn celebrations", "Birthdays and anniversaries", "Reception parties and family gatherings", "Personalized surprises for patients and guests"]
+                  ).map((item, i) => (
+                    <div key={i} className="flex items-center gap-3">
+                      <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
+                      <span className="font-body text-sm text-foreground">{item}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <a href="tel:+96525360573" className="inline-flex items-center gap-2 text-accent font-body text-sm hover:underline">
+                  <Phone className="w-4 h-4" />
+                  +965 2536 0573
+                </a>
+              </div>
+            </ScrollAnimationWrapper>
+          </div>
         </div>
       </section>}
 
@@ -953,7 +1157,7 @@ const HospitalityServices = ({
         </div>
       </section>} 
 
-      {/* ===== AL LIWAN CAFÉ (Show All Order) ===== */}
+      {/* ===== AL LIWAN BISTRO (Show All Order) ===== */}
       {showAll && <section className="py-6 bg-white">
         <div className="container mx-auto px-6 max-w-7xl">
           <div className="lg:hidden flex items-center gap-3 mb-4">
@@ -976,7 +1180,7 @@ const HospitalityServices = ({
                   >
                     <img
                       src={cafeImages[cafeSlide]}
-                      alt={isAr ? `مقهى الليوان ${cafeSlide + 1}` : `Al Liwan Cafe image ${cafeSlide + 1}`}
+                      alt={isAr ? `بيسترو الليوان ${cafeSlide + 1}` : `Al Liwan Bistro image ${cafeSlide + 1}`}
                       className="w-full h-full object-cover cursor-zoom-in"
                       loading="lazy"
                       onClick={() => setLightboxImage(cafeImages[cafeSlide])}
@@ -1017,56 +1221,173 @@ const HospitalityServices = ({
                   </div>
                   <h2 className="text-2xl md:text-3xl font-serif text-foreground">{t("alLiwanCafe")}</h2>
                 </div>
-                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-5">
+                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
                   {isAr
-                    ? "مقهى الليوان هو صالة قهوة ومطعم ترحيبي يقع في ردهة مستشفى رويال حياة. يقدم طعاماً محضراً طازجاً وحلويات شهية في بيئة راقية، مع جلسات مريحة وخدمة واي فاي مجانية للضيوف."
-                    : "Al Liwan Café is a welcoming coffee lounge and diner located in the lobby of Royale Hayat Hospital. It offers freshly prepared food and delectable desserts in a sophisticated setting, complemented by comfortable seating and complimentary Wi-Fi."}
+                    ? "في قلب الردهة، يقدم بيسترو الليوان (مطعم وصالة) أجواءً مدعوة حيث تملأ روائح الأطباق المحضرة طازجاً والحلويات المصنوعة يدوياً الهواء برفق. استرخِ في مساحة راقية محاطة بديكورات أنيقة وأصوات الموسيقى الحية الهادئة، مما يخلق أجواءً هادئة وترحيبية."
+                    : "At the heart of the lobby, Al Liwan Bistro (Restaurant & Lounge) offers an inviting setting where the aromas of freshly prepared dishes and handcrafted desserts gently fill the air. Relax in a sophisticated space, surrounded by elegant interiors and the soft sounds of live music, creating a calm and welcoming atmosphere."}
                 </p>
-                <div className="space-y-2 mb-5">
-                  {(isAr
-                    ? ["عصائر طازجة ومجموعة متنوعة من السموذي", "برغر وسلطات وساندويتشات ولفائف", "تشكيلة يومية من الكعك والبسكويت", "قهوة متخصصة ومجموعة متنوعة من الشاي"]
-                    : ["Fresh juices and a wide smoothie selection", "Burgers, salads, sandwiches, and wraps", "Daily assortment of cakes and cookies", "Specialty coffee and tea selections"]).map((item, i) => (
-                      <div key={i} className="flex items-center gap-3">
-                        <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
-                        <span className="font-body text-sm text-foreground">{item}</span>
-                      </div>
-                    ))}
-                </div>
+                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
+                  {isAr
+                    ? "استمتع بتجربة طعام راقية تضم تخصصات عربية إلى جانب تشكيلة مختارة من المأكولات الدولية. تشمل القائمة عصائر طازجة، سموذي، برغر راقي، سلطات، ساندويتشات ولفائف. أتمم تجربتك بقطعة كيك أو معجنات طازجة مع قهوة متخصصة أو شاي."
+                    : "Enjoy a refined dining experience featuring Arabian specialties alongside a curated selection of international cuisine. The menu includes freshly squeezed juices, smoothies, gourmet burgers, salads, sandwiches, and wraps. Complete your experience with a slice of cake or a freshly baked pastry, paired with specialty coffees and teas."}
+                </p>
                 <p className="font-body text-sm text-muted-foreground leading-relaxed">
-                  {isAr ? "مواعيد العمل اليومية: 8:00 صباحاً - 11:00 مساءً." : "Open daily: 8:00 a.m. - 11:00 p.m."}
+                  {isAr
+                    ? "مفتوح يومياً من 8 صباحاً حتى 11 مساءً، بيسترو الليوان وجهة مثالية للإفطار والغداء والعشاء أو وجبة خفيفة في أي وقت من اليوم."
+                    : "Open daily from 8 a.m. to 11 p.m., Al Liwan Bistro is an ideal destination for breakfast, lunch, dinner, or a light bite at any time of day."}
                 </p>
               </div>
             </ScrollAnimationWrapper>
           </div>
         </div>
       </section>}
+
+      {/* ===== 5TH FLOOR CAFÉ (Show All Order) ===== */}
+      {showAll && <section className="py-6 bg-muted/10">
+        <div className="container mx-auto px-6 max-w-6xl">
+          {/* Mobile header */}
+          <div className="lg:hidden flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
+              <Coffee className="w-6 h-6 text-accent" />
+            </div>
+            <h2 className="text-2xl font-serif text-foreground">{isAr ? "كافيه الطابق الخامس" : "The 5th Floor Café"}</h2>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-10 items-start">
+            {/* LEFT — content */}
+            <ScrollAnimationWrapper className="order-1">
+              <div>
+                <div className="hidden lg:flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
+                    <Coffee className="w-6 h-6 text-accent" />
+                  </div>
+                  <h2 className="text-2xl md:text-3xl font-serif text-foreground">
+                    {isAr ? "كافيه الطابق الخامس" : "The 5th Floor Café"}
+                  </h2>
+                </div>
+                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
+                  {isAr
+                    ? "يقع كافيه الطابق الخامس في الطابق الخامس، ويوفر مساحة مريحة وترحيبية للضيوف للاسترخاء أثناء انتظار المواعيد أو زيارة أحبائهم. مصمم بعناية للعائلات التي تنتظر قدوم مولود جديد أو اكتمال إجراء طبي، يوفر بيئة هادئة ومطمئنة."
+                    : "The Fifth Café, located on the 5th floor, offers a welcoming and comfortable space for guests to relax while waiting for appointments or visiting loved ones. Thoughtfully designed for families awaiting the arrival of a newborn or the completion of a procedure, it provides a calm and reassuring environment."}
+                </p>
+                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-5">
+                  {isAr
+                    ? "يمكن للضيوف الاستمتاع بالقهوة المعدة طازجاً، وتشكيلة من الساندويتشات، والسلطات الطازجة، والحلويات الشهية — كل ذلك في أجواء مريحة تجمع بين الراحة والملاءمة."
+                    : "Guests can enjoy freshly brewed coffee, a selection of sandwiches, fresh salads, and indulgent desserts — all served in a cozy setting that blends comfort with convenience."}
+                </p>
+                <div className="space-y-2 mb-5">
+                  {(isAr
+                    ? ["قهوة مختصة طازجة", "تشكيلة من الساندويتشات", "سلطات طازجة", "حلويات شهية"]
+                    : ["Freshly brewed specialty coffee", "A selection of sandwiches", "Fresh salads", "Indulgent desserts"]
+                  ).map((item, i) => (
+                    <div key={i} className="flex items-center gap-3">
+                      <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
+                      <span className="font-body text-sm text-foreground">{item}</span>
+                    </div>
+                  ))}
+                </div>
+                <p className="font-body text-xs text-muted-foreground">
+                  {isAr ? "الطابق الخامس — مستشفى رويال حياة" : "5th Floor — Royale Hayat Hospital"}
+                </p>
+              </div>
+            </ScrollAnimationWrapper>
+
+            {/* RIGHT — image placeholder */}
+            <div className="order-2 aspect-[5/4] rounded-2xl overflow-hidden bg-muted/30 border border-border flex items-center justify-center">
+              <div className="text-center">
+                <Image className="w-12 h-12 text-muted-foreground/40 mx-auto mb-3" />
+                <p className="font-body text-xs text-muted-foreground tracking-widest uppercase">
+                  {isAr ? "صور قريباً" : "Photos Coming Soon"}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>}
       {/* ===== NEWBORN PHOTOGRAPHY ===== */}
       {showAll && <section className="py-6">
         <div className="container mx-auto px-6 max-w-6xl">
-          <div className="grid lg:grid-cols-2 gap-10 items-center">
+          {/* Mobile header */}
+          <div className="lg:hidden flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
+              <Baby className="w-6 h-6 text-accent" />
+            </div>
+            <h2 className="text-2xl font-serif text-foreground">{isAr ? "خدمات تصوير المواليد" : "Newborn Photography Services"}</h2>
+          </div>
 
-            <div className="aspect-video bg-muted/30 rounded-2xl border border-border flex items-center justify-center order-2 lg:order-2">
-              <div className="text-center">
-                <Image className="w-8 h-8 text-muted-foreground/50 mx-auto mb-2" />
-                <p className="font-body text-xs text-muted-foreground">{isAr ? "معرض الصور قريباً" : "Photography portfolio coming soon"}</p>
+          <div className="grid lg:grid-cols-2 gap-10 items-start">
+            {/* LEFT — carousel */}
+            <div className="relative order-1 lg:order-1">
+              <div className="relative aspect-[5/4] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
+                <AnimatePresence initial={false}>
+                  <motion.div
+                    key={`baby-${babySlide}`}
+                    initial={{ x: 36 }}
+                    animate={{ x: 0 }}
+                    exit={{ x: -36 }}
+                    transition={{ duration: 0.35, ease: "easeInOut" }}
+                    className="absolute inset-0"
+                  >
+                    <img
+                      src={babyImages[babySlide]}
+                      alt={isAr ? `تصوير المواليد ${babySlide + 1}` : `Newborn photography ${babySlide + 1}`}
+                      className="w-full h-full object-cover cursor-zoom-in"
+                      loading="lazy"
+                      onClick={() => setLightboxImage(babyImages[babySlide])}
+                    />
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+              <button
+                onClick={() => setBabySlide((prev) => (prev - 1 + babyImages.length) % babyImages.length)}
+                aria-label={isAr ? "السابق" : "Previous"}
+                disabled={babyImages.length <= 1}
+                className="absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => setBabySlide((prev) => (prev + 1) % babyImages.length)}
+                aria-label={isAr ? "التالي" : "Next"}
+                disabled={babyImages.length <= 1}
+                className="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+              <div className="flex items-center justify-center gap-3 mt-5">
+                <span className="font-body text-xs text-muted-foreground tracking-widest">
+                  {String(babySlide + 1).padStart(2, "0")} / {String(babyImages.length).padStart(2, "0")}
+                </span>
               </div>
             </div>
-            <ScrollAnimationWrapper className="order-1 lg:order-1">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
-                  <Baby className="w-6 h-6 text-accent" />
+
+            {/* RIGHT — content */}
+            <ScrollAnimationWrapper className="order-2 lg:order-2">
+              <div>
+                <div className="hidden lg:flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
+                    <Baby className="w-6 h-6 text-accent" />
+                  </div>
+                  <h2 className="text-2xl md:text-3xl font-serif text-foreground">{isAr ? "خدمات تصوير المواليد" : "Newborn Photography Services"}</h2>
                 </div>
-                <h2 className="text-2xl md:text-3xl font-serif text-foreground">{isAr ? "خدمات تصوير المواليد" : "Newborn Photography Services"}</h2>
-              </div>
-              <h3 className="font-serif text-lg text-foreground mb-4">{isAr ? "التقط أثمن لحظات الحياة" : "Capture Life's Most Precious Moments"}</h3>
-              <div className="space-y-4 font-body text-sm text-muted-foreground leading-relaxed">
-                <p>{isAr
-                  ? "استقبال مولودك الجديد هو من أغلى لحظات الحياة. في مستشفى رويال حياة، نقدم خدمات تصوير احترافية لتوثيق هذه اللحظات الخاصة خلال إقامتك."
-                  : "Welcoming your newborn is one of life's most cherished milestones. At Royale Hayat Hospital, we offer professional photography services to beautifully capture these special moments during your stay."}</p>
-              </div>
-              <div className="flex items-center gap-2 mt-6">
-                <Phone className="w-4 h-4 text-accent" />
-                <p className="font-body text-sm text-foreground">{isAr ? "للاستفسارات والمواعيد، اتصل:" : "For inquiries and appointments, please contact:"} <a href="tel:25360960" className="text-accent hover:underline font-semibold">2536 0960</a></p>
+                <h3 className="font-serif text-lg text-foreground mb-4">{isAr ? "التقط أثمن لحظات الحياة" : "Capture Life's Most Precious Moments"}</h3>
+                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
+                  {isAr
+                    ? "استقبال مولودك الجديد هو من أغلى لحظات الحياة. في مستشفى رويال حياة، نقدم خدمات تصوير احترافية لتوثيق هذه اللحظات الخاصة خلال إقامتك."
+                    : "Welcoming your newborn is one of life's most cherished milestones. At Royale Hayat Hospital, we offer professional photography services to beautifully capture these special moments during your stay."}
+                </p>
+                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-6">
+                  {isAr
+                    ? "يضمن مصورونا المهرة، من أحد الاستوديوهات الرقمية الرائدة في الكويت، الحفاظ على كل ابتسامة ونظرة وذكرى سعيدة لك ولعائلتك لتخزّنوها لسنوات قادمة."
+                    : "Our skilled photographers, from one of Kuwait's leading digital studios, ensure every smile, glance, and joyful memory is preserved for you and your family to treasure for years to come."}
+                </p>
+                <div className="flex items-center gap-2">
+                  <Phone className="w-4 h-4 text-accent" />
+                  <p className="font-body text-sm text-foreground">
+                    {isAr ? "للاستفسارات والمواعيد، اتصل:" : "For inquiries and appointments, please contact:"}{" "}
+                    <a href="tel:25360960" className="text-accent hover:underline font-semibold">2536 0960</a>
+                  </p>
+                </div>
               </div>
             </ScrollAnimationWrapper>
           </div>

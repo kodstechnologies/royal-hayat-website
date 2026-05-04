@@ -73,11 +73,13 @@ const Header = () => {
   ];
 
   const hospitalitySubLinks = [
-    { label: lang === "ar" ? "القاعات الفاخرة" : "Halls", href: "/hospitality?section=halls", icon: Star, desc: lang === "ar" ? "قاعات أنيقة للمناسبات" : "Elegant event spaces for celebrations" },
-    { label: lang === "ar" ? "الأجنحة الفاخرة" : "Suites", href: "/hospitality?section=suites", icon: Bed, desc: lang === "ar" ? "أجنحة فاخرة بمعايير فندقية" : "Luxury hotel-standard suites" },
-    { label: lang === "ar" ? "خدمات الفعاليات في الغرف" : "In-Room Event Services", href: "/in-room-events", icon: Sparkles, desc: lang === "ar" ? "ترتيبات فعاليات مخصصة" : "Personalized event arrangements" },
-    { label: lang === "ar" ? "سبا إليمنتس" : "Elements Spa", href: "/hospitality?section=spa", icon: Droplets, desc: lang === "ar" ? "خدمات استرخاء وعافية" : "Relaxation and wellness services." },
-    { label: lang === "ar" ? "مقهى الليوان" : "Al Liwan Cafe", href: "/hospitality?section=cafe", icon: Coffee, desc: lang === "ar" ? "مأكولات راقية ومرطبات" : "Fine dining and refreshments" },
+    { label: lang === "ar" ? "قاعات الاحتفالات" : "Birth Celebration Halls", href: "/hospitality?section=halls", icon: Star, desc: lang === "ar" ? "مساحة خاصة للاحتفال بقدوم مولودك" : "A private space to celebrate your baby's arrival" },
+    { label: lang === "ar" ? "الأجنحة الحصرية" : "Exclusive Suites", href: "/hospitality?section=suites", icon: Bed, desc: lang === "ar" ? "مساحة هادئة وشخصية للراحة والتعافي والتواصل" : "A calm, personal space to rest, recover, and bond" },
+    { label: lang === "ar" ? "تجارب الاحتفال داخل الجناح" : "In-Suite Celebration Experiences", href: "/in-room-events", icon: Sparkles, desc: lang === "ar" ? "احتفالات مميزة في خصوصية جناحك" : "Create meaningful celebrations in the comfort and privacy of your own suite" },
+    { label: lang === "ar" ? "سبا إليمنتس (بانيان تري)" : "Elements Spa (by Banyan Tree)", href: "/hospitality?section=spa", icon: Droplets, desc: lang === "ar" ? "ملاذ هادئ للاسترخاء والتجديد" : "A serene sanctuary for relaxation and renewal" },
+    { label: lang === "ar" ? "بيسترو الليوان" : "Al Liwan Bistro", href: "/hospitality?section=cafe", icon: Coffee, desc: lang === "ar" ? "بيئة راقية لتجارب طعام استثنائية" : "A refined setting for exceptional dining experiences" },
+    { label: lang === "ar" ? "كافيه الطابق الخامس" : "The 5th Floor Café", href: "/fifth-floor-cafe", icon: Coffee, desc: lang === "ar" ? "مساحة مريحة للقهوة والمرطبات الخفيفة" : "A cozy space for light bites and refreshments" },
+    { label: lang === "ar" ? "خدمات تصوير المواليد" : "Newborn Photography Services", href: "/newborn-photography", icon: Baby, desc: lang === "ar" ? "التقط أثمن لحظات الحياة" : "Capture Life's Most Precious Moments" },
   ];
 
   const patientsSubLinks = [
@@ -85,7 +87,7 @@ const Header = () => {
     { label: lang === "ar" ? "معلومات القبول" : "Admission Information", href: "/patients-visitors?tab=admission", icon: ClipboardList, desc: lang === "ar" ? "ما يجب معرفته قبل القبول" : "What to know before admission" },
     { label: lang === "ar" ? "التأمين الصحي" : "Health Insurance", href: "/patients-visitors?tab=insurance", icon: ShieldCheck, desc: lang === "ar" ? "المطالبات والموافقات المسبقة" : "Claims and pre-approvals" },
     { label: lang === "ar" ? "أثناء إقامتك" : "During Your Stay", href: "/patients-visitors?tab=during-stay", icon: Bed, desc: lang === "ar" ? "خدمات الغرف والراحة" : "Room services and comfort" },
-    { label: lang === "ar" ? "باقات الغرف" : "Birthing Rooms Package", href: "/patients-visitors?tab=rooms-package", icon: Bed, desc: lang === "ar" ? "باقات الغرف الفاخرة" : "Luxury room packages" },
+    { label: lang === "ar" ? "باقات الغرف" : "Birthing Suites Packages", href: "/patients-visitors?tab=rooms-package", icon: Bed, desc: lang === "ar" ? "باقات الغرف الفاخرة" : "Private Suites Packages" },
     { label: lang === "ar" ? "وثيقة حقوق المريض" : "Patient Bill of Rights", href: "/patients-visitors?tab=bill-of-rights", icon: ScrollText, desc: lang === "ar" ? "حقوقك ومسؤولياتك" : "Your rights and responsibilities" },
     { label: lang === "ar" ? "المرضى الدوليون" : "International Patient", href: "/international-patient", icon: MapPin, desc: lang === "ar" ? "دعم مخصص للمرضى الدوليين" : "Dedicated international patient support" },
     { label: lang === "ar" ? "نظام أمان الرضّع " : " Infant Security", href: "/infant-security", icon: Baby, desc: lang === "ar" ? "حماية متقدمة للمواليد على مدار الساعة" : "Advanced 24/7 newborn protection system" },
@@ -189,7 +191,7 @@ const Header = () => {
     const services = [
       { en: "Luxury Suites", ar: "الأجنحة الفاخرة", href: "/hospitality" },
       { en: "Elements Spa", ar: "سبا إليمنتس", href: "/hospitality" },
-      { en: "Al Liwan Cafe", ar: "مقهى الليوان", href: "/hospitality" },
+      { en: "Al Liwan Bistro", ar: "بيسترو الليوان", href: "/hospitality" },
       { en: "Newborn Photography", ar: "تصوير المواليد", href: "/patients-visitors" },
       { en: "Health Insurance", ar: "التأمين الصحي", href: "/patients-visitors" },
       { en: "Nursing Services", ar: "خدمات التمريض", href: "/home-health" },

@@ -29,12 +29,12 @@ const InRoomEvents = ({ galleryImages }: InRoomEventsProps) => {
               {isAr ? "خدمات الضيافة" : "Hospitality Services"}
             </p>
             <h1 className="text-4xl md:text-5xl font-serif text-foreground mb-4">
-              {isAr ? "خدمات الفعاليات في الغرف" : "In-Room Event Services"}
+              {isAr ? "تجارب الاحتفال داخل الجناح" : "In-Suite Celebration Experiences"}
             </h1>
             <p className="text-muted-foreground font-body text-sm max-w-2xl mx-auto">
               {isAr
-                ? "تفضل احتفالاً أكثر خصوصية وحميمية؟ تقدم خدمات الفعاليات في الغرف الفرصة المثالية لاستضافة لحظات لا تُنسى في راحة وأناقة جناح المستشفى."
-                : "Prefer a more private and intimate celebration? Our In-Room Event Services offer the perfect opportunity to host unforgettable moments right within the comfort and elegance of your hospital suite."}
+                ? "احتفل بلحظاتك الخاصة في راحة وخصوصية جناحك."
+                : "Create meaningful celebrations in the comfort and privacy of your own suite."}
             </p>
           </ScrollAnimationWrapper>
         </div>

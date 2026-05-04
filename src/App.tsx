@@ -29,6 +29,8 @@ import TrackerWaveInfantSecurity from "./pages/TrackerWaveInfantSecurity.tsx";
 import InRoomEvents from "./pages/InRoomEvents.tsx";
 import JobApplication from "./pages/JobApplication.tsx";
 import CSR from "./pages/CSR.tsx";
+import FifthFloorCafe from "./pages/FifthFloorCafe.tsx";
+import NewbornPhotography from "./pages/NewbornPhotography.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import ScrollToTopOnNav from "./components/ScrollToTopOnNav.tsx";
 
@@ -80,6 +82,12 @@ const cafeImages = [
   "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1777006539/DSC09115_nn6lzj.jpg",
   "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1777006540/DSC09126_titzqv.jpg",
   "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1777006541/DSC09207_w92s3o.jpg",
+  "/images/cafe/DSC05535.jpg",
+  "/images/cafe/DSC05536.jpg",
+  "/images/cafe/DSC09202.jpg",
+  "/images/cafe/_DSC4893.jpg",
+  "/images/cafe/_DSC4906.jpg",
+  "/images/cafe/cafe.JPG",
 ];
 const suiteCarouselImagesByIndex: Record<number, string[]> = {
   1: [
@@ -238,6 +246,7 @@ const App = () => (
                   spaImages={spaImages}
                   cafeImages={cafeImages}
                   suiteCarouselImagesByIndex={suiteCarouselImagesByIndex}
+                  inRoomEventGalleryImages={inRoomEventGalleryImages}
                 />
               }
             />
@@ -273,6 +282,8 @@ const App = () => (
             <Route path="/in-room-events" element={<InRoomEvents galleryImages={inRoomEventGalleryImages} />} />
             <Route path="/job-application" element={<JobApplication />} />
             <Route path="/csr" element={<CSR />} />
+            <Route path="/fifth-floor-cafe" element={<FifthFloorCafe />} />
+            <Route path="/newborn-photography" element={<NewbornPhotography />} />
             <Route path="/verify-national-id" element={<VerifyNationalId />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

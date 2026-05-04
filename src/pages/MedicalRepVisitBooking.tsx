@@ -11,6 +11,26 @@ import { CalendarCheck, ListChecks, Stethoscope } from "lucide-react";
 import { doctors, type Doctor } from "@/data/doctors";
 import { departments, deptDoctorAliases } from "@/data/departments";
 
+const getCleanCalendlySlug = (name: string) => {
+  let clean = name.replace(/^Dr\.?\s+/i, '').trim();
+  clean = clean.replace(/[^\w\s-]/g, '');
+  
+  const parts = clean.split(/\s+/);
+  if (parts.length <= 2) {
+     return `dr-${parts.join('-').toLowerCase()}`;
+  }
+  
+  const first = parts[0];
+  let last = parts[parts.length - 1];
+  
+  const secondToLast = parts[parts.length - 2].toLowerCase();
+  if (['al', 'el', 'abou', 'abu', 'abd'].includes(secondToLast)) {
+     last = `${secondToLast}-${last}`;
+  }
+  
+  return `dr-${first.toLowerCase()}-${last.toLowerCase()}`;
+};
+
 const MedicalRepVisitBooking = () => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
@@ -95,10 +115,20 @@ const MedicalRepVisitBooking = () => {
       </section>
 
       {/* Doctors by Department */}
-      <section className="py-20">
+      <section className="pt-10 pb-20">
         <div className="container mx-auto px-6 max-w-7xl">
           <ScrollAnimationWrapper>
-            <h2 className="text-2xl font-serif text-foreground mb-8">
+            <div className="flex flex-row items-center gap-4 mb-6">
+              <h2 className="text-2xl font-serif text-foreground m-0">{isAr ? "روابط عامة" : "General Link"}</h2>
+              <Link to="https://calendly.com/rhhmedrep" target="_blank">
+                <Button size="lg" className="gap-2">
+                  <CalendarCheck className="w-5 h-5" />
+                  {isAr ? "احجز الآن" : "Book Now"}
+                </Button>
+              </Link>
+            </div>
+
+            <h2 className="text-2xl font-serif text-foreground mb-6">
               {isAr ? "الأطباء حسب القسم" : "Doctors by Department"}
             </h2>
           </ScrollAnimationWrapper>
@@ -116,7 +146,7 @@ const MedicalRepVisitBooking = () => {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                     {deptDoctors.map((doc: Doctor) => (
-                      <Link key={doc.id} to={`/doctors/${doc.id}`} className="block">
+                      <Link key={doc.id} to={`https://calendly.com/rhhmedrep/${getCleanCalendlySlug(doc.name)}`} target="_blank" className="block">
                         <div className="bg-popover rounded-2xl border border-border/50 group cursor-pointer h-full flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
                           <div className="bg-white h-64 flex items-center justify-center relative overflow-hidden rounded-t-2xl shrink-0">
                             {doc.image ? (
@@ -138,7 +168,7 @@ const MedicalRepVisitBooking = () => {
                             <h4 className="text-base font-serif text-foreground mb-1">{isAr ? doc.nameAr : doc.name}</h4>
                             <p className="text-muted-foreground font-body text-xs mb-3">{isAr ? doc.titleAr : doc.title}</p>
 
-                            <div className="flex flex-wrap gap-1.5 mb-2">
+                            <div className="flex flex-wrap gap-1.5 mb-4">
                               {(isAr ? doc.languagesAr : doc.languages).map((l) => (
                                 <span key={l} className="px-2.5 py-0.5 rounded-full bg-secondary/40 text-[10px] font-body text-foreground">
                                   {l}
@@ -147,7 +177,7 @@ const MedicalRepVisitBooking = () => {
                             </div>
 
                             {doc.hideBooking !== true && (
-                              <div className={`flex items-center gap-1.5 mb-2 ${doc.availableOnline !== false ? "text-green-600" : "text-destructive"}`}>
+                              <div className={`flex items-center gap-1.5 mb-4 ${doc.availableOnline !== false ? "text-green-600" : "text-destructive"}`}>
                                 <div className={`w-1.5 h-1.5 rounded-full ${doc.availableOnline !== false ? "bg-green-500" : "bg-destructive"}`} />
                                 <span className="font-body text-[10px]">
                                   {doc.availableOnline !== false
@@ -157,9 +187,12 @@ const MedicalRepVisitBooking = () => {
                               </div>
                             )}
 
-                            <span className="inline-flex items-center gap-1.5 text-primary font-body text-xs tracking-wide group-hover:text-accent transition-colors mt-auto">
-                              {isAr ? "عرض الملف الشخصي ←" : "View Profile →"}
-                            </span>
+                            <div className="mt-auto pt-2">
+                              <Button className="w-full gap-2 transition-transform group-hover:scale-[1.02]">
+                                <CalendarCheck className="w-4 h-4" />
+                                {isAr ? "احجز الآن" : "Book Now"}
+                              </Button>
+                            </div>
                           </div>
                         </div>
                       </Link>
@@ -172,28 +205,7 @@ const MedicalRepVisitBooking = () => {
         </div>
       </section>
 
-      {/* General Links */}
-      <section className="py-20">
-        <div className="container mx-auto px-6 max-w-3xl">
-          <ScrollAnimationWrapper>
-            <h2 className="text-2xl font-serif text-foreground mb-8">{isAr ? "روابط عامة" : "General Link"}</h2>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link to="https://calendly.com/rhhmedrep" target="_blank">
-                <Button size="lg" className="gap-2">
-                  <CalendarCheck className="w-5 h-5" />
-                  {isAr ? "احجز الآن" : "Book Now"}
-                </Button>
-              </Link>
-              <Link to="/departments">
-                <Button size="lg" variant="outline" className="gap-2">
-                  <ListChecks className="w-5 h-5" />
-                  {isAr ? "قائمة الأقسام" : "List of Departments"}
-                </Button>
-              </Link>
-            </div>
-          </ScrollAnimationWrapper>
-        </div>
-      </section>
+
 
       <Footer />
       <ChatButton />

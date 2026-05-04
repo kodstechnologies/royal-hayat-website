@@ -14,7 +14,9 @@ import ScrollToTop from "@/components/ScrollToTop";
 import ChatButton from "@/components/ChatButton";
 import { doctors as allRealDoctors } from "@/data/doctors";
 import { departments, deptDoctorAliases } from "@/data/departments";
-import { getIdentityStatus, startIdentityVerification } from "../../api/identity";
+// TEMP: national ID / civil ID modal flow disabled — uncomment when re-enabling identity verification
+// // TEMP: civil ID verification disabled — uncomment when re-enabling
+// import { getIdentityStatus, startIdentityVerification } from "../../api/identity";
 
 
 // All doctors flat for "know your doctor" path - filter out non-bookable doctors
@@ -214,6 +216,7 @@ const BookAppointment = () => {
     setStep((s) => Math.min(s + 1, 4));
   };
 
+  /* TEMP: National ID / Afiyati flow — restore with `api/identity` import above
   const extractVerifiedName = (source: any) => {
     const payload = source?.raw?.payload || source?.raw || source?.identityData?.payload || source?.identityData || {};
     return {
@@ -316,6 +319,10 @@ const BookAppointment = () => {
       setIsCheckingApproval(false);
     }
   };
+  */
+
+  const handleNationalIdVerify = async () => {};
+  const handleCheckApproval = async () => {};
 
   const goToInitialBookingScreen = () => {
     setShowReturningPatientModal(false);
@@ -852,7 +859,15 @@ const BookAppointment = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
                     <motion.button whileHover={{ y: -4 }} whileTap={{ scale: 0.98 }}
                       onClick={() => {
-                        openReturningPatientModal();
+                        // Skip civil ID modal — go straight to patient info (step 2 returning)
+                        setNationalId("");
+                        setNationalIdError("");
+                        setVerifiedPersonName(null);
+                        setVerifyOperationId(null);
+                        setVerifyStatusMessage("");
+                        setPatientErrors({});
+                        setPatientName("");
+                        setPatientType("returning");
                       }}
                       className="bg-popover rounded-2xl p-8 border border-border text-center transition-all hover:border-primary/40">
                       <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
@@ -860,7 +875,7 @@ const BookAppointment = () => {
                       </div>
                       <h3 className="font-serif text-lg text-foreground mb-2">{t("registeredPatient")}</h3>
                       <p className="font-body text-xs text-muted-foreground">
-                        {isAr ? "سيتم توجيهك إلى بوابة عافيتي" : "You will be redirected to Afiyati Portal"}
+                        {isAr ? "أدخل بياناتك للمتابعة" : "Enter your details to continue"}
                       </p>
                     </motion.button>
                     <motion.button whileHover={{ y: -4 }} whileTap={{ scale: 0.98 }}
@@ -957,13 +972,38 @@ const BookAppointment = () => {
                     <h2 className="text-xl font-serif text-foreground mb-2">
                       {isAr ? "تأكيد بيانات المريض" : "Confirm Patient Details"}
                     </h2>
-                    <p className="font-body text-sm text-muted-foreground">
-                      {isAr ? "الحجز باسم" : "Booking for"}{" "}
-                      <span className="text-foreground font-medium">{patientName}</span>
+                    <p className="font-body text-xs text-muted-foreground mb-4">
+                      {isAr ? "أدخل اسمك الكامل كما هو مسجل في المستشفى." : "Enter your full name as registered with the hospital."}
                     </p>
+                    <div>
+                      <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
+                        {t("fullName")} <span className="text-destructive">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={patientName}
+                        onChange={(e) => {
+                          setPatientName(e.target.value);
+                          setPatientErrors((prev) => ({ ...prev, name: "" }));
+                        }}
+                        placeholder={t("enterFullName")}
+                        className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all ${patientErrors.name ? "border-destructive" : "border-border"}`}
+                      />
+                      {patientErrors.name && <p className="font-body text-xs text-destructive mt-1">{patientErrors.name}</p>}
+                    </div>
                     <div className="mt-5 flex gap-3">
                       <button
-                        onClick={() => setStep(3)}
+                        onClick={() => {
+                          if (!patientName.trim()) {
+                            setPatientErrors((prev) => ({
+                              ...prev,
+                              name: isAr ? "الاسم الكامل مطلوب" : "Full name is required",
+                            }));
+                            return;
+                          }
+                          setPatientErrors((prev) => ({ ...prev, name: "" }));
+                          setStep(3);
+                        }}
                         className="flex-1 bg-primary text-primary-foreground px-3 py-2.5 rounded-lg font-body text-xs tracking-widest uppercase hover:bg-primary/90 transition-colors inline-flex items-center justify-center text-center"
                       >
                         {isAr ? "متابعة" : "Proceed"}
@@ -1137,7 +1177,7 @@ const BookAppointment = () => {
           )}
         </div>
       </div>
-      {showReturningPatientModal && (
+      {false /* TEMP: civil ID modal — use `showReturningPatientModal &&` when restoring */ && showReturningPatientModal && (
         <div
           className="fixed inset-0 z-[70] flex items-center justify-center bg-foreground/40 backdrop-blur-sm p-4"
           onClick={() => setShowReturningPatientModal(false)}

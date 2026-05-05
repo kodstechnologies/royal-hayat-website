@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import {
@@ -21,6 +21,11 @@ import { postEnquiry } from "../../api/enquiry";
 
 // All doctors flat for "know your doctor" path - filter out non-bookable doctors
 const allDoctorsFlat = allRealDoctors.filter(d => !d.hideBooking);
+const MAIN_CATEGORY_ORDER = [
+  "Clinical Speciality",
+  "Clinical Support Service",
+  "Home Care Service",
+] as const;
 
 // ─── COMPONENT ───────────────────────────────────────────────────────────────
 
@@ -272,6 +277,27 @@ const BookAppointment = () => {
         d.category.toLowerCase().includes(deptSearch.toLowerCase())
     )
     .sort((a, b) => (isAr ? a.nameAr : a.name).localeCompare(isAr ? b.nameAr : b.name, isAr ? 'ar' : 'en'));
+  const displayDepts = useMemo(
+    () => (deptSearch.trim() || showAllDepts ? filteredDepts : filteredDepts.slice(0, 6)),
+    [deptSearch, showAllDepts, filteredDepts],
+  );
+  const groupedMainCategoryDepts = useMemo(() => {
+    const grouped: Record<string, typeof filteredDepts> = {};
+    for (const dept of displayDepts) {
+      const mainCategory = String((dept as unknown as { mainCategory?: unknown }).mainCategory ?? "");
+      const key = MAIN_CATEGORY_ORDER.includes(mainCategory as (typeof MAIN_CATEGORY_ORDER)[number])
+        ? mainCategory
+        : "Other";
+      if (!grouped[key]) grouped[key] = [];
+      grouped[key].push(dept);
+    }
+    const ordered: Array<[string, typeof filteredDepts]> = [];
+    for (const key of MAIN_CATEGORY_ORDER) {
+      if (grouped[key]?.length) ordered.push([key, grouped[key]]);
+    }
+    if (grouped.Other?.length) ordered.push(["Other", grouped.Other]);
+    return ordered;
+  }, [displayDepts]);
 
   const doctors = selectedDept
     ? (() => {
@@ -907,35 +933,41 @@ const BookAppointment = () => {
                     placeholder={t("searchDepartments")}
                     className="w-full pl-11 pr-4 py-3 rounded-xl border border-border bg-popover font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30" />
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                  {(() => {
-                    const displayDepts = deptSearch.trim() || showAllDepts ? filteredDepts : filteredDepts.slice(0, 6);
-                    return displayDepts.map((dept) => (
-                      <motion.button key={dept.id} whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}
-                        onClick={() => {
-                          if (dept.slug === "al-safwa-healthcare") {
-                            navigate("/al-safwa", { state: { fromBookAppointment: true } });
-                            return;
-                          }
-                          if (dept.slug === "home-health") {
-                            navigate("/home-health", { state: { fromBookAppointment: true } });
-                            return;
-                          }
-                          setSelectedDept(dept.id);
-                          setStep(1);
-                        }}
-                        className={`flex items-center gap-3 p-4 rounded-xl border transition-all text-left ${selectedDept === dept.id
-                          ? "bg-primary text-primary-foreground border-primary shadow-md"
-                          : "bg-popover border-border hover:border-accent/40 text-foreground"
-                          }`}>
-                        <dept.icon className={`w-5 h-5 flex-shrink-0 ${selectedDept === dept.id ? "" : "text-accent"}`} />
-                        <div className="min-w-0">
-                          <p className="font-body text-sm font-medium truncate">{dept.name}</p>
-                          <p className={`font-body text-xs ${selectedDept === dept.id ? "text-primary-foreground/60" : "text-muted-foreground"}`}>{dept.category}</p>
-                        </div>
-                      </motion.button>
-                    ));
-                  })()}
+                <div className="space-y-10">
+                  {groupedMainCategoryDepts.map(([mainCategory, depts]) => (
+                    <section key={mainCategory}>
+                      <h3 className="text-2xl md:text-3xl font-serif font-semibold tracking-tight text-accent mb-5 md:mb-6 text-center pb-3 border-b-2 border-primary/15">
+                        {mainCategory}
+                      </h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                        {depts.map((dept) => (
+                          <motion.button key={dept.id} whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}
+                            onClick={() => {
+                              if (dept.slug === "al-safwa-healthcare") {
+                                navigate("/al-safwa", { state: { fromBookAppointment: true } });
+                                return;
+                              }
+                              if (dept.slug === "home-health") {
+                                navigate("/home-health", { state: { fromBookAppointment: true } });
+                                return;
+                              }
+                              setSelectedDept(dept.id);
+                              setStep(1);
+                            }}
+                            className={`flex items-center gap-3 p-4 rounded-xl border transition-all text-left ${selectedDept === dept.id
+                              ? "bg-primary text-primary-foreground border-primary shadow-md"
+                              : "bg-popover border-border hover:border-accent/40 text-foreground"
+                              }`}>
+                            <dept.icon className={`w-5 h-5 flex-shrink-0 ${selectedDept === dept.id ? "" : "text-accent"}`} />
+                            <div className="min-w-0">
+                              <p className="font-body text-sm font-medium truncate">{dept.name}</p>
+                              <p className={`font-body text-xs ${selectedDept === dept.id ? "text-primary-foreground/60" : "text-muted-foreground"}`}>{dept.category}</p>
+                            </div>
+                          </motion.button>
+                        ))}
+                      </div>
+                    </section>
+                  ))}
                 </div>
                 {!showAllDepts && !deptSearch.trim() && filteredDepts.length > 6 && (
                   <div className="text-center mt-6">

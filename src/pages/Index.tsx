@@ -32,7 +32,7 @@ const Index = () => {
     featuredDoctors.forEach((doc) => {
       if (doc.image) {
         const img = new Image();
-        img.src = doc.image;
+        img.src = doc.image;  
       }
     });
   }, []);

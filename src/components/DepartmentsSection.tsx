@@ -123,6 +123,7 @@ const DepartmentsSection = ({
   }, [apiCatalog, apiGroupedCatalog, useGroupedLayout, disableStaticFallback]);
   const doctorScrollRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef(null);
+  const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
   const { lang, t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
 

@@ -7,7 +7,7 @@ import ChairmanMessage from "@/components/ChairmanMessage";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Heart, Star, Sparkles, Shield, Target, BookOpen, Users, ChevronDown, ChevronUp } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 const leaders = [
@@ -190,6 +190,10 @@ const AboutUs = () => {
   const section = searchParams.get("section");
   const showAll = !section;
   const show = (s: string) => showAll || section === s; 
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [section]);
 
   const values = [
     { icon: Heart, titleKey: "patientCenteredCare", descKey: "patientCenteredCareDesc" },

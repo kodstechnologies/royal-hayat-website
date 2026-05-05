@@ -177,6 +177,10 @@ const WorkWithUs = ({
   const showSection = (s: string) => showAll || section === s;
 
   useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [section]);
+
+  useEffect(() => {
     const loadJobs = async () => {
       try {
         console.log("getAllJobs----start");

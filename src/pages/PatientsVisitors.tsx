@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -16,6 +16,10 @@ const PatientsVisitors = () => {
   const tab = searchParams.get("tab");
   const showAll = !tab;
   const show = (s: string) => showAll || tab === s;
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [tab]);
 
   // ─── ROOMS PACKAGE PDF LINKS ───────────────────────────────────────────
   // Using local PDF files from /public/images/doctors/

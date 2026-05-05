@@ -14,7 +14,6 @@ const PatientsVisitors = () => {
   const { lang } = useLanguage();
   const [searchParams] = useSearchParams();
   const tab = searchParams.get("tab");
-  const [isRoomsOpen, setIsRoomsOpen] = useState(tab === "rooms-package");
   const showAll = !tab;
   const show = (s: string) => showAll || tab === s;
 
@@ -40,7 +39,7 @@ const PatientsVisitors = () => {
                 : tab === "admission" ? (lang === "ar" ? "معلومات القبول" : "Admission Information")
                   : tab === "insurance" ? (lang === "ar" ? "التأمين الصحي" : "Health Insurance")
                     : tab === "during-stay" ? (lang === "ar" ? "أثناء إقامتك" : "During Your Stay")
-                      : tab === "rooms-package" ? (lang === "ar" ? "باقات الغرف" : "Birthing Suites Packages")
+                      : tab === "rooms-package" ? (lang === "ar" ? "باقات أجنحة الولادة" : "Birthing Suites Packages")
                         : tab === "bill-of-rights" ? (lang === "ar" ? "وثيقة حقوق المريض" : "Patient Bill of Rights")
                           : (lang === "ar" ? "معلومات للمرضى والزوار" : "Information for Patients & Visitors")}
             </h1>
@@ -117,6 +116,186 @@ const PatientsVisitors = () => {
                     </div>
                   </div>
                 </div>
+              </ScrollAnimationWrapper>
+            </div>}
+
+            {/* HEALTH INSURANCE */}
+            {show("insurance") && <div id="section-insurance" className={sectionClass}>
+              <ScrollAnimationWrapper>
+                {showAll && <div className="flex items-center gap-3 mb-6">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Shield className="w-6 h-6 text-primary" />
+                  </div>
+                  <h2 className="text-2xl md:text-3xl font-serif text-foreground">{lang === "ar" ? "خدمات التأمين الصحي" : "Health Insurance Services"}</h2>
+                </div>}
+
+                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-8">
+                  {lang === "ar" ? "في مستشفى رويال حياة، قسم التأمين الطبي لدينا مكرس لجعل تجربة الرعاية الصحية الخاصة بك سلسة وخالية من التوتر قدر الإمكان. أقمنا شراكات مع معظم شركات التأمين الطبي الخاصة الرئيسية ونقدم خطة دفع مصممة خصيصاً للمرضى المشمولين ببرامج التأمين الخاصة." : "At Royale Hayat Hospital, our Medical Insurance Department is dedicated to making your healthcare experience as smooth and stress-free as possible. We have established partnerships with most major private medical insurance companies and offer a tailored payment scheme for patients covered under private insurance programs."}
+                </p>
+
+                <div className="bg-popover border border-border/50 rounded-2xl p-6 mb-6">
+                  <h3 className="font-serif text-lg text-foreground mb-3">{lang === "ar" ? "دعم الفواتير المباشرة" : "Direct Billing Support"}</h3>
+                  <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
+                    {lang === "ar" ? "نتولى جميع تقديمات الفواتير ونسهل الفوترة المباشرة لمزود التأمين الخاص بك. لتمكين هذه الخدمة، يرجى التأكد من تقديم المعلومات التالية بدقة:" : "We handle all billing submissions and facilitate direct billing to your insurance provider, ensuring minimal hassle for you. To enable this service, please ensure the following information is accurately provided:"}
+                  </p>
+                  <div className="space-y-2">
+                    {(lang === "ar" ? ["رقم بوليصة التأمين", "رقم المجموعة", "العنوان البريدي الصحيح"] : ["Insurance policy number", "Group number", "Correct mailing address"]).map((item, i) => (
+                      <div key={i} className="flex items-center gap-3">
+                        <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
+                        <span className="font-body text-sm text-foreground">{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="bg-popover border border-border/50 rounded-2xl p-6 mb-6">
+                  <h3 className="font-serif text-lg text-foreground mb-3">{lang === "ar" ? "مساعدة تأمينية شاملة" : "Comprehensive Insurance Assistance"}</h3>
+                  <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
+                    {lang === "ar" ? "فريق التأمين ذو الخبرة لدينا هنا لإرشادك في كل خطوة من العملية. تشمل الخدمات:" : "Our experienced insurance team is here to guide you through every step of the process. Services include:"}
+                  </p>
+                  <div className="space-y-2">
+                    {(lang === "ar" ? [
+                      "توعية المرضى بتفاصيل بوليصة التأمين",
+                      "المساعدة في التسجيل والتقديرات المالية",
+                      "تنسيق الموافقات المسبقة للقبول الداخلي والإجراءات الجراحية",
+                    ] : [
+                      "Educating patients on insurance policy details",
+                      "Assistance with registration and financial estimates",
+                      "Coordinating pre-approvals for inpatient admissions and surgical procedures",
+                    ]).map((item, i) => (
+                      <div key={i} className="flex items-center gap-3">
+                        <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
+                        <span className="font-body text-sm text-foreground">{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="bg-primary/5 rounded-2xl p-6">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Clock className="w-5 h-5 text-primary" />
+                    <h3 className="font-serif text-lg text-foreground">{lang === "ar" ? "ساعات العمل" : "Operating Hours"}</h3>
+                  </div>
+                  <p className="font-body text-sm text-muted-foreground mb-1">{lang === "ar" ? "مكتب التأمين مفتوح:" : "Our insurance office is open:"}</p>
+                  <p className="font-body text-sm text-foreground">{lang === "ar" ? "الأحد – الخميس: 8:00 ص – 8:00 م" : "Sunday – Thursday: 8:00 AM – 8:00 PM"}</p>
+                  <p className="font-body text-sm text-foreground">{lang === "ar" ? "السبت: 8:00 ص – 4:00 م" : "Saturday: 8:00 AM – 4:00 PM"}</p>
+                  <div className="flex items-center gap-2 mt-4">
+                    <Phone className="w-4 h-4 text-accent" />
+                    <p className="font-body text-sm text-foreground">
+                      {lang === "ar" ? "للاستفسارات أو للتحقق مما إذا كانت خطة التأمين الخاصة بك مقبولة، يرجى الاتصال بنا على " : "For inquiries or to verify if your insurance plan is accepted, please contact us at "}
+                      <a href="tel:25360453" className="text-accent hover:underline font-semibold">25360453</a>.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-10 relative left-1/2 right-1/2 -mx-[50vw] w-screen">
+                  <InsurancePartners />
+                </div>
+              </ScrollAnimationWrapper>
+            </div>}
+
+            {/* BIRTHING SUITES PACKAGES */}
+            {show("rooms-package") && <div id="section-rooms-package" className={tab === "rooms-package" ? "flex-1 flex flex-col" : sectionClass}>
+              <ScrollAnimationWrapper className={tab === "rooms-package" ? "flex-1 flex flex-col" : ""}>
+                {tab === "rooms-package" ? (
+                  /* Dedicated Tab View — images stacked one by one */
+                  <div className="w-full">
+                    {/* Desktop (md+): PC version images */}
+                    <div className="hidden md:block w-full space-y-6 px-6 py-6 bg-background">
+                      {(lang === "ar"
+                        ? [1,2,3,4,5,6].map(n => `/images/Birthing-packages/Birthing Packages for_PC Version_AR jpg/Birthing Packages for_PC Version_AR_${n}.jpg`)
+                        : [1,2,3,4,5,6,7].map(n => `/images/Birthing-packages/Birthing Packages for_PC Version_Eng jpg/Birthing Packages for_PC Version_Eng_${n}.jpg`)
+                      ).map((src, i) => (
+                        <img
+                          key={i}
+                          src={src}
+                          alt={lang === "ar" ? `باقات الغرف ${i + 1}` : `Birthing Suites Package ${i + 1}`}
+                          className="w-full block rounded-2xl shadow-sm"
+                          loading={i === 0 ? "eager" : "lazy"}
+                        />
+                      ))}
+                    </div>
+
+                    {/* Mobile (< md): Mobile version images */}
+                    <div className="md:hidden w-full">
+                      {(lang === "ar"
+                        ? [1,2,3,4,5,6,7].map(n => `/images/Birthing-packages/Birthing Packages for_Mobile Version_AR JPG/Birthing Packages for_Mobile Version_AR_${n}.jpg`)
+                        : [1,2,3,4,5,6,7].map(n => `/images/Birthing-packages/Birthing Packages for_Mobile Version_Eng jpg/Birthing Packages for_Mobile Version_Eng_${n}.jpg`)
+                      ).map((src, i) => (
+                        <img
+                          key={i}
+                          src={src}
+                          alt={lang === "ar" ? `باقات الغرف ${i + 1}` : `Birthing Suites Package ${i + 1}`}
+                          className="w-full block"
+                          loading={i === 0 ? "eager" : "lazy"}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  /* Regular Section View for "All" page - like other sections */
+                  <div>
+                    {showAll && <div className="flex items-center gap-3 mb-6">
+                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                        <Bed className="w-6 h-6 text-primary" />
+                      </div>
+                      <h2 className="text-2xl md:text-3xl font-serif text-foreground">{lang === "ar" ? "باقات أجنحة الولادة" : "Birthing Suites Packages"}</h2>
+                    </div>}
+{/* 
+                    <p className="font-body text-sm text-muted-foreground leading-relaxed mb-6">
+                      {lang === "ar"
+                        ? "يوفر مستشفى رويال حياة مجموعة من الأجنحة الفاخرة. يمكنك استعراض كافة التفاصيل والباقات."
+                        : "Royale Hayat Hospital offers a range of luxurious birthing suites. Explore all details and packages."}
+                    </p> */}
+
+                    {/* Single preview image */}
+                    <div className="w-full rounded-2xl shadow-lg bg-white border border-border/30 overflow-hidden mb-6">
+                      <img
+                        src={lang === "ar" 
+                          ? "/images/Birthing-packages/Birthing Packages for_PC Version_AR jpg/Birthing Packages for_PC Version_AR_1.jpg"
+                          : "/images/Birthing-packages/Birthing Packages for_PC Version_Eng jpg/Birthing Packages for_PC Version_Eng_1.jpg"
+                        }
+                        alt={lang === "ar" ? "باقات أجنحة الولادة" : "Birthing Suites Packages"}
+                        className="w-full block"
+                      />
+                    </div>
+
+                    {/* Read More button */}
+                    <div className="flex justify-center">
+                      <Link
+                        to="/patients-visitors?tab=rooms-package"
+                        className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-full font-body text-sm hover:bg-primary/90 transition-colors shadow-md"
+                      >
+                        {lang === "ar" ? "اقرأ المزيد" : "Read More"}
+                        <ChevronDown className="w-4 h-4 rotate-[-90deg]" />
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </ScrollAnimationWrapper>
+            </div>}
+
+            {/* INTERNATIONAL PATIENT */}
+            {show("international") && <div id="section-international" className={sectionClass}>
+              <ScrollAnimationWrapper>
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Globe className="w-6 h-6 text-primary" />
+                  </div>
+                  <h2 className="text-2xl md:text-3xl font-serif text-foreground">{lang === "ar" ? "المرضى الدوليون" : "International Patient"}</h2>
+                </div>
+
+                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
+                  {lang === "ar" ? "لمعلومات مفصلة حول خدمات مركز المرضى الدوليين ونموذج الاستفسار وتفاصيل الاتصال، يرجى زيارة الصفحة المخصصة." : "For detailed information about our International Patient Center services, enquiry form, and contact details, please visit the dedicated page."}
+                </p>
+
+                <Link
+                  to="/international-patient"
+                  className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-full font-body text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-colors"
+                >
+                  <Globe className="w-4 h-4" />
+                  {lang === "ar" ? "زيارة مركز المرضى الدوليين" : "Visit International Patient Center"}
+                </Link>
               </ScrollAnimationWrapper>
             </div>}
 
@@ -213,81 +392,6 @@ const PatientsVisitors = () => {
               </ScrollAnimationWrapper>
             </div>}
 
-            {/* HEALTH INSURANCE */}
-            {show("insurance") && <div id="section-insurance" className={sectionClass}>
-              <ScrollAnimationWrapper>
-                {showAll && <div className="flex items-center gap-3 mb-6">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Shield className="w-6 h-6 text-primary" />
-                  </div>
-                  <h2 className="text-2xl md:text-3xl font-serif text-foreground">{lang === "ar" ? "خدمات التأمين الصحي" : "Health Insurance Services"}</h2>
-                </div>}
-
-                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-8">
-                  {lang === "ar" ? "في مستشفى رويال حياة، قسم التأمين الطبي لدينا مكرس لجعل تجربة الرعاية الصحية الخاصة بك سلسة وخالية من التوتر قدر الإمكان. أقمنا شراكات مع معظم شركات التأمين الطبي الخاصة الرئيسية ونقدم خطة دفع مصممة خصيصاً للمرضى المشمولين ببرامج التأمين الخاصة." : "At Royale Hayat Hospital, our Medical Insurance Department is dedicated to making your healthcare experience as smooth and stress-free as possible. We have established partnerships with most major private medical insurance companies and offer a tailored payment scheme for patients covered under private insurance programs."}
-                </p>
-
-                <div className="bg-popover border border-border/50 rounded-2xl p-6 mb-6">
-                  <h3 className="font-serif text-lg text-foreground mb-3">{lang === "ar" ? "دعم الفواتير المباشرة" : "Direct Billing Support"}</h3>
-                  <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
-                    {lang === "ar" ? "نتولى جميع تقديمات الفواتير ونسهل الفوترة المباشرة لمزود التأمين الخاص بك. لتمكين هذه الخدمة، يرجى التأكد من تقديم المعلومات التالية بدقة:" : "We handle all billing submissions and facilitate direct billing to your insurance provider, ensuring minimal hassle for you. To enable this service, please ensure the following information is accurately provided:"}
-                  </p>
-                  <div className="space-y-2">
-                    {(lang === "ar" ? ["رقم بوليصة التأمين", "رقم المجموعة", "العنوان البريدي الصحيح"] : ["Insurance policy number", "Group number", "Correct mailing address"]).map((item, i) => (
-                      <div key={i} className="flex items-center gap-3">
-                        <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
-                        <span className="font-body text-sm text-foreground">{item}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="bg-popover border border-border/50 rounded-2xl p-6 mb-6">
-                  <h3 className="font-serif text-lg text-foreground mb-3">{lang === "ar" ? "مساعدة تأمينية شاملة" : "Comprehensive Insurance Assistance"}</h3>
-                  <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
-                    {lang === "ar" ? "فريق التأمين ذو الخبرة لدينا هنا لإرشادك في كل خطوة من العملية. تشمل الخدمات:" : "Our experienced insurance team is here to guide you through every step of the process. Services include:"}
-                  </p>
-                  <div className="space-y-2">
-                    {(lang === "ar" ? [
-                      "توعية المرضى بتفاصيل بوليصة التأمين",
-                      "المساعدة في التسجيل والتقديرات المالية",
-                      "تنسيق الموافقات المسبقة للقبول الداخلي والإجراءات الجراحية",
-                    ] : [
-                      "Educating patients on insurance policy details",
-                      "Assistance with registration and financial estimates",
-                      "Coordinating pre-approvals for inpatient admissions and surgical procedures",
-                    ]).map((item, i) => (
-                      <div key={i} className="flex items-center gap-3">
-                        <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
-                        <span className="font-body text-sm text-foreground">{item}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="bg-primary/5 rounded-2xl p-6">
-                  <div className="flex items-center gap-3 mb-3">
-                    <Clock className="w-5 h-5 text-primary" />
-                    <h3 className="font-serif text-lg text-foreground">{lang === "ar" ? "ساعات العمل" : "Operating Hours"}</h3>
-                  </div>
-                  <p className="font-body text-sm text-muted-foreground mb-1">{lang === "ar" ? "مكتب التأمين مفتوح:" : "Our insurance office is open:"}</p>
-                  <p className="font-body text-sm text-foreground">{lang === "ar" ? "الأحد – الخميس: 8:00 ص – 8:00 م" : "Sunday – Thursday: 8:00 AM – 8:00 PM"}</p>
-                  <p className="font-body text-sm text-foreground">{lang === "ar" ? "السبت: 8:00 ص – 4:00 م" : "Saturday: 8:00 AM – 4:00 PM"}</p>
-                  <div className="flex items-center gap-2 mt-4">
-                    <Phone className="w-4 h-4 text-accent" />
-                    <p className="font-body text-sm text-foreground">
-                      {lang === "ar" ? "للاستفسارات أو للتحقق مما إذا كانت خطة التأمين الخاصة بك مقبولة، يرجى الاتصال بنا على " : "For inquiries or to verify if your insurance plan is accepted, please contact us at "}
-                      <a href="tel:25360453" className="text-accent hover:underline font-semibold">25360453</a>.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mt-10 relative left-1/2 right-1/2 -mx-[50vw] w-screen">
-                  <InsurancePartners />
-                </div>
-              </ScrollAnimationWrapper>
-            </div>}
-
             {/* DURING YOUR STAY */}
             {show("during-stay") && <div id="section-during-stay" className={sectionClass}>
               <ScrollAnimationWrapper>
@@ -373,132 +477,6 @@ const PatientsVisitors = () => {
                     ))}
                   </div>
                 </div>
-              </ScrollAnimationWrapper>
-            </div>}
-
-            {/* ROOMS PACKAGE */}
-            {/* ROOMS PACKAGE */}
-            {/* ROOMS PACKAGE */}
-            {show("rooms-package") && <div id="section-rooms-package" className={tab === "rooms-package" ? "flex-1 flex flex-col" : `${sectionClass} border border-border/50 rounded-2xl overflow-hidden bg-popover shadow-sm`}>
-              <ScrollAnimationWrapper className={tab === "rooms-package" ? "flex-1 flex flex-col" : ""}>
-                {tab === "rooms-package" ? (
-                  /* Dedicated Tab View — images stacked one by one */
-                  <div className="w-full">
-                    {/* Desktop (md+): PC version images */}
-                    <div className="hidden md:block w-full space-y-6 px-6 py-6 bg-background">
-                      {(lang === "ar"
-                        ? [1,2,3,4,5,6].map(n => `/images/Birthing-packages/Birthing Packages for_PC Version_AR jpg/Birthing Packages for_PC Version_AR_${n}.jpg`)
-                        : [1,2,3,4,5,6,7].map(n => `/images/Birthing-packages/Birthing Packages for_PC Version_Eng jpg/Birthing Packages for_PC Version_Eng_${n}.jpg`)
-                      ).map((src, i) => (
-                        <img
-                          key={i}
-                          src={src}
-                          alt={lang === "ar" ? `باقات الغرف ${i + 1}` : `Birthing Suites Package ${i + 1}`}
-                          className="w-full block rounded-2xl shadow-sm"
-                          loading={i === 0 ? "eager" : "lazy"}
-                        />
-                      ))}
-                    </div>
-
-                    {/* Mobile (< md): Mobile version images */}
-                    <div className="md:hidden w-full">
-                      {(lang === "ar"
-                        ? [1,2,3,4,5,6,7].map(n => `/images/Birthing-packages/Birthing Packages for_Mobile Version_AR JPG/Birthing Packages for_Mobile Version_AR_${n}.jpg`)
-                        : [1,2,3,4,5,6,7].map(n => `/images/Birthing-packages/Birthing Packages for_Mobile Version_Eng jpg/Birthing Packages for_Mobile Version_Eng_${n}.jpg`)
-                      ).map((src, i) => (
-                        <img
-                          key={i}
-                          src={src}
-                          alt={lang === "ar" ? `باقات الغرف ${i + 1}` : `Birthing Suites Package ${i + 1}`}
-                          className="w-full block"
-                          loading={i === 0 ? "eager" : "lazy"}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  /* Accordion View for "All" page */
-                  <>
-                    <button
-                      onClick={() => setIsRoomsOpen(!isRoomsOpen)}
-                      className="w-full flex items-center justify-between p-6 text-left hover:bg-muted/30 transition-colors"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                          <Bed className="w-6 h-6 text-primary" />
-                        </div>
-                        <div>
-                          <h2 className="text-2xl font-serif text-foreground">{lang === "ar" ? "باقات الغرف" : "Rooms Package"}</h2>
-                          <p className="text-xs text-muted-foreground font-body mt-1">
-                            {lang === "ar" ? "انقر لاستكشاف تفاصيل الأجنحة الفاخرة لدينا" : "Click to explore our luxury suite details"}
-                          </p>
-                        </div>
-                      </div>
-                      <ChevronDown className={`w-6 h-6 text-muted-foreground transition-transform duration-500 ${isRoomsOpen ? "rotate-180" : ""}`} />
-                    </button>
-
-                    <motion.div
-                      initial={false}
-                      animate={{ height: isRoomsOpen ? "auto" : 0, opacity: isRoomsOpen ? 1 : 0 }}
-                      transition={{ duration: 0.5, ease: [0.04, 0.62, 0.23, 0.98] }}
-                      className="overflow-hidden"
-                    >
-                      <div className="p-6 border-t border-border/50">
-                        <p className="font-body text-sm text-muted-foreground leading-relaxed mb-6">
-                          {lang === "ar"
-                            ? "يوفر مستشفى رويال حياة مجموعة من الأجنحة الفاخرة. يمكنك استعراض كافة التفاصيل والباقات في العارض أدناه."
-                            : "Royale Hayat Hospital offers a range of luxurious suites. You can browse all details and packages in the viewer below."}
-                        </p>
-
-                        <div className="w-full rounded-2xl shadow-lg bg-white border border-border/30 overflow-hidden">
-                          <div className="overflow-hidden">
-                            {lang === "ar" ? (
-                              roomsPdfAr ? (
-                                <iframe
-                                  src={`${roomsPdfAr}#toolbar=0&navpanes=0&scrollbar=0`}
-                                  title="Rooms Package Arabic"
-                                  className="w-full"
-                                  style={{ border: "none", height: "auto", minHeight: "700px" }}
-                                  scrolling="no"
-                                />
-                              ) : (
-                                <div className="py-20 text-center text-muted-foreground font-body">
-                                  {lang === "ar" ? "ملف PDF العربي غير متوفر" : "Arabic PDF file not available"}
-                                </div>
-                              )
-                            ) : (
-                              roomsPdfEn ? (
-                                <iframe
-                                  src={`${roomsPdfEn}#toolbar=0&navpanes=0&scrollbar=0`}
-                                  title="Rooms Package English"
-                                  className="w-full"
-                                  style={{ border: "none", height: "auto", minHeight: "700px" }}
-                                  scrolling="no"
-                                />
-                              ) : (
-                                <div className="py-20 text-center text-muted-foreground font-body">
-                                  English PDF file not available
-                                </div>
-                              )
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Mobile download button — shown only on small screens */}
-                        <div className="flex justify-center mt-5 md:hidden">
-                          <a
-                            href={lang === "ar" ? roomsPdfAr : roomsPdfEn}
-                            download
-                            className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-full font-body text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-colors shadow-md"
-                          >
-                            <Download className="w-4 h-4" />
-                            {lang === "ar" ? "تحميل PDF" : "Download PDF"}
-                          </a>
-                        </div>
-                      </div>
-                    </motion.div>
-                  </>
-                )}
               </ScrollAnimationWrapper>
             </div>}
 
@@ -670,30 +648,6 @@ const PatientsVisitors = () => {
               </ScrollAnimationWrapper>
             </div>}
 
-            {/* INTERNATIONAL PATIENT */}
-            {show("international") && <div id="section-international" className={sectionClass}>
-              <ScrollAnimationWrapper>
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Globe className="w-6 h-6 text-primary" />
-                  </div>
-                  <h2 className="text-2xl md:text-3xl font-serif text-foreground">{lang === "ar" ? "المرضى الدوليون" : "International Patient"}</h2>
-                </div>
-
-                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
-                  {lang === "ar" ? "لمعلومات مفصلة حول خدمات مركز المرضى الدوليين ونموذج الاستفسار وتفاصيل الاتصال، يرجى زيارة الصفحة المخصصة." : "For detailed information about our International Patient Center services, enquiry form, and contact details, please visit the dedicated page."}
-                </p>
-
-                <Link
-                  to="/international-patient"
-                  className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-full font-body text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-colors"
-                >
-                  <Globe className="w-4 h-4" />
-                  {lang === "ar" ? "زيارة مركز المرضى الدوليين" : "Visit International Patient Center"}
-                </Link>
-              </ScrollAnimationWrapper>
-            </div>}
-
           </div>
         </div>
       </section>
@@ -701,7 +655,7 @@ const PatientsVisitors = () => {
       <Footer />
       <ChatButton />
       <ScrollToTop />
-      
+
     </div>
   );
 };

@@ -98,15 +98,30 @@ const DepartmentsSection = () => {
       "respiratory-clinic-pulmonology": ["alia", "ibrahim"],
       "allergy-and-immunology": ["othman", "yassmin"],
       // OB/GYN subs
+      "cosmetic-gynecology": ["abubakr", "elmardi", "nada", "samar", "nagaty"],
+      "gynecologic-oncology": ["nourah-al-ibrahim"],
+      "urogynecology": ["abubakr", "elmardi", "nada"],
+      "women-s-health": [], // All OBGYN doctors
       "physiotherapy": [],
       "parent-and-childbirth-education": [],
+      // General & Laparoscopic Surgery subs
+      "obesity-bariatric-surgery": ["ahmed-al-mulla", "mulla", "humoud", "alrasheedi", "hussein", "faour", "sulaiman", "almazeedi"],
+      "breast-surgical-oncology": ["noha", "alsaleh"],
+      "abdominal-wall-reconstruction": ["humoud", "alrasheedi", "sarah", "youha"],
+      "nutrition-and-diet-surgery": ["hachem", "khreis", "salamah"],
     };
 
     // Build all doctors pool — include Nutricare for Clinical Nutrition sub
     const aliases = deptDoctorAliases[selectedDept.name];
     const matchTerms = aliases && aliases.length > 0 ? aliases : [selectedDept.name];
     // For Internal Medicine, also pull Nutricare doctors
-    const extraTerms = selectedDept.name === "Internal Medicine" ? ["Nutricare"] : [];
+    // For General Surgery, also pull Nutricare and La Cosmetique doctors
+    const extraTerms: string[] = [];
+    if (selectedDept.name === "Internal Medicine") {
+      extraTerms.push("Nutricare");
+    } else if (selectedDept.name === "General & Laparoscopic Surgery") {
+      extraTerms.push("Nutricare", "La Cosmetique");
+    }
     const allTerms = [...matchTerms, ...extraTerms];
     const allDeptDoctors = doctors.filter((doc) =>
       allTerms.some((alias) => doc.department.includes(alias) || doc.specialty.includes(alias))

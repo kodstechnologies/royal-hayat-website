@@ -20,16 +20,22 @@ const ChairmanMessage = () => {
       >
         {/* LEFT — Photo placeholder */}
         <div className="md:w-[38%] lg:w-[35%] flex-shrink-0 bg-primary/10 min-h-[480px] md:min-h-[600px] flex items-end justify-center relative overflow-hidden">
-          {/* Placeholder — swap src when ready */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-primary/30">
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-20 h-20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5.121 17.804A9 9 0 1118.88 6.196M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            <p className="font-body text-xs tracking-widest uppercase">Photo Coming Soon</p>
-          </div>
+          {/* Responsive Chairman Photo */}
+          <picture className="absolute inset-0">
+            {/* Mobile image */}
+            <source media="(max-width: 767px)" srcSet="/images/Chairman-mobile.jpeg" />
+            {/* Desktop/tablet image */}
+            <source media="(min-width: 768px)" srcSet="/images/Chairman-web.jpeg" />
+            {/* Fallback */}
+            <img 
+              src="/images/Chairman-web.jpeg" 
+              alt={t("chairmanName")}
+              className="w-full h-full object-cover object-center"
+            />
+          </picture>
 
-          {/* Name badge at bottom */}
-          <div className="relative z-10 w-full bg-gradient-to-t from-primary/80 via-primary/40 to-transparent pt-20 pb-8 px-8">
+          {/* Name badge at bottom - only visible on mobile */}
+          <div className="md:hidden relative z-10 w-full bg-gradient-to-t from-primary/80 via-primary/40 to-transparent pt-20 pb-8 px-8">
             <p className="font-serif text-xl text-primary-foreground leading-tight">
               {t("chairmanName")}
             </p>

@@ -190,18 +190,16 @@ const Doctors = () => {
       "Obstetrics & Gynecology", "Neonatal", "Pediatric", "Pediatrics",
       "General Surgery", "Anesthesia", "Anesthesia & Intensive Care",
       "Internal Medicine", "Family Medicine", "ENT (Ear, Nose & Throat)", "ENT",
-      "La Cosmetique", "Plastic Surgery", "IVF", "Reproductive Medicine",
-      "Dermatology", "Dental", "Dental Clinic", "Pain Management",
+      "La Cosmetique", "Plastic Surgery & Cosmetology", "IVF", "Reproductive Medicine",
+      "Dermatology", "Dental", "Dental Clinic", "Pain Management", "Nutricare",
     ];
     const clinicalSupport: string[] = [
       "Laboratory", "Radiology", "Intensive Care", "Clinical Pharmacy",
       "Pharmacy", "Al Safwa",
     ];
-    const homeCare: string[] = ["Royale Home Health", "Physiotherapy", "Nutricare"];
 
     if (clinicalSpeciality.some(a => dept.toLowerCase().includes(a.toLowerCase()) || a.toLowerCase().includes(dept.toLowerCase()))) return "Clinical Speciality";
     if (clinicalSupport.some(a => dept.toLowerCase().includes(a.toLowerCase()) || a.toLowerCase().includes(dept.toLowerCase()))) return "Clinical Support Service";
-    if (homeCare.some(a => dept.toLowerCase().includes(a.toLowerCase()) || a.toLowerCase().includes(dept.toLowerCase()))) return "Home Care Service";
     return "Clinical Speciality"; // default
   };
 
@@ -263,7 +261,6 @@ const Doctors = () => {
     const result: Record<MainCategory, typeof sortedGroupedEntries> = {
       "Clinical Speciality": [],
       "Clinical Support Service": [],
-      "Home Care Service": [],
     };
     sortedGroupedEntries.forEach((entry) => {
       const cat = getDeptMainCategory(entry[0]);

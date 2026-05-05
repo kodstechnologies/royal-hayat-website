@@ -1,4 +1,4 @@
-﻿import Header from "@/components/Header";
+import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ChatButton from "@/components/ChatButton";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -84,8 +84,8 @@ const leaders = [
     credentialsEn: "CMA (USA), ACMA India, IFRS",
     credentialsAr: "",
     bioEn: [
-      "Shibu Thomas Mathew has been part of Royale Hayat Hospital’s leadership journey since its inception, joining the preu{2011}opening team in 2006 and contributing to the establishment of a trusted, worldu{2011}class healthcare institution. He was appointed Financial Controller in 2007 and promoted to Chief Financial Officer in 2010.",
-      "In his role as Chief Financial Officer and Director u{2013} Human Resources Capital, Mr. Mathew provides strategic leadership that integrates financial stewardship with peopleu{2011}centric governance. He oversees longu{2011}term investment planning, financial performance management, budget governance, and human capital strategy across all Group companies. He also serves as a Board Member for several subsidiaries, supporting strong governance, ethical decisionu{2011}making, and sustainable growth.",
+      "Shibu Thomas Mathew has been part of Royale Hayat Hospital’s leadership journey since its inception, joining the pre-opening team in 2006 and contributing to the establishment of a trusted, world-class healthcare institution. He was appointed Financial Controller in 2007 and promoted to Chief Financial Officer in 2010.",
+      "In his role as Chief Financial Officer and Director – Human Resources Capital, Mr. Mathew provides strategic leadership that integrates financial stewardship with people-centric governance. He oversees long-term investment planning, financial performance management, budget governance, and human capital strategy across all Group companies. He also serves as a Board Member for several subsidiaries, supporting strong governance, ethical decision-making, and sustainable growth.",
       "With prior senior leadership experience in finance, accounting, and treasury roles across multinational organizations, Mr. Shibu brings a balanced approach combining operational discipline, strategic foresight, and a deep commitment to people and purpose.",
       "He is a CMA (USA), ACMA India with IFRS credentials and executive education in healthcare strategy from Harvard T.H. Chan School of Public Health.",
     ],
@@ -204,22 +204,26 @@ const AboutUs = () => {
       <Header />
 
       {/* Hero */}
-      <section className="pt-12 pb-6 md:pt-16 md:pb-8 bg-primary/5">
-        <div className="container mx-auto px-6 text-center">
-          <ScrollAnimationWrapper>
-            <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">{lang === "ar" ? "تعرف علينا" : "Get To Know Us"}</p>
-            <h1 className="text-4xl md:text-5xl font-serif text-foreground mb-4">
-              {section === "history" ? (lang === "ar" ? "قصتنا" : "Our Story")
-                : section === "mission" ? (lang === "ar" ? "الرسالة والقيم" : "Mission & Values")
-                  : section === "csr" ? "Celebrating Life"
-                    : section === "chairman" ? (lang === "ar" ? "رسالة رئيس مجلس الإدارة" : "Chairman's Message")
-                      : section === "leadership" ? (lang === "ar" ? "فريق القيادة" : "Leadership Team")
-                        : t("aboutUs")}
-            </h1>
-            {showAll && <p className="text-muted-foreground font-body text-sm max-w-xl mx-auto">{t("storyP1")}</p>}
-          </ScrollAnimationWrapper>
-        </div>
-      </section>
+      {section !== "chairman" && (
+        <section className="pt-12 pb-6 md:pt-16 md:pb-8 bg-primary/5">
+          <div className="container mx-auto px-6 text-center">
+            <ScrollAnimationWrapper>
+              {section !== "chairman" && (
+                <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">{lang === "ar" ? "تعرف علينا" : "Get To Know Us"}</p>
+              )}
+              <h1 className="text-4xl md:text-5xl font-serif text-foreground mb-4">
+                {section === "history" ? (lang === "ar" ? "قصتنا" : "Our Story")
+                  : section === "mission" ? (lang === "ar" ? "الرسالة والقيم" : "Mission & Values")
+                    : section === "csr" ? "Celebrating Life"
+                      : section === "chairman" ? (lang === "ar" ? "رسالة رئيس مجلس الإدارة" : "Chairman's Message")
+                        : section === "leadership" ? (lang === "ar" ? "فريق القيادة" : "Leadership Team")
+                          : t("aboutUs")}
+              </h1>
+              {showAll && <p className="text-muted-foreground font-body text-sm max-w-xl mx-auto">{t("storyP1")}</p>}
+            </ScrollAnimationWrapper>
+          </div>
+        </section>
+      )}
 
       {/* Our History - FULL content from doc */}
       {show("history") && <section className="pb-16 pt-2 bg-background" id="history">
@@ -263,10 +267,23 @@ const AboutUs = () => {
       </section>}
 
       {/* Chairman's Message */}
-      {show("chairman") && <ChairmanMessage />}
+      {show("chairman") && (
+        <>
+          <section className="pt-12 pb-0 bg-background">
+            <div className="container mx-auto px-6 text-center">
+              <ScrollAnimationWrapper>
+                <h1 className="text-4xl md:text-5xl font-serif text-foreground mb-4">
+                  {lang === "ar" ? "رسالة رئيس مجلس الإدارة" : "Chairman's Message"}
+                </h1>
+              </ScrollAnimationWrapper>
+            </div>
+          </section>
+          <ChairmanMessage />
+        </>
+      )}
 
       {/* Leadership Team */}
-      {show("leadership") && <section className="pb-16 pt-2 bg-background" id="leadership">
+      {show("leadership") && <section className="pb-16 pt-16 bg-background" id="leadership">
         <div className="container mx-auto px-6">
           <ScrollAnimationWrapper>
             <div className="text-center mb-10">

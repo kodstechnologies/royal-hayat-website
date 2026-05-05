@@ -169,11 +169,11 @@ const services: ServiceItem[] = [
     subspecialties: [],
   },
   {
-    num: "15", name: "Plastic Surgery", nameAr: "الجراحة التجميلية",
+    num: "15", name: "Plastic Surgery & Cosmetology", nameAr: "الجراحة التجميلية",
     desc: "Internationally certified physicians offering advanced surgical and non-surgical cosmetic and reconstructive solutions.",
     descAr: "أطباء معتمدون دولياً يقدمون حلولاً تجميلية وترميمية جراحية وغير جراحية متقدمة.",
     img: "https://res.cloudinary.com/dwhc8kzpv/image/upload/q_auto/f_auto/v1776341728/3_b7dnxl.jpg",
-    department: "Plastic & Cosmetic Surgery",
+    department: "Plastic Surgery & Cosmetology",
     subspecialties: [],
   },
   {

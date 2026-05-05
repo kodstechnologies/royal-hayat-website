@@ -167,7 +167,7 @@ const Header = () => {
       { en: "Radiology", ar: "الأشعة" },
       { en: "Laboratory", ar: "المختبر" },
       { en: "Physiotherapy", ar: "العلاج الطبيعي" },
-      { en: "Plastic Surgery", ar: "الجراحة التجميلية" },
+      { en: "Plastic Surgery & Cosmetology", ar: "الجراحة التجميلية" },
       { en: "Psychiatry", ar: "الطب النفسي" },
       { en: "Nutrition & Dietetics", ar: "التغذية" },
       { en: "Emergency", ar: "الطوارئ" },

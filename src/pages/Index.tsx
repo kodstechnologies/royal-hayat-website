@@ -50,7 +50,7 @@ const Index = () => {
       <WhyRoyaleHayat />
       
       {/* Chairman's Message Section with Heading */}
-      <section className="pt-12 pb-0 bg-background">
+      {/* <section className="pt-12 pb-0 bg-background">
         <div className="container mx-auto px-6 text-center">
           <ScrollAnimationWrapper>
             <h1 className="text-4xl md:text-5xl font-serif text-foreground mb-4">
@@ -59,7 +59,7 @@ const Index = () => {
           </ScrollAnimationWrapper>
         </div>
       </section>
-      <ChairmanMessage />
+      <ChairmanMessage /> */}
       
       <HospitalityBanner />
       <AlSafwaSpotlight />

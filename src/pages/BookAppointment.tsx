@@ -527,6 +527,22 @@ const BookAppointment = () => {
         serviceName: { ar: "تجربة", en: "Service Test" },
         reason: { ar: "تجربة", en: "test" }
       });
+      
+      // USER REQUEST: Always call push notification api/flow. 
+      // Even if already verified, we want to show the 'Check Approval' button for demonstration/testing.
+      if (response?.operationId) {
+        setVerifyOperationId(response.operationId);
+        setVerifyStatusMessage(
+          isAr
+            ? "تمت معالجة التحقق، يرجى انتظار الموافقة ثم اضغط تحقق من الموافقة."
+            : "Authentication processed, please wait for approval and click Check Approval."
+        );
+        return;
+      }
+
+      // If no operationId but already verified (backend returned data)
+      // we still treat it as successful but the user specifically asked to always call push notification api.
+      // For the mock ID, our API now returns an operationId anyway.
       const names = extractVerifiedName(response);
       const hasName = Boolean(names.english || names.arabic);
       if (response?.verified === true && hasName) {
@@ -546,15 +562,7 @@ const BookAppointment = () => {
         setShowReturningPatientModal(false);
         return;
       }
-      if (response?.operationId) {
-        setVerifyOperationId(response.operationId);
-        setVerifyStatusMessage(
-          isAr
-            ? "تمت معالجة التحقق، يرجى انتظار الموافقة ثم اضغط تحقق من الموافقة."
-            : "Authentication processed, please wait for approval and click Check Approval."
-        );
-        return;
-      }
+
       setNationalIdError(
         isAr
           ? "تعذر التحقق حالياً. أكمل التحقق في تطبيق هويتي ثم أعد المحاولة."
@@ -585,6 +593,7 @@ const BookAppointment = () => {
     setNationalIdError("");
     try {
       const statusData = await getIdentityStatus(verifyOperationId);
+      
       if (statusData?.status === "pending") {
         setVerifyStatusMessage(
           isAr ? "الحالة ما زالت قيد الانتظار." : "Status is still pending."
@@ -625,7 +634,7 @@ const BookAppointment = () => {
 
   const goToInitialBookingScreen = () => {
     setShowReturningPatientModal(false);
-    setBookingPath(null);
+    setBookingPath("primary"); // Go to department selection
     setStep(0);
     setPatientType(null);
     setPatientName("");
@@ -1281,12 +1290,30 @@ const BookAppointment = () => {
                 {nationalIdError && <p className="font-body text-xs text-destructive mt-2">{nationalIdError}</p>}
               </div>
               <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <button onClick={handleNationalIdVerify} disabled={isVerifyingNationalId} className="w-full bg-primary text-primary-foreground px-4 py-3 rounded-xl font-body text-xs tracking-widest uppercase hover:bg-primary/90 transition-colors disabled:opacity-70 inline-flex items-center justify-center text-center">{isVerifyingNationalId ? (isAr ? "جارِ الفحص..." : "Verifying...") : (isAr ? "تحقق" : "Verify")}</button>
                 {verifyOperationId ? (
-                  <button onClick={handleCheckApproval} disabled={isCheckingApproval || isVerifyingNationalId} className="w-full bg-secondary/50 text-foreground px-4 py-3 rounded-xl font-body text-xs tracking-widest uppercase hover:bg-secondary/70 transition-colors disabled:opacity-70 inline-flex items-center justify-center text-center">{isCheckingApproval ? (isAr ? "جارِ التحقق..." : "Checking...") : (isAr ? "تحقق من الموافقة" : "Check Approval")}</button>
+                  <button 
+                    onClick={handleCheckApproval} 
+                    disabled={isCheckingApproval} 
+                    className="w-full bg-primary text-primary-foreground px-4 py-3 rounded-xl font-body text-xs tracking-widest uppercase hover:bg-primary/90 transition-colors disabled:opacity-70 inline-flex items-center justify-center text-center"
+                  >
+                    {isCheckingApproval ? (isAr ? "جارِ التحقق..." : "Checking...") : (isAr ? "تحقق من الموافقة" : "Check Approval")}
+                  </button>
                 ) : (
-                  <button onClick={goToInitialBookingScreen} className="w-full bg-secondary/40 text-foreground px-4 py-3 rounded-xl font-body text-xs tracking-widest uppercase hover:bg-secondary/60 transition-colors inline-flex items-center justify-center text-center">{isAr ? "إلغاء" : "Cancel"}</button>
+                  <button 
+                    onClick={handleNationalIdVerify} 
+                    disabled={isVerifyingNationalId} 
+                    className="w-full bg-primary text-primary-foreground px-4 py-3 rounded-xl font-body text-xs tracking-widest uppercase hover:bg-primary/90 transition-colors disabled:opacity-70 inline-flex items-center justify-center text-center"
+                  >
+                    {isVerifyingNationalId ? (isAr ? "جارِ الفحص..." : "Verifying...") : (isAr ? "تحقق من الموافقة" : "Check Approval")}
+                  </button>
                 )}
+                
+                <button 
+                  onClick={goToInitialBookingScreen} 
+                  className="w-full bg-secondary/40 text-foreground px-4 py-3 rounded-xl font-body text-xs tracking-widest uppercase hover:bg-secondary/60 transition-colors inline-flex items-center justify-center text-center"
+                >
+                  {isAr ? "إلغاء" : "Cancel"}
+                </button>
               </div>
               {verifyStatusMessage && <div className="mt-4 rounded-xl border border-accent/20 bg-accent/5 px-4 py-3"><p className="font-body text-xs text-foreground">{verifyStatusMessage}</p></div>}
             </div>

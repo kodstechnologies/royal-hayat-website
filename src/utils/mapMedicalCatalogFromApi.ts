@@ -4,7 +4,7 @@ import type { Doctor } from "@/data/doctors";
 import type { ApiCategoryWithNested, ApiDoctorNested, ApiDepartmentNested } from "@/api/catagory";
 
 const PLACEHOLDER_DEPT_IMG =
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/q_auto/f_auto/v1776418841/2_kdo31l.jpg";
+  "/placeholder.svg";
 
 const slugify = (value: string) =>
   value

@@ -13,7 +13,7 @@ import {
   type IdentityStatusResponse,
   type StartIdentityPayload,
   type StartIdentityResponse
-} from "../../api/identity";
+} from "@/api/identity";
 
 const VerifyNationalId = () => {
   const { lang, t } = useLanguage();

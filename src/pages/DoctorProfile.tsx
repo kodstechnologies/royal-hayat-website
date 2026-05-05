@@ -1,12 +1,15 @@
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeft, Stethoscope, Globe, Award, Star, Quote, GraduationCap, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Stethoscope, Globe, Award, Star, Quote, GraduationCap, CheckCircle2, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ChatButton from "@/components/ChatButton";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { doctors } from "@/data/doctors";
 import { departments, deptDoctorAliases } from "@/data/departments";
+import { getDoctorById, mapApiDoctorRowToDoctor } from "@/api/doctors";
+
 const patientFeedback = [
   {
     name: "Sara Al-Mutairi", nameAr: "سارة المطيري",
@@ -68,7 +71,39 @@ const DoctorProfile = () => {
     }
   };
 
-  const doctor = doctors.find((d) => d.id === id);
+  const localDoctor = doctors.find((d) => d.id === id);
+
+  const { data: apiDoctor, isLoading: apiLoading } = useQuery({
+    queryKey: ["doctor", id],
+    queryFn: async () => {
+      if (!id || !/^[0-9a-fA-F]{24}$/i.test(id)) return null;
+      try {
+        const res = await getDoctorById(id);
+        if (res.success && res.data) {
+          // Pass empty strings for dept names as mapApiDoctorRowToDoctor handles populated department objects
+          return mapApiDoctorRowToDoctor(res.data, "", "");
+        }
+      } catch (err) {
+        console.error("Error fetching doctor from API:", err);
+      }
+      return null;
+    },
+    enabled: !!id && !localDoctor,
+  });
+
+  const doctor = localDoctor || apiDoctor;
+
+  if (apiLoading) {
+    return (
+      <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
+        <Header />
+        <div className="flex items-center justify-center py-48">
+          <Loader2 className="w-8 h-8 text-primary animate-spin" />
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!doctor) {
     return (

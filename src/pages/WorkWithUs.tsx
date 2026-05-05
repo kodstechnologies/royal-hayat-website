@@ -8,7 +8,7 @@ import type { LifePhoto } from "@/components/LifePhotoCarousel.tsx";
 import VoicesFromOurPeople from "@/components/VoicesFromOurPeople.tsx";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { getAllJobs, type JobPosting } from "../../api/job";
+import { getAllJobs, type JobPosting } from "@/api/job";
 import {
   Heart, Sparkles, HandHeart, GraduationCap, Globe2, Award,
   MapPin, Clock, ArrowUpRight, ChevronLeft, ChevronRight,

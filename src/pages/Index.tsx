@@ -8,6 +8,8 @@ import SpecializedCare from "@/components/SpecializedCare";
 
 import DoctorsSection from "@/components/DoctorsSection";
 import WhyRoyaleHayat from "@/components/WhyRoyaleHayat";
+import ChairmanMessage from "@/components/ChairmanMessage";
+import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
 
 import AwardsSection from "@/components/AwardsSection";
 import InsurancePartners from "@/components/InsurancePartners";
@@ -19,9 +21,11 @@ import Footer from "@/components/Footer";
 import ChatButton from "@/components/ChatButton";
 import ScrollToTop from "@/components/ScrollToTop";
 import { doctors } from "@/data/doctors";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Index = () => {
   const featuredDoctors = doctors.slice(0, 12);
+  const { lang } = useLanguage();
 
   // Preload doctor images for instant loading in DoctorsSection
   useEffect(() => {
@@ -44,6 +48,19 @@ const Index = () => {
       <InsurancePartners />
       <DoctorsSection featuredDoctors={featuredDoctors} />
       <WhyRoyaleHayat />
+      
+      {/* Chairman's Message Section with Heading */}
+      <section className="pt-12 pb-0 bg-background">
+        <div className="container mx-auto px-6 text-center">
+          <ScrollAnimationWrapper>
+            <h1 className="text-4xl md:text-5xl font-serif text-foreground mb-4">
+              {lang === "ar" ? "رسالة رئيس مجلس الإدارة" : "Chairman's Message"}
+            </h1>
+          </ScrollAnimationWrapper>
+        </div>
+      </section>
+      <ChairmanMessage />
+      
       <HospitalityBanner />
       <AlSafwaSpotlight />
       <AwardsSection />

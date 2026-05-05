@@ -163,7 +163,7 @@ const DepartmentDetail = () => {
     "Neonatal": ["Neonatal"],
     "Internal Medicine": ["Internal Medicine"],
     "General & Laparoscopic Surgery": ["General Surgery"],
-    "Plastic Surgery": ["La Cosmetique"],
+    "Plastic Surgery & Cosmetology": ["La Cosmetique"],
     "Dermatology": ["Dermatology"],
     "ENT (Ear, Nose & Throat)": ["ENT (Ear, Nose & Throat)"],
     "Family Medicine": ["Family Medicine"],

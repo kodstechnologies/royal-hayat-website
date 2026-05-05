@@ -12,20 +12,90 @@ import { doctors, type Doctor } from "@/data/doctors";
 import { departments, deptDoctorAliases } from "@/data/departments";
 
 const getCleanCalendlySlug = (name: string) => {
+  // Remove "Dr." prefix and trim
   let clean = name.replace(/^Dr\.?\s+/i, '').trim();
+  
+  // Remove any special characters except spaces and hyphens
   clean = clean.replace(/[^\w\s-]/g, '');
   
   const parts = clean.split(/\s+/);
-  if (parts.length <= 2) {
-     return `dr-${parts.join('-').toLowerCase()}`;
+  
+  // Special case mappings for specific doctors
+  const specialCases: Record<string, string> = {
+    // OB/GYN Department
+    'Abubakr Elmardi': 'dr-abubakr-elmardi',
+    'Abubakar Elmardi': 'dr-abubakr-elmardi',
+    'Essam Sakr': 'dr-essam-sakr',
+    'Mona Abou Taam': 'dr-mona-aboutaam',
+    'Lobna Bassiouni': 'dr-lobna-bassiouni',
+    'Lobna Ibrahim Bassiouni': 'dr-lobna-bassiouni',
+    'Zeinab Sholkany': 'dr-zeinab-sholkany',
+    'Zeinab Sholkany M.saad': 'dr-zeinab-sholkany',
+    'Zeinab Sholkany Msaad': 'dr-zeinab-sholkany',
+    'Eman Alsayegh': 'dr-eman-alsayegh',
+    'Eman Al Sayegh': 'dr-eman-alsayegh',
+    'Mayada Al Qadi': 'dr-mayada-al-qadi-ob-gyn-clone',
+    'Salma Ibrahim': 'dr-salma-ibrahim',
+    'Hafsah Hussain': 'dr-hafsah-hussain',
+    
+    // Surgical Department
+    'Hussein Faour': 'dr-hussein-faour',
+    'Ahmed Al Mulla': 'dr-ahmed-almulla',
+    'Sulaiman Almazeedi': 'drsulaiman-almazeedi',
+    'Sulaiman AlMazeedi': 'drsulaiman-almazeedi',
+    'Humoud Alrasheedi': 'dr-hamoud-alrasheedi',
+    'Humoud AlRasheedi': 'dr-hamoud-alrasheedi',
+    
+    // Royale Nutricare
+    'Heba Ben Salama': 'hebah-bensalama',
+    'Heba Ben Salamah': 'hebah-bensalama',
+    'Fatima Khreis': 'fatima-khreis',
+    'Fatme Khreis': 'fatima-khreis',
+    'Farah Hashem': 'farah-hashem',
+    'Farah Hachem': 'farah-hashem',
+    
+    // Gastroenterology
+    'Wadha Al-Jaser': 'dr-wadha-aljasser',
+    'Wadha Abdulaziz Al-jaser': 'dr-wadha-aljasser',
+    'Wadha Al Jaser': 'dr-wadha-aljasser',
+    
+    // ENT Department
+    'Hanafi Abdulsalam': 'dr-hanafi-abdulsalam',
+    'Hamoud Alarouj': 'dr-hamoud-alarouj',
+    'Abdullah AlBader': 'drabdullah-albader',
+    'Abdullah Al Bader': 'drabdullah-albader',
+    
+    // Oncology Department
+    'Noha Alsaleh': 'dr-noha-alsaleh',
+    'Noha Al Saleh': 'dr-noha-alsaleh',
+    
+    // Rheumatology Department
+    'Ali Ibrahim Aldei': 'dr-alialdei',
+    'Ali Aldei': 'dr-alialdei',
+    
+    // Pain Management
+    'Hamid Ghaderi': 'dr-hamid-ghaderi',
+  };
+  
+  // Check for special cases first
+  const cleanName = clean.replace(/\s+/g, ' ');
+  if (specialCases[cleanName]) {
+    return specialCases[cleanName];
   }
   
+  // For names with 2 or fewer parts, join them all
+  if (parts.length <= 2) {
+    return `dr-${parts.join('-').toLowerCase()}`;
+  }
+  
+  // For names with 3+ parts, check if there's a prefix like "Al", "El", "Abou", etc.
   const first = parts[0];
   let last = parts[parts.length - 1];
   
+  // Check if second-to-last is a prefix
   const secondToLast = parts[parts.length - 2].toLowerCase();
-  if (['al', 'el', 'abou', 'abu', 'abd'].includes(secondToLast)) {
-     last = `${secondToLast}-${last}`;
+  if (['al', 'el', 'abou', 'abu', 'abd', 'bin', 'ben'].includes(secondToLast)) {
+    last = `${secondToLast}${last.toLowerCase()}`;
   }
   
   return `dr-${first.toLowerCase()}-${last.toLowerCase()}`;
@@ -134,73 +204,148 @@ const MedicalRepVisitBooking = () => {
           </ScrollAnimationWrapper>
 
           <div className="space-y-12">
-            {doctorsByDepartment.map(({ dept, deptDoctors }) => (
-              <ScrollAnimationWrapper key={dept.id}>
-                <div>
-                  <h3 className="text-xl md:text-2xl font-serif text-foreground">
-                    {isAr ? dept.nameAr : dept.name}
-                  </h3>
-                  <p className="text-muted-foreground font-body text-sm mt-1 mb-5">
-                    {isAr ? dept.descAr : dept.desc}
-                  </p>
+            {doctorsByDepartment.map(({ dept, deptDoctors }) => {
+              const isPediatrics = dept.name === "Pediatrics";
+              const isFamilyMedicine = dept.name === "Family Medicine";
+              const isInternalMedicine = dept.name === "Internal Medicine";
+              const isDermatology = dept.name === "Dermatology";
+              const isDepartmentBooking = isPediatrics || isFamilyMedicine || isInternalMedicine || isDermatology;
+              
+              // Get department booking URL
+              const getDepartmentBookingUrl = () => {
+                if (isPediatrics) return "https://calendly.com/rhhmedrep/pediatric-department";
+                if (isFamilyMedicine) return "https://calendly.com/rhhmedrep/family-internal-medicine";
+                if (isInternalMedicine) return "https://calendly.com/rhhmedrep/family-internal-medicine";
+                if (isDermatology) return "https://calendly.com/rhhmedrep/pediatric-department-clone";
+                return "";
+              };
+              
+              return (
+                <ScrollAnimationWrapper key={dept.id}>
+                  <div>
+                    <div className="flex flex-row items-center gap-4 mb-2">
+                      <h3 className="text-xl md:text-2xl font-serif text-foreground m-0">
+                        {isAr ? dept.nameAr : dept.name}
+                      </h3>
+                      {isDepartmentBooking && (
+                        <Link to={getDepartmentBookingUrl()} target="_blank">
+                          <Button size="lg" className="gap-2">
+                            <CalendarCheck className="w-5 h-5" />
+                            {isAr ? "احجز الآن" : "Book Now"}
+                          </Button>
+                        </Link>
+                      )}
+                    </div>
+                    <p className="text-muted-foreground font-body text-sm mt-1 mb-5">
+                      {isAr ? dept.descAr : dept.desc}
+                    </p>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                    {deptDoctors.map((doc: Doctor) => (
-                      <Link key={doc.id} to={`https://calendly.com/rhhmedrep/${getCleanCalendlySlug(doc.name)}`} target="_blank" className="block">
-                        <div className="bg-popover rounded-2xl border border-border/50 group cursor-pointer h-full flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-                          <div className="bg-white h-64 flex items-center justify-center relative overflow-hidden rounded-t-2xl shrink-0">
-                            {doc.image ? (
-                              <img src={doc.image} alt={isAr ? doc.nameAr : doc.name} className="w-full h-full object-cover object-top" />
-                            ) : (
-                              <div className="w-20 h-20 rounded-full bg-popover/20 backdrop-blur-sm flex items-center justify-center border-2 border-popover/30">
-                                <span className="text-2xl font-serif text-primary-foreground">{doc.initials}</span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                      {deptDoctors.map((doc: Doctor) => (
+                        isDepartmentBooking ? (
+                          // For departments with department-level booking, show card without link and without Book Now button
+                          <div key={doc.id} className="block">
+                            <div className="bg-popover rounded-2xl border border-border/50 h-full flex flex-col">
+                              <div className="bg-white h-64 flex items-center justify-center relative overflow-hidden rounded-t-2xl shrink-0">
+                                {doc.image ? (
+                                  <img src={doc.image} alt={isAr ? doc.nameAr : doc.name} className="w-full h-full object-cover object-top" />
+                                ) : (
+                                  <div className="w-20 h-20 rounded-full bg-popover/20 backdrop-blur-sm flex items-center justify-center border-2 border-popover/30">
+                                    <span className="text-2xl font-serif text-primary-foreground">{doc.initials}</span>
+                                  </div>
+                                )}
+                                <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-popover/20 backdrop-blur-sm flex items-center justify-center">
+                                  <Stethoscope className="w-3.5 h-3.5 text-primary-foreground" />
+                                </div>
                               </div>
-                            )}
-                            <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-popover/20 backdrop-blur-sm flex items-center justify-center">
-                              <Stethoscope className="w-3.5 h-3.5 text-primary-foreground" />
+
+                              <div className="p-5 flex flex-col flex-grow">
+                                <p className="text-accent text-[10px] tracking-[0.2em] uppercase font-body mb-1.5">
+                                  {isAr ? doc.specialtyAr : doc.specialty}
+                                </p>
+                                <h4 className="text-base font-serif text-foreground mb-1">{isAr ? doc.nameAr : doc.name}</h4>
+                                <p className="text-muted-foreground font-body text-xs mb-3">{isAr ? doc.titleAr : doc.title}</p>
+
+                                <div className="flex flex-wrap gap-1.5 mb-4">
+                                  {(isAr ? doc.languagesAr : doc.languages).map((l) => (
+                                    <span key={l} className="px-2.5 py-0.5 rounded-full bg-secondary/40 text-[10px] font-body text-foreground">
+                                      {l}
+                                    </span>
+                                  ))}
+                                </div>
+
+                                {doc.hideBooking !== true && (
+                                  <div className={`flex items-center gap-1.5 mb-4 ${doc.availableOnline !== false ? "text-green-600" : "text-destructive"}`}>
+                                    <div className={`w-1.5 h-1.5 rounded-full ${doc.availableOnline !== false ? "bg-green-500" : "bg-destructive"}`} />
+                                    <span className="font-body text-[10px]">
+                                      {doc.availableOnline !== false
+                                        ? (isAr ? "متاح للحجز الإلكتروني" : "Book Online")
+                                        : (isAr ? "غير متاح للحجز الإلكتروني" : "Not Available for Online Booking")}
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           </div>
-
-                          <div className="p-5 flex flex-col flex-grow">
-                            <p className="text-accent text-[10px] tracking-[0.2em] uppercase font-body mb-1.5">
-                              {isAr ? doc.specialtyAr : doc.specialty}
-                            </p>
-                            <h4 className="text-base font-serif text-foreground mb-1">{isAr ? doc.nameAr : doc.name}</h4>
-                            <p className="text-muted-foreground font-body text-xs mb-3">{isAr ? doc.titleAr : doc.title}</p>
-
-                            <div className="flex flex-wrap gap-1.5 mb-4">
-                              {(isAr ? doc.languagesAr : doc.languages).map((l) => (
-                                <span key={l} className="px-2.5 py-0.5 rounded-full bg-secondary/40 text-[10px] font-body text-foreground">
-                                  {l}
-                                </span>
-                              ))}
-                            </div>
-
-                            {doc.hideBooking !== true && (
-                              <div className={`flex items-center gap-1.5 mb-4 ${doc.availableOnline !== false ? "text-green-600" : "text-destructive"}`}>
-                                <div className={`w-1.5 h-1.5 rounded-full ${doc.availableOnline !== false ? "bg-green-500" : "bg-destructive"}`} />
-                                <span className="font-body text-[10px]">
-                                  {doc.availableOnline !== false
-                                    ? (isAr ? "متاح للحجز الإلكتروني" : "Book Online")
-                                    : (isAr ? "غير متاح للحجز الإلكتروني" : "Not Available for Online Booking")}
-                                </span>
+                        ) : (
+                          // For other departments, keep the original link and button
+                          <Link key={doc.id} to={`https://calendly.com/rhhmedrep/${getCleanCalendlySlug(doc.name)}`} target="_blank" className="block">
+                            <div className="bg-popover rounded-2xl border border-border/50 group cursor-pointer h-full flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+                              <div className="bg-white h-64 flex items-center justify-center relative overflow-hidden rounded-t-2xl shrink-0">
+                                {doc.image ? (
+                                  <img src={doc.image} alt={isAr ? doc.nameAr : doc.name} className="w-full h-full object-cover object-top" />
+                                ) : (
+                                  <div className="w-20 h-20 rounded-full bg-popover/20 backdrop-blur-sm flex items-center justify-center border-2 border-popover/30">
+                                    <span className="text-2xl font-serif text-primary-foreground">{doc.initials}</span>
+                                  </div>
+                                )}
+                                <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-popover/20 backdrop-blur-sm flex items-center justify-center">
+                                  <Stethoscope className="w-3.5 h-3.5 text-primary-foreground" />
+                                </div>
                               </div>
-                            )}
 
-                            <div className="mt-auto pt-2">
-                              <Button className="w-full gap-2 transition-transform group-hover:scale-[1.02]">
-                                <CalendarCheck className="w-4 h-4" />
-                                {isAr ? "احجز الآن" : "Book Now"}
-                              </Button>
+                              <div className="p-5 flex flex-col flex-grow">
+                                <p className="text-accent text-[10px] tracking-[0.2em] uppercase font-body mb-1.5">
+                                  {isAr ? doc.specialtyAr : doc.specialty}
+                                </p>
+                                <h4 className="text-base font-serif text-foreground mb-1">{isAr ? doc.nameAr : doc.name}</h4>
+                                <p className="text-muted-foreground font-body text-xs mb-3">{isAr ? doc.titleAr : doc.title}</p>
+
+                                <div className="flex flex-wrap gap-1.5 mb-4">
+                                  {(isAr ? doc.languagesAr : doc.languages).map((l) => (
+                                    <span key={l} className="px-2.5 py-0.5 rounded-full bg-secondary/40 text-[10px] font-body text-foreground">
+                                      {l}
+                                    </span>
+                                  ))}
+                                </div>
+
+                                {doc.hideBooking !== true && (
+                                  <div className={`flex items-center gap-1.5 mb-4 ${doc.availableOnline !== false ? "text-green-600" : "text-destructive"}`}>
+                                    <div className={`w-1.5 h-1.5 rounded-full ${doc.availableOnline !== false ? "bg-green-500" : "bg-destructive"}`} />
+                                    <span className="font-body text-[10px]">
+                                      {doc.availableOnline !== false
+                                        ? (isAr ? "متاح للحجز الإلكتروني" : "Book Online")
+                                        : (isAr ? "غير متاح للحجز الإلكتروني" : "Not Available for Online Booking")}
+                                    </span>
+                                  </div>
+                                )}
+
+                                <div className="mt-auto pt-2">
+                                  <Button className="w-full gap-2 transition-transform group-hover:scale-[1.02]">
+                                    <CalendarCheck className="w-4 h-4" />
+                                    {isAr ? "احجز الآن" : "Book Now"}
+                                  </Button>
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        </div>
-                      </Link>
-                    ))}
+                          </Link>
+                        )
+                      ))}
+                    </div>
                   </div>
-                </div>
-              </ScrollAnimationWrapper>
-            ))}
+                </ScrollAnimationWrapper>
+              );
+            })}
           </div>
         </div>
       </section>

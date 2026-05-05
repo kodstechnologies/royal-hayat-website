@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import {
@@ -20,12 +20,12 @@ import {
   getDoctorsByDepartment,
   mapApiDoctorRowToDoctor,
 } from "@/api/doctors";
-import { 
-  getAvailability, 
+import {
+  getAvailability,
   getCareProviders,
-  bookAppointment, 
-  getPatient, 
-  type Slot 
+  bookAppointment,
+  getPatient,
+  type Slot
 } from "@/api/royalhayat";
 import { getIdentityStatus, startIdentityVerification } from "@/api/identity";
 import { postEnquiry } from "@/api/enquiry";
@@ -164,7 +164,7 @@ const BookAppointment = () => {
           const res = await getCareProviders(specialityCode);
           if (res.success && res.data?.provider_list) {
             // Match by name or existing providerCode
-            const match = res.data.provider_list.find((p: any) => 
+            const match = res.data.provider_list.find((p: any) =>
               p.provider_name?.toLowerCase().includes(doc.name.toLowerCase()) ||
               doc.name.toLowerCase().includes(p.provider_name?.toLowerCase()) ||
               p.provider_id === doc.providerCode
@@ -230,7 +230,7 @@ const BookAppointment = () => {
 
   const formatSlotRange = (slot: Slot) => {
     if (!slot.slot_from_time || !slot.slot_from_time.includes(":")) return "";
-    
+
     const parseTime = (t: string) => {
       const [hStr, mStr] = t.split(":");
       return { h: parseInt(hStr), m: parseInt(mStr) };
@@ -377,10 +377,10 @@ const BookAppointment = () => {
 
         const mapped = rows.map((r) => {
           const doc = mapApiDoctorRowToDoctor(r as Record<string, unknown>, deptName, deptName);
-          
+
           // Enrich with authoritative providerCode from Royal Hayat if available
           if (careProviders.length > 0) {
-            const match = careProviders.find((p: any) => 
+            const match = careProviders.find((p: any) =>
               p.provider_name?.toLowerCase().includes(doc.name.toLowerCase()) ||
               doc.name.toLowerCase().includes(p.provider_name?.toLowerCase()) ||
               p.provider_id === doc.providerCode
@@ -408,7 +408,7 @@ const BookAppointment = () => {
 
   // Read query param on mount
   useEffect(() => {
-    if (locState.step != null) return; 
+    if (locState.step != null) return;
     const pathParam = searchParams.get("path");
     if (pathParam === "primary") { setBookingPath("primary"); setStep(0); }
     else if (pathParam === "doctor") { setBookingPath("doctor"); setStep(1); }
@@ -421,11 +421,35 @@ const BookAppointment = () => {
     }
   }, [booked]);
 
-  const filteredDepts = departmentsList.filter(
-    (d) =>
-      d.name.toLowerCase().includes(deptSearch.toLowerCase()) ||
-      d.category.toLowerCase().includes(deptSearch.toLowerCase()),
+  const filteredDepts = departments
+    .filter(d => !["Clinical Pharmacy", "Royale Hayat Pharmacy"].includes(d.name))
+    .filter(
+      (d) =>
+        d.name.toLowerCase().includes(deptSearch.toLowerCase()) ||
+        d.category.toLowerCase().includes(deptSearch.toLowerCase())
+    )
+    .sort((a, b) => (isAr ? a.nameAr : a.name).localeCompare(isAr ? b.nameAr : b.name, isAr ? 'ar' : 'en'));
+  const displayDepts = useMemo(
+    () => (deptSearch.trim() || showAllDepts ? filteredDepts : filteredDepts.slice(0, 6)),
+    [deptSearch, showAllDepts, filteredDepts],
   );
+  const groupedMainCategoryDepts = useMemo(() => {
+    const grouped: Record<string, typeof filteredDepts> = {};
+    for (const dept of displayDepts) {
+      const mainCategory = String((dept as unknown as { mainCategory?: unknown }).mainCategory ?? "");
+      const key = MAIN_CATEGORY_ORDER.includes(mainCategory as (typeof MAIN_CATEGORY_ORDER)[number])
+        ? mainCategory
+        : "Other";
+      if (!grouped[key]) grouped[key] = [];
+      grouped[key].push(dept);
+    }
+    const ordered: Array<[string, typeof filteredDepts]> = [];
+    for (const key of MAIN_CATEGORY_ORDER) {
+      if (grouped[key]?.length) ordered.push([key, grouped[key]]);
+    }
+    if (grouped.Other?.length) ordered.push(["Other", grouped.Other]);
+    return ordered;
+  }, [displayDepts]);
 
   const doctors = deptDoctorList.sort((a, b) =>
     (isAr ? a.nameAr : a.name).localeCompare(isAr ? b.nameAr : b.name, isAr ? "ar" : "en"),
@@ -510,7 +534,7 @@ const BookAppointment = () => {
         department: selectedDeptObj?.name || selectedDoctorObj?.specialty || "Appointment Request",
         message: `Appointment requested for ${selectedDate} at ${selectedSlot}. Patient Type: ${patientType}. Doctor: ${selectedDoctorObj?.name}.`
       };
-      
+
       const enqRes = await postEnquiry(enquiryPayload);
       if (enqRes.success) {
         setBooked(true);
@@ -530,9 +554,9 @@ const BookAppointment = () => {
       if (patientType === "new" && !validatePatientDetails()) return;
       if (!patientType) return;
     }
-    if (step === 4) { 
+    if (step === 4) {
       handleConfirm();
-      return; 
+      return;
     }
     setStep((s) => Math.min(s + 1, 4));
   };
@@ -580,7 +604,7 @@ const BookAppointment = () => {
         serviceName: { ar: "تجربة", en: "Service Test" },
         reason: { ar: "تجربة", en: "test" }
       });
-      
+
       // USER REQUEST: Always call push notification api/flow. 
       // Even if already verified, we want to show the 'Check Approval' button for demonstration/testing.
       if (response?.operationId) {
@@ -602,7 +626,7 @@ const BookAppointment = () => {
         const pickedName = isAr ? (names.arabic || names.english) : (names.english || names.arabic);
         setPatientName(pickedName);
         setPatientType("returning");
-        
+
         try {
           const pRes = await getPatient({ nationalid: civilId });
           if (pRes.success && pRes.data?.patient?.patient_id) {
@@ -646,7 +670,7 @@ const BookAppointment = () => {
     setNationalIdError("");
     try {
       const statusData = await getIdentityStatus(verifyOperationId);
-      
+
       if (statusData?.status === "pending") {
         setVerifyStatusMessage(
           isAr ? "الحالة ما زالت قيد الانتظار." : "Status is still pending."
@@ -1086,37 +1110,43 @@ const BookAppointment = () => {
                     disabled={catalogLoading}
                     className="w-full pl-11 pr-4 py-3 rounded-xl border border-border bg-popover font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 disabled:opacity-50" />
                 </div>
-                {catalogLoading ? (
-                  <div className="py-16 text-center text-muted-foreground font-body text-sm">
-                    {isAr ? "جاري تحميل الأقسام…" : "Loading departments…"}
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                    {(() => {
-                      const displayDepts = deptSearch.trim() || showAllDepts ? filteredDepts : filteredDepts.slice(0, 6);
-                      return displayDepts.map((dept) => (
-                        <motion.button key={dept.id} whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}
-                          onClick={() => {
-                            if (isAlSafwaDept(dept)) { navigate("/al-safwa", { state: { fromBookAppointment: true } }); return; }
-                            if (isHomeHealthDept(dept)) { navigate("/home-health", { state: { fromBookAppointment: true } }); return; }
-                            setSelectedDept(dept.id);
-                            setStep(1);
-                          }}
-                          className={`flex items-center gap-3 p-4 rounded-xl border transition-all text-left ${selectedDept === dept.id
-                            ? "bg-primary text-primary-foreground border-primary shadow-md"
-                            : "bg-popover border-border hover:border-accent/40 text-foreground"
-                            }`}>
-                          <Stethoscope className={`w-5 h-5 flex-shrink-0 ${selectedDept === dept.id ? "" : "text-accent"}`} />
-                          <div className="min-w-0">
-                            <p className="font-body text-sm font-medium truncate">{dept.name}</p>
-                            <p className={`font-body text-xs ${selectedDept === dept.id ? "text-primary-foreground/60" : "text-muted-foreground"}`}>{dept.category}</p>
-                          </div>
-                        </motion.button>
-                      ));
-                    })()}
-                  </div>
-                )}
-                {!catalogLoading && !showAllDepts && !deptSearch.trim() && filteredDepts.length > 6 && (
+                <div className="space-y-10">
+                  {groupedMainCategoryDepts.map(([mainCategory, depts]) => (
+                    <section key={mainCategory}>
+                      <h3 className="text-2xl md:text-3xl font-serif font-semibold tracking-tight text-accent mb-5 md:mb-6 text-center pb-3 border-b-2 border-primary/15">
+                        {mainCategory}
+                      </h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                        {depts.map((dept) => (
+                          <motion.button key={dept.id} whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}
+                            onClick={() => {
+                              if (dept.slug === "al-safwa-healthcare") {
+                                navigate("/al-safwa", { state: { fromBookAppointment: true } });
+                                return;
+                              }
+                              if (dept.slug === "home-health") {
+                                navigate("/home-health", { state: { fromBookAppointment: true } });
+                                return;
+                              }
+                              setSelectedDept(dept.id);
+                              setStep(1);
+                            }}
+                            className={`flex items-center gap-3 p-4 rounded-xl border transition-all text-left ${selectedDept === dept.id
+                              ? "bg-primary text-primary-foreground border-primary shadow-md"
+                              : "bg-popover border-border hover:border-accent/40 text-foreground"
+                              }`}>
+                            <dept.icon className={`w-5 h-5 flex-shrink-0 ${selectedDept === dept.id ? "" : "text-accent"}`} />
+                            <div className="min-w-0">
+                              <p className="font-body text-sm font-medium truncate">{dept.name}</p>
+                              <p className={`font-body text-xs ${selectedDept === dept.id ? "text-primary-foreground/60" : "text-muted-foreground"}`}>{dept.category}</p>
+                            </div>
+                          </motion.button>
+                        ))}
+                      </div>
+                    </section>
+                  ))}
+                </div>
+                {!showAllDepts && !deptSearch.trim() && filteredDepts.length > 6 && (
                   <div className="text-center mt-6">
                     <button onClick={() => setShowAllDepts(true)}
                       className="px-6 py-2.5 rounded-lg font-body text-xs tracking-widest uppercase border border-border hover:border-accent/40 text-muted-foreground hover:text-foreground transition-all">
@@ -1344,25 +1374,25 @@ const BookAppointment = () => {
               </div>
               <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {verifyOperationId ? (
-                  <button 
-                    onClick={handleCheckApproval} 
-                    disabled={isCheckingApproval} 
+                  <button
+                    onClick={handleCheckApproval}
+                    disabled={isCheckingApproval}
                     className="w-full bg-primary text-primary-foreground px-4 py-3 rounded-xl font-body text-xs tracking-widest uppercase hover:bg-primary/90 transition-colors disabled:opacity-70 inline-flex items-center justify-center text-center"
                   >
                     {isCheckingApproval ? (isAr ? "جارِ التحقق..." : "Checking...") : (isAr ? "تحقق من الموافقة" : "Check Approval")}
                   </button>
                 ) : (
-                  <button 
-                    onClick={handleNationalIdVerify} 
-                    disabled={isVerifyingNationalId} 
+                  <button
+                    onClick={handleNationalIdVerify}
+                    disabled={isVerifyingNationalId}
                     className="w-full bg-primary text-primary-foreground px-4 py-3 rounded-xl font-body text-xs tracking-widest uppercase hover:bg-primary/90 transition-colors disabled:opacity-70 inline-flex items-center justify-center text-center"
                   >
                     {isVerifyingNationalId ? (isAr ? "جارِ الفحص..." : "Verifying...") : (isAr ? "تحقق من الموافقة" : "Check Approval")}
                   </button>
                 )}
-                
-                <button 
-                  onClick={goToInitialBookingScreen} 
+
+                <button
+                  onClick={goToInitialBookingScreen}
                   className="w-full bg-secondary/40 text-foreground px-4 py-3 rounded-xl font-body text-xs tracking-widest uppercase hover:bg-secondary/60 transition-colors inline-flex items-center justify-center text-center"
                 >
                   {isAr ? "إلغاء" : "Cancel"}

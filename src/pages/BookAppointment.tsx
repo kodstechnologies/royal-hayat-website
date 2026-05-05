@@ -148,7 +148,7 @@ const BookAppointment = () => {
   // Dynamic Availability State
   const [specialityCode, setSpecialityCode] = useState<string | null>(null);
   const [providerCode, setProviderCode] = useState<string | null>(null);
-  const [serviceCode, setServiceCode] = useState<string>("S001");
+  const [serviceCode, setServiceCode] = useState<string>("R01-FMC001-F010");
   const [fetchedSlots, setFetchedSlots] = useState<Slot[]>([]);
   const [patientId, setPatientId] = useState<string | null>(null);
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);

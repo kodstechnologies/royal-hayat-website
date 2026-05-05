@@ -4,9 +4,13 @@ import { useRef, useState, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useNavigate } from "react-router-dom";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
-import { doctors, Doctor } from "@/data/doctors";
-import { deptDoctorAliases } from "@/data/departments";
+import type { Doctor } from "@/data/doctors";
 import { departmentDetails } from "@/data/departmentDetails";
+import { getCatagoriesWithDepartmentsAndDoctors } from "@/api/catagory";
+import {
+  mapCategoriesToGroupedMedicalDepartments,
+  type DepartmentWithEmbeddedDoctors,
+} from "@/utils/mapMedicalCatalogFromApi";
 
 interface ServiceItem {
   num: string;
@@ -15,208 +19,11 @@ interface ServiceItem {
   desc: string;
   descAr: string;
   img: string;
+  slug: string;
   department: string;
   subspecialties: { name: string; nameAr: string }[];
+  doctors: Doctor[];
 }
-
-const services: ServiceItem[] = [
-  {
-    num: "01", name: "Obstetrics & Gynecology", nameAr: "التوليد وأمراض النساء",
-    desc: "Complete maternity care from prenatal through postpartum recovery, supported by healthcare professionals.",
-    descAr: "رعاية أمومة شاملة من ما قبل الولادة حتى التعافي بعدها، بدعم من أكثر من 600 متخصص.",
-    img: "https://res.cloudinary.com/dwhc8kzpv/image/upload/q_auto/f_auto/v1776418841/2_kdo31l.jpg",
-    department: "Obstetrics & Gynecology",
-    subspecialties: [
-      { name: "Women's Health", nameAr: "صحة المرأة" },
-      { name: "Urogynecology", nameAr: "أمراض المسالك البولية النسائية" },
-      { name: "Cosmetic Gynecology", nameAr: "أمراض النساء التجميلية" },
-      { name: "Gynecologic Oncology", nameAr: "أورام النساء" },
-      { name: "Physiotherapy", nameAr: "العلاج الطبيعي" },
-      { name: "Parent and Childbirth Education", nameAr: "تثقيف الوالدين والولادة" },
-    ],
-  },
-  {
-    num: "02", name: "Family Medicine", nameAr: "طب الأسرة",
-    desc: "Continuous, personalized care for individuals and families of all ages with coordinated health management.",
-    descAr: "رعاية مستمرة ومخصصة للأفراد والعائلات من جميع الأعمار مع إدارة صحية منسقة.",
-    img: "https://res.cloudinary.com/dwhc8kzpv/image/upload/q_auto/f_auto/v1776410298/1_vcivez.jpg",
-    department: "Family Medicine",
-    subspecialties: [],
-  },
-  {
-    num: "03", name: "Al Safwa Healthcare Program", nameAr: "برنامج الصفوة للرعاية الصحية",
-    desc: "Personalized executive health program with premium screening, dedicated coordinators, and elegant private suites.",
-    descAr: "برنامج صحي تنفيذي مخصص مع فحوصات متميزة ومنسقين مخصصين وأجنحة خاصة أنيقة.",
-    img: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&h=250&fit=crop",
-    department: "Al Safwa Healthcare Program",
-    subspecialties: [],
-  },
-  {
-    num: "04", name: "Dental Clinic", nameAr: "عيادة الأسنان",
-    desc: "Exceptional dental care in a luxurious setting with specialized dentists using advanced technology for all ages.",
-    descAr: "رعاية أسنان استثنائية في بيئة فاخرة مع أطباء متخصصين يستخدمون تقنيات متقدمة لجميع الأعمار.",
-    img: "https://res.cloudinary.com/dwhc8kzpv/image/upload/q_auto/f_auto/v1776341941/3_hjykck.jpg",
-    department: "Dental Clinic",
-    subspecialties: [],
-  },
-  {
-    num: "05", name: "Reproductive Medicine & IVF", nameAr: "الطب التناسلي وأطفال الأنابيب",
-    desc: "Advanced fertility treatments blending expertise with cutting-edge technology, including IVF, ICSI, and genetic diagnosis.",
-    descAr: "علاجات خصوبة متقدمة تجمع بين الخبرة والتكنولوجيا المتطورة، بما في ذلك أطفال الأنابيب والحقن المجهري.",
-    img: "https://res.cloudinary.com/dwhc8kzpv/image/upload/q_auto/f_auto/v1776421052/2_f1yt2d.jpg",
-    department: "IVF & Reproductive Medicine",
-    subspecialties: [
-      { name: "IVF Treatment", nameAr: "أطفال الأنابيب" },
-      { name: "ICSI", nameAr: "الحقن المجهري" },
-      { name: "Fertility Preservation", nameAr: "حفظ الخصوبة" },
-      { name: "Reproductive Endocrinology", nameAr: "الغدد الصماء التناسلية" },
-    ],
-  },
-  {
-    num: "06", name: "Pain Management", nameAr: "إدارة الألم",
-    desc: "Comprehensive program offering advanced, compassionate care for acute and chronic pain to restore comfort and functionality.",
-    descAr: "برنامج شامل يقدم رعاية متقدمة ورحيمة للألم الحاد والمزمن لاستعادة الراحة والوظائف.",
-    img: "https://res.cloudinary.com/dwhc8kzpv/image/upload/q_auto/f_auto/v1776341973/1_euvkse.jpg",
-    department: "Pain Management",
-    subspecialties: [],
-  },
-  {
-    num: "07", name: "Pediatrics", nameAr: "طب الأطفال",
-    desc: "World-class pediatric care with warmth and a child-centered approach, from infancy through adolescence.",
-    descAr: "رعاية أطفال عالمية المستوى بدفء ونهج محوره الطفل، من الرضاعة حتى المراهقة.",
-    img: "https://res.cloudinary.com/dwhc8kzpv/image/upload/q_auto/f_auto/v1776341215/2_zdqayn.jpg",
-    department: "Pediatrics",
-    subspecialties: [
-      { name: "Pediatric Intensive Care Unit (PICU)", nameAr: "وحدة العناية المركزة للأطفال" },
-    ],
-  },
-  {
-    num: "08", name: "Anesthesia", nameAr: "التخدير",
-    desc: "Top-tier anesthesia services ensuring patient safety and comfort for all surgical and childbirth procedures.",
-    descAr: "خدمات تخدير عالية المستوى تضمن سلامة المريض وراحته لجميع الإجراءات الجراحية والولادة.",
-    img: "https://res.cloudinary.com/dwhc8kzpv/image/upload/q_auto/f_auto/v1776342086/1_ucnzxm.jpg",
-    department: "Anesthesia",
-    subspecialties: [],
-  },
-  {
-    num: "09", name: "Neonatal", nameAr: "حديثي الولادة",
-    desc: "Level III Neonatal Unit — the highest in Kuwait's private sector — offering specialized care for premature and critically ill infants.",
-    descAr: "وحدة حديثي الولادة من المستوى الثالث — الأعلى في القطاع الخاص بالكويت.",
-    img: "https://res.cloudinary.com/dwhc8kzpv/image/upload/q_auto/f_auto/v1776341286/1_cig453.jpg",
-    department: "Neonatal",
-    subspecialties: [
-      { name: "Special Care Baby Unit (SCBU)", nameAr: "وحدة العناية الخاصة بالمواليد" },
-    ],
-  },
-  {
-    num: "10", name: "Intensive Care", nameAr: "العناية المركزة",
-    desc: "Round-the-clock monitoring and care for severe, life-threatening conditions with cutting-edge technology.",
-    descAr: "مراقبة ورعاية على مدار الساعة للحالات الحرجة المهددة للحياة بأحدث التقنيات.",
-    img: "https://res.cloudinary.com/dwhc8kzpv/image/upload/q_auto/f_auto/v1776342130/1_lc2cxx.jpg",
-    department: "Intensive Care",
-    subspecialties: [],
-  },
-  {
-    num: "11", name: "Internal Medicine", nameAr: "الطب الباطني",
-    desc: "Comprehensive diagnosis and treatment of complex adult diseases with personalized health check programs.",
-    descAr: "تشخيص وعلاج شامل لأمراض البالغين المعقدة مع برامج فحص صحي مخصصة.",
-    img: "https://res.cloudinary.com/dwhc8kzpv/image/upload/q_auto/f_auto/v1776410489/1_eb6qdw.jpg",
-    department: "Internal Medicine",
-    subspecialties: [
-      { name: "Cardiology", nameAr: "أمراض القلب" },
-      { name: "Nephrology", nameAr: "أمراض الكلى" },
-      { name: "Gastroenterology", nameAr: "أمراض الجهاز الهضمي" },
-      { name: "Endocrinology & Metabolism", nameAr: "الغدد الصماء والتمثيل الغذائي" },
-      { name: "Rheumatology", nameAr: "أمراض الروماتيزم" },
-      { name: "Clinical Nutrition & Dietetics", nameAr: "التغذية السريرية" },
-    ],
-  },
-  {
-    num: "12", name: "Center for Diagnostic Imaging", nameAr: "مركز التصوير التشخيصي",
-    desc: "Advanced diagnostic and image-guided therapeutic services combining expert professionals with state-of-the-art technology.",
-    descAr: "خدمات تشخيصية وعلاجية موجهة بالتصوير تجمع بين متخصصين وتقنيات حديثة.",
-    img: "https://images.unsplash.com/photo-1530497610245-94d3c16cda28?w=400&h=250&fit=crop",
-    department: "Center for Diagnostic Imaging",
-    subspecialties: [
-      { name: "The Abdominal & Women's Imaging", nameAr: "تصوير البطن والمرأة" },
-      { name: "The Breast Imaging", nameAr: "تصوير الثدي" },
-      { name: "The Cardiovascular & Thoracic Imaging", nameAr: "تصوير القلب والصدر" },
-      { name: "The Musculoskeletal Imaging", nameAr: "تصوير العضلات والعظام" },
-      { name: "The Neuroradiology and Head & Neck Imaging", nameAr: "الأشعة العصبية" },
-      { name: "The Pediatric Imaging", nameAr: "تصوير الأطفال" },
-      { name: "The Vascular & Interventional Radiology", nameAr: "الأشعة الوعائية والتدخلية" },
-    ],
-  },
-  {
-    num: "13", name: "General & Laparoscopic Surgery", nameAr: "الجراحة العامة والمنظار",
-    desc: "Exceptional surgical care blending expert skills with advanced technology for precision, safety, and quick recovery.",
-    descAr: "رعاية جراحية استثنائية تجمع بين المهارات والتكنولوجيا المتقدمة.",
-    img: "https://res.cloudinary.com/dwhc8kzpv/image/upload/q_auto/f_auto/v1776341611/1_jbry60.jpg",
-    department: "General & Laparoscopic Surgery",
-    subspecialties: [
-      { name: "Obesity Bariatric Surgery", nameAr: "جراحة السمنة" },
-      { name: "Breast Surgical Oncology", nameAr: "أورام الثدي الجراحية" },
-      { name: "Abdominal Wall Reconstruction", nameAr: "إعادة بناء جدار البطن" },
-      { name: "Clinical Nutrition & Dietetics", nameAr: "التغذية السريرية" },
-    ],
-  },
-  {
-    num: "14", name: "Laboratory Services", nameAr: "خدمات المختبر",
-    desc: "CAP-accredited laboratory providing gold-standard diagnostic testing and pathology services.",
-    descAr: "مختبر معتمد من CAP يقدم فحوصات تشخيصية وخدمات علم الأمراض بأعلى المعايير.",
-    img: "https://res.cloudinary.com/dwhc8kzpv/image/upload/q_auto/f_auto/v1776342209/1_z8wzox.jpg",
-    department: "Laboratory Services",
-    subspecialties: [],
-  },
-  {
-    num: "15", name: "Plastic Surgery & Cosmetology", nameAr: "الجراحة التجميلية",
-    desc: "Internationally certified physicians offering advanced surgical and non-surgical cosmetic and reconstructive solutions.",
-    descAr: "أطباء معتمدون دولياً يقدمون حلولاً تجميلية وترميمية جراحية وغير جراحية متقدمة.",
-    img: "https://res.cloudinary.com/dwhc8kzpv/image/upload/q_auto/f_auto/v1776341728/3_b7dnxl.jpg",
-    department: "Plastic Surgery & Cosmetology",
-    subspecialties: [],
-  },
-  {
-    num: "16", name: "Royale Hayat Pharmacy", nameAr: "صيدلية رويال حياة",
-    desc: "Comprehensive pharmacy services ensuring safe and effective medication management for all patients.",
-    descAr: "خدمات صيدلية شاملة تضمن إدارة آمنة وفعالة للأدوية لجميع المرضى.",
-    img: "https://images.unsplash.com/photo-1585435557343-3b092031a831?w=400&h=250&fit=crop",
-    department: "Royale Hayat Pharmacy",
-    subspecialties: [],
-  },
-  {
-    num: "17", name: "Dermatology", nameAr: "الأمراض الجلدية",
-    desc: "Expert care for all dermatological needs combining clinical excellence with the latest advances for adults and children.",
-    descAr: "رعاية متخصصة لجميع احتياجات الأمراض الجلدية مع أحدث التطورات.",
-    img: "https://res.cloudinary.com/dwhc8kzpv/image/upload/q_auto/f_auto/v1776341783/1_h3erol.jpg",
-    department: "Dermatology",
-    subspecialties: [],
-  },
-  {
-    num: "18", name: "Clinical Pharmacy", nameAr: "الصيدلة السريرية",
-    desc: "Expert pharmaceutical care integrated with clinical teams for optimal medication therapy outcomes.",
-    descAr: "رعاية صيدلانية متخصصة مدمجة مع الفرق السريرية لتحقيق أفضل نتائج العلاج الدوائي.",
-    img: "https://res.cloudinary.com/dwhc8kzpv/image/upload/q_auto/f_auto/v1776342251/1_ygmlze.jpg",
-    department: "Clinical Pharmacy",
-    subspecialties: [],
-  },
-  {
-    num: "19", name: "ENT (Ear, Nose & Throat)", nameAr: "الأنف والأذن والحنجرة",
-    desc: "Expert care for conditions affecting the ear, nose, throat, head, and neck with both medical and surgical expertise.",
-    descAr: "رعاية متخصصة لأمراض الأنف والأذن والحنجرة والرأس والرقبة بخبرات طبية وجراحية.",
-    img: "https://res.cloudinary.com/dwhc8kzpv/image/upload/q_auto/f_auto/v1776341874/1_muikcx.jpg",
-    department: "ENT (Ear, Nose & Throat)",
-    subspecialties: [],
-  },
-  {
-    num: "20", name: "Royale Home Health", nameAr: "رويال للرعاية المنزلية",
-    desc: "Premium medical care delivered in the comfort and privacy of your home by certified professionals.",
-    descAr: "رعاية طبية متميزة تُقدم في راحة وخصوصية منزلك من قبل متخصصين معتمدين.",
-    img: "https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?w=400&h=250&fit=crop",
-    department: "Royale Home Health",
-    subspecialties: [],
-  },
-];
 
 const SpecializedCare = () => {
   const sectionRef = useRef(null);
@@ -228,7 +35,9 @@ const SpecializedCare = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const INITIAL_COUNT = 6;
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const sortedServices = [...services]
+  const [apiServices, setApiServices] = useState<ServiceItem[]>([]);
+
+  const sortedServices = [...apiServices]
     .filter((service) => service.name !== "Allergy & Immunology")
     .sort((a, b) => a.name.localeCompare(b.name));
 
@@ -238,14 +47,40 @@ const SpecializedCare = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const getDeptDoctors = (department: string): Doctor[] => {
-    const aliases = deptDoctorAliases[department] || [department];
-    return doctors.filter((d) =>
-      aliases.some(a => d.department.includes(a) || d.specialty.includes(a))
-    )
-      .sort((a, b) => a.name.localeCompare(b.name))
-      .slice(0, 3);
-  };
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const categories = await getCatagoriesWithDepartmentsAndDoctors();
+        const grouped = mapCategoriesToGroupedMedicalDepartments(categories);
+        const departments: DepartmentWithEmbeddedDoctors[] = grouped.flatMap((g) => g.departments);
+        const mapped: ServiceItem[] = departments.map((dep, index) => {
+          const detail = departmentDetails.find((d) => d.slug === dep.slug);
+          return {
+            num: String(index + 1).padStart(2, "0"),
+            name: dep.name,
+            nameAr: dep.nameAr || dep.name,
+            desc: dep.desc || dep.name,
+            descAr: dep.descAr || dep.desc || dep.name,
+            img: dep.img || "",
+            slug: dep.slug,
+            department: dep.name,
+            subspecialties:
+              dep.subs.length > 0
+                ? dep.subs
+                : (detail?.subDepartments ?? []).map((sub) => ({ name: sub.name, nameAr: sub.nameAr })),
+            doctors: (dep.embeddedDoctors ?? []).slice(0, 3),
+          };
+        });
+        if (!cancelled) setApiServices(mapped);
+      } catch {
+        if (!cancelled) setApiServices([]);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const scrollDoctors = (direction: "left" | "right") => {
     if (scrollRef.current) {
@@ -261,14 +96,15 @@ const SpecializedCare = () => {
   };
 
   const handleExpand = (index: number) => {
+    if (index < 0 || index >= INITIAL_COUNT) return;
     setExpandedIndex(expandedIndex === index ? null : index);
   };
 
   const visibleServices = sortedServices.slice(0, INITIAL_COUNT);
 
   // Reorder: expanded card first, rest below
-  const reorderedServices = (expandedIndex !== null && !isMobile)
-    ? [sortedServices[expandedIndex], ...visibleServices.filter((s) => sortedServices.indexOf(s) !== expandedIndex)]
+  const reorderedServices = (expandedIndex !== null && !isMobile && expandedIndex < visibleServices.length)
+    ? [visibleServices[expandedIndex], ...visibleServices.filter((_, idx) => idx !== expandedIndex)]
     : visibleServices;
 
   const getOriginalIndex = (service: ServiceItem) =>
@@ -284,12 +120,7 @@ const SpecializedCare = () => {
       .replace(/^-+|-+$/g, "");
 
   const getDepartmentSlug = (service: ServiceItem) => {
-    const matchedDept = departmentDetails.find(
-      (d) =>
-        d.name.toLowerCase() === service.name.toLowerCase() ||
-        d.name.toLowerCase() === service.department.toLowerCase()
-    );
-    return matchedDept?.slug;
+    return service.slug;
   };
 
   const getSubSlug = (service: ServiceItem, subName: string) => {
@@ -321,7 +152,7 @@ const SpecializedCare = () => {
           {reorderedServices.map((s) => {
             const origIdx = getOriginalIndex(s);
             const isExpanded = expandedIndex === origIdx;
-            const deptDoctors = getDeptDoctors(s.department);
+            const deptDoctors = s.doctors;
             const showImageCard = isInFirstSix(origIdx);
             const selectedSubSlug = selectedSubByService[s.num];
             const departmentSlug = getDepartmentSlug(s);
@@ -355,12 +186,18 @@ const SpecializedCare = () => {
                         /* First 6: Image cards */
                         <>
                           <div className="relative h-52 md:h-60 overflow-hidden">
-                            <img
-                              src={s.img}
-                              alt={lang === "ar" ? s.nameAr : s.name}
-                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                              loading="lazy"
-                            />
+                            {s.img ? (
+                              <img
+                                src={s.img}
+                                alt={lang === "ar" ? s.nameAr : s.name}
+                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                loading="lazy"
+                              />
+                            ) : (
+                              <div className="w-full h-full bg-secondary/30 flex items-center justify-center">
+                                <Stethoscope className="w-8 h-8 text-primary/40" />
+                              </div>
+                            )}
                             <div className="absolute inset-0 bg-gradient-to-t from-popover/70 to-transparent" />
                             <span className="absolute top-3 left-3 text-2xl font-serif text-primary-foreground/80 drop-shadow-lg"></span>
                           </div>
@@ -369,7 +206,7 @@ const SpecializedCare = () => {
                               {lang === "ar" ? s.nameAr : s.name}
                             </h3>
                             <p className="text-muted-foreground font-body text-xs leading-relaxed mb-3 line-clamp-2">
-                              {lang === "ar" ? s.descAr : s.desc}
+                              {(lang === "ar" ? s.descAr : s.desc) || (lang === "ar" ? "قسم طبي" : "Medical department")}
                             </p>
                             <span className="inline-flex items-center gap-1.5 text-primary font-body text-xs tracking-wide hover:text-accent transition-colors">
                               {t("learnMore")} <ArrowRight className="w-3.5 h-3.5" />
@@ -404,11 +241,17 @@ const SpecializedCare = () => {
                       {/* Left: Image + Info */}
                       <div className="lg:w-2/5 relative">
                         <div className="relative h-72 lg:h-full min-h-[380px] overflow-hidden">
-                          <img
-                            src={s.img}
-                            alt={lang === "ar" ? s.nameAr : s.name}
-                            className="w-full h-full object-cover"
-                          />
+                          {s.img ? (
+                            <img
+                              src={s.img}
+                              alt={lang === "ar" ? s.nameAr : s.name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-secondary/30 flex items-center justify-center">
+                              <Stethoscope className="w-10 h-10 text-primary/40" />
+                            </div>
+                          )}
                           <div className="absolute inset-0 bg-gradient-to-t from-popover via-popover/40 to-transparent" />
                           <div className="absolute bottom-0 left-0 right-0 p-6">
                             <span className="text-4xl font-serif text-primary/60 mb-2 block"></span>
@@ -416,7 +259,7 @@ const SpecializedCare = () => {
                               {lang === "ar" ? s.nameAr : s.name}
                             </h3>
                             <p className="text-muted-foreground font-body text-sm leading-relaxed">
-                              {lang === "ar" ? s.descAr : s.desc}
+                              {(lang === "ar" ? s.descAr : s.desc) || (lang === "ar" ? "قسم طبي" : "Medical department")}
                             </p>
                             {departmentSlug && (
                               <button

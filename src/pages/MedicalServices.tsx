@@ -3,26 +3,38 @@ import Footer from "@/components/Footer";
 import ChatButton from "@/components/ChatButton";
 import ScrollToTop from "@/components/ScrollToTop";
 import DepartmentsSection from "@/components/DepartmentsSection";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router-dom";
-import { Home } from "lucide-react";
+import { ChevronLeft, ChevronRight, Home, Stethoscope } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { doctors } from "@/data/doctors";
-import { motion } from "framer-motion";
-import { ChevronLeft, ChevronRight, Stethoscope } from "lucide-react";
-import { useRef } from "react";
+import type { Doctor } from "@/data/doctors";
+import { useEffect, useMemo, useRef, useState } from "react";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
+import { getCatagoriesWithDepartmentsAndDoctors } from "@/api/catagory";
+import { getDoctorsBySubspeciality } from "@/api/doctors";
+import {
+  type MedicalCategoryGroup,
+  mapCategoriesToGroupedMedicalDepartments,
+  collectFeaturedDoctorsFromGrouped,
+} from "@/utils/mapMedicalCatalogFromApi";
 
-const FeaturedDoctors = () => {
+type CatalogState =
+  | { status: "loading" }
+  | { status: "ok"; grouped: MedicalCategoryGroup[] }
+  | { status: "error" };
+
+type FeaturedDoctorsProps = {
+  catalogState: CatalogState;
+};
+
+const FeaturedDoctors = ({ catalogState }: FeaturedDoctorsProps) => {
   const { lang } = useLanguage();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const featured = [...doctors]
-    .sort((a, b) =>
-      (lang === "ar" ? a.nameAr : a.name).localeCompare(
-        lang === "ar" ? b.nameAr : b.name,
-        lang === "ar" ? "ar" : "en"
-      )
-    )
-    .slice(0, 10);
+
+  const featured: Doctor[] = useMemo(() => {
+    if (catalogState.status !== "ok") return [];
+    return collectFeaturedDoctorsFromGrouped(catalogState.grouped, 10);
+  }, [catalogState]);
 
   const scroll = (dir: "left" | "right") => {
     if (scrollRef.current) {
@@ -31,6 +43,51 @@ const FeaturedDoctors = () => {
       scrollRef.current.scrollBy({ left: dir === "left" ? -amount : amount, behavior: "smooth" });
     }
   };
+
+  if (catalogState.status === "loading") {
+    return (
+      <section className="py-12 bg-muted/20">
+        <div className="container mx-auto px-6 flex flex-col items-center justify-center min-h-[280px] gap-3">
+          <Skeleton className="h-8 w-56" />
+          <Skeleton className="h-40 w-full max-w-4xl" />
+          <p className="text-muted-foreground font-body text-sm mt-4">
+            {lang === "ar" ? "جاري تحميل الأطباء…" : "Loading doctors…"}
+          </p>
+        </div>
+      </section>
+    );
+  }
+
+  if (catalogState.status === "error") {
+    return (
+      <section className="py-12 bg-muted/20">
+        <div className="container mx-auto px-6 max-w-2xl text-center py-16 rounded-2xl border border-destructive/30 bg-destructive/5">
+          <p className="font-serif text-lg text-foreground mb-2">
+            {lang === "ar" ? "تعذر تحميل فريق الأطباء" : "Could not load featured doctors"}
+          </p>
+          <p className="text-muted-foreground font-body text-sm">
+            {lang === "ar"
+              ? "يعتمد هذا القسم على بيانات الخادم فقط."
+              : "This section only shows live data from the server."}
+          </p>
+        </div>
+      </section>
+    );
+  }
+
+  if (featured.length === 0) {
+    return (
+      <section className="py-12 bg-muted/20">
+        <div className="container mx-auto px-6 text-center py-16">
+          <p className="text-muted-foreground font-body text-sm max-w-md mx-auto">
+            {lang === "ar"
+              ? "لا يوجد أطباء في الكتالوج لعرضهم هنا بعد."
+              : "No doctors are available in the catalog to feature here yet."}
+          </p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-12 bg-muted/20">
@@ -132,12 +189,47 @@ const HomeHealthPreview = () => {
   );
 };
 
+const MedicalServicesDepartments = ({ catalogState }: { catalogState: CatalogState }) => (
+  <DepartmentsSection
+    apiGroupedCatalog={
+      catalogState.status === "ok"
+        ? catalogState.grouped
+        : catalogState.status === "error"
+          ? []
+          : undefined
+    }
+    apiCatalogLoading={catalogState.status === "loading"}
+    disableStaticFallback
+    catalogFetchFailed={catalogState.status === "error"}
+    fetchDoctorsBySubspeciality={getDoctorsBySubspeciality}
+  />
+);
+
 const MedicalServices = () => {
+  const [catalogState, setCatalogState] = useState<CatalogState>({ status: "loading" });
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const categories = await getCatagoriesWithDepartmentsAndDoctors();
+        if (cancelled) return;
+        const grouped = mapCategoriesToGroupedMedicalDepartments(categories);
+        setCatalogState({ status: "ok", grouped });
+      } catch {
+        if (!cancelled) setCatalogState({ status: "error" });
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107]">
       <Header />
-      <DepartmentsSection />
-      <FeaturedDoctors />
+      <MedicalServicesDepartments catalogState={catalogState} />
+      <FeaturedDoctors catalogState={catalogState} />
       <HomeHealthPreview />
       <Footer />
       <ChatButton />

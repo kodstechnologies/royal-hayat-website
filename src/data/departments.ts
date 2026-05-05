@@ -16,14 +16,22 @@ export interface Department {
   slug: string;
   icon: LucideIcon;
   category: string;
+  subs?: {
+    name: string;
+    nameAr: string;
+    subspecialityId?: string;
+    description?: string;
+    customBlocks?: { subHeading?: string; explanations: string[] }[];
+  }[];
+  /** Optional rich sections from API (`CustomExplainantion` → mapped as explanations for UI). */
+  departmentContentBlocks?: { subHeading?: string; explanations: string[] }[];
   mainCategory: MainCategory;
-  subs?: { name: string; nameAr: string }[];
 }
 
 export const MAIN_CATEGORIES: { key: MainCategory; label: string; labelAr: string }[] = [
-  { key: "Clinical Speciality",       label: "Clinical Speciality",       labelAr: "التخصصات السريرية" },
-  { key: "Clinical Support Service",  label: "Clinical Support Service",  labelAr: "خدمات الدعم السريري" },
-  { key: "Home Care Service",         label: "Home Care Service",         labelAr: "خدمات الرعاية المنزلية" },
+  { key: "Clinical Speciality", label: "Clinical Speciality", labelAr: "التخصصات السريرية" },
+  { key: "Clinical Support Service", label: "Clinical Support Service", labelAr: "خدمات الدعم السريري" },
+  { key: "Home Care Service", label: "Home Care Service", labelAr: "خدمات الرعاية المنزلية" },
 ];
 
 export const departments: Department[] = [

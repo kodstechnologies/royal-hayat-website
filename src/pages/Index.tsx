@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import StatsRow from "@/components/StatsRow";
@@ -20,22 +19,8 @@ import PatientsQuickLinks from "@/components/PatientsQuickLinks";
 import Footer from "@/components/Footer";
 import ChatButton from "@/components/ChatButton";
 import ScrollToTop from "@/components/ScrollToTop";
-import { doctors } from "@/data/doctors";
-import { useLanguage } from "@/contexts/LanguageContext";
 
 const Index = () => {
-  const featuredDoctors = doctors.slice(0, 12);
-  const { lang } = useLanguage();
-
-  // Preload doctor images for instant loading in DoctorsSection
-  useEffect(() => {
-    featuredDoctors.forEach((doc) => {
-      if (doc.image) {
-        const img = new Image();
-        img.src = doc.image;
-      }
-    });
-  }, []);
 
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107]">
@@ -46,7 +31,7 @@ const Index = () => {
       <HomeBookingBlock />
       <SpecializedCare />
       <InsurancePartners />
-      <DoctorsSection featuredDoctors={featuredDoctors} />
+      <DoctorsSection />
       <WhyRoyaleHayat />
       
       {/* Chairman's Message Section with Heading */}

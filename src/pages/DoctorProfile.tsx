@@ -5,8 +5,9 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ChatButton from "@/components/ChatButton";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { doctors } from "@/data/doctors";
-import { departments, deptDoctorAliases } from "@/data/departments";
+import { useEffect, useMemo, useState } from "react";
+import { doctors, type Doctor } from "@/data/doctors";
+import { getDoctorById, mapApiDoctorRowToDoctor } from "@/api/doctors";
 const patientFeedback = [
   {
     name: "Sara Al-Mutairi", nameAr: "سارة المطيري",
@@ -68,7 +69,61 @@ const DoctorProfile = () => {
     }
   };
 
-  const doctor = doctors.find((d) => d.id === id);
+  const staticDoctor = useMemo(() => doctors.find((d) => d.id === id) ?? null, [id]);
+  const [doctor, setDoctor] = useState<Doctor | null>(staticDoctor);
+  const [loadingDoctor, setLoadingDoctor] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!id) {
+      setDoctor(null);
+      return;
+    }
+    if (staticDoctor) {
+      setDoctor(staticDoctor);
+      return;
+    }
+
+    (async () => {
+      try {
+        setLoadingDoctor(true);
+        const res = await getDoctorById(id);
+        const payload =
+          (res && typeof res === "object" && "data" in (res as Record<string, unknown>)
+            ? (res as { data?: unknown }).data
+            : res) ?? {};
+        if (cancelled) return;
+        if (payload && typeof payload === "object") {
+          const raw = payload as Record<string, unknown>;
+          setDoctor(mapApiDoctorRowToDoctor(raw, "", ""));
+        } else {
+          setDoctor(null);
+        }
+      } catch {
+        if (!cancelled) setDoctor(null);
+      } finally {
+        if (!cancelled) setLoadingDoctor(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id, staticDoctor]);
+
+  if (loadingDoctor) {
+    return (
+      <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
+        <Header />
+        <div className="container mx-auto px-6 py-24 text-center">
+          <h1 className="text-3xl font-serif text-foreground mb-4">
+            {lang === "ar" ? "جاري تحميل بيانات الطبيب..." : "Loading doctor profile..."}
+          </h1>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!doctor) {
     return (
@@ -90,19 +145,14 @@ const DoctorProfile = () => {
   const isOnlineAvailable = doctor.availableOnline !== false;
   const canBookSlot = bookingReturnState?.canBookSlot ?? isOnlineAvailable;
 
-  const inferredDept = departments.find((d) => {
-    const aliases = deptDoctorAliases[d.name] || [d.name];
-    return aliases.some((a) => doctor.department.includes(a) || doctor.specialty.includes(a));
-  });
-
-  /** Resume booking at patient type step: department + doctor pre-filled, then time slots after details. */
+  /** Resume booking: department + doctor pre-filled. Step 3 = time slots (step 2 patient details temporarily skipped in BookAppointment). */
   const goToBookAppointmentPatientInfo = () => {
     navigate("/book-appointment", {
       state: {
         ...bookingReturnState,
         fromBookAppointment: true,
         bookingPath: bookingReturnState?.bookingPath ?? "primary",
-        selectedDept: bookingReturnState?.selectedDept ?? inferredDept?.id ?? null,
+        selectedDept: bookingReturnState?.selectedDept ?? doctor.departmentId ?? null,
         selectedDoctor: doctor.id,
         isRequestMode: doctor.availableOnline === false,
         canBookSlot: doctor.availableOnline !== false,
@@ -149,20 +199,18 @@ const DoctorProfile = () => {
 
                   {/* Availability Badge */}
                   {doctor.hideBooking !== true && (
-                    <div className={`flex items-center gap-1.5 mb-4 justify-center ${
-                      isOnlineAvailable
+                    <div className={`flex items-center gap-1.5 mb-4 justify-center ${isOnlineAvailable
                         ? "text-green-600"
                         : fromBooking
                           ? "text-muted-foreground"
                           : "text-red-500"
-                    }`}>
-                      <div className={`w-2 h-2 rounded-full ${
-                        isOnlineAvailable
+                      }`}>
+                      <div className={`w-2 h-2 rounded-full ${isOnlineAvailable
                           ? "bg-green-500"
                           : fromBooking
                             ? "bg-muted-foreground"
                             : "bg-red-500"
-                      }`} />
+                        }`} />
                       <span className="font-body text-xs">
                         {isOnlineAvailable
                           ? (lang === "ar" ? "متاح للحجز الإلكتروني" : "Book Online")

@@ -8,7 +8,7 @@ import ScrollToTop from "@/components/ScrollToTop";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "sonner";
 import axios from "axios";
-import { postEnquiry } from "../../api/enquiry";
+import { postEnquiry } from "@/api/enquiry";
 
 const ContactUs = () => {
   const { lang } = useLanguage();

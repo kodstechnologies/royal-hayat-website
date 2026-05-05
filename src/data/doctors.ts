@@ -22,6 +22,10 @@ export interface Doctor {
   availableOnline?: boolean;
   image?: string;
   hideBooking?: boolean;
+  /** Mongo department `_id` when returned from API (populated or raw ObjectId). */
+  departmentId?: string;
+  /** Legacy/External doctor ID (provider code) used for appointments. */
+  providerCode?: string;
 }
 
 export const doctors: Doctor[] = [

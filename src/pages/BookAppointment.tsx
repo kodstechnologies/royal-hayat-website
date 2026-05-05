@@ -22,13 +22,14 @@ import {
 } from "@/api/doctors";
 import {
   getAvailability,
-  getCareProviders,
   bookAppointment,
   getPatient,
   type Slot
 } from "@/api/royalhayat";
 import { getIdentityStatus, startIdentityVerification } from "@/api/identity";
 import { postEnquiry } from "@/api/enquiry";
+
+
 
 // Helper types and functions for dynamic API data
 type BookingDeptRow = {
@@ -38,6 +39,8 @@ type BookingDeptRow = {
   category: string;
   slug: string;
   specialityCode?: string;
+  mainCategory: string;
+  icon: any;
 };
 
 const OID = /^[0-9a-fA-F]{24}$/i;
@@ -62,6 +65,21 @@ function apiRowToBookingDept(row: Record<string, unknown>): BookingDeptRow | nul
   if (cat && typeof cat === "object" && cat !== null && "name" in cat) {
     category = String((cat as { name?: string }).name ?? "").trim();
   }
+
+  const mainCategory = category || "Others";
+
+  // Assign icons based on name or category
+  let icon = Stethoscope;
+  const lowerName = name.toLowerCase();
+  if (lowerName.includes("dental")) icon = Smile;
+  else if (lowerName.includes("pediatric") || lowerName.includes("neonatology")) icon = Baby;
+  else if (lowerName.includes("plastic") || lowerName.includes("cosmetic")) icon = Scissors;
+  else if (lowerName.includes("dermatology")) icon = Sparkles;
+  else if (lowerName.includes("diagnostic") || lowerName.includes("imaging")) icon = Microscope;
+  else if (lowerName.includes("surgery")) icon = Scissors;
+  else if (lowerName.includes("home health")) icon = Building2;
+  else if (lowerName.includes("physio")) icon = Activity;
+
   return {
     id,
     name,
@@ -69,6 +87,8 @@ function apiRowToBookingDept(row: Record<string, unknown>): BookingDeptRow | nul
     category: category || "—",
     slug: departmentSlug(name, id),
     specialityCode: typeof row.departmentId === "string" ? row.departmentId : undefined,
+    mainCategory,
+    icon
   };
 }
 
@@ -149,47 +169,18 @@ const BookAppointment = () => {
     }
   }, [selectedDept, departmentsList]);
 
-  // Sync providerCode with selectedDoctor (uses dynamic care provider lookup)
+  // Sync providerCode with selectedDoctor (uses doctorId from doctor object)
   useEffect(() => {
-    const doc = allApiDoctors.find(d => d.id === selectedDoctor) || deptDoctorList.find(d => d.id === selectedDoctor);
-    if (!doc) {
-      setProviderCode(null);
-      return;
+    if (selectedDoctor) {
+      const doc = allApiDoctors.find(d => d.id === selectedDoctor) || deptDoctorList.find(d => d.id === selectedDoctor);
+      if (doc?.providerCode) {
+        console.log("Setting providerCode from doctorId:", doc.providerCode);
+        setProviderCode(doc.providerCode);
+      } else if (doc) {
+        console.warn("Doctor found but no doctorId (providerCode) available for:", doc.name);
+      }
     }
-
-    if (specialityCode) {
-      (async () => {
-        try {
-          console.log(`[BookAppointment] Fetching care providers for speciality: ${specialityCode} to match doctor: ${doc.name}`);
-          const res = await getCareProviders(specialityCode);
-          if (res.success && res.data?.provider_list) {
-            // Match by name or existing providerCode
-            const match = res.data.provider_list.find((p: any) =>
-              p.provider_name?.toLowerCase().includes(doc.name.toLowerCase()) ||
-              doc.name.toLowerCase().includes(p.provider_name?.toLowerCase()) ||
-              p.provider_id === doc.providerCode
-            );
-
-            if (match) {
-              console.log(`[BookAppointment] Found care provider match: ${match.provider_name} (ID: ${match.provider_id})`);
-              setProviderCode(match.provider_id);
-            } else {
-              console.warn(`[BookAppointment] No care provider match found for ${doc.name}. Falling back to DB code: ${doc.providerCode}`);
-              setProviderCode(doc.providerCode || null);
-            }
-          } else {
-            setProviderCode(doc.providerCode || null);
-          }
-        } catch (err) {
-          console.error("[BookAppointment] Failed to fetch care providers:", err);
-          setProviderCode(doc.providerCode || null);
-        }
-      })();
-    } else {
-      // Fallback to doctor's existing providerCode if specialityCode is not yet available
-      setProviderCode(doc.providerCode || null);
-    }
-  }, [selectedDoctor, specialityCode, allApiDoctors, deptDoctorList]);
+  }, [selectedDoctor, allApiDoctors, deptDoctorList]);
 
   // Fetch availability when all params are ready
   useEffect(() => {
@@ -226,7 +217,6 @@ const BookAppointment = () => {
     fetchSlots();
   }, [specialityCode, providerCode, serviceCode, selectedDate]);
 
-  const timeSlots = fetchedSlots.map(s => s.slot_from_time).filter(Boolean);
 
   const formatSlotRange = (slot: Slot) => {
     if (!slot.slot_from_time || !slot.slot_from_time.includes(":")) return "";
@@ -342,7 +332,25 @@ const BookAppointment = () => {
           (isAr ? a.nameAr : a.name).localeCompare(isAr ? b.nameAr : b.name, isAr ? "ar" : "en"),
         );
         setDepartmentsList(bookingDepts);
-        setAllApiDoctors(doctorRows.filter((d) => !d.hideBooking));
+
+        // Enrich allApiDoctors with department names if they only have IDs
+        const enrichedDoctors = doctorRows.map(doc => {
+          if (!doc.department || doc.department === "") {
+            const dept = bookingDepts.find(d => d.id === doc.departmentId);
+            if (dept) {
+              return {
+                ...doc,
+                department: dept.name,
+                departmentAr: dept.nameAr,
+                specialty: doc.specialty || dept.name,
+                specialtyAr: doc.specialtyAr || dept.nameAr
+              };
+            }
+          }
+          return doc;
+        });
+
+        setAllApiDoctors(enrichedDoctors.filter((d) => !d.hideBooking));
       } catch {
         if (!cancelled) {
           setCatalogError(isAr ? "تعذر تحميل الأقسام والأطباء. حاول مرة أخرى." : "Could not load departments and doctors. Please try again.");
@@ -356,7 +364,7 @@ const BookAppointment = () => {
     };
   }, [isAr]);
 
-  // Fetch Doctors for selected department (enriched with care provider IDs)
+  // Fetch Doctors for selected department
   useEffect(() => {
     if (!selectedDept || bookingPath !== "primary") {
       setDeptDoctorList([]);
@@ -366,36 +374,16 @@ const BookAppointment = () => {
     (async () => {
       setDeptDoctorLoading(true);
       try {
-        // Fetch both local doctors and Royal Hayat care providers
-        const [rows, cpRes] = await Promise.all([
-          getDoctorsByDepartment(selectedDept),
-          specialityCode ? getCareProviders(specialityCode) : Promise.resolve(null)
-        ]);
-
+        const rows = await getDoctorsByDepartment(selectedDept);
         const deptName = departmentsList.find((d) => d.id === selectedDept)?.name ?? "";
-        const careProviders = (cpRes?.success && cpRes.data?.provider_list) ? cpRes.data.provider_list : [];
 
         const mapped = rows.map((r) => {
-          const doc = mapApiDoctorRowToDoctor(r as Record<string, unknown>, deptName, deptName);
-
-          // Enrich with authoritative providerCode from Royal Hayat if available
-          if (careProviders.length > 0) {
-            const match = careProviders.find((p: any) =>
-              p.provider_name?.toLowerCase().includes(doc.name.toLowerCase()) ||
-              doc.name.toLowerCase().includes(p.provider_name?.toLowerCase()) ||
-              p.provider_id === doc.providerCode
-            );
-            if (match) {
-              console.log(`[BookAppointment] Enriched ${doc.name} with providerCode: ${match.provider_id}`);
-              doc.providerCode = match.provider_id;
-            }
-          }
-          return doc;
+          return mapApiDoctorRowToDoctor(r as Record<string, unknown>, deptName, deptName);
         });
 
         if (!cancelled) setDeptDoctorList(mapped.filter((d) => !d.hideBooking));
       } catch (err) {
-        console.error("[BookAppointment] Failed to fetch doctors or care providers:", err);
+        console.error("[BookAppointment] Failed to fetch doctors:", err);
         if (!cancelled) setDeptDoctorList([]);
       } finally {
         if (!cancelled) setDeptDoctorLoading(false);
@@ -404,7 +392,7 @@ const BookAppointment = () => {
     return () => {
       cancelled = true;
     };
-  }, [selectedDept, bookingPath, departmentsList, specialityCode]);
+  }, [selectedDept, bookingPath, departmentsList]);
 
   // Read query param on mount
   useEffect(() => {
@@ -421,35 +409,20 @@ const BookAppointment = () => {
     }
   }, [booked]);
 
-  const filteredDepts = departments
-    .filter(d => !["Clinical Pharmacy", "Royale Hayat Pharmacy"].includes(d.name))
-    .filter(
+  const filteredDepts = useMemo(() => {
+    return departmentsList.filter(
       (d) =>
         d.name.toLowerCase().includes(deptSearch.toLowerCase()) ||
         d.category.toLowerCase().includes(deptSearch.toLowerCase())
-    )
-    .sort((a, b) => (isAr ? a.nameAr : a.name).localeCompare(isAr ? b.nameAr : b.name, isAr ? 'ar' : 'en'));
+    );
+  }, [departmentsList, deptSearch]);
+
   const displayDepts = useMemo(
     () => (deptSearch.trim() || showAllDepts ? filteredDepts : filteredDepts.slice(0, 6)),
     [deptSearch, showAllDepts, filteredDepts],
   );
-  const groupedMainCategoryDepts = useMemo(() => {
-    const grouped: Record<string, typeof filteredDepts> = {};
-    for (const dept of displayDepts) {
-      const mainCategory = String((dept as unknown as { mainCategory?: unknown }).mainCategory ?? "");
-      const key = MAIN_CATEGORY_ORDER.includes(mainCategory as (typeof MAIN_CATEGORY_ORDER)[number])
-        ? mainCategory
-        : "Other";
-      if (!grouped[key]) grouped[key] = [];
-      grouped[key].push(dept);
-    }
-    const ordered: Array<[string, typeof filteredDepts]> = [];
-    for (const key of MAIN_CATEGORY_ORDER) {
-      if (grouped[key]?.length) ordered.push([key, grouped[key]]);
-    }
-    if (grouped.Other?.length) ordered.push(["Other", grouped.Other]);
-    return ordered;
-  }, [displayDepts]);
+
+
 
   const doctors = deptDoctorList.sort((a, b) =>
     (isAr ? a.nameAr : a.name).localeCompare(isAr ? b.nameAr : b.name, isAr ? "ar" : "en"),
@@ -1110,42 +1083,33 @@ const BookAppointment = () => {
                     disabled={catalogLoading}
                     className="w-full pl-11 pr-4 py-3 rounded-xl border border-border bg-popover font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 disabled:opacity-50" />
                 </div>
-                <div className="space-y-10">
-                  {groupedMainCategoryDepts.map(([mainCategory, depts]) => (
-                    <section key={mainCategory}>
-                      <h3 className="text-2xl md:text-3xl font-serif font-semibold tracking-tight text-accent mb-5 md:mb-6 text-center pb-3 border-b-2 border-primary/15">
-                        {mainCategory}
-                      </h3>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                        {depts.map((dept) => (
-                          <motion.button key={dept.id} whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}
-                            onClick={() => {
-                              if (dept.slug === "al-safwa-healthcare") {
-                                navigate("/al-safwa", { state: { fromBookAppointment: true } });
-                                return;
-                              }
-                              if (dept.slug === "home-health") {
-                                navigate("/home-health", { state: { fromBookAppointment: true } });
-                                return;
-                              }
-                              setSelectedDept(dept.id);
-                              setStep(1);
-                            }}
-                            className={`flex items-center gap-3 p-4 rounded-xl border transition-all text-left ${selectedDept === dept.id
-                              ? "bg-primary text-primary-foreground border-primary shadow-md"
-                              : "bg-popover border-border hover:border-accent/40 text-foreground"
-                              }`}>
-                            <dept.icon className={`w-5 h-5 flex-shrink-0 ${selectedDept === dept.id ? "" : "text-accent"}`} />
-                            <div className="min-w-0">
-                              <p className="font-body text-sm font-medium truncate">{dept.name}</p>
-                              <p className={`font-body text-xs ${selectedDept === dept.id ? "text-primary-foreground/60" : "text-muted-foreground"}`}>{dept.category}</p>
-                            </div>
-                          </motion.button>
-                        ))}
-                      </div>
-                    </section>
-                  ))}
-                </div>
+                {catalogLoading ? (
+                  <div className="py-16 text-center text-muted-foreground font-body text-sm">
+                    {isAr ? "جاري تحميل الأقسام…" : "Loading departments…"}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                    {displayDepts.map((dept) => (
+                      <motion.button key={dept.id} whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}
+                        onClick={() => {
+                          if (isAlSafwaDept(dept)) { navigate("/al-safwa", { state: { fromBookAppointment: true } }); return; }
+                          if (isHomeHealthDept(dept)) { navigate("/home-health", { state: { fromBookAppointment: true } }); return; }
+                          setSelectedDept(dept.id);
+                          setStep(1);
+                        }}
+                        className={`flex items-center gap-3 p-4 rounded-xl border transition-all text-left ${selectedDept === dept.id
+                          ? "bg-primary text-primary-foreground border-primary shadow-md"
+                          : "bg-popover border-border hover:border-accent/40 text-foreground"
+                          }`}>
+                        <dept.icon className={`w-5 h-5 flex-shrink-0 ${selectedDept === dept.id ? "" : "text-accent"}`} />
+                        <div className="min-w-0">
+                          <p className="font-body text-sm font-medium truncate">{isAr ? dept.nameAr : dept.name}</p>
+                          <p className={`font-body text-xs ${selectedDept === dept.id ? "text-primary-foreground/60" : "text-muted-foreground"}`}>{dept.category}</p>
+                        </div>
+                      </motion.button>
+                    ))}
+                  </div>
+                )}
                 {!showAllDepts && !deptSearch.trim() && filteredDepts.length > 6 && (
                   <div className="text-center mt-6">
                     <button onClick={() => setShowAllDepts(true)}
@@ -1339,7 +1303,7 @@ const BookAppointment = () => {
                   {bookingError && <div className="mt-6 p-4 rounded-xl bg-destructive/10 border border-destructive/20 flex items-center gap-3"><AlertCircle className="w-5 h-5 text-destructive" /><p className="font-body text-sm text-destructive">{bookingError}</p></div>}
                   <div className="mt-8 flex flex-col gap-4">
                     <motion.button whileHover={!isSubmitting ? { scale: 1.02 } : {}} whileTap={!isSubmitting ? { scale: 0.98 } : {}} onClick={handleConfirm} disabled={isSubmitting} className="w-full bg-primary text-primary-foreground py-4 rounded-xl font-body text-sm tracking-widest uppercase hover:bg-primary/90 transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-70">
-                      {isSubmitting ? <><Loader2 className="w-5 h-5 animate-spin" />{isAr ? "جارِ الإرسال..." : "Submitting..."}</> : <>{isRequestMode ? t("submitRequest") : t("confirmBooking")}</>}
+                      {isSubmitting ? <><Loader2 className="w-5 h-5 animate-spin" />{isAr ? "جارِ الإرسال..." : "Submitting..."}</> : <>{isAr ? "تأكيد الحجز" : "Confirm Booking"}</>}
                     </motion.button>
                   </div>
                 </div>
@@ -1379,7 +1343,7 @@ const BookAppointment = () => {
                     disabled={isCheckingApproval}
                     className="w-full bg-primary text-primary-foreground px-4 py-3 rounded-xl font-body text-xs tracking-widest uppercase hover:bg-primary/90 transition-colors disabled:opacity-70 inline-flex items-center justify-center text-center"
                   >
-                    {isCheckingApproval ? (isAr ? "جارِ التحقق..." : "Checking...") : (isAr ? "تحقق من الموافقة" : "Check Approval")}
+                    {isCheckingApproval ? (isAr ? "جارِ التحقق..." : "Checking...") : (isAr ? "هل تمت المصادقة في التطبيق؟" : "Authenticated in App?")}
                   </button>
                 ) : (
                   <button
@@ -1387,7 +1351,7 @@ const BookAppointment = () => {
                     disabled={isVerifyingNationalId}
                     className="w-full bg-primary text-primary-foreground px-4 py-3 rounded-xl font-body text-xs tracking-widest uppercase hover:bg-primary/90 transition-colors disabled:opacity-70 inline-flex items-center justify-center text-center"
                   >
-                    {isVerifyingNationalId ? (isAr ? "جارِ الفحص..." : "Verifying...") : (isAr ? "تحقق من الموافقة" : "Check Approval")}
+                    {isVerifyingNationalId ? (isAr ? "جارِ الفحص..." : "Verifying...") : (isAr ? "مصادقة" : "Authenticate")}
                   </button>
                 )}
 

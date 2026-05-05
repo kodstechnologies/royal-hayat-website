@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import {
@@ -373,6 +373,21 @@ const BookAppointment = () => {
       d.name.toLowerCase().includes(deptSearch.toLowerCase()) ||
       d.category.toLowerCase().includes(deptSearch.toLowerCase()),
   );
+  const primaryDisplayDepts = useMemo(
+    () => (deptSearch.trim() || showAllDepts ? filteredDepts : filteredDepts.slice(0, 6)),
+    [deptSearch, showAllDepts, filteredDepts],
+  );
+  const primaryGroupedDepts = useMemo(() => {
+    const groups: Record<string, BookingDeptRow[]> = {};
+    for (const dept of primaryDisplayDepts) {
+      const key = dept.category || "—";
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(dept);
+    }
+    return Object.entries(groups).sort(([a], [b]) =>
+      a.localeCompare(b, isAr ? "ar" : "en"),
+    );
+  }, [primaryDisplayDepts, isAr]);
 
   const doctors = deptDoctorList.sort((a, b) =>
     (isAr ? a.nameAr : a.name).localeCompare(isAr ? b.nameAr : b.name, isAr ? "ar" : "en"),
@@ -1029,29 +1044,32 @@ const BookAppointment = () => {
                     {isAr ? "جاري تحميل الأقسام…" : "Loading departments…"}
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                    {(() => {
-                      const displayDepts = deptSearch.trim() || showAllDepts ? filteredDepts : filteredDepts.slice(0, 6);
-                      return displayDepts.map((dept) => (
-                        <motion.button key={dept.id} whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}
-                          onClick={() => {
-                            if (isAlSafwaDept(dept)) { navigate("/al-safwa", { state: { fromBookAppointment: true } }); return; }
-                            if (isHomeHealthDept(dept)) { navigate("/home-health", { state: { fromBookAppointment: true } }); return; }
-                            setSelectedDept(dept.id);
-                            setStep(1);
-                          }}
-                          className={`flex items-center gap-3 p-4 rounded-xl border transition-all text-left ${selectedDept === dept.id
-                            ? "bg-primary text-primary-foreground border-primary shadow-md"
-                            : "bg-popover border-border hover:border-accent/40 text-foreground"
-                            }`}>
-                          <Stethoscope className={`w-5 h-5 flex-shrink-0 ${selectedDept === dept.id ? "" : "text-accent"}`} />
-                          <div className="min-w-0">
-                            <p className="font-body text-sm font-medium truncate">{dept.name}</p>
-                            <p className={`font-body text-xs ${selectedDept === dept.id ? "text-primary-foreground/60" : "text-muted-foreground"}`}>{dept.category}</p>
-                          </div>
-                        </motion.button>
-                      ));
-                    })()}
+                  <div className="space-y-8">
+                    {primaryGroupedDepts.map(([category, depts]) => (
+                      <section key={category}>
+                        <h3 className="font-serif text-lg text-foreground mb-3">{category}</h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                          {depts.map((dept) => (
+                            <motion.button key={dept.id} whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}
+                              onClick={() => {
+                                if (isAlSafwaDept(dept)) { navigate("/al-safwa", { state: { fromBookAppointment: true } }); return; }
+                                if (isHomeHealthDept(dept)) { navigate("/home-health", { state: { fromBookAppointment: true } }); return; }
+                                setSelectedDept(dept.id);
+                                setStep(1);
+                              }}
+                              className={`flex items-center gap-3 p-4 rounded-xl border transition-all text-left ${selectedDept === dept.id
+                                ? "bg-primary text-primary-foreground border-primary shadow-md"
+                                : "bg-popover border-border hover:border-accent/40 text-foreground"
+                                }`}>
+                              <Stethoscope className={`w-5 h-5 flex-shrink-0 ${selectedDept === dept.id ? "" : "text-accent"}`} />
+                              <div className="min-w-0">
+                                <p className="font-body text-sm font-medium truncate">{dept.name}</p>
+                              </div>
+                            </motion.button>
+                          ))}
+                        </div>
+                      </section>
+                    ))}
                   </div>
                 )}
                 {!catalogLoading && !showAllDepts && !deptSearch.trim() && filteredDepts.length > 6 && (

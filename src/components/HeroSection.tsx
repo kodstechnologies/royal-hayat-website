@@ -83,7 +83,8 @@ const HeroSection = () => {
       <div className="absolute inset-0 z-0 overflow-hidden">
         <video
           ref={videoRef}
-          src="https://royal-hayat.s3.eu-central-1.amazonaws.com/static/RHH+VIDEO+(1).mp4"
+          // src="https://royal-hayat.s3.eu-central-1.amazonaws.com/static/RHH+VIDEO+(1).mp4"
+          src="https://res.cloudinary.com/dwhc8kzpv/video/upload/v1777986296/RHH_SH_16_Website_1_h7dabt.mp4"
           autoPlay
           loop
           muted          /* must start muted for autoplay to work in all browsers */
@@ -107,14 +108,14 @@ const HeroSection = () => {
       </div>
 
       {/* Mute / Unmute button — top right, icon only in gold color */}
-      <button
+      {/* <button
         onClick={() => setIsMuted((m) => !m)}
         className="absolute top-4 right-4 z-20 flex items-center justify-center transition-opacity hover:opacity-70"
         aria-label={isMuted ? "Unmute video" : "Mute video"}
         style={{ color: '#9B804E' }}
       >
         {isMuted ? <VolumeX className="w-7 h-7" /> : <Volume2 className="w-7 h-7" />}
-      </button>
+      </button> */}
 
       {/* Content — revealed on hover */}
       <AnimatePresence>

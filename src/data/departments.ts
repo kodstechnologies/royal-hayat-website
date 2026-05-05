@@ -16,6 +16,7 @@ export interface Department {
   slug: string;
   icon: LucideIcon;
   category: string;
+  mainCategory: MainCategory;
   subs?: {
     name: string;
     nameAr: string;

@@ -29,13 +29,6 @@ const DepartmentsSection = () => {
     );
   });
 
-  const sortedFilteredDepts = [...filteredDepts].sort((a, b) =>
-    (lang === "ar" ? a.nameAr : a.name).localeCompare(
-      lang === "ar" ? b.nameAr : b.name,
-      lang === "ar" ? "ar" : "en"
-    )
-  );
-
   const scrollDoctors = (direction: "left" | "right") => {
     if (doctorScrollRef.current) {
       const isMobile = window.innerWidth < 768;
@@ -202,7 +195,7 @@ const DepartmentsSection = () => {
 
         <div className="space-y-14">
           {MAIN_CATEGORIES.map((cat) => {
-            const catDepts = sortedFilteredDepts.filter(d => d.mainCategory === cat.key);
+            const catDepts = filteredDepts.filter(d => d.mainCategory === cat.key);
             if (catDepts.length === 0) return null;
             return (
               <div key={cat.key}>
@@ -353,7 +346,7 @@ const DepartmentsSection = () => {
               </div>
             );
           })}
-          {sortedFilteredDepts.length === 0 && (
+          {filteredDepts.length === 0 && (
             <div className="text-center py-20">
               <p className="text-muted-foreground font-body">{lang === "ar" ? "لم يتم العثور على أقسام تطابق بحثك." : "No departments found matching your search."}</p>
             </div>

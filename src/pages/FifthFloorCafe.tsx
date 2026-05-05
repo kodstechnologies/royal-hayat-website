@@ -3,7 +3,7 @@ import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import ChatButton from "@/components/ChatButton";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
-import { Coffee, CheckCircle2, Image } from "lucide-react";
+import { Coffee, CheckCircle2 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const FifthFloorCafe = () => {
@@ -35,25 +35,13 @@ const FifthFloorCafe = () => {
         </div>
       </section>
 
-      {/* Main content — image placeholder left, content right */}
+      {/* Main content */}
       <section className="py-10">
         <div className="container mx-auto px-6 max-w-6xl">
-          <div className="grid lg:grid-cols-2 gap-10 items-start">
-
-            {/* LEFT — image placeholder */}
-            <div className="aspect-[5/4] rounded-2xl overflow-hidden bg-muted/30 border border-border flex items-center justify-center">
-              <div className="text-center">
-                <Image className="w-12 h-12 text-muted-foreground/40 mx-auto mb-3" />
-                <p className="font-body text-xs text-muted-foreground tracking-widest uppercase">
-                  {isAr ? "صور قريباً" : "Photos Coming Soon"}
-                </p>
-              </div>
-            </div>
-
-            {/* RIGHT — content */}
+          <div className="max-w-3xl mx-auto">
             <ScrollAnimationWrapper>
-              <div>
-                <div className="flex items-center gap-3 mb-4">
+              <div className="text-center">
+                <div className="flex items-center justify-center gap-3 mb-4">
                   <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
                     <Coffee className="w-6 h-6 text-accent" />
                   </div>
@@ -71,7 +59,7 @@ const FifthFloorCafe = () => {
                 <h3 className="font-serif text-base text-foreground mb-3">
                   {isAr ? "ما نقدمه:" : "What We Offer:"}
                 </h3>
-                <div className="space-y-2 mb-6">
+                <div className="space-y-2 mb-6 max-w-md mx-auto text-left">
                   {menuItems.map((item, i) => (
                     <div key={i} className="flex items-center gap-3">
                       <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />

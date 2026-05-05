@@ -19,8 +19,10 @@ import PatientsQuickLinks from "@/components/PatientsQuickLinks";
 import Footer from "@/components/Footer";
 import ChatButton from "@/components/ChatButton";
 import ScrollToTop from "@/components/ScrollToTop";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Index = () => {
+  const { lang } = useLanguage();
 
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107]">

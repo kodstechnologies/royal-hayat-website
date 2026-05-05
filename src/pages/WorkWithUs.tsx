@@ -271,46 +271,46 @@ console.log("jobs----",jobs);
       <Header />
 
       {/* Hero */}
-      <section className="py-0 bg-primary/5 overflow-hidden">
-        <div className="grid lg:grid-cols-2 gap-0 items-stretch min-h-[480px]">
+      {showSection("culture") && (
+        <section className="py-0 bg-primary/5 overflow-hidden">
+          <div className="grid lg:grid-cols-2 gap-0 items-stretch min-h-[480px]">
 
-          {/* LEFT — image, full bleed */}
-          <div className="hidden lg:block relative overflow-hidden min-h-[480px]">
-            <img
-              src="/images/Life at Royale hayat Hospital.jpg.jpeg"
-              alt={isAr ? "الحياة في رويال حياة" : "Life at Royale Hayat Hospital"}
-              className="absolute inset-0 w-full h-full object-cover object-center"
-            />
-          </div>
-
-          {/* RIGHT — content */}
-          <ScrollAnimationWrapper className="flex flex-col justify-center py-16 md:py-24 px-8 md:px-14 lg:px-16">
-            <h1 className="text-4xl md:text-5xl font-serif text-primary mb-6 leading-tight">
-              {section === "positions"
-                ? (isAr ? "الوظائف المتاحة" : "Open Positions")
-                : (isAr ? "الحياة في مستشفى رويال حياة" : "Life at Royale Hayat Hospital")}
-            </h1>
-            <div className="space-y-4 font-body text-sm text-foreground leading-relaxed">
-              <p>
-                {isAr
-                  ? "في مستشفى رويال حياة، نؤمن بفكرة بسيطة: قد ينسى الناس ما قلناه، لكنهم لن ينسوا أبداً كيف جعلناهم يشعرون كمرضى، أو أفراد عائلة، أو زملاء."
-                  : "At Royale Hayat Hospital, we hold a simple belief: people may forget what we said, but they will never forget how we made them feel as patients, family members, or colleagues."}
-              </p>
-              <p>
-                {isAr
-                  ? "يوجّه هذا الإيمان كيف نرعى، وكيف نعمل، وكيف نعامل بعضنا البعض. كل يوم، تقدّم فرقنا رعاية آمنة وحديثة وعالية الجودة بتعاطف وراحة — لأن الشفاء ليس فقط بالطب، بل بالتجربة."
-                  : "That belief guides how we care, how we work, and how we treat one another. Every day, our teams deliver safe, modern, quality care with compassion and comfort—because healing is not only about medicine, but about experience."}
-              </p>
-              <p>
-                {isAr
-                  ? "هنا، تلتقي الاحترافية باللطف. تلتقي المعايير بالتعاطف. ويحمل العمل هدفاً. إذا كان هذا الإيمان يلامسك، فأنت تنتمي إلى هنا بالفعل."
-                  : "Here, professionalism meets kindness. Standards meet empathy. And work carries purpose. If this belief resonates with you, you already belong here."}
-              </p>
+            {/* LEFT — image, full bleed */}
+            <div className="hidden lg:block relative overflow-hidden min-h-[480px]">
+              <img
+                src="/images/Life at Royale hayat Hospital.jpg.jpeg"
+                alt={isAr ? "الحياة في رويال حياة" : "Life at Royale Hayat Hospital"}
+                className="absolute inset-0 w-full h-full object-cover object-center"
+              />
             </div>
-          </ScrollAnimationWrapper>
 
-        </div>
-      </section>
+            {/* RIGHT — content */}
+            <ScrollAnimationWrapper className="flex flex-col justify-center py-16 md:py-24 px-8 md:px-14 lg:px-16">
+              <h1 className="text-4xl md:text-5xl font-serif text-primary mb-6 leading-tight">
+                {isAr ? "الحياة في مستشفى رويال حياة" : "Life at Royale Hayat Hospital"}
+              </h1>
+              <div className="space-y-4 font-body text-sm text-foreground leading-relaxed">
+                <p>
+                  {isAr
+                    ? "في مستشفى رويال حياة، نؤمن بفكرة بسيطة: قد ينسى الناس ما قلناه، لكنهم لن ينسوا أبداً كيف جعلناهم يشعرون كمرضى، أو أفراد عائلة، أو زملاء."
+                    : "At Royale Hayat Hospital, we hold a simple belief: people may forget what we said, but they will never forget how we made them feel as patients, family members, or colleagues."}
+                </p>
+                <p>
+                  {isAr
+                    ? "يوجّه هذا الإيمان كيف نرعى، وكيف نعمل، وكيف نعامل بعضنا البعض. كل يوم، تقدّم فرقنا رعاية آمنة وحديثة وعالية الجودة بتعاطف وراحة — لأن الشفاء ليس فقط بالطب، بل بالتجربة."
+                    : "That belief guides how we care, how we work, and how we treat one another. Every day, our teams deliver safe, modern, quality care with compassion and comfort—because healing is not only about medicine, but about experience."}
+                </p>
+                <p>
+                  {isAr
+                    ? "هنا، تلتقي الاحترافية باللطف. تلتقي المعايير بالتعاطف. ويحمل العمل هدفاً. إذا كان هذا الإيمان يلامسك، فأنت تنتمي إلى هنا بالفعل."
+                    : "Here, professionalism meets kindness. Standards meet empathy. And work carries purpose. If this belief resonates with you, you already belong here."}
+                </p>
+              </div>
+            </ScrollAnimationWrapper>
+
+          </div>
+        </section>
+      )}
 
       {/* Our People Promise — narrative from document */}
       {showSection("culture") && (

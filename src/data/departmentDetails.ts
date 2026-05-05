@@ -1316,7 +1316,7 @@ export const departmentDetails: DepartmentDetail[] = [
     slug: "physiotherapy",
     name: "Physiotherapy",
     nameAr: "العلاج الطبيعي",
-    intro: "At Royale Hayat Hospital, our Physiotherapy Clinic offers advanced treatments tailored to support your health and recovery throughout life. We collaborate with all medical departments to provide comprehensive rehabilitation services tailored to each patient's unique needs.",
+    intro: "We offer advanced physiotherapy treatments tailored to support women's health throughout life. We collaborate with other departments for comprehensive recovery and rehabilitation.",
     sections: [
       {
         title: "Comprehensive Rehabilitation Services",

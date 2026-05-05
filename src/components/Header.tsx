@@ -94,8 +94,8 @@ const Header = () => {
   ];
 
   const workWithUsSubLinks = [
+    { label: lang === "ar" ? "ثقافة العمل" : "Work Culture", href: "/work-with-us?section=culture", icon: Heart, desc: lang === "ar" ? "الحياة في مستشفى رويال حياة" : "Life at Royale Hayat Hospital" },
     { label: lang === "ar" ? "الوظائف المتاحة" : "Open Positions", href: "/work-with-us?section=positions", icon: Users, desc: lang === "ar" ? "تصفح جميع الفرص الوظيفية" : "Browse all career opportunities" },
-    { label: lang === "ar" ? "ثقافة العمل" : "Work Culture", href: "/work-with-us?section=culture", icon: Heart, desc: lang === "ar" ? "لماذا تعمل في رويال حياة" : "Why work at Royale Hayat" },
   ];
 
   const navItems: {

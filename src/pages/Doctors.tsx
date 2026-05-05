@@ -8,6 +8,7 @@ import ChatButton from "@/components/ChatButton";
 import ScrollToTop from "@/components/ScrollToTop";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { doctors, type Doctor } from "@/data/doctors";
+import { departments, MAIN_CATEGORIES, type MainCategory } from "@/data/departments";
 import { Input } from "@/components/ui/input";
 
 const DoctorCard = ({ doc }: { doc: Doctor }) => {
@@ -109,7 +110,7 @@ const DepartmentRow = ({ department, departmentAr, docs }: { department: string;
   return (
     <div className="mb-14">
       <div className="max-w-[1192px] mx-auto mb-6">
-        <h3 className="text-2xl font-serif text-foreground mb-3">
+        <h3 className="text-2xl font-serif font-bold text-foreground mb-3">
           {lang === "ar" ? departmentAr : department}
         </h3>
         {deptDesc && (
@@ -167,6 +168,43 @@ const DepartmentRow = ({ department, departmentAr, docs }: { department: string;
 const Doctors = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const { lang, t } = useLanguage();
+
+  // Build dept → mainCategory lookup from departments data
+  const deptToMainCategory = useMemo<Record<string, MainCategory>>(() => {
+    const map: Record<string, MainCategory> = {};
+    departments.forEach((d) => {
+      // Map by all alias names too
+      map[d.name] = d.mainCategory;
+    });
+    return map;
+  }, []);
+
+  // dept name → mainCategory using doctor department field
+  // Doctor departments use values like "Internal Medicine", "Pediatric", "La Cosmetique", etc.
+  // We need a broader alias map
+  const getDeptMainCategory = (dept: string): MainCategory => {
+    // Direct match
+    if (deptToMainCategory[dept]) return deptToMainCategory[dept];
+    // Alias matching
+    const clinicalSpeciality: string[] = [
+      "Obstetrics & Gynecology", "Neonatal", "Pediatric", "Pediatrics",
+      "General Surgery", "Anesthesia", "Anesthesia & Intensive Care",
+      "Internal Medicine", "Family Medicine", "ENT (Ear, Nose & Throat)", "ENT",
+      "La Cosmetique", "Plastic Surgery", "IVF", "Reproductive Medicine",
+      "Dermatology", "Dental", "Dental Clinic", "Pain Management",
+    ];
+    const clinicalSupport: string[] = [
+      "Laboratory", "Radiology", "Intensive Care", "Clinical Pharmacy",
+      "Pharmacy", "Al Safwa",
+    ];
+    const homeCare: string[] = ["Royale Home Health", "Physiotherapy", "Nutricare"];
+
+    if (clinicalSpeciality.some(a => dept.toLowerCase().includes(a.toLowerCase()) || a.toLowerCase().includes(dept.toLowerCase()))) return "Clinical Speciality";
+    if (clinicalSupport.some(a => dept.toLowerCase().includes(a.toLowerCase()) || a.toLowerCase().includes(dept.toLowerCase()))) return "Clinical Support Service";
+    if (homeCare.some(a => dept.toLowerCase().includes(a.toLowerCase()) || a.toLowerCase().includes(dept.toLowerCase()))) return "Home Care Service";
+    return "Clinical Speciality"; // default
+  };
+
   const grouped = useMemo<Record<string, Doctor[]>>(() => {
     return doctors.reduce<Record<string, Doctor[]>>((acc, doctor) => {
       const key = doctor.department || "General";
@@ -175,33 +213,27 @@ const Doctors = () => {
       return acc;
     }, {});
   }, []);
+
   const allDoctors = useMemo(() => Object.values(grouped).flat(), [grouped]);
+
   const searchResults = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
     if (!query) return [];
-
     return allDoctors.filter((doc) => {
       const searchableFields = [
-        doc.name,
-        doc.nameAr,
-        doc.specialty,
-        doc.specialtyAr,
-        doc.department,
-        doc.departmentAr,
-        doc.title,
-        doc.titleAr,
+        doc.name, doc.nameAr, doc.specialty, doc.specialtyAr,
+        doc.department, doc.departmentAr, doc.title, doc.titleAr,
         ...(doc.symptoms || []),
       ];
-
       return searchableFields.some((field) => (field || "").toLowerCase().includes(query));
     });
   }, [allDoctors, searchQuery]);
+
   const isSearching = searchQuery.trim().length > 0;
   const locale = lang === "ar" ? "ar" : "en";
+
   const stripTitlePrefix = (name: string) =>
-    name
-      .replace(/^(dr|prof|professor)\.?\s+/i, "")
-      .trim();
+    name.replace(/^(dr|prof|professor)\.?\s+/i, "").trim();
 
   const sortedGroupedEntries = Object.entries(grouped)
     .filter(([, docs]) => Array.isArray(docs) && docs.length > 0)
@@ -226,6 +258,20 @@ const Doctors = () => {
       )
     );
 
+  // Group department rows by main category
+  const groupedByMainCategory = useMemo(() => {
+    const result: Record<MainCategory, typeof sortedGroupedEntries> = {
+      "Clinical Speciality": [],
+      "Clinical Support Service": [],
+      "Home Care Service": [],
+    };
+    sortedGroupedEntries.forEach((entry) => {
+      const cat = getDeptMainCategory(entry[0]);
+      result[cat].push(entry);
+    });
+    return result;
+  }, [sortedGroupedEntries, getDeptMainCategory]);
+
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
       <Header />
@@ -241,7 +287,7 @@ const Doctors = () => {
             </p>
           </div>
 
-          {/* Symptom Search */}
+          {/* Search */}
           <div className="max-w-2xl mx-auto mb-14">
             <div className="relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
@@ -275,15 +321,34 @@ const Doctors = () => {
               )}
             </div>
           ) : (
-            /* Department-grouped doctors */
-            sortedGroupedEntries.map(([dept, docs]) => (
-              <DepartmentRow
-                key={dept}
-                department={dept}
-                departmentAr={docs[0]?.departmentAr || dept}
-                docs={docs}
-              />
-            ))
+            /* Main-category grouped departments */
+            <div className="space-y-16">
+              {MAIN_CATEGORIES.map((cat) => {
+                const entries = groupedByMainCategory[cat.key];
+                if (!entries || entries.length === 0) return null;
+                return (
+                  <div key={cat.key}>
+                    {/* Category divider header */}
+                    <div className="flex items-center gap-4 mb-10">
+                      <div className="h-px flex-1 bg-border/50" />
+                      <h2 className="text-xs font-body font-bold tracking-[0.25em] uppercase text-accent whitespace-nowrap">
+                        {lang === "ar" ? cat.labelAr : cat.label}
+                      </h2>
+                      <div className="h-px flex-1 bg-border/50" />
+                    </div>
+
+                    {entries.map(([dept, docs]) => (
+                      <DepartmentRow
+                        key={dept}
+                        department={dept}
+                        departmentAr={docs[0]?.departmentAr || dept}
+                        docs={docs}
+                      />
+                    ))}
+                  </div>
+                );
+              })}
+            </div>
           )}
         </div>
       </section>

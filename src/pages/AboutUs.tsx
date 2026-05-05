@@ -1,4 +1,4 @@
-import Header from "@/components/Header";
+﻿import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ChatButton from "@/components/ChatButton";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -29,7 +29,7 @@ const leaders = [
       "بدأ رحلته التعليمية في كلية الطب بجامعة الكويت. الدكتور المزيدي عضو في البورد الكويتي للجراحة العامة والكلية الملكية للجراحين (إنجلترا)، حيث تدرب على جراحة السمنة والقولون والمستقيم في لندن، المملكة المتحدة.",
       "الدكتور المزيدي ملتزم بتحويل المشهد الصحي في الكويت. قاد العديد من المبادرات الهادفة إلى دمج التقنيات المتطورة في أنظمة تقديم الرعاية الصحية وتحسين نتائج المرضى وتعزيز الكفاءة العامة.",
     ],
-    image: "/images/doctors/sulaiman34.png",
+    image: "/images/doctors/Dr. Sulaiman.jpg",
   },
   {
     initials: "AE",
@@ -73,19 +73,19 @@ const leaders = [
       "حاصل على درجة الماجستير في التخدير والعناية المركزة الجراحية من كلية الطب بالإسكندرية، تليها درجة الدكتوراه في التخدير والعناية المركزة وإدارة الألم من جامعة الإسكندرية عام 1982. عضو في الجمعية الدولية لدراسة الألم.",
       "الدكتور الخطيب ذو خبرة عالية في مجالات متخصصة متعددة، بما في ذلك تخدير التوليد والتسكين، وإجراء التخدير فوق الجافية للولادة. لديه فهم عميق لإدارة التخدير للمرضى عاليي الخطورة وكبار السن، وخبرة في طب العناية المركزة الجراحية للبالغين والأطفال.",
     ],
-    image: "/images/doctors/omar1.png",
+    image: "/images/doctors/Dr. Omar.jpg",
   },
   {
     initials: "SM",
     nameEn: "Shibu Thomas Mathew",
     nameAr: "شيبو توماس ماثيو",
-    roleEn: "Chief Financial Officer and Director of Human Resources Capital",
-    roleAr: "المدير المالي الرئيسي ومدير الموارد البشرية",
+    roleEn: "Chief Financial Officer & Director – Human Resources Capital",
+    roleAr: "المدير المالي الرئيسي ومدير رأس المال البشري",
     credentialsEn: "CMA (USA), ACMA India, IFRS",
     credentialsAr: "",
     bioEn: [
-      "Shibu Thomas Mathew has been part of Royale Hayat Hospital’s leadership journey since its inception, joining the pre opening team in 2006 and contributing to the establishment of a trusted, world class healthcare institution. He was appointed Financial Controller in 2007 and promoted to Chief Financial Officer in 2010.",
-      "In his dual role as Chief Financial Officer and Director Human Resources Capital, Mr. Mathew provides strategic leadership that integrates financial stewardship with people centric governance. He oversees long term investment planning, financial performance management, budget governance, and human capital strategy across all Group companies. He also serves as a Board Member for several subsidiaries, supporting strong governance, ethical decision making, and sustainable growth.",
+      "Shibu Thomas Mathew has been part of Royale Hayat Hospital’s leadership journey since its inception, joining the preu{2011}opening team in 2006 and contributing to the establishment of a trusted, worldu{2011}class healthcare institution. He was appointed Financial Controller in 2007 and promoted to Chief Financial Officer in 2010.",
+      "In his role as Chief Financial Officer and Director u{2013} Human Resources Capital, Mr. Mathew provides strategic leadership that integrates financial stewardship with peopleu{2011}centric governance. He oversees longu{2011}term investment planning, financial performance management, budget governance, and human capital strategy across all Group companies. He also serves as a Board Member for several subsidiaries, supporting strong governance, ethical decisionu{2011}making, and sustainable growth.",
       "With prior senior leadership experience in finance, accounting, and treasury roles across multinational organizations, Mr. Shibu brings a balanced approach combining operational discipline, strategic foresight, and a deep commitment to people and purpose.",
       "He is a CMA (USA), ACMA India with IFRS credentials and executive education in healthcare strategy from Harvard T.H. Chan School of Public Health.",
     ],
@@ -95,7 +95,7 @@ const leaders = [
       "مع خبرة قيادية سابقة في أدوار التمويل والمحاسبة والخزينة عبر المنظمات متعددة الجنسيات، يقدم السيد شيبو نهجاً متوازناً يجمع بين الانضباط العملياتي والرؤية الاستراتيجية والالتزام العميق تجاه الناس والهدف.",
       "وهو حاصل على شهادات CMA (الولايات المتحدة الأمريكية) وACMA الهند مع مؤهلات IFRS وتعليم تنفيذي في استراتيجية الرعاية الصحية من كلية هارفارد تي إتش تشان للصحة العامة.",
     ],
-    image: "/images/doctors/Shibu-Mathew.png",
+    image: "/images/doctors/Mr. Shibu.jpg",
   },
   {
     initials: "HG",
@@ -117,7 +117,7 @@ const leaders = [
       "يتمتع بخبرة واسعة في التخدير العام والموضعي لجميع التخصصات والمرضى عاليي الخطورة، بما في ذلك تخدير جراحات السمنة والتخدير فوق الجافية للولادة الطبيعية والقيصرية. لديه تخصص فرعي في تخدير الأطفال وحديثي الولادة وذوي الاحتياجات الخاصة.",
       "في إدارة الألم المزمن، يركز على آلام العمود الفقري بالحقن العلاجية وقد كان رائداً في الحقن العلاجية الموجهة بالأشعة المقطعية للعمود الفقري، مؤسساً أول مركز مؤهل في الكويت والشرق الأوسط. تشمل خبرته إدارة الألم المزمن لحالات مثل الصداع والهربس النطاقي والألم العضلي الليفي وألم السرطان.",
     ],
-    image: "/images/doctors/hamid-ghaderi.png",
+    image: "/images/doctors/Dr. Hamid.jpg",
   },
 ];
 

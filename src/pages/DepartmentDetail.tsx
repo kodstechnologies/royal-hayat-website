@@ -203,10 +203,10 @@ const DepartmentDetail = () => {
                   {dept.name}
                 </Link>
                 <ChevronRight className="w-3 h-3" />
-                <span className="text-foreground font-medium">{activeSub.name}</span>
+                <span className="text-foreground font-bold">{activeSub.name}</span>
               </>
             ) : (
-              <span className="text-foreground font-medium">{dept.name}</span>
+              <span className="text-foreground font-bold">{dept.name}</span>
             )}
           </nav>
         </div>
@@ -238,7 +238,7 @@ const DepartmentDetail = () => {
               <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">
                 {activeSub ? dept.name : "Medical Services"}
               </p>
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-serif text-foreground mb-4">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-foreground mb-4">
                 {displayDept.name}
               </h1>
               <p className="font-body text-sm md:text-base text-muted-foreground leading-relaxed max-w-3xl whitespace-pre-line">
@@ -342,7 +342,7 @@ const DepartmentDetail = () => {
                       onClick={() => setExpandedSub(expandedSub === sub.slug ? null : sub.slug)}
                       className="w-full flex items-center justify-between px-6 py-4 hover:bg-muted/30 transition-colors"
                     >
-                      <span className="font-serif text-base text-foreground">{sub.name}</span>
+                      <span className="font-serif font-bold text-base text-foreground">{sub.name}</span>
                       <ChevronDown
                         className={`w-5 h-5 text-muted-foreground transition-transform ${expandedSub === sub.slug ? "rotate-180" : ""
                           }`}

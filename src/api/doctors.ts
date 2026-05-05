@@ -55,14 +55,29 @@ export function mapApiDoctorRowToDoctor(
   const image = typeof row.image === "string" ? row.image : "";
   const isActive = row.isActive !== false;
 
+  const depRaw = row.department;
+  let resolvedDeptEn = departmentNameEn;
+  let resolvedDeptAr = departmentNameAr;
+  let departmentId: string | undefined;
+  if (depRaw && typeof depRaw === "object" && depRaw !== null) {
+    const d = depRaw as { _id?: unknown; name?: string };
+    if (d._id != null) departmentId = String(d._id);
+    if (typeof d.name === "string" && d.name.trim()) {
+      resolvedDeptEn = d.name.trim();
+      resolvedDeptAr = resolvedDeptAr || resolvedDeptEn;
+    }
+  } else if (typeof depRaw === "string" && /^[0-9a-fA-F]{24}$/i.test(depRaw)) {
+    departmentId = depRaw;
+  }
+
   return {
     id,
     name,
     nameAr,
     specialty,
     specialtyAr,
-    department: departmentNameEn,
-    departmentAr: departmentNameAr,
+    department: resolvedDeptEn,
+    departmentAr: resolvedDeptAr || resolvedDeptEn,
     title,
     titleAr,
     bio,
@@ -79,7 +94,37 @@ export function mapApiDoctorRowToDoctor(
     image,
     availableOnline: row.availableOnline === true,
     hideBooking: !isActive,
+    ...(departmentId ? { departmentId } : {}),
   };
+}
+
+/** All active doctors (paginates until complete). List endpoint populates `department`. */
+export async function fetchAllActiveDoctors(): Promise<Doctor[]> {
+  const out: Doctor[] = [];
+  let page = 1;
+  const limit = 100;
+  for (;;) {
+    const res = await api.get("/api/v1/doctors", {
+      params: { page, limit, sortBy: "name", sortOrder: "asc" },
+    });
+    const rows = res?.data?.data as Record<string, unknown>[] | undefined;
+    const meta = res?.data?.meta as { totalPages?: number } | undefined;
+    if (!Array.isArray(rows) || rows.length === 0) break;
+    for (const row of rows) {
+      const dep = row.department;
+      let deptName = "";
+      let deptNameAr = "";
+      if (dep && typeof dep === "object" && dep !== null && "name" in dep) {
+        deptName = String((dep as { name?: string }).name ?? "");
+        deptNameAr = deptName;
+      }
+      out.push(mapApiDoctorRowToDoctor(row, deptName, deptNameAr));
+    }
+    const totalPages = meta?.totalPages ?? page;
+    if (page >= totalPages) break;
+    page += 1;
+  }
+  return out;
 }
 
 export const getDoctorById = async (id: string) => {

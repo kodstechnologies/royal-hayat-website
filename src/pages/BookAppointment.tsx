@@ -4,23 +4,77 @@ import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import {
   Brain, Sparkles, Stethoscope, Building2, User, CheckCircle2,
   Search, ArrowRight, ArrowLeft, Clock,
-  Activity, Heart, Baby, Eye, Bone, Pill, Microscope, Scissors, Smile,
-  AlertCircle, FileText, ClipboardList, UserPlus, LogIn, Calendar, Shield
+  AlertCircle, FileText, ClipboardList, UserPlus, LogIn, Calendar,
 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import ChatButton from "@/components/ChatButton";
-import { doctors as allRealDoctors } from "@/data/doctors";
-import { departments, deptDoctorAliases } from "@/data/departments";
+import type { Doctor } from "@/data/doctors";
+import { fetchAllDepartmentsPages } from "@/api/department";
+import {
+  fetchAllActiveDoctors,
+  getDoctorsByDepartment,
+  mapApiDoctorRowToDoctor,
+} from "@/api/doctors";
 // TEMP: national ID / civil ID modal flow disabled — uncomment when re-enabling identity verification
 // // TEMP: civil ID verification disabled — uncomment when re-enabling
 // import { getIdentityStatus, startIdentityVerification } from "@/api/identity";
 
 
-// All doctors flat for "know your doctor" path - filter out non-bookable doctors
-const allDoctorsFlat = allRealDoctors.filter(d => !d.hideBooking);
+type BookingDeptRow = {
+  id: string;
+  name: string;
+  nameAr: string;
+  category: string;
+  slug: string;
+};
+
+const OID = /^[0-9a-fA-F]{24}$/i;
+
+function departmentSlug(name: string, mongoId: string): string {
+  const base = name
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return `${base}-${mongoId.slice(-6)}`;
+}
+
+function apiRowToBookingDept(row: Record<string, unknown>): BookingDeptRow | null {
+  const id = String(row._id ?? "");
+  if (!OID.test(id)) return null;
+  const name = String(row.name ?? "").trim();
+  if (!name) return null;
+  if (["Clinical Pharmacy", "Royale Hayat Pharmacy"].includes(name)) return null;
+  const cat = row.catagory;
+  let category = "";
+  if (cat && typeof cat === "object" && cat !== null && "name" in cat) {
+    category = String((cat as { name?: string }).name ?? "").trim();
+  }
+  return {
+    id,
+    name,
+    nameAr: name,
+    category: category || "—",
+    slug: departmentSlug(name, id),
+  };
+}
+
+function normalizeRestoredDeptId(v: unknown): string | null {
+  return typeof v === "string" && OID.test(v) ? v : null;
+}
+
+function isHomeHealthDept(d: BookingDeptRow): boolean {
+  const n = d.name.toLowerCase();
+  return n.includes("home health") || d.slug === "home-health";
+}
+
+function isAlSafwaDept(d: BookingDeptRow): boolean {
+  const n = d.name.toLowerCase();
+  return n.includes("safwa") || n.includes("al-safwa") || d.slug.includes("safwa");
+}
 
 /** TEMP: Skip patient-details (step 2) — go straight to time slots after doctor. Set to `false` to restore "Confirm Patient Details" / patient forms. */
 const SKIP_PATIENT_DETAILS_STEP = true;
@@ -45,13 +99,23 @@ const BookAppointment = () => {
   const [step, setStep] = useState<number>(initialStep);
   const [bookingPath, setBookingPath] = useState<"primary" | "doctor" | "symptoms" | null>(locState.bookingPath ?? null);
 
+  const [departmentsList, setDepartmentsList] = useState<BookingDeptRow[]>([]);
+  const [allApiDoctors, setAllApiDoctors] = useState<Doctor[]>([]);
+  const [catalogLoading, setCatalogLoading] = useState(true);
+  const [catalogError, setCatalogError] = useState("");
+
+  const [deptDoctorList, setDeptDoctorList] = useState<Doctor[]>([]);
+  const [deptDoctorLoading, setDeptDoctorLoading] = useState(false);
+
   // Step 0: Department
   const [deptSearch, setDeptSearch] = useState("");
-  const [selectedDept, setSelectedDept] = useState<number | null>(locState.selectedDept ?? null);
+  const [selectedDept, setSelectedDept] = useState<string | null>(normalizeRestoredDeptId(locState.selectedDept));
   const [showAllDepts, setShowAllDepts] = useState(false);
 
   // Step 1: Doctor
-  const [selectedDoctor, setSelectedDoctor] = useState<string | null>(locState.selectedDoctor ?? null);
+  const [selectedDoctor, setSelectedDoctor] = useState<string | null>(
+    typeof locState.selectedDoctor === "string" ? locState.selectedDoctor : null,
+  );
   const [doctorSearch, setDoctorSearch] = useState("");
   const [isRequestMode, setIsRequestMode] = useState(locState.isRequestMode ?? false);
   const [showAllDoctors, setShowAllDoctors] = useState(false);
@@ -125,9 +189,67 @@ const BookAppointment = () => {
   const [symptomText, setSymptomText] = useState("");
   const [symptomChips, setSymptomChips] = useState<string[]>([]);
   const [symptomAnalyzing, setSymptomAnalyzing] = useState(false);
-  const [symptomResults, setSymptomResults] = useState<number[] | null>(null);
+  const [symptomResults, setSymptomResults] = useState<string[] | null>(null);
 
   const [booked, setBooked] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setCatalogLoading(true);
+      setCatalogError("");
+      try {
+        const [deptRows, doctorRows] = await Promise.all([
+          fetchAllDepartmentsPages({ isActive: true }),
+          fetchAllActiveDoctors(),
+        ]);
+        if (cancelled) return;
+        const bookingDepts = (deptRows as unknown as Record<string, unknown>[])
+          .map(apiRowToBookingDept)
+          .filter((x): x is BookingDeptRow => Boolean(x));
+        bookingDepts.sort((a, b) =>
+          (isAr ? a.nameAr : a.name).localeCompare(isAr ? b.nameAr : b.name, isAr ? "ar" : "en"),
+        );
+        setDepartmentsList(bookingDepts);
+        setAllApiDoctors(doctorRows.filter((d) => !d.hideBooking));
+      } catch {
+        if (!cancelled) {
+          setCatalogError(isAr ? "تعذر تحميل الأقسام والأطباء. حاول مرة أخرى." : "Could not load departments and doctors. Please try again.");
+        }
+      } finally {
+        if (!cancelled) setCatalogLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [isAr]);
+
+  useEffect(() => {
+    if (!selectedDept || bookingPath !== "primary") {
+      setDeptDoctorList([]);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      setDeptDoctorLoading(true);
+      try {
+        const rows = await getDoctorsByDepartment(selectedDept);
+        const deptName = departmentsList.find((d) => d.id === selectedDept)?.name ?? "";
+        const mapped = rows.map((r) =>
+          mapApiDoctorRowToDoctor(r as Record<string, unknown>, deptName, deptName),
+        );
+        if (!cancelled) setDeptDoctorList(mapped.filter((d) => !d.hideBooking));
+      } catch {
+        if (!cancelled) setDeptDoctorList([]);
+      } finally {
+        if (!cancelled) setDeptDoctorLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedDept, bookingPath, departmentsList]);
 
   // Read query param on mount (skip if restoring from navigation state)
   useEffect(() => {
@@ -145,37 +267,32 @@ const BookAppointment = () => {
     }
   }, [booked]);
 
-  const filteredDepts = departments
-    .filter(d => !["Clinical Pharmacy", "Royale Hayat Pharmacy"].includes(d.name))
+  const filteredDepts = departmentsList.filter(
+    (d) =>
+      d.name.toLowerCase().includes(deptSearch.toLowerCase()) ||
+      d.category.toLowerCase().includes(deptSearch.toLowerCase()),
+  );
+
+  const doctors = deptDoctorList.sort((a, b) =>
+    (isAr ? a.nameAr : a.name).localeCompare(isAr ? b.nameAr : b.name, isAr ? "ar" : "en"),
+  );
+
+  const filteredAllDoctors = allApiDoctors
     .filter(
       (d) =>
-        d.name.toLowerCase().includes(deptSearch.toLowerCase()) ||
-        d.category.toLowerCase().includes(deptSearch.toLowerCase())
+        d.name.toLowerCase().includes(doctorSearch.toLowerCase()) ||
+        d.specialty.toLowerCase().includes(doctorSearch.toLowerCase()),
     )
-    .sort((a, b) => (isAr ? a.nameAr : a.name).localeCompare(isAr ? b.nameAr : b.name, isAr ? 'ar' : 'en'));
+    .sort((a, b) => (isAr ? a.nameAr : a.name).localeCompare(isAr ? b.nameAr : b.name, isAr ? "ar" : "en"));
 
-  const doctors = selectedDept
-    ? (() => {
-      const dept = departments.find(d => d.id === selectedDept);
-      if (!dept) return [];
-      const aliases = deptDoctorAliases[dept.name] || [dept.name];
-      return allRealDoctors
-        .filter(d => aliases.some(a => d.department.includes(a) || d.specialty.includes(a)))
-        .sort((a, b) => (isAr ? a.nameAr : a.name).localeCompare(isAr ? b.nameAr : b.name, isAr ? 'ar' : 'en'));
-    })()
-    : [];
+  const selectedDeptObj = departmentsList.find((d) => d.id === selectedDept);
+  const selectedDoctorObj =
+    bookingPath === "doctor"
+      ? allApiDoctors.find((d) => d.id === selectedDoctor)
+      : doctors.find((d) => d.id === selectedDoctor);
 
-  const filteredAllDoctors = allDoctorsFlat
-    .filter(d =>
-      d.name.toLowerCase().includes(doctorSearch.toLowerCase()) ||
-      d.specialty.toLowerCase().includes(doctorSearch.toLowerCase())
-    )
-    .sort((a, b) => (isAr ? a.nameAr : a.name).localeCompare(isAr ? b.nameAr : b.name, isAr ? 'ar' : 'en'));
-
-  const selectedDeptObj = departments.find((d) => d.id === selectedDept);
-  const selectedDoctorObj = bookingPath === "doctor"
-    ? allDoctorsFlat.find(d => d.id === selectedDoctor)
-    : doctors.find((d) => d.id === selectedDoctor);
+  const resolveDeptIdForDoctor = (doc: Doctor): string | null =>
+    doc.departmentId ?? departmentsList.find((d) => d.name === doc.department)?.id ?? null;
   const formattedDob = patientDob
     ? patientDob.split("-").reverse().join("/")
     : "";
@@ -360,23 +477,46 @@ const BookAppointment = () => {
   };
 
   const handleSymptomAnalyze = () => {
-    const allSymptoms = [...symptomChips, ...(symptomText.trim() ? [symptomText.trim()] : [])];
-    if (allSymptoms.length === 0) return;
+    const tokens = [
+      ...symptomChips.map((c) => c.toLowerCase()),
+      ...symptomText
+        .split(/[,;\n]+/)
+        .map((s) => s.trim().toLowerCase())
+        .filter(Boolean),
+    ];
+    if (tokens.length === 0) return;
     setSymptomAnalyzing(true);
     setTimeout(() => {
-      // Simple matching
-      const symptomKeywords: Record<string, number[]> = {
-        headache: [9, 8], "chest pain": [4, 26], fever: [3, 2], cough: [11, 8],
-        fatigue: [3, 16], dizziness: [9, 8], nausea: [12, 1], "back pain": [5, 22],
-        "joint pain": [5, 27], "shortness of breath": [11, 4],
+      const symptomKeywords: Record<string, string[]> = {
+        headache: ["neuro", "neurology", "brain", "internal", "medicine"],
+        "chest pain": ["cardio", "heart", "internal", "cardiology"],
+        fever: ["pediatric", "internal", "medicine", "infection"],
+        cough: ["pulmo", "respiratory", "ent", "internal"],
+        fatigue: ["internal", "medicine", "endo"],
+        dizziness: ["neuro", "ent", "internal"],
+        nausea: ["gastro", "internal", "medicine"],
+        "back pain": ["ortho", "spine", "physio", "neuro"],
+        "joint pain": ["ortho", "rheum", "physio"],
+        "shortness of breath": ["pulmo", "cardio", "internal"],
       };
-      const deptIds = new Set<number>();
-      allSymptoms.forEach(s => {
-        const matches = symptomKeywords[s.toLowerCase()];
-        if (matches) matches.forEach(id => deptIds.add(id));
+      const hints = new Set<string>();
+      for (const t of tokens) {
+        const direct = symptomKeywords[t];
+        if (direct) direct.forEach((h) => hints.add(h));
+        for (const [key, vals] of Object.entries(symptomKeywords)) {
+          if (t.includes(key) || key.includes(t)) vals.forEach((h) => hints.add(h));
+        }
+      }
+      const matched = departmentsList.filter((d) => {
+        const dn = d.name.toLowerCase();
+        const dc = d.category.toLowerCase();
+        return [...hints].some((h) => dn.includes(h) || dc.includes(h));
       });
-      if (deptIds.size === 0) { deptIds.add(3); deptIds.add(10); }
-      setSymptomResults(Array.from(deptIds));
+      const ids =
+        matched.length > 0
+          ? matched.map((d) => d.id)
+          : departmentsList.slice(0, Math.min(3, departmentsList.length)).map((d) => d.id);
+      setSymptomResults(ids);
       setSymptomAnalyzing(false);
     }, 1200);
   };
@@ -617,15 +757,15 @@ const BookAppointment = () => {
           </motion.div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-            {symptomResults.map(id => {
-              const dept = departments.find(d => d.id === id);
+            {symptomResults.map((id) => {
+              const dept = departmentsList.find((d) => d.id === id);
               if (!dept) return null;
               return (
                 <motion.button key={dept.id} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
                   onClick={() => { setSelectedDept(dept.id); setBookingPath("primary"); setStep(1); }}
                   className={`flex items-center gap-3 p-4 rounded-xl border transition-all text-left ${selectedDept === dept.id ? "bg-primary text-primary-foreground border-primary" : "bg-popover border-border hover:border-accent text-foreground"
                     }`}>
-                  <dept.icon className="w-5 h-5 flex-shrink-0" />
+                  <Stethoscope className="w-5 h-5 flex-shrink-0" />
                   <div>
                     <p className="font-body text-sm font-medium">{dept.name}</p>
                     <p className="font-body text-xs text-accent"><Sparkles className="w-3 h-3 inline mr-1" />{lang === "ar" ? "توصية ذكية" : "AI Match"}</p>
@@ -638,11 +778,11 @@ const BookAppointment = () => {
           <p className="text-center text-muted-foreground font-body text-xs mb-4">{lang === "ar" ? "أو اختر من جميع الأقسام أدناه" : "Or choose from all departments below"}</p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-            {departments.filter(d => !symptomResults.includes(d.id)).map(dept => (
+            {departmentsList.filter((d) => !symptomResults.includes(d.id)).map((dept) => (
               <motion.button key={dept.id} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
                 onClick={() => { setSelectedDept(dept.id); setBookingPath("primary"); setStep(1); }}
                 className="flex items-center gap-3 p-4 rounded-xl border border-border bg-popover hover:border-accent/40 text-foreground text-left">
-                <dept.icon className="w-5 h-5 text-accent flex-shrink-0" />
+                <Stethoscope className="w-5 h-5 text-accent flex-shrink-0" />
                 <div className="min-w-0">
                   <p className="font-body text-sm font-medium truncate">{dept.name}</p>
                   <p className="font-body text-xs text-muted-foreground">{dept.category}</p>
@@ -701,23 +841,32 @@ const BookAppointment = () => {
           {step === 0 && bookingPath === "primary" && (
             <motion.div key="s0" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.35 }}>
               <div className="max-w-4xl mx-auto">
+                {catalogError ? (
+                  <p className="text-center text-destructive font-body text-sm mb-4">{catalogError}</p>
+                ) : null}
                 <div className="relative mb-6">
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <input type="text" value={deptSearch} onChange={(e) => setDeptSearch(e.target.value)}
                     placeholder={t("searchDepartments")}
-                    className="w-full pl-11 pr-4 py-3 rounded-xl border border-border bg-popover font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30" />
+                    disabled={catalogLoading}
+                    className="w-full pl-11 pr-4 py-3 rounded-xl border border-border bg-popover font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 disabled:opacity-50" />
                 </div>
+                {catalogLoading ? (
+                  <div className="py-16 text-center text-muted-foreground font-body text-sm">
+                    {isAr ? "جاري تحميل الأقسام…" : "Loading departments…"}
+                  </div>
+                ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                   {(() => {
                     const displayDepts = deptSearch.trim() || showAllDepts ? filteredDepts : filteredDepts.slice(0, 6);
                     return displayDepts.map((dept) => (
                       <motion.button key={dept.id} whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}
                         onClick={() => {
-                          if (dept.slug === "al-safwa-healthcare") {
+                          if (isAlSafwaDept(dept)) {
                             navigate("/al-safwa", { state: { fromBookAppointment: true } });
                             return;
                           }
-                          if (dept.slug === "home-health") {
+                          if (isHomeHealthDept(dept)) {
                             navigate("/home-health", { state: { fromBookAppointment: true } });
                             return;
                           }
@@ -728,7 +877,7 @@ const BookAppointment = () => {
                           ? "bg-primary text-primary-foreground border-primary shadow-md"
                           : "bg-popover border-border hover:border-accent/40 text-foreground"
                           }`}>
-                        <dept.icon className={`w-5 h-5 flex-shrink-0 ${selectedDept === dept.id ? "" : "text-accent"}`} />
+                        <Stethoscope className={`w-5 h-5 flex-shrink-0 ${selectedDept === dept.id ? "" : "text-accent"}`} />
                         <div className="min-w-0">
                           <p className="font-body text-sm font-medium truncate">{dept.name}</p>
                           <p className={`font-body text-xs ${selectedDept === dept.id ? "text-primary-foreground/60" : "text-muted-foreground"}`}>{dept.category}</p>
@@ -737,7 +886,8 @@ const BookAppointment = () => {
                     ));
                   })()}
                 </div>
-                {!showAllDepts && !deptSearch.trim() && filteredDepts.length > 6 && (
+                )}
+                {!catalogLoading && !showAllDepts && !deptSearch.trim() && filteredDepts.length > 6 && (
                   <div className="text-center mt-6">
                     <button onClick={() => setShowAllDepts(true)}
                       className="px-6 py-2.5 rounded-lg font-body text-xs tracking-widest uppercase border border-border hover:border-accent/40 text-muted-foreground hover:text-foreground transition-all">
@@ -753,15 +903,26 @@ const BookAppointment = () => {
           {step === 1 && (
             <motion.div key="s1" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.35 }}>
               <div className="max-w-4xl mx-auto">
+                {catalogError ? (
+                  <p className="text-center text-destructive font-body text-sm mb-4">{catalogError}</p>
+                ) : null}
                 <div className="relative mb-6">
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <input type="text" value={doctorSearch} onChange={(e) => { setDoctorSearch(e.target.value); setShowAllDoctors(true); }}
                     placeholder={lang === "ar" ? "ابحث عن طبيب..." : "Search for a doctor..."}
-                    className="w-full pl-11 pr-4 py-3 rounded-xl border border-border bg-popover font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30" />
+                    disabled={catalogLoading || (bookingPath === "primary" && deptDoctorLoading)}
+                    className="w-full pl-11 pr-4 py-3 rounded-xl border border-border bg-popover font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 disabled:opacity-50" />
                 </div>
                 {(() => {
                   const docList = bookingPath === "doctor" ? filteredAllDoctors : doctors;
                   const displayList = showAllDoctors || doctorSearch.trim() ? docList : docList.slice(0, 6);
+                  if (catalogLoading || (bookingPath === "primary" && deptDoctorLoading)) {
+                    return (
+                      <div className="py-16 text-center text-muted-foreground font-body text-sm">
+                        {isAr ? "جاري تحميل الأطباء…" : "Loading doctors…"}
+                      </div>
+                    );
+                  }
                   return (
                     <>
                       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -770,11 +931,7 @@ const BookAppointment = () => {
                             whileHover={{ y: -6, boxShadow: "0 20px 40px -12px rgba(74,20,35,0.12)" }}
                             className={`relative rounded-2xl border flex flex-col cursor-pointer transition-all duration-300 overflow-hidden ${selectedDoctor === doc.id ? "border-primary shadow-md" : "border-border/50 hover:border-accent/40"}`}
                             onClick={() => {
-                              const matchedDept = departments.find((d) => {
-                                const aliases = deptDoctorAliases[d.name] || [d.name];
-                                return aliases.some((a) => doc.department.includes(a) || doc.specialty.includes(a));
-                              });
-                              const resolvedDeptId = selectedDept ?? matchedDept?.id ?? null;
+                              const resolvedDeptId = selectedDept ?? resolveDeptIdForDoctor(doc);
                               navigate(`/doctors/${doc.id}`, {
                                 state: {
                                   fromBookAppointment: true,
@@ -828,11 +985,7 @@ const BookAppointment = () => {
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  const matchedDept = departments.find((d) => {
-                                    const aliases = deptDoctorAliases[d.name] || [d.name];
-                                    return aliases.some((a) => doc.department.includes(a) || doc.specialty.includes(a));
-                                  });
-                                  const resolvedDeptId = selectedDept ?? matchedDept?.id ?? null;
+                                  const resolvedDeptId = selectedDept ?? resolveDeptIdForDoctor(doc);
                                   navigate(`/doctors/${doc.id}`, {
                                     state: {
                                       fromBookAppointment: true,

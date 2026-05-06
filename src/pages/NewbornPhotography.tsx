@@ -99,8 +99,8 @@ const NewbornPhotography = () => {
             </div>
 
             {/* RIGHT — content */}
-            <ScrollAnimationWrapper className="h-full flex items-center">
-              <div className="w-full text-center">
+            <ScrollAnimationWrapper className="h-full flex items-start pt-2 md:pt-4">
+              <div className="w-full text-left">
                 {/* <div className="flex items-center gap-3 mb-4">
                   <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
                     <Baby className="w-6 h-6 text-accent" />
@@ -126,7 +126,7 @@ const NewbornPhotography = () => {
                     : "Our skilled photographers, from one of Kuwait's leading digital studios, ensure every smile, glance, and joyful memory is preserved for you and your family to treasure for years to come."}
                 </p>
 
-                <div className="flex items-center justify-center gap-2">
+                <div className="flex items-center gap-2">
                   <Phone className="w-4 h-4 text-accent" />
                   <p className="font-body text-sm text-foreground">
                     {isAr ? "للاستفسارات والمواعيد، اتصل:" : "For inquiries and appointments, please contact:"}{" "}

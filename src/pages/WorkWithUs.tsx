@@ -8,7 +8,6 @@ import type { LifePhoto } from "@/components/LifePhotoCarousel.tsx";
 import VoicesFromOurPeople from "@/components/VoicesFromOurPeople.tsx";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { getAllJobs, type JobPosting } from "@/api/job";
 import {
   Heart, Sparkles, HandHeart, GraduationCap, Globe2, Award,
   MapPin, Clock, ArrowUpRight, ChevronLeft, ChevronRight,
@@ -180,38 +179,6 @@ const WorkWithUs = ({
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, [section]);
 
-  useEffect(() => {
-    const loadJobs = async () => {
-      try {
-        console.log("getAllJobs----start");
-        const jobs = await getAllJobs();
-        if (!Array.isArray(jobs) || jobs.length === 0) return;
-console.log("jobs----",jobs);
-        const mapped = jobs
-          .map((job: JobPosting, index: number): Position | null => {
-            const title = job.title?.toString().trim();
-            if (!title) return null;
-            return {
-              id: String(job._id || job.id || index),
-              title,
-              category: (job.category?.toString().trim() || "General"),
-              location: (job.location?.toString().trim() || "On-Site"),
-              type: (job.type?.toString().trim() || "Full-Time"),
-              desc: (job.desc?.toString().trim() || job.description?.toString().trim() || ""),
-            };
-          })
-          .filter((job): job is Position => job !== null);
-
-        if (mapped.length > 0) {
-          setPositions(mapped);
-        }
-      } catch (error) {
-        console.error("Failed to fetch jobs", error);
-      }
-    };
-
-    loadJobs();
-  }, []);
   const scrollCategories = (direction: "left" | "right") => {
     if (!categoriesScrollRef.current) return;
     const amount = direction === "left" ? -280 : 280;

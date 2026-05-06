@@ -13,8 +13,9 @@ import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import ChatButton from "@/components/ChatButton";
 
-import type { Doctor } from "@/data/doctors";
+import type { DoctorWithClinicCode as Doctor } from "@/data/doctorsWithClinicCodes";
 import { fetchAllDepartmentsPages } from "@/api/department";
+import { departmentsWithDoctors, getDepartmentsWithClinicCodes } from "@/data/departmentWithDoctors";
 import {
   fetchAllActiveDoctors,
   getDoctorsByDepartment,
@@ -28,8 +29,11 @@ import {
 } from "@/api/royalhayat";
 import { getIdentityStatus, startIdentityVerification } from "@/api/identity";
 import { postEnquiry } from "@/api/enquiry";
+import { doctorsWithClinicCodes as staticDoctors } from "@/data/doctorsWithClinicCodes";
+import { departments as staticDepts, deptDoctorAliases } from "@/data/departments";
 
-
+/** Hidden on "I know my doctor" only — incomplete static data. */
+const DOCTOR_PATH_EXCLUDED_IDS = new Set<string>(["dr-madiha-khisaf", "dr-wael-ibrahim", "dr-fatima-alazemi"]);
 
 // Helper types and functions for dynamic API data
 type BookingDeptRow = {
@@ -93,7 +97,11 @@ function apiRowToBookingDept(row: Record<string, unknown>): BookingDeptRow | nul
 }
 
 function normalizeRestoredDeptId(v: unknown): string | null {
-  return typeof v === "string" && OID.test(v) ? v : null;
+  if (typeof v !== "string" || !v.trim()) return null;
+  const s = v.trim();
+  /** API departments use Mongo ids; static booking uses numeric string ids. */
+  if (OID.test(s) || /^\d+$/.test(s)) return s;
+  return null;
 }
 
 function isHomeHealthDept(d: BookingDeptRow): boolean {
@@ -157,42 +165,63 @@ const BookAppointment = () => {
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
 
   // Sync specialityCode with selectedDept (uses departmentId from department object)
-  useEffect(() => {
-    if (selectedDept) {
-      const dept = departmentsList.find(d => d.id === selectedDept);
-      if (dept?.specialityCode) {
-        console.log("Setting specialityCode from departmentId:", dept.specialityCode);
-        setSpecialityCode(dept.specialityCode);
-      } else if (dept) {
-        console.warn("Department found but no departmentId available for:", dept.name);
-      }
-    }
-  }, [selectedDept, departmentsList]);
-
-  // Sync providerCode with selectedDoctor (uses doctorId from doctor object)
+  // Sync providerCode and specialityCode with selectedDoctor
   useEffect(() => {
     if (selectedDoctor) {
-      const doc = allApiDoctors.find(d => d.id === selectedDoctor) || deptDoctorList.find(d => d.id === selectedDoctor);
-      if (doc?.providerCode) {
-        console.log("Setting providerCode from doctorId:", doc.providerCode);
-        setProviderCode(doc.providerCode);
-      } else if (doc) {
-        console.warn("Doctor found but no doctorId (providerCode) available for:", doc.name);
+      const doc =
+        allApiDoctors.find((d) => d.id === selectedDoctor) ||
+        deptDoctorList.find((d) => d.id === selectedDoctor) ||
+        staticDoctors.find((d) => d.id === selectedDoctor);
+
+      if (doc) {
+        if (doc.providerCode) {
+          setProviderCode(doc.providerCode);
+        }
+
+        const clinicOverride = doc.clinicCode || doc.departmentClinicCode;
+        if (clinicOverride) {
+          setSpecialityCode(clinicOverride);
+        }
+
+        // 3. If department is not selected, try to find it from the doctor
+        if (!selectedDept && doc.departmentId) {
+          setSelectedDept(doc.departmentId);
+        } else if (!selectedDept && doc.department) {
+          const dept = departmentsList.find((d) => d.name.toLowerCase() === doc.department?.toLowerCase());
+          if (dept) setSelectedDept(dept.id);
+        }
       }
     }
-  }, [selectedDoctor, allApiDoctors, deptDoctorList]);
+  }, [selectedDoctor, allApiDoctors, deptDoctorList, departmentsList, selectedDept]);
+
+  // Sync specialityCode from selectedDept
+  useEffect(() => {
+    if (selectedDept) {
+      const dept = departmentsList.find((d) => d.id === selectedDept);
+      if (dept?.specialityCode) {
+        const doc =
+          allApiDoctors.find((d) => d.id === selectedDoctor) ||
+          deptDoctorList.find((d) => d.id === selectedDoctor) ||
+          staticDoctors.find((d) => d.id === selectedDoctor);
+        const finalCode = doc?.clinicCode || doc?.departmentClinicCode || dept.specialityCode;
+        setSpecialityCode(finalCode);
+      } else if (dept) {
+        const sDept = staticDepts.find((s) => s.name.toLowerCase() === dept.name.toLowerCase());
+        if (sDept?.clinicCode) {
+          setSpecialityCode(sDept.clinicCode);
+        }
+      }
+    }
+  }, [selectedDept, departmentsList, selectedDoctor]);
 
   // Fetch availability when all params are ready
   useEffect(() => {
     const fetchSlots = async () => {
-      // Ensure we have all necessary codes and a date before calling the API
       if (!serviceCode || !selectedDate || !specialityCode || !providerCode) {
-        console.log("Missing params for availability fetch:", { serviceCode, selectedDate, specialityCode, providerCode });
         setFetchedSlots([]);
         return;
       }
 
-      console.log("Fetching availability with:", { specialityCode, providerCode, serviceCode, selectedDate });
       setIsLoadingSlots(true);
       try {
         const res = await getAvailability({
@@ -320,40 +349,42 @@ const BookAppointment = () => {
       setCatalogLoading(true);
       setCatalogError("");
       try {
+        // Muting API calls as requested, using static data only
+        /*
         const [deptRows, doctorRows] = await Promise.all([
           fetchAllDepartmentsPages({ isActive: true }),
           fetchAllActiveDoctors(),
         ]);
+        */
+        
         if (cancelled) return;
-        const bookingDepts = (deptRows as unknown as Record<string, unknown>[])
-          .map(apiRowToBookingDept)
-          .filter((x): x is BookingDeptRow => Boolean(x));
-        bookingDepts.sort((a, b) =>
-          (isAr ? a.nameAr : a.name).localeCompare(isAr ? b.nameAr : b.name, isAr ? "ar" : "en"),
-        );
-        setDepartmentsList(bookingDepts);
+        
+        // 1. Load departments directly from staticDepts
+        const combinedDepartments = staticDepts.map(dept => ({
+          id: dept.id.toString(),
+          name: dept.name,
+          nameAr: dept.nameAr,
+          category: dept.category || "Others",
+          slug: dept.slug,
+          specialityCode: dept.clinicCode,
+          mainCategory: dept.mainCategory || "Others",
+          icon: dept.icon || Stethoscope
+        }));
 
-        // Enrich allApiDoctors with department names if they only have IDs
-        const enrichedDoctors = doctorRows.map(doc => {
-          if (!doc.department || doc.department === "") {
-            const dept = bookingDepts.find(d => d.id === doc.departmentId);
-            if (dept) {
-              return {
-                ...doc,
-                department: dept.name,
-                departmentAr: dept.nameAr,
-                specialty: doc.specialty || dept.name,
-                specialtyAr: doc.specialtyAr || dept.nameAr
-              };
-            }
-          }
-          return doc;
-        });
+        setDepartmentsList(combinedDepartments);
+
+        // 2. Load doctors directly from staticDoctors (doctorsWithClinicCodes)
+        const enrichedDoctors = staticDoctors.map(doc => ({
+          ...doc,
+          // Ensure consistency with the booking logic's expectations
+          clinicCode: doc.clinicCode || doc.departmentClinicCode
+        }));
 
         setAllApiDoctors(enrichedDoctors.filter((d) => !d.hideBooking));
-      } catch {
+      } catch (err) {
+        console.error("Error in static load:", err);
         if (!cancelled) {
-          setCatalogError(isAr ? "تعذر تحميل الأقسام والأطباء. حاول مرة أخرى." : "Could not load departments and doctors. Please try again.");
+          setCatalogError(isAr ? "تعذر تحميل البيانات." : "Could not load data.");
         }
       } finally {
         if (!cancelled) setCatalogLoading(false);
@@ -374,16 +405,28 @@ const BookAppointment = () => {
     (async () => {
       setDeptDoctorLoading(true);
       try {
-        const rows = await getDoctorsByDepartment(selectedDept);
-        const deptName = departmentsList.find((d) => d.id === selectedDept)?.name ?? "";
+        const dept = departmentsList.find((d) => d.id === selectedDept);
+        if (!dept) {
+          if (!cancelled) setDeptDoctorList([]);
+          return;
+        }
 
-        const mapped = rows.map((r) => {
-          return mapApiDoctorRowToDoctor(r as Record<string, unknown>, deptName, deptName);
-        });
+        // Filter staticDoctors by department name using aliases
+        const filtered = staticDoctors
+          .filter((doc) => {
+            const aliases = deptDoctorAliases[dept.name] || [dept.name];
+            return aliases.some((alias) => doc.department.toLowerCase() === alias.toLowerCase());
+          })
+          .map((doc) => ({
+            ...doc,
+            clinicCode: doc.clinicCode || doc.departmentClinicCode,
+          }));
 
-        if (!cancelled) setDeptDoctorList(mapped.filter((d) => !d.hideBooking));
+        if (!cancelled) {
+          setDeptDoctorList(filtered.filter(d => !d.hideBooking));
+        }
       } catch (err) {
-        console.error("[BookAppointment] Failed to fetch doctors:", err);
+        console.error("Error in static doctor filter:", err);
         if (!cancelled) setDeptDoctorList([]);
       } finally {
         if (!cancelled) setDeptDoctorLoading(false);
@@ -417,10 +460,20 @@ const BookAppointment = () => {
     );
   }, [departmentsList, deptSearch]);
 
-  const displayDepts = useMemo(
-    () => (deptSearch.trim() || showAllDepts ? filteredDepts : filteredDepts.slice(0, 6)),
-    [deptSearch, showAllDepts, filteredDepts],
-  );
+  /** Keep the chosen department visible when the list is capped at 6 (step back from doctors). */
+  const displayDepts = useMemo(() => {
+    const expanded = deptSearch.trim() || showAllDepts ? filteredDepts : filteredDepts.slice(0, 6);
+    if (!selectedDept) return expanded;
+    const sel = filteredDepts.find((d) => d.id === selectedDept);
+    if (!sel || expanded.some((d) => d.id === selectedDept)) return expanded;
+    return [sel, ...expanded.filter((d) => d.id !== selectedDept)];
+  }, [deptSearch, showAllDepts, filteredDepts, selectedDept]);
+
+  const goToStep = (i: number) => {
+    if (i > step) return;
+    if (i === 1 && step > 1) setShowAllDoctors(true);
+    setStep(i);
+  };
 
 
 
@@ -429,6 +482,7 @@ const BookAppointment = () => {
   );
 
   const filteredAllDoctors = allApiDoctors
+    .filter((d) => !DOCTOR_PATH_EXCLUDED_IDS.has(d.id))
     .filter(
       (d) =>
         d.name.toLowerCase().includes(doctorSearch.toLowerCase()) ||
@@ -705,6 +759,7 @@ const BookAppointment = () => {
       setPatientName("");
       setPatientErrors({});
     }
+    if (step === 2) setShowAllDoctors(true);
     setStep((s) => Math.max(s - 1, 0));
   };
 
@@ -1056,7 +1111,8 @@ const BookAppointment = () => {
           {steps.map((s, i) => (
             <div key={s.label} className="flex items-center">
               <motion.button
-                onClick={() => i < step && setStep(i)}
+                type="button"
+                onClick={() => i < step && goToStep(i)}
                 disabled={i > step}
                 whileHover={i < step ? { scale: 1.05 } : {}}
                 className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-xs font-body tracking-wide transition-all duration-300 ${i === step ? "bg-primary text-primary-foreground shadow-md"
@@ -1072,7 +1128,7 @@ const BookAppointment = () => {
         </div>
 
         <AnimatePresence mode="wait">
-          {step === 0 && bookingPath === "primary" && (
+          {step === 0 && (bookingPath === "primary" || bookingPath === "doctor") && (
             <motion.div key="s0" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.35 }}>
               <div className="max-w-4xl mx-auto">
                 {catalogError ? <p className="text-center text-destructive font-body text-sm mb-4">{catalogError}</p> : null}

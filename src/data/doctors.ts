@@ -26,6 +26,8 @@ export interface Doctor {
   departmentId?: string;
   /** Legacy/External doctor ID (provider code) used for appointments. */
   providerCode?: string;
+  /** Scheduling / subspecialty clinic code (when used for availability). */
+  clinicCode?: string;
 }
 
 export const doctors: Doctor[] = [
@@ -197,6 +199,8 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-ahmed-al-qallaf',
     image: '/images/doctors/ahmad34.png',
+    providerCode: 'PT043',
+    clinicCode: 'R01NEP',
     name: 'Dr. Ahmed Al Qallaf', nameAr: 'د. أحمد القلاف',
     specialty: 'Internal Medicine', specialtyAr: 'الطب الباطني',
     department: 'Internal Medicine', departmentAr: 'الطب الباطني',
@@ -470,6 +474,8 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-alia-ali-ibrahim',
     image: '/images/doctors/alia-ibrahim.png',
+    providerCode: 'PT053',
+    clinicCode: 'R01PUL',
     name: 'Dr. Alia Ali Ibrahim', nameAr: 'د. عالية علي إبراهيم',
     specialty: 'Internal Medicine', specialtyAr: 'الطب الباطني',
     department: 'Internal Medicine', departmentAr: 'الطب الباطني',
@@ -535,6 +541,8 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-yassmin-othman',
     image: '/images/doctors/yasmin-othman.png',
+    providerCode: 'PT084',
+    clinicCode: 'R01ALG',
     name: 'Dr. Yassmin Othman', nameAr: 'د. ياسمين عثمان',
     specialty: 'Internal Medicine', specialtyAr: 'الطب الباطني',
     department: 'Internal Medicine', departmentAr: 'الطب الباطني',
@@ -596,6 +604,8 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-ali-ibrahim-aldei',
     image: '/images/doctors/dr-ali1.png',
+    providerCode: 'PT060',
+    clinicCode: 'R01RHE',
     name: 'Dr. Ali Ibrahim Aldei', nameAr: 'د. علي إبراهيم الدعي',
     specialty: 'Internal Medicine', specialtyAr: 'الطب الباطني',
     department: 'Internal Medicine', departmentAr: 'الطب الباطني',
@@ -3051,7 +3061,8 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-eman-alsayegh',
     image: '/images/doctors/eman2.png',
-
+    providerCode: 'E2961',
+    clinicCode: 'R002OBG',
     name: 'Dr. Eman Alsayegh', nameAr: 'د. إيمــان الصـائـغ',
     specialty: 'Obstetrics & Gynecology', specialtyAr: 'أمراض النساء والولادة',
     department: 'Obstetrics & Gynecology', departmentAr: 'أمراض النساء والولادة',
@@ -3106,7 +3117,8 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-fariba-vadoudi',
     image: '/images/doctors/fariba1.png',
-
+    providerCode: 'E2736',
+    clinicCode: 'R002OBG',
     name: 'Dr. Fariba Vadoudi', nameAr: 'د. فاريبا فادودي',
     specialty: 'Obstetrics & Gynecology', specialtyAr: 'أمراض النساء والولادة',
     department: 'Obstetrics & Gynecology', departmentAr: 'أمراض النساء والولادة',
@@ -3177,7 +3189,8 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-mona-abou-taam',
     image: '/images/doctors/mona1.png',
-
+    providerCode: 'E1223',
+    clinicCode: 'R002OBG',
     name: 'Dr. Mona Abou Taam', nameAr: 'د. منـى ابو طعـام',
     specialty: 'Obstetrics & Gynecology', specialtyAr: 'أمراض النساء والولادة',
     department: 'Obstetrics & Gynecology', departmentAr: 'أمراض النساء والولادة',
@@ -3242,7 +3255,9 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-zeinab-sholkany-m-saad',
     image: '/images/doctors/zainab-sholkany.png',
-
+    providerCode: 'E1535',
+    clinicCode: 'R002OBG',
+    hideBooking: true,
     name: 'Dr. Zeinab Sholkany M.saad', nameAr: 'د. زينب شلقاني محمد سعد',
     specialty: 'Obstetrics & Gynecology', specialtyAr: 'أمراض النساء والولادة',
     department: 'Obstetrics & Gynecology', departmentAr: 'أمراض النساء والولادة',
@@ -3297,7 +3312,8 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-abubakr-elmardi',
     image: '/images/doctors/abubakr-elmardi.png',
-
+    providerCode: 'E1759',
+    clinicCode: 'R002OBG',
     name: 'Dr. Abubakr Elmardi', nameAr: 'د. أبو بكــر المرضــي',
     specialty: 'Obstetrics & Gynecology', specialtyAr: 'أمراض النساء والولادة',
     department: 'Obstetrics & Gynecology', departmentAr: 'أمراض النساء والولادة',
@@ -3352,7 +3368,8 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-hafsah-hussain',
     image: '/images/doctors/hafsah1.png',
-
+    providerCode: 'E3329',
+    clinicCode: 'R002OBG',
     name: 'Dr. Hafsah Hussain', nameAr: 'د. حفصه حسين',
     specialty: 'Obstetrics & Gynecology', specialtyAr: 'أمراض النساء والولادة',
     department: 'Obstetrics & Gynecology', departmentAr: 'أمراض النساء والولادة',
@@ -3411,7 +3428,8 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-essam-sakr',
     image: '/images/doctors/issam-sakr.png',
-
+    providerCode: 'E1859',
+    clinicCode: 'R002OBG',
     name: 'Dr. Essam Sakr', nameAr: 'د. عصـام صقـر',
     specialty: 'Obstetrics & Gynecology', specialtyAr: 'أمراض النساء والولادة',
     department: 'Obstetrics & Gynecology', departmentAr: 'أمراض النساء والولادة',
@@ -3452,7 +3470,8 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-fatima-sultan',
     image: '/images/doctors/fatima-sultan34.png',
-
+    providerCode: 'E1897',
+    clinicCode: 'R002OBG',
     name: 'Dr. Fatima Sultan', nameAr: 'د. فاطمـة سلطـان',
     specialty: 'Obstetrics & Gynecology', specialtyAr: 'أمراض النساء والولادة',
     department: 'Obstetrics & Gynecology', departmentAr: 'أمراض النساء والولادة',
@@ -3522,7 +3541,9 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-nada-al-ibrahim',
     image: '/images/doctors/nada-ibrahim.png',
-
+    providerCode: 'PT081',
+    clinicCode: 'R002OBG',
+    hideBooking: true,
     name: 'Dr. Nada Al Ibrahim', nameAr: 'د. نـدى الإبراهيـم',
     specialty: 'Obstetrics & Gynecology', specialtyAr: 'أمراض النساء والولادة',
     department: 'Obstetrics & Gynecology', departmentAr: 'أمراض النساء والولادة',
@@ -3549,7 +3570,8 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-nourah-al-ibrahim', //////////////
     image: '/images/doctors/noura34.png',
-
+    providerCode: 'PT082',
+    clinicCode: 'R002OBG',
     name: 'Dr. Nourah Al Ibrahim', nameAr: 'د. نـوره الإبراهيـم',
     specialty: 'Obstetrics & Gynecology', specialtyAr: 'أمراض النساء والولادة',
     department: 'Obstetrics & Gynecology', departmentAr: 'أمراض النساء والولادة',
@@ -3575,7 +3597,8 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-salma-ibrahim',
     image: '/images/doctors/salma-ibrahim34.png',
-
+    providerCode: 'E3193',
+    clinicCode: 'R002OBG',
     name: 'Dr. Salma Ibrahim', nameAr: 'د. سلمى ابراهيم',
     specialty: 'Obstetrics & Gynecology', specialtyAr: 'أمراض النساء والولادة',
     department: 'Obstetrics & Gynecology', departmentAr: 'أمراض النساء والولادة',
@@ -3638,7 +3661,8 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-samar-nagaty',
     image: '/images/doctors/samar-nagaty.png',
-
+    providerCode: 'E2084',
+    clinicCode: 'R002OBG',
     name: 'Dr. Samar Nagaty', nameAr: 'د. سمـر نجاتـي',
     specialty: 'Obstetrics & Gynecology', specialtyAr: 'أمراض النساء والولادة',
     department: 'Obstetrics & Gynecology', departmentAr: 'أمراض النساء والولادة',
@@ -3677,7 +3701,9 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-khalida-al-mujaibel',
     image: '/images/doctors/khalida.png',
-
+    providerCode: 'E0404',
+    clinicCode: 'R002OBG',
+    hideBooking: true,
     name: 'Dr. Khalida Al Mujaibel', nameAr: 'د. خالده المجيبل',
     specialty: 'Obstetrics & Gynecology', specialtyAr: 'أمراض النساء والولادة',
     department: 'Obstetrics & Gynecology', departmentAr: 'أمراض النساء والولادة',
@@ -3713,7 +3739,8 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-lobna-ibrahim-bassiouni',
     image: '/images/doctors/Lubna.png',
-
+    providerCode: 'E1796',
+    clinicCode: 'R002OBG',
     name: 'Dr. Lobna Ibrahim Bassiouni', nameAr: 'د. لبنى إبراهيم بسيوني',
     specialty: 'Obstetrics & Gynecology', specialtyAr: 'أمراض النساء والولادة',
     department: 'Obstetrics & Gynecology', departmentAr: 'أمراض النساء والولادة',
@@ -3772,7 +3799,7 @@ export const doctors: Doctor[] = [
 
     name: 'Dr. Elisavet Angelaki', nameAr: 'الدكتورة إليزافيت أنجيلاكي',
     specialty: 'IVF', specialtyAr: 'أطفال الأنابيب',
-    department: 'IVF', departmentAr: 'أطفال الأنابيب',
+    department: 'Reproductive Medicine & IVF', departmentAr: 'الطب التناسلي وأطفال الأنابيب',
     title: 'Consultant infertility and IVF, University of Brussels Belgium',
     titleAr: 'استشاري العقم وأطفال الأنابيب، جامعة بروكسل، بلجيكا',
     bio: 'Dr. Elisavet Angelaki is a specialist in the IVF department at Royale Hayat Hospital.',
@@ -3830,7 +3857,7 @@ export const doctors: Doctor[] = [
 
     name: 'Dr. Naser Al-azemi', nameAr: 'الدكتور ناصر العازمي',
     specialty: 'IVF', specialtyAr: 'أطفال الأنابيب',
-    department: 'IVF', departmentAr: 'أطفال الأنابيب',
+    department: 'Reproductive Medicine & IVF', departmentAr: 'الطب التناسلي وأطفال الأنابيب',
     title: 'Head of Reproductive Medicine Unit , Consultant infertility and IVF, University of Brussels Belgium',
     titleAr: 'رئيس وحدة المساعدة على الانجاب، إستشاري العقم البشري وأطفال الأنابيب والطب التناسلي، التخصص الدقيق في الطب التناسلي والعقم البشري، جامعة بروكسل بلجيكا',
     bio: 'Dr. Naser Al-azemi is a specialist in the IVF department at Royale Hayat Hospital.',

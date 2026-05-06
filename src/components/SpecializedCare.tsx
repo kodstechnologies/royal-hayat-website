@@ -5,7 +5,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useNavigate } from "react-router-dom";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { doctors, Doctor } from "@/data/doctors";
-import { deptDoctorAliases } from "@/data/departments";
+import { deptDoctorAliases, departments as staticDepartments } from "@/data/departments";
 import { departmentDetails } from "@/data/departmentDetails";
 
 interface ServiceItem {
@@ -228,9 +228,27 @@ const SpecializedCare = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const INITIAL_COUNT = 6;
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const normalizeDeptName = (value: string) =>
+    value.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "");
+  const staticOrderMap = new Map(
+    staticDepartments.map((d, idx) => [normalizeDeptName(d.name), idx]),
+  );
   const sortedServices = [...services]
     .filter((service) => service.name !== "Allergy & Immunology")
-    .sort((a, b) => a.name.localeCompare(b.name));
+    .sort((a, b) => {
+      const aKey = normalizeDeptName(a.name);
+      const bKey = normalizeDeptName(b.name);
+      const aOrder =
+        staticOrderMap.get(aKey) ??
+        staticOrderMap.get(normalizeDeptName(a.department)) ??
+        Number.MAX_SAFE_INTEGER;
+      const bOrder =
+        staticOrderMap.get(bKey) ??
+        staticOrderMap.get(normalizeDeptName(b.department)) ??
+        Number.MAX_SAFE_INTEGER;
+      if (aOrder !== bOrder) return aOrder - bOrder;
+      return Number(a.num) - Number(b.num);
+    });
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);

@@ -29,13 +29,6 @@ const DepartmentsSection = () => {
     );
   });
 
-  const sortedFilteredDepts = [...filteredDepts].sort((a, b) =>
-    (lang === "ar" ? a.nameAr : a.name).localeCompare(
-      lang === "ar" ? b.nameAr : b.name,
-      lang === "ar" ? "ar" : "en"
-    )
-  );
-
   const scrollDoctors = (direction: "left" | "right") => {
     if (doctorScrollRef.current) {
       const isMobile = window.innerWidth < 768;
@@ -202,14 +195,14 @@ const DepartmentsSection = () => {
 
         <div className="space-y-14">
           {MAIN_CATEGORIES.map((cat) => {
-            const catDepts = sortedFilteredDepts.filter(d => d.mainCategory === cat.key);
+            const catDepts = filteredDepts.filter(d => d.mainCategory === cat.key);
             if (catDepts.length === 0) return null;
             return (
               <div key={cat.key}>
                 {/* Category Header */}
                 <div className="flex items-center gap-4 mb-6">
                   <div className="h-px flex-1 bg-border/50" />
-                  <h3 className="text-xs font-body font-bold tracking-[0.25em] uppercase text-accent whitespace-nowrap">
+                  <h3 className="text-sm md:text-base font-body font-bold tracking-[0.2em] md:tracking-[0.25em] uppercase text-accent whitespace-nowrap px-1">
                     {lang === "ar" ? cat.labelAr : cat.label}
                   </h3>
                   <div className="h-px flex-1 bg-border/50" />
@@ -353,7 +346,7 @@ const DepartmentsSection = () => {
               </div>
             );
           })}
-          {sortedFilteredDepts.length === 0 && (
+          {filteredDepts.length === 0 && (
             <div className="text-center py-20">
               <p className="text-muted-foreground font-body">{lang === "ar" ? "لم يتم العثور على أقسام تطابق بحثك." : "No departments found matching your search."}</p>
             </div>

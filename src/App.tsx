@@ -35,6 +35,17 @@ import NotFound from "./pages/NotFound.tsx";
 import ScrollToTopOnNav from "./components/ScrollToTopOnNav.tsx";
 
 const queryClient = new QueryClient();
+const inRoomEventsTopCarouselImages = [
+  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1778038620/DSC02570_udxrpg.jpg",
+  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1778039575/DSC02560_copy_oj1xqd.jpg",
+  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1778039577/DSC00364_copy_g2hgt2.jpg",
+  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1778039578/DSC01274_copy_el7r0l.jpg",
+  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1778039579/DSC02516_copy_ydrkma.jpg",
+  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1778039581/DSC02068_1_copy_fbu2ap.jpg",
+  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1778039581/DSC00382_copy_sbialz.jpg",
+  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1778039582/DSC00345_copy_y3w4lm.jpg",
+  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1778039609/DSC00381_copy_lnaijo.jpg"
+];
 const inRoomEventGalleryImages = [
   "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776925513/DSC06020_ehruim.jpg",
   "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776925529/DSC06022_xybmbl.jpg",
@@ -280,7 +291,15 @@ const App = () => (
             <Route path="/medical-rep-visit-booking" element={<MedicalRepVisitBooking />} />
             <Route path="/medical-records-request" element={<MedicalRecordsRequest />} />
             <Route path="/infant-security" element={<TrackerWaveInfantSecurity />} />
-            <Route path="/in-room-events" element={<InRoomEvents galleryImages={inRoomEventGalleryImages} />} />
+            <Route
+              path="/in-room-events"
+              element={
+                <InRoomEvents
+                  topCarouselImages={inRoomEventsTopCarouselImages}
+                  galleryImages={inRoomEventGalleryImages}
+                />
+              }
+            />
             <Route path="/job-application" element={<JobApplication />} />
             <Route path="/csr" element={<CSR />} />
             <Route path="/fifth-floor-cafe" element={<FifthFloorCafe />} />

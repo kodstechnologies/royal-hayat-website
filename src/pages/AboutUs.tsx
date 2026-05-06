@@ -128,6 +128,17 @@ const LeaderCard = ({ leader, lang }: { leader: typeof leaders[0] & { image?: st
   const credentials = lang === "ar" ? leader.credentialsAr : leader.credentialsEn;
   const bio = lang === "ar" ? leader.bioAr : leader.bioEn;
   const roles = role.split("\n");
+  const mobileImageOverride: Record<string, string> = {
+    "Dr. Abubakr Elmardi": "/images/doctors/abubkar.jpeg",
+  };
+  const desktopImageOverride: Record<string, string> = {
+    "Dr. Sulaiman Al Mazeedi": "/images/doctors/sulaiman-web.png",
+    "Prof. Dr. Omar El Khateeb": "/images/doctors/omar-web.png",
+    "Dr. Hamid Ghaderi": "/images/doctors/hamid-web.png",
+    "Shibu Thomas Mathew": "/images/doctors/shibu-web2.png",
+  };
+  const mobileOverrideSrc = mobileImageOverride[leader.nameEn];
+  const desktopOverrideSrc = desktopImageOverride[leader.nameEn];
 
   return (
     <motion.div
@@ -141,11 +152,23 @@ const LeaderCard = ({ leader, lang }: { leader: typeof leaders[0] & { image?: st
         <div className="md:w-64 flex-shrink-0 bg-primary/5 flex items-center justify-center p-8 md:p-10">
           <div className={`w-44 h-44 md:w-60 md:h-60 rounded-2xl flex items-center justify-center border-4 border-primary/20 overflow-hidden ${leader.nameEn === "Shibu Thomas Mathew" ? "bg-white" : "bg-primary/10"}`}>
             {leader.image ? (
-              <img
-                src={leader.image}
-                alt={name}
-                className="w-full h-full object-contain md:object-cover md:object-top bg-white"
-              />
+              mobileOverrideSrc || desktopOverrideSrc ? (
+                <picture>
+                  {mobileOverrideSrc ? <source media="(max-width: 767px)" srcSet={mobileOverrideSrc} /> : null}
+                  {desktopOverrideSrc ? <source media="(min-width: 768px)" srcSet={desktopOverrideSrc} /> : null}
+                  <img
+                    src={leader.image}
+                    alt={name}
+                    className="w-full h-full object-contain md:object-cover md:object-top bg-white"
+                  />
+                </picture>
+              ) : (
+                <img
+                  src={leader.image}
+                  alt={name}
+                  className="w-full h-full object-contain md:object-cover md:object-top bg-white"
+                />
+              )
             ) : (
               <span className="text-4xl md:text-5xl font-serif text-primary">{leader.initials}</span>
             )}
@@ -223,7 +246,7 @@ const AboutUs = () => {
                         : section === "leadership" ? (lang === "ar" ? "فريق القيادة" : "Leadership Team")
                           : t("aboutUs")}
               </h1>
-              {showAll && <p className="text-muted-foreground font-body text-sm max-w-xl mx-auto">{t("storyP1")}</p>}
+              {showAll && <p className="text-muted-foreground font-body text-sm max-w-xl mx-auto text-justify">{t("storyP1")}</p>}
             </ScrollAnimationWrapper>
           </div>
         </section>

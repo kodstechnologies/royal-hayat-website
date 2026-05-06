@@ -236,7 +236,7 @@ export const deptDoctorAliases: Record<string, string[]> = {
   "Reproductive Medicine & IVF": ["Reproductive Medicine & IVF", "IVF", "Reproductive Medicine"],
   "Pediatrics": ["Pediatric", "Pediatrics"],
   "Neonatal": ["Neonatal"],
-  "Internal Medicine": ["Internal Medicine"],
+  "Internal Medicine": ["Internal Medicine", "Nutricare"],
   "General & Laparoscopic Surgery": ["General Surgery"],
   "Plastic Surgery & Cosmetology": ["La Cosmetique", "Plastic Surgery"],
   "Dermatology": ["Dermatology"],

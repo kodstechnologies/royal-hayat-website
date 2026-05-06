@@ -441,7 +441,7 @@ const BookAppointment = () => {
           clinicCode: doc.clinicCode || doc.departmentClinicCode
         }));
 
-        setAllApiDoctors(enrichedDoctors.filter((d) => !d.hideBooking));
+        setAllApiDoctors(enrichedDoctors);
       } catch (err) {
         console.error("Error in static load:", err);
         if (!cancelled) {
@@ -484,7 +484,7 @@ const BookAppointment = () => {
           }));
 
         if (!cancelled) {
-          setDeptDoctorList(filtered.filter(d => !d.hideBooking));
+          setDeptDoctorList(filtered);
         }
       } catch (err) {
         console.error("Error in static doctor filter:", err);
@@ -553,6 +553,16 @@ const BookAppointment = () => {
     (isAr ? a.nameAr : a.name).localeCompare(isAr ? b.nameAr : b.name, isAr ? "ar" : "en"),
   );
 
+  const filteredDeptDoctors = useMemo(() => {
+    const q = doctorSearch.toLowerCase().trim();
+    if (!q) return doctors;
+    return doctors.filter(
+      (d) =>
+        d.name.toLowerCase().includes(q) ||
+        d.specialty.toLowerCase().includes(q),
+    );
+  }, [doctors, doctorSearch]);
+
   const filteredAllDoctors = allApiDoctors
     .filter((d) => !DOCTOR_PATH_EXCLUDED_IDS.has(d.id))
     .filter(
@@ -566,10 +576,13 @@ const BookAppointment = () => {
   const selectedDoctorObj =
     bookingPath === "doctor"
       ? allApiDoctors.find((d) => d.id === selectedDoctor)
-      : doctors.find((d) => d.id === selectedDoctor);
+      : filteredDeptDoctors.find((d) => d.id === selectedDoctor);
 
   const resolveDeptIdForDoctor = (doc: Doctor): string | null =>
     doc.departmentId ?? departmentsList.find((d) => d.name === doc.department)?.id ?? null;
+
+  const isRequestOnlyDoctor = (doc: Doctor): boolean =>
+    doc.hideBooking === true || doc.availableOnline === false;
 
   const formattedDob = patientDob
     ? patientDob.split("-").reverse().join("/")
@@ -1293,7 +1306,7 @@ Clinic Code:`;
                     className="w-full pl-11 pr-4 py-3 rounded-xl border border-border bg-popover font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 disabled:opacity-50" />
                 </div>
                 {(() => {
-                  const docList = bookingPath === "doctor" ? filteredAllDoctors : doctors;
+                  const docList = bookingPath === "doctor" ? filteredAllDoctors : filteredDeptDoctors;
                   const displayList = showAllDoctors || doctorSearch.trim() ? docList : docList.slice(0, 6);
                   if (catalogLoading || (bookingPath === "primary" && deptDoctorLoading)) {
                     return <div className="py-16 text-center text-muted-foreground font-body text-sm">{isAr ? "جاري تحميل الأطباء…" : "Loading doctors…"}</div>;
@@ -1306,8 +1319,9 @@ Clinic Code:`;
                             className={`relative rounded-2xl border flex flex-col cursor-pointer transition-all duration-300 overflow-hidden ${selectedDoctor === doc.id ? "border-primary shadow-md" : "border-border/50 hover:border-accent/40"}`}
                             onClick={() => {
                               const resolvedDeptId = selectedDept ?? resolveDeptIdForDoctor(doc);
+                              const requestOnly = isRequestOnlyDoctor(doc);
                               navigate(`/doctors/${doc.id}`, {
-                                state: { fromBookAppointment: true, step, bookingPath: bookingPath ?? "primary", selectedDept: resolvedDeptId, selectedDoctor: doc.id, isRequestMode: doc.availableOnline === false, canBookSlot: doc.availableOnline !== false }
+                                state: { fromBookAppointment: true, step, bookingPath: bookingPath ?? "primary", selectedDept: resolvedDeptId, selectedDoctor: doc.id, isRequestMode: requestOnly, canBookSlot: !requestOnly }
                               });
                             }}>
                             <div className="bg-white h-64 flex items-center justify-center relative overflow-hidden shrink-0 rounded-t-2xl">
@@ -1324,13 +1338,11 @@ Clinic Code:`;
                               <h4 className="font-serif text-sm text-foreground mb-0.5 leading-snug">{isAr ? doc.nameAr : doc.name}</h4>
                               <p className="text-muted-foreground font-body text-[11px] mb-2 line-clamp-1">{isAr ? doc.specialtyAr : doc.specialty}</p>
                               <div className="flex flex-wrap gap-1 mb-2">{(isAr ? doc.languagesAr : doc.languages).map((l) => <span key={l} className="px-2 py-0.5 rounded-full bg-secondary/40 text-[10px] font-body text-foreground">{l}</span>)}</div>
-                              {doc.hideBooking !== true && (
-                                <div className={`flex items-center gap-1.5 mb-3 ${doc.availableOnline !== false ? "text-green-600" : "text-gray-500"}`}>
-                                  <div className={`w-1.5 h-1.5 rounded-full ${doc.availableOnline !== false ? "bg-green-500" : "bg-muted-foreground"}`} />
-                                  <span className="font-body text-[10px]">{doc.availableOnline !== false ? (isAr ? "متاح للحجز" : "Book Online") : (isAr ? "غير متاح حالياً" : "Request Appointment")}</span>
-                                </div>
-                              )}
-                              <button onClick={(e) => { e.stopPropagation(); const resolvedDeptId = selectedDept ?? resolveDeptIdForDoctor(doc); navigate(`/doctors/${doc.id}`, { state: { fromBookAppointment: true, step, bookingPath: bookingPath ?? "primary", selectedDept: resolvedDeptId, selectedDoctor: doc.id, isRequestMode: doc.availableOnline === false, canBookSlot: doc.availableOnline !== false } }); }} className="mt-auto inline-flex items-center gap-1 text-primary font-body text-xs hover:text-accent transition-colors">{isAr ? "عرض الملف الشخصي ←" : "View Profile →"}</button>
+                              <div className={`flex items-center gap-1.5 mb-3 ${isRequestOnlyDoctor(doc) ? "text-gray-500" : "text-green-600"}`}>
+                                <div className={`w-1.5 h-1.5 rounded-full ${isRequestOnlyDoctor(doc) ? "bg-muted-foreground" : "bg-green-500"}`} />
+                                <span className="font-body text-[10px]">{isRequestOnlyDoctor(doc) ? (isAr ? "غير متاح حالياً" : "Request Appointment") : (isAr ? "متاح للحجز" : "Book Online")}</span>
+                              </div>
+                              <button onClick={(e) => { e.stopPropagation(); const resolvedDeptId = selectedDept ?? resolveDeptIdForDoctor(doc); const requestOnly = isRequestOnlyDoctor(doc); navigate(`/doctors/${doc.id}`, { state: { fromBookAppointment: true, step, bookingPath: bookingPath ?? "primary", selectedDept: resolvedDeptId, selectedDoctor: doc.id, isRequestMode: requestOnly, canBookSlot: !requestOnly } }); }} className="mt-auto inline-flex items-center gap-1 text-primary font-body text-xs hover:text-accent transition-colors">{isAr ? "عرض الملف الشخصي ←" : "View Profile →"}</button>
                             </div>
                           </motion.div>
                         ))}

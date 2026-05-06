@@ -122,7 +122,8 @@ const DoctorProfile = () => {
     );
   }
 
-  const isOnlineAvailable = doctor.availableOnline !== false;
+  const isRequestOnlyDoctor = doctor.hideBooking === true || doctor.availableOnline === false;
+  const isOnlineAvailable = !isRequestOnlyDoctor;
   const canBookSlot = bookingReturnState?.canBookSlot ?? isOnlineAvailable;
 
   const inferredDept = departments.find((d) => {
@@ -139,8 +140,8 @@ const DoctorProfile = () => {
         bookingPath: bookingReturnState?.bookingPath ?? "primary",
         selectedDept: bookingReturnState?.selectedDept ?? inferredDept?.id ?? null,
         selectedDoctor: doctor.id,
-        isRequestMode: doctor.availableOnline === false,
-        canBookSlot: doctor.availableOnline !== false,
+        isRequestMode: isRequestOnlyDoctor,
+        canBookSlot: !isRequestOnlyDoctor,
         step: 2,
       },
     });
@@ -183,60 +184,28 @@ const DoctorProfile = () => {
                   <p className="text-muted-foreground font-body text-sm mb-5">{lang === "ar" ? doctor.titleAr : doctor.title}</p>
 
                   {/* Availability Badge */}
-                  {doctor.hideBooking !== true && (
-                    <div className={`flex items-center gap-1.5 mb-4 justify-center ${
-                      isOnlineAvailable
-                        ? "text-green-600"
-                        : fromBooking
-                          ? "text-muted-foreground"
-                          : "text-red-500"
-                    }`}>
-                      <div className={`w-2 h-2 rounded-full ${
-                        isOnlineAvailable
-                          ? "bg-green-500"
-                          : fromBooking
-                            ? "bg-muted-foreground"
-                            : "bg-red-500"
-                      }`} />
-                      <span className="font-body text-xs">
-                        {isOnlineAvailable
-                          ? (lang === "ar" ? "متاح للحجز الإلكتروني" : "Book Online")
-                          : fromBooking
-                            ? (lang === "ar" ? "طلب موعد" : "Request Appointment")
-                            : (lang === "ar" ? "غير متاح للحجز الإلكتروني" : "Not Available for Online Booking")}
-                      </span>
-                    </div>
-                  )}
+                  <div
+                    className={`flex items-center gap-1.5 mb-4 justify-center ${
+                      isRequestOnlyDoctor ? "text-muted-foreground" : "text-green-600"
+                    }`}
+                  >
+                    <div className={`w-2 h-2 rounded-full ${isRequestOnlyDoctor ? "bg-muted-foreground" : "bg-green-500"}`} />
+                    <span className="font-body text-xs">
+                      {isRequestOnlyDoctor
+                        ? (lang === "ar" ? "طلب موعد" : "Request Appointment")
+                        : (lang === "ar" ? "متاح للحجز الإلكتروني" : "Book Online")}
+                    </span>
+                  </div>
 
-                  {doctor.hideBooking !== true && (
-                    fromBooking ? (
-                      canBookSlot ? (
-                        <motion.button
-                          whileHover={{ scale: 1.03 }}
-                          whileTap={{ scale: 0.97 }}
-                          onClick={goToBookAppointmentPatientInfo}
-                          className="w-full bg-primary text-primary-foreground py-3 rounded-xl font-body text-sm tracking-wider uppercase hover:bg-primary/90 transition-colors text-center"
-                        >
-                          {lang === "ar" ? "احجز الموعد" : "Continue with the appointment"}
-                        </motion.button>
-                      ) : (
-                        <motion.button
-                          whileHover={{ scale: 1.03 }}
-                          whileTap={{ scale: 0.97 }}
-                          onClick={() => navigate(`/appointment-request?doctor=${doctor.id}`)}
-                          className="w-full bg-primary text-primary-foreground py-3 rounded-xl font-body text-sm tracking-wider uppercase hover:bg-primary/90 transition-colors text-center"
-                        >
-                          {lang === "ar" ? "طلب موعد" : "Request Appointment"}
-                        </motion.button>
-                      )
-                    ) : isOnlineAvailable ? (
+                  {fromBooking ? (
+                    canBookSlot ? (
                       <motion.button
                         whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.97 }}
                         onClick={goToBookAppointmentPatientInfo}
                         className="w-full bg-primary text-primary-foreground py-3 rounded-xl font-body text-sm tracking-wider uppercase hover:bg-primary/90 transition-colors text-center"
                       >
-                        {t("bookAppointment")}
+                        {lang === "ar" ? "احجز الموعد" : "Continue with the appointment"}
                       </motion.button>
                     ) : (
                       <motion.button
@@ -248,6 +217,24 @@ const DoctorProfile = () => {
                         {lang === "ar" ? "طلب موعد" : "Request Appointment"}
                       </motion.button>
                     )
+                  ) : isOnlineAvailable ? (
+                    <motion.button
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.97 }}
+                      onClick={goToBookAppointmentPatientInfo}
+                      className="w-full bg-primary text-primary-foreground py-3 rounded-xl font-body text-sm tracking-wider uppercase hover:bg-primary/90 transition-colors text-center"
+                    >
+                      {t("bookAppointment")}
+                    </motion.button>
+                  ) : (
+                    <motion.button
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.97 }}
+                      onClick={() => navigate(`/appointment-request?doctor=${doctor.id}`)}
+                      className="w-full bg-primary text-primary-foreground py-3 rounded-xl font-body text-sm tracking-wider uppercase hover:bg-primary/90 transition-colors text-center"
+                    >
+                      {lang === "ar" ? "طلب موعد" : "Request Appointment"}
+                    </motion.button>
                   )}
 
                   {/* Languages */}

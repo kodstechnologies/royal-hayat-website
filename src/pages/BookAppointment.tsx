@@ -1263,6 +1263,8 @@ Clinic Code:`;
                               onClick={() => {
                                 if (isAlSafwaDept(dept)) { navigate("/al-safwa", { state: { fromBookAppointment: true } }); return; }
                                 if (isHomeHealthDept(dept)) { navigate("/home-health", { state: { fromBookAppointment: true } }); return; }
+                                // Ensure step 1 shows doctors for the selected department only.
+                                setBookingPath("primary");
                                 setSelectedDept(dept.id);
                                 setStep(1);
                               }}

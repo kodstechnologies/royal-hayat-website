@@ -8,8 +8,8 @@ const ChairmanMessage = () => {
     <section className="py-12 md:py-16 bg-background">
       <div className="container mx-auto px-4 md:px-6">
         <div className="max-w-5xl lg:max-w-7xl 2xl:max-w-[88rem] mx-auto">
-          <div className="flex flex-col lg:flex-row gap-8 lg:gap-10 xl:gap-12 items-center">
-            <div className="w-full lg:w-[38%] xl:w-[36%] flex-shrink-0 flex justify-center lg:justify-start">
+          <div className="flex flex-col lg:flex-row gap-8 lg:gap-10 xl:gap-12 items-center lg:items-start">
+            <div className="w-full lg:w-[38%] xl:w-[36%] flex-shrink-0 flex justify-center lg:justify-start lg:mt-6 xl:mt-8">
               <div className="relative mx-auto w-full max-w-[320px] md:max-w-[420px] lg:max-w-none lg:w-full">
                 <div className="relative w-full pt-[115%] md:pt-[118%] lg:pt-[128%] xl:pt-[124%] rounded-2xl overflow-hidden bg-primary/5 shadow-lg lg:shadow-xl">
                   <picture className="absolute inset-0 block size-full">
@@ -27,7 +27,7 @@ const ChairmanMessage = () => {
               </div>
             </div>
 
-            <div className="flex-1 w-full min-w-0 space-y-4 md:space-y-5">
+            <div className="flex-1 w-full min-w-0 space-y-4 md:space-y-5 lg:pt-1">
               <ScrollAnimationWrapper>
                 {/* <div>
                   <h2 className="font-serif text-2xl md:text-3xl lg:text-4xl text-foreground mb-2">

@@ -10,6 +10,7 @@ import { Heart, Star, Sparkles, Shield, Target, BookOpen, Users, ChevronDown, Ch
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Link } from "react-router-dom";
+
 const leaders = [
   {
     initials: "SA",

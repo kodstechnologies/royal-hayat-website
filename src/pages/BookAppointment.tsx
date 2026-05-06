@@ -925,7 +925,7 @@ Clinic Code:`;
               <CheckCircle2 className="w-10 h-10 text-primary-foreground" />
             </motion.div>
             <h1 className="text-3xl md:text-5xl font-serif text-primary-foreground mb-3">
-              {isRequestMode ? t("requestSubmitted") : t("appointmentConfirmed")}
+              {isRequestMode ? t("requestSubmitted") : (isAr ? "تم تأكيد الموعد" : "Appointment Confirmed")}
             </h1>
             <p className="text-primary-foreground/70 font-body text-sm max-w-md mx-auto">
               {isRequestMode ? t("requestConfirmMsg") : t("bookingConfirmMsg")}

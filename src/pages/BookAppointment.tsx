@@ -28,9 +28,8 @@ import {
   type Slot
 } from "@/api/royalhayat";
 import { getIdentityStatus, startIdentityVerification } from "@/api/identity";
-import { postEnquiry } from "@/api/enquiry";
 import { doctorsWithClinicCodes as staticDoctors } from "@/data/doctorsWithClinicCodes";
-import { departments as staticDepts, deptDoctorAliases } from "@/data/departments";
+import { departments as staticDepts, deptDoctorAliases, MAIN_CATEGORIES } from "@/data/departments";
 
 /** Hidden on "I know my doctor" only — incomplete static data. */
 const DOCTOR_PATH_EXCLUDED_IDS = new Set<string>(["dr-madiha-khisaf", "dr-wael-ibrahim", "dr-fatima-alazemi"]);
@@ -48,6 +47,8 @@ type BookingDeptRow = {
 };
 
 const OID = /^[0-9a-fA-F]{24}$/i;
+const GEMINI_TRIAGE_MODEL = "gemini-flash-latest";
+const GEMINI_TRIAGE_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_TRIAGE_MODEL}:generateContent`;
 
 function departmentSlug(name: string, mongoId: string): string {
   const base = name
@@ -112,6 +113,66 @@ function isHomeHealthDept(d: BookingDeptRow): boolean {
 function isAlSafwaDept(d: BookingDeptRow): boolean {
   const n = d.name.toLowerCase();
   return n.includes("safwa") || n.includes("al-safwa") || d.slug.includes("safwa");
+}
+
+function normalizeClinicCode(value: string): string {
+  return value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+}
+
+function heuristicDepartmentIdsFromTokens(tokens: string[], departments: BookingDeptRow[]): string[] {
+  const symptomKeywords: Record<string, string[]> = {
+    headache: ["neuro", "neurology", "brain", "internal", "medicine"],
+    "chest pain": ["cardio", "heart", "internal", "cardiology"],
+    fever: ["pediatric", "internal", "medicine", "infection"],
+    cough: ["pulmo", "respiratory", "ent", "internal"],
+    fatigue: ["internal", "medicine", "endo"],
+    dizziness: ["neuro", "ent", "internal"],
+    nausea: ["gastro", "internal", "medicine"],
+    "back pain": ["ortho", "spine", "physio", "neuro"],
+    "joint pain": ["ortho", "rheum", "physio"],
+    "shortness of breath": ["pulmo", "cardio", "internal"],
+  };
+
+  const hints = new Set<string>();
+  for (const t of tokens) {
+    const direct = symptomKeywords[t];
+    if (direct) direct.forEach((h) => hints.add(h));
+    for (const [key, vals] of Object.entries(symptomKeywords)) {
+      if (t.includes(key) || key.includes(t)) vals.forEach((h) => hints.add(h));
+    }
+  }
+  const matched = departments.filter((d) => {
+    const dn = d.name.toLowerCase();
+    const dc = d.category.toLowerCase();
+    return [...hints].some((h) => dn.includes(h) || dc.includes(h));
+  });
+
+  return matched.length > 0
+    ? matched.map((d) => d.id)
+    : departments.slice(0, Math.min(3, departments.length)).map((d) => d.id);
+}
+
+function mapAiClinicCodeToDepartmentIds(aiText: string, departments: BookingDeptRow[]): string[] {
+  const firstLine = aiText
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .find(Boolean) ?? "";
+
+  const candidate = firstLine
+    .replace(/^clinic\s*code\s*:\s*/i, "")
+    .replace(/^[-*]\s*/, "")
+    .replace(/^["'`]|["'`]$/g, "")
+    .trim();
+
+  if (!candidate || /^no clinic found$/i.test(candidate)) return [];
+
+  const normalizedCandidate = normalizeClinicCode(candidate);
+  if (!normalizedCandidate) return [];
+
+  const exact = departments.find(
+    (d) => d.specialityCode && normalizeClinicCode(d.specialityCode) === normalizedCandidate
+  );
+  return exact ? [exact.id] : [];
 }
 
 // ─── COMPONENT ───────────────────────────────────────────────────────────────
@@ -469,6 +530,17 @@ const BookAppointment = () => {
     return [sel, ...expanded.filter((d) => d.id !== selectedDept)];
   }, [deptSearch, showAllDepts, filteredDepts, selectedDept]);
 
+  const groupedDisplayDepts = useMemo(
+    () =>
+      MAIN_CATEGORIES.map((cat) => ({
+        key: cat.key,
+        label: cat.label,
+        labelAr: cat.labelAr,
+        depts: displayDepts.filter((d) => d.mainCategory === cat.key),
+      })).filter((group) => group.depts.length > 0),
+    [displayDepts]
+  );
+
   const goToStep = (i: number) => {
     if (i > step) return;
     if (i === 1 && step > 1) setShowAllDoctors(true);
@@ -552,22 +624,11 @@ const BookAppointment = () => {
           setBooked(true);
           return;
         }
+        throw new Error(isAr ? "فشل تأكيد الموعد" : "Failed to confirm appointment");
       }
 
-      const enquiryPayload = {
-        fullName: patientName,
-        email: "guest@royalhayat.com",
-        phone: patientPhone || nationalId || "",
-        department: selectedDeptObj?.name || selectedDoctorObj?.specialty || "Appointment Request",
-        message: `Appointment requested for ${selectedDate} at ${selectedSlot}. Patient Type: ${patientType}. Doctor: ${selectedDoctorObj?.name}.`
-      };
-
-      const enqRes = await postEnquiry(enquiryPayload);
-      if (enqRes.success) {
-        setBooked(true);
-      } else {
-        throw new Error(isAr ? "فشل إرسال الطلب" : "Failed to submit request");
-      }
+      // For non-returning flow, we intentionally skip enquiry API submission.
+      setBooked(true);
     } catch (err: any) {
       console.error("Booking failed:", err);
       setBookingError(err.message || (isAr ? "حدث خطأ أثناء معالجة طلبك" : "An error occurred while processing your request"));
@@ -763,7 +824,7 @@ const BookAppointment = () => {
     setStep((s) => Math.max(s - 1, 0));
   };
 
-  const handleSymptomAnalyze = () => {
+  const handleSymptomAnalyze = async () => {
     const tokens = [
       ...symptomChips.map((c) => c.toLowerCase()),
       ...symptomText
@@ -773,39 +834,61 @@ const BookAppointment = () => {
     ];
     if (tokens.length === 0) return;
     setSymptomAnalyzing(true);
-    setTimeout(() => {
-      const symptomKeywords: Record<string, string[]> = {
-        headache: ["neuro", "neurology", "brain", "internal", "medicine"],
-        "chest pain": ["cardio", "heart", "internal", "cardiology"],
-        fever: ["pediatric", "internal", "medicine", "infection"],
-        cough: ["pulmo", "respiratory", "ent", "internal"],
-        fatigue: ["internal", "medicine", "endo"],
-        dizziness: ["neuro", "ent", "internal"],
-        nausea: ["gastro", "internal", "medicine"],
-        "back pain": ["ortho", "spine", "physio", "neuro"],
-        "joint pain": ["ortho", "rheum", "physio"],
-        "shortness of breath": ["pulmo", "cardio", "internal"],
-      };
-      const hints = new Set<string>();
-      for (const t of tokens) {
-        const direct = symptomKeywords[t];
-        if (direct) direct.forEach((h) => hints.add(h));
-        for (const [key, vals] of Object.entries(symptomKeywords)) {
-          if (t.includes(key) || key.includes(t)) vals.forEach((h) => hints.add(h));
-        }
+
+    const fallbackIds = heuristicDepartmentIdsFromTokens(tokens, departmentsList);
+    const geminiApiKey = (import.meta.env.VITE_GEMINI_API_KEY as string | undefined)?.trim();
+
+    try {
+      if (!geminiApiKey || departmentsList.length === 0) {
+        setSymptomResults(fallbackIds);
+        return;
       }
-      const matched = departmentsList.filter((d) => {
-        const dn = d.name.toLowerCase();
-        const dc = d.category.toLowerCase();
-        return [...hints].some((h) => dn.includes(h) || dc.includes(h));
+
+      const mappingLines = departmentsList
+        .filter((d) => Boolean(d.specialityCode))
+        .map((d) => `${d.specialityCode} - ${d.name}`)
+        .join("\n");
+
+      const combinedPrompt = `You are a strict medical triage router.
+Analyze the patient's description of their condition. They may provide long, conversational sentences describing their health issues.
+Extract the core medical symptoms from their description and determine the most appropriate department.
+You MUST output ONLY the exact Clinic Code of that department from the mapping below.
+If the description does not clearly match any department on the list, you MUST output exactly "no clinic found".
+DO NOT provide any explanations, greetings, or the department name. Output ONLY the code itself.
+
+Mapping:
+${mappingLines}
+
+Patient Description: ${[...symptomChips, symptomText].filter(Boolean).join(", ").trim()}
+
+Clinic Code:`;
+
+      const response = await fetch(GEMINI_TRIAGE_API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-goog-api-key": geminiApiKey,
+        },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: combinedPrompt }] }],
+          generationConfig: { temperature: 0.1 },
+        }),
       });
-      const ids =
-        matched.length > 0
-          ? matched.map((d) => d.id)
-          : departmentsList.slice(0, Math.min(3, departmentsList.length)).map((d) => d.id);
-      setSymptomResults(ids);
+
+      if (!response.ok) {
+        setSymptomResults(fallbackIds);
+        return;
+      }
+
+      const data = await response.json();
+      const aiText = String(data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "").trim();
+      const matchedIds = mapAiClinicCodeToDepartmentIds(aiText, departmentsList);
+      setSymptomResults(matchedIds.length > 0 ? matchedIds : fallbackIds);
+    } catch {
+      setSymptomResults(fallbackIds);
+    } finally {
       setSymptomAnalyzing(false);
-    }, 1200);
+    }
   };
 
   const chipOptions = ["Headache", "Chest Pain", "Fever", "Cough", "Fatigue", "Dizziness", "Nausea", "Back Pain", "Joint Pain", "Shortness of Breath"];
@@ -986,7 +1069,28 @@ const BookAppointment = () => {
             <div className="flex flex-wrap gap-2 mb-4">
               {chipOptions.map((chip) => (
                 <motion.button key={chip} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
-                  onClick={() => setSymptomChips(prev => prev.includes(chip) ? prev.filter(c => c !== chip) : [...prev, chip])}
+                  onClick={() =>
+                    setSymptomChips((prev) => {
+                      const isSelected = prev.includes(chip);
+                      const next = isSelected ? prev.filter((c) => c !== chip) : [...prev, chip];
+
+                      setSymptomText((prevText) => {
+                        const parts = prevText
+                          .split(/[,;\n]+/)
+                          .map((s) => s.trim())
+                          .filter(Boolean);
+
+                        if (isSelected) {
+                          return parts.filter((p) => p.toLowerCase() !== chip.toLowerCase()).join(", ");
+                        }
+
+                        if (parts.some((p) => p.toLowerCase() === chip.toLowerCase())) return parts.join(", ");
+                        return [...parts, chip].join(", ");
+                      });
+
+                      return next;
+                    })
+                  }
                   className={`px-4 py-2 rounded-full text-xs font-body tracking-wide transition-all duration-200 border ${symptomChips.includes(chip)
                     ? "bg-primary text-primary-foreground border-primary shadow-sm"
                     : "bg-background border-border text-muted-foreground hover:border-accent hover:text-accent"
@@ -1069,21 +1173,7 @@ const BookAppointment = () => {
             })}
           </div>
 
-          <p className="text-center text-muted-foreground font-body text-xs mb-4">{lang === "ar" ? "أو اختر من جميع الأقسام أدناه" : "Or choose from all departments below"}</p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-            {departmentsList.filter((d) => !symptomResults.includes(d.id)).map((dept) => (
-              <motion.button key={dept.id} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                onClick={() => { setSelectedDept(dept.id); setBookingPath("primary"); setStep(1); }}
-                className="flex items-center gap-3 p-4 rounded-xl border border-border bg-popover hover:border-accent/40 text-foreground text-left">
-                <Stethoscope className="w-5 h-5 text-accent flex-shrink-0" />
-                <div className="min-w-0">
-                  <p className="font-body text-sm font-medium truncate">{dept.name}</p>
-                  <p className="font-body text-xs text-muted-foreground">{dept.category}</p>
-                </div>
-              </motion.button>
-            ))}
-          </div>
+          {/* <p className="text-center text-muted-foreground font-body text-xs mb-4">{lang === "ar" ? "أو اختر من جميع الأقسام أدناه" : "Or choose from all departments below"}</p> */}
 
           <div className="flex items-center justify-start mt-8">
             <button onClick={() => { setSymptomResults(null); }} className="flex items-center gap-2 text-muted-foreground font-body text-sm hover:text-foreground transition-colors">
@@ -1144,25 +1234,38 @@ const BookAppointment = () => {
                     {isAr ? "جاري تحميل الأقسام…" : "Loading departments…"}
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                    {displayDepts.map((dept) => (
-                      <motion.button key={dept.id} whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}
-                        onClick={() => {
-                          if (isAlSafwaDept(dept)) { navigate("/al-safwa", { state: { fromBookAppointment: true } }); return; }
-                          if (isHomeHealthDept(dept)) { navigate("/home-health", { state: { fromBookAppointment: true } }); return; }
-                          setSelectedDept(dept.id);
-                          setStep(1);
-                        }}
-                        className={`flex items-center gap-3 p-4 rounded-xl border transition-all text-left ${selectedDept === dept.id
-                          ? "bg-primary text-primary-foreground border-primary shadow-md"
-                          : "bg-popover border-border hover:border-accent/40 text-foreground"
-                          }`}>
-                        <dept.icon className={`w-5 h-5 flex-shrink-0 ${selectedDept === dept.id ? "" : "text-accent"}`} />
-                        <div className="min-w-0">
-                          <p className="font-body text-sm font-medium truncate">{isAr ? dept.nameAr : dept.name}</p>
-                          <p className={`font-body text-xs ${selectedDept === dept.id ? "text-primary-foreground/60" : "text-muted-foreground"}`}>{dept.category}</p>
+                  <div className="space-y-10">
+                    {groupedDisplayDepts.map((group) => (
+                      <div key={group.key}>
+                        <div className="flex items-center gap-4 mb-5">
+                          <div className="h-px flex-1 bg-border/50" />
+                          <h3 className="text-xs sm:text-sm font-body font-bold tracking-[0.18em] sm:tracking-[0.22em] uppercase text-accent whitespace-nowrap px-1">
+                            {isAr ? group.labelAr : group.label}
+                          </h3>
+                          <div className="h-px flex-1 bg-border/50" />
                         </div>
-                      </motion.button>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                          {group.depts.map((dept) => (
+                            <motion.button key={dept.id} whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}
+                              onClick={() => {
+                                if (isAlSafwaDept(dept)) { navigate("/al-safwa", { state: { fromBookAppointment: true } }); return; }
+                                if (isHomeHealthDept(dept)) { navigate("/home-health", { state: { fromBookAppointment: true } }); return; }
+                                setSelectedDept(dept.id);
+                                setStep(1);
+                              }}
+                              className={`flex items-center gap-3 p-4 rounded-xl border transition-all text-left ${selectedDept === dept.id
+                                ? "bg-primary text-primary-foreground border-primary shadow-md"
+                                : "bg-popover border-border hover:border-accent/40 text-foreground"
+                                }`}>
+                              <dept.icon className={`w-5 h-5 flex-shrink-0 ${selectedDept === dept.id ? "" : "text-accent"}`} />
+                              <div className="min-w-0">
+                                <p className="font-body text-sm font-medium truncate">{isAr ? dept.nameAr : dept.name}</p>
+                                <p className={`font-body text-xs ${selectedDept === dept.id ? "text-primary-foreground/60" : "text-muted-foreground"}`}>{dept.category}</p>
+                              </div>
+                            </motion.button>
+                          ))}
+                        </div>
+                      </div>
                     ))}
                   </div>
                 )}

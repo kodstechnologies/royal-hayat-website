@@ -1157,9 +1157,13 @@ const BookAppointment = () => {
                               {selectedDoctor === doc.id && <div className="absolute top-3 left-3 w-6 h-6 rounded-full bg-primary flex items-center justify-center"><CheckCircle2 className="w-4 h-4 text-primary-foreground" /></div>}
                             </div>
                             <div className="p-4 flex flex-col flex-grow bg-popover">
-                              <p className="text-accent text-[10px] tracking-[0.15em] uppercase font-body mb-1">{isAr ? doc.specialtyAr : doc.specialty}</p>
+                              <p className="text-accent text-[10px] tracking-[0.15em] uppercase font-body mb-1">
+                                {isAr
+                                  ? (doc.departmentAr || doc.specialtyAr)
+                                  : (doc.department || doc.specialty)}
+                              </p>
                               <h4 className="font-serif text-sm text-foreground mb-0.5 leading-snug">{isAr ? doc.nameAr : doc.name}</h4>
-                              <p className="text-muted-foreground font-body text-[11px] mb-2 line-clamp-1">{isAr ? doc.titleAr : doc.title}</p>
+                              <p className="text-muted-foreground font-body text-[11px] mb-2 line-clamp-1">{isAr ? doc.specialtyAr : doc.specialty}</p>
                               <div className="flex flex-wrap gap-1 mb-2">{(isAr ? doc.languagesAr : doc.languages).map((l) => <span key={l} className="px-2 py-0.5 rounded-full bg-secondary/40 text-[10px] font-body text-foreground">{l}</span>)}</div>
                               {doc.hideBooking !== true && (
                                 <div className={`flex items-center gap-1.5 mb-3 ${doc.availableOnline !== false ? "text-green-600" : "text-gray-500"}`}>

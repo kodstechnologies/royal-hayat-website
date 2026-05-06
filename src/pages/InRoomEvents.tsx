@@ -3,7 +3,7 @@ import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import ChatButton from "@/components/ChatButton";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
-import { Sparkles, Phone, CheckCircle2, Image, Video, Gift, UtensilsCrossed, UserCheck } from "lucide-react";
+import { Sparkles, Phone, CheckCircle2, Video, Gift, UtensilsCrossed, UserCheck } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 type InRoomEventsProps = {
@@ -116,29 +116,23 @@ const InRoomEvents = ({ galleryImages }: InRoomEventsProps) => {
       {/* What We Offer */}
       <section className="py-12 md:py-16">
         <div className="container mx-auto px-6">
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-6xl mx-auto w-full">
             <ScrollAnimationWrapper>
-              <div className="grid lg:grid-cols-2 gap-10 items-center">
-                <div>
+              <div className="w-full">
+                <div className="w-full">
                   <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-4">
                     {isAr ? "مناسبات نخدمها" : "Occasions We Serve"}
                   </h2>
-                  <div className="space-y-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
                     {(isAr
                       ? ["احتفالات المواليد الجدد", "أعياد الميلاد والذكرى السنوية", "حفلات الاستقبال والتجمعات العائلية", "مفاجآت شخصية للمرضى والضيوف", "أي مناسبة خاصة تستحق الاحتفال"]
                       : ["Newborn celebrations", "Birthdays and anniversaries", "Reception parties and family gatherings", "Personalized surprises for patients and guests", "Any special occasion worth celebrating"]
                     ).map((item, i) => (
-                      <div key={i} className="flex items-start gap-3 bg-popover border border-border/50 rounded-xl px-5 py-4">
+                      <div key={i} className="flex items-start gap-3 bg-popover border border-border/50 rounded-xl px-5 py-4 h-full min-w-0 w-full">
                         <CheckCircle2 className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
-                        <span className="font-body text-sm text-foreground">{item}</span>
+                        <span className="font-body text-sm text-foreground flex-1 min-w-0">{item}</span>
                       </div>
                     ))}
-                  </div>
-                </div>
-                <div className="aspect-square bg-muted/30 rounded-2xl border border-border flex items-center justify-center">
-                  <div className="text-center">
-                    <Image className="w-10 h-10 text-muted-foreground/50 mx-auto mb-2" />
-                    <p className="font-body text-xs text-muted-foreground">{isAr ? "صور الفعاليات قريباً" : "Event images coming soon"}</p>
                   </div>
                 </div>
               </div>

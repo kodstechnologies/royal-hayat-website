@@ -3,7 +3,7 @@ import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import ChatButton from "@/components/ChatButton";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
-import { Coffee, CheckCircle2 } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const FifthFloorCafe = () => {
@@ -38,28 +38,19 @@ const FifthFloorCafe = () => {
       {/* Main content */}
       <section className="py-10">
         <div className="container mx-auto px-6 max-w-6xl">
-          <div className="max-w-3xl mx-auto">
+          <div className="w-full">
             <ScrollAnimationWrapper>
-              <div className="text-center">
-                <div className="flex items-center justify-center gap-3 mb-4">
-                  <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
-                    <Coffee className="w-6 h-6 text-accent" />
-                  </div>
-                  <h2 className="text-2xl md:text-3xl font-serif text-foreground">
-                    {isAr ? "كافيه الطابق الخامس" : "The 5th Floor Café"}
-                  </h2>
-                </div>
-
-                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-6">
+              <div className="text-left">
+                <p className="w-full font-body text-sm text-muted-foreground leading-relaxed mb-6">
                   {isAr
                     ? "يقع كافيه الطابق الخامس في الطابق الخامس، ويوفر مساحة مريحة وترحيبية للضيوف للاسترخاء أثناء انتظار المواعيد أو زيارة أحبائهم. مصمم بعناية للعائلات التي تنتظر قدوم مولود جديد أو اكتمال إجراء طبي، يوفر بيئة هادئة ومطمئنة. يمكن للضيوف الاستمتاع بالقهوة المعدة طازجاً، وتشكيلة من الساندويتشات، والسلطات الطازجة، والحلويات الشهية — كل ذلك في أجواء مريحة تجمع بين الراحة والملاءمة."
                     : "The Fifth Café, located on the 5th floor, offers a welcoming and comfortable space for guests to relax while waiting for appointments or visiting loved ones. Thoughtfully designed for families awaiting the arrival of a newborn or the completion of a procedure, it provides a calm and reassuring environment. Guests can enjoy freshly brewed coffee, a selection of sandwiches, fresh salads, and indulgent desserts — all served in a cozy setting that blends comfort with convenience."}
                 </p>
 
-                <h3 className="font-serif text-base text-foreground mb-3">
+                <h3 className="font-serif text-base text-foreground mb-3 text-left">
                   {isAr ? "ما نقدمه:" : "What We Offer:"}
                 </h3>
-                <div className="space-y-2 mb-6 max-w-md mx-auto text-left">
+                <div className="space-y-2 mb-6 w-full text-left">
                   {menuItems.map((item, i) => (
                     <div key={i} className="flex items-center gap-3">
                       <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />

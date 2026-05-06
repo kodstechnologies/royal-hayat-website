@@ -202,7 +202,7 @@ const DepartmentsSection = () => {
                 {/* Category Header */}
                 <div className="flex items-center gap-4 mb-6">
                   <div className="h-px flex-1 bg-border/50" />
-                  <h3 className="text-xs font-body font-bold tracking-[0.25em] uppercase text-accent whitespace-nowrap">
+                  <h3 className="text-sm md:text-base font-body font-bold tracking-[0.2em] md:tracking-[0.25em] uppercase text-accent whitespace-nowrap px-1">
                     {lang === "ar" ? cat.labelAr : cat.label}
                   </h3>
                   <div className="h-px flex-1 bg-border/50" />

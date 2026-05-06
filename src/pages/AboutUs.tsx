@@ -135,6 +135,7 @@ const LeaderCard = ({ leader, lang }: { leader: typeof leaders[0] & { image?: st
     "Dr. Sulaiman Al Mazeedi": "/images/doctors/sulaiman-web.png",
     "Prof. Dr. Omar El Khateeb": "/images/doctors/omar-web.png",
     "Dr. Hamid Ghaderi": "/images/doctors/hamid-web.png",
+    "Shibu Thomas Mathew": "/images/doctors/shibu-web.png",
   };
   const mobileOverrideSrc = mobileImageOverride[leader.nameEn];
   const desktopOverrideSrc = desktopImageOverride[leader.nameEn];

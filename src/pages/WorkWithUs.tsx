@@ -293,7 +293,7 @@ console.log("jobs----",jobs);
               <h1 className="text-4xl md:text-5xl font-serif text-primary mb-6 leading-tight">
                 {isAr ? "الحياة في مستشفى رويال حياة" : "Life at Royale Hayat Hospital"}
               </h1>
-              <div className="space-y-4 font-body text-sm text-foreground leading-relaxed">
+              <div className="space-y-4 font-body text-sm text-foreground leading-relaxed text-justify">
                 <p>
                   {isAr
                     ? "في مستشفى رويال حياة، نؤمن بفكرة بسيطة: قد ينسى الناس ما قلناه، لكنهم لن ينسوا أبداً كيف جعلناهم يشعرون كمرضى، أو أفراد عائلة، أو زملاء."

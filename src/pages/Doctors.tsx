@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { Search, ChevronLeft, ChevronRight, Stethoscope } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
@@ -8,7 +8,7 @@ import ChatButton from "@/components/ChatButton";
 import ScrollToTop from "@/components/ScrollToTop";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { doctors, type Doctor } from "@/data/doctors";
-import { departments, MAIN_CATEGORIES, type MainCategory } from "@/data/departments";
+import { departments, deptDoctorAliases, MAIN_CATEGORIES, type MainCategory } from "@/data/departments";
 import { Input } from "@/components/ui/input";
 
 const DoctorCard = ({ doc }: { doc: Doctor }) => {
@@ -179,13 +179,29 @@ const Doctors = () => {
     return map;
   }, []);
 
-  // dept name → mainCategory using doctor department field
-  // Doctor departments use values like "Internal Medicine", "Pediatric", "La Cosmetique", etc.
-  // We need a broader alias map
-  const getDeptMainCategory = (dept: string): MainCategory => {
-    // Direct match
+  // Same ordering as Departments.tsx / departments.ts (array index within catalog)
+  const doctorDeptOrderIndex = useMemo(() => {
+    const m = new Map<string, number>();
+    departments.forEach((d, i) => {
+      m.set(d.name, i);
+      deptDoctorAliases[d.name]?.forEach((alias) => {
+        m.set(alias, i);
+      });
+    });
+    const pharmacyIdx = departments.findIndex((d) => d.name === "Royale Hayat Pharmacy");
+    if (pharmacyIdx >= 0) m.set("Pharmacy", pharmacyIdx);
+    return m;
+  }, []);
+
+  const DEPT_ORDER_FALLBACK = 100_000;
+
+  // dept name → mainCategory using doctor department field (canonical + deptDoctorAliases, then fuzzy)
+  const getDeptMainCategory = useCallback((dept: string): MainCategory => {
     if (deptToMainCategory[dept]) return deptToMainCategory[dept];
-    // Alias matching
+    for (const d of departments) {
+      const aliases = deptDoctorAliases[d.name];
+      if (aliases?.includes(dept)) return d.mainCategory;
+    }
     const clinicalSpeciality: string[] = [
       "Obstetrics & Gynecology", "Neonatal", "Pediatric", "Pediatrics",
       "General Surgery", "Anesthesia", "Anesthesia & Intensive Care",
@@ -197,11 +213,13 @@ const Doctors = () => {
       "Laboratory", "Radiology", "Intensive Care", "Clinical Pharmacy",
       "Pharmacy", "Al Safwa",
     ];
+    const homeCare: string[] = ["Royale Home Health", "Physiotherapy", "Home Health"];
 
     if (clinicalSpeciality.some(a => dept.toLowerCase().includes(a.toLowerCase()) || a.toLowerCase().includes(dept.toLowerCase()))) return "Clinical Speciality";
     if (clinicalSupport.some(a => dept.toLowerCase().includes(a.toLowerCase()) || a.toLowerCase().includes(dept.toLowerCase()))) return "Clinical Support Service";
+    if (homeCare.some(a => dept.toLowerCase().includes(a.toLowerCase()) || a.toLowerCase().includes(dept.toLowerCase()))) return "Home Care Service";
     return "Clinical Speciality"; // default
-  };
+  }, [deptToMainCategory]);
 
   const grouped = useMemo<Record<string, Doctor[]>>(() => {
     return doctors.reduce<Record<string, Doctor[]>>((acc, doctor) => {
@@ -233,34 +251,39 @@ const Doctors = () => {
   const stripTitlePrefix = (name: string) =>
     name.replace(/^(dr|prof|professor)\.?\s+/i, "").trim();
 
-  const sortedGroupedEntries = Object.entries(grouped)
-    .filter(([, docs]) => Array.isArray(docs) && docs.length > 0)
-    .map(([dept, docs]) => [
-      dept,
-      [...docs].sort((a, b) =>
-        (dept === "Anesthesia"
+  const sortedGroupedEntries = useMemo(() => {
+    const sortDocsWithinDept = (dept: string, docs: Doctor[]) =>
+      [...docs].sort((a, b) => {
+        const stripTitles =
+          dept === "Anesthesia" || dept === "Anesthesia & Intensive Care";
+        const aKey = stripTitles
           ? stripTitlePrefix(lang === "ar" ? a.nameAr : a.name)
-          : (lang === "ar" ? a.nameAr : a.name)
-        ).localeCompare(
-          dept === "Anesthesia"
-            ? stripTitlePrefix(lang === "ar" ? b.nameAr : b.name)
-            : (lang === "ar" ? b.nameAr : b.name),
-          locale
-        )
-      ),
-    ] as const)
-    .sort(([deptA, docsA], [deptB, docsB]) =>
-      (lang === "ar" ? docsA[0]?.departmentAr || deptA : deptA).localeCompare(
-        lang === "ar" ? docsB[0]?.departmentAr || deptB : deptB,
-        locale
-      )
-    );
+          : lang === "ar" ? a.nameAr : a.name;
+        const bKey = stripTitles
+          ? stripTitlePrefix(lang === "ar" ? b.nameAr : b.name)
+          : lang === "ar" ? b.nameAr : b.name;
+        return aKey.localeCompare(bKey, locale);
+      });
+
+    const orderOf = (dept: string) => doctorDeptOrderIndex.get(dept) ?? DEPT_ORDER_FALLBACK;
+
+    return Object.entries(grouped)
+      .filter(([, docs]) => Array.isArray(docs) && docs.length > 0)
+      .map(([dept, docs]) => [dept, sortDocsWithinDept(dept, docs)] as const)
+      .sort(([deptA], [deptB]) => {
+        const da = orderOf(deptA);
+        const db = orderOf(deptB);
+        if (da !== db) return da - db;
+        return deptA.localeCompare(deptB, locale);
+      });
+  }, [grouped, lang, locale, doctorDeptOrderIndex]);
 
   // Group department rows by main category
   const groupedByMainCategory = useMemo(() => {
     const result: Record<MainCategory, typeof sortedGroupedEntries> = {
       "Clinical Speciality": [],
       "Clinical Support Service": [],
+      "Home Care Service": [],
     };
     sortedGroupedEntries.forEach((entry) => {
       const cat = getDeptMainCategory(entry[0]);

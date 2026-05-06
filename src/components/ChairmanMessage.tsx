@@ -79,7 +79,7 @@ const ChairmanMessage = () => {
                     <p className="text-muted-foreground font-body text-sm md:text-base leading-relaxed">
                       {lang === "ar" ? "مع خالص التحيات،" : "Kindest regards,"}
                     </p>
-                    <p className="font-serif text-base md:text-lg text-foreground leading-relaxed">
+                    <p className="text-muted-foreground font-body text-sm md:text-base leading-relaxed">
                       {lang === "ar"
                         ? "مستشفى رويال حياة … وجهتكم لصحة أفضل وللاحتفاء بالحياة!"
                         : "Royale Hayat Hospital …your destination for better health and to celebrate life!"}
@@ -87,10 +87,10 @@ const ChairmanMessage = () => {
                     <p className="text-muted-foreground font-body text-sm md:text-base leading-relaxed">
                       {lang === "ar" ? "مع أطيب الأماني،" : "With best wishes,"}
                     </p>
-                    <p className="font-serif text-lg md:text-xl text-foreground pt-1">
+                    <p className="font-serif text-xl md:text-2xl text-foreground pt-1">
                       {lang === "ar" ? "برادييب ك. هاندا" : "Pradeep K Handa"}
                     </p>
-                    <p className="text-accent font-body text-sm">
+                    <p className="text-muted-foreground font-body text-sm md:text-base leading-relaxed">
                       {lang === "ar"
                         ? "رئيس مجلس رويال حياة التنفيذي"
                         : "Chairman, Royale Hayat Executive Board"}

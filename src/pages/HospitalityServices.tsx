@@ -223,8 +223,8 @@ const HospitalityServices = ({
           <ScrollAnimationWrapper>
             <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">{t("premiumExperience")}</p>
             <h1 className="text-4xl md:text-5xl font-serif text-foreground mb-4">
-              {section === "halls" ? (isAr ? "القاعات الفاخرة" : " Halls")
-                : section === "suites" ? (isAr ? "الأجنحة الفاخرة" : " Suites")
+              {section === "halls" ? (isAr ? "القاعات الفاخرة" : "Birth Celebration Halls")
+                : section === "suites" ? (isAr ? "الأجنحة الفاخرة" : "Exclusive Suites")
                   : section === "spa" ? (isAr ? "سبا إليمنتس" : "Elements Spa")
                     : section === "cafe" ? (isAr ? "بيسترو الليوان" : "Al Liwan Bistro")
                       : (isAr ? "خدمات الضيافة" : "Hospitality Services")}
@@ -273,7 +273,7 @@ const HospitalityServices = ({
       {show("halls") && <section className="py-6 bg-white">
         <div className="container mx-auto px-6 max-w-7xl">
           <ScrollAnimationWrapper>
-            {showAll && <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-2 text-center">{isAr ? "القاعات الفاخرة" : "Halls"}</h2>}
+            {showAll && <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-2 text-center">{isAr ? "القاعات الفاخرة" : "Birth Celebration Halls"}</h2>}
             <div className={`flex justify-center gap-2 flex-wrap ${showAll ? 'mt-6' : 'mt-2'} mb-10`}>
               {hallsNav.map((h) => (
                 <button key={h.id} onClick={() => setActiveHall(h.id)}
@@ -649,7 +649,7 @@ const HospitalityServices = ({
       {show("suites") && <section className="py-6 bg-primary/5">
         <div className="container mx-auto px-6 max-w-7xl">
           <ScrollAnimationWrapper>
-            {showAll && <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-2 text-center">{isAr ? "الأجنحة الفاخرة" : "Suites"}</h2>}
+            {showAll && <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-2 text-center">{isAr ? "الأجنحة الفاخرة" : "Exclusive Suites"}</h2>}
             <p className="text-muted-foreground font-body text-sm text-justify mb-8 max-w-xl mx-auto">
               {isAr ? "اختر من سبع فئات أجنحة مميزة، كل منها مسمى على اسم زهرة ومصمم لتقديم تجربة فريدة." : "Choose from seven distinctive suite categories, each named after a flower and designed to offer a unique experience."}
             </p>

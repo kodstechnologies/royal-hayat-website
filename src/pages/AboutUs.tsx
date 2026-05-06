@@ -298,11 +298,13 @@ const AboutUs = () => {
       {show("chairman") && (
         <>
           <section className="pt-12 pb-0 bg-background">
-            <div className="container mx-auto px-6 text-center">
+            <div className="container mx-auto px-4 md:px-6">
               <ScrollAnimationWrapper>
-                <h1 className="text-4xl md:text-5xl font-serif text-foreground mb-4">
-                  {lang === "ar" ? "رسالة رئيس مجلس الإدارة" : "Chairman's Message"}
-                </h1>
+                <div className="max-w-5xl lg:max-w-7xl 2xl:max-w-[88rem] mx-auto">
+                  <h1 className="text-4xl md:text-5xl font-serif text-foreground mb-4 text-left lg:pl-[42%] xl:pl-[40%]">
+                    {lang === "ar" ? "رسالة رئيس مجلس الإدارة" : "Chairman's Message"}
+                  </h1>
+                </div>
               </ScrollAnimationWrapper>
             </div>
           </section>

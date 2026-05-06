@@ -1252,7 +1252,7 @@ Clinic Code:`;
                       <div key={group.key}>
                         <div className="flex items-center gap-4 mb-5">
                           <div className="h-px flex-1 bg-border/50" />
-                          <h3 className="text-xs sm:text-sm font-body font-bold tracking-[0.18em] sm:tracking-[0.22em] uppercase text-accent whitespace-nowrap px-1">
+                          <h3 className="text-sm sm:text-base font-body font-bold tracking-[0.18em] sm:tracking-[0.22em] uppercase text-accent whitespace-nowrap px-1">
                             {isAr ? group.labelAr : group.label}
                           </h3>
                           <div className="h-px flex-1 bg-border/50" />

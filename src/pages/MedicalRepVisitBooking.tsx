@@ -158,7 +158,7 @@ const MedicalRepVisitBooking = () => {
           <ScrollAnimationWrapper>
             <h2 className="text-2xl font-serif text-foreground mb-4">{isAr ? "نظام حجز المندوب الطبي الإلكتروني" : "Medical Representative Online System Reservation"}</h2>
             <h3 className="text-lg font-body font-semibold text-foreground mb-6">{isAr ? "مرحباً بكم في نظام الحجز الإلكتروني للمندوبين الطبيين" : "Welcome to our Medical Representative Online Reservation System"}</h3>
-            <div className="font-body text-sm text-muted-foreground leading-relaxed space-y-4">
+            <div className="font-body text-sm text-muted-foreground leading-relaxed text-justify space-y-4">
               <p>{isAr
                 ? "تم تصميم هذه المنصة حصرياً للمندوبين الطبيين الذين يحتاجون لجدولة زيارة مع الأطباء في مستشفى رويال حياة. يرجى ملاحظة أن هذه المواعيد ليست مخصصة للاستشارات الطبية. من المهم أن تضع في اعتبارك أن صلاحية موعد الزيارة ستعتمد على توفر الطبيب. يرجى التوجه إلى السكرتير أو موظف الاستقبال وتقديم تأكيد الحجز الخاص بك. لضمان عملية سلسة وفعالة، نطلب منك بلطف الالتزام بسياسة المستشفى التي تحظر الوقوف أمام أبواب العيادات. نقدر تعاونكم في هذا الشأن."
                 : "This platform has been designed exclusively for medical representatives who need to schedule a visit with doctors at Royale Hayat Hospital. Please note that these appointments are not meant for medical consultations. It's important to keep in mind that an appointment visit will be valid based on the doctor's availability. Kindly approach the secretary or receptionist and present them with your booking confirmation. To ensure a smooth and efficient process, we kindly request that you comply with the hospital policy, which prohibits standing in front of the clinic doors. We greatly appreciate your cooperation in this matter."}</p>
@@ -176,7 +176,7 @@ const MedicalRepVisitBooking = () => {
               {steps.map((step, i) => (
                 <li key={i} className="flex gap-4 items-start">
                   <span className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-body text-sm font-bold">{i + 1}</span>
-                  <p className="font-body text-sm text-muted-foreground leading-relaxed pt-1">{step}</p>
+                  <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify pt-1">{step}</p>
                 </li>
               ))}
             </ol>
@@ -236,7 +236,7 @@ const MedicalRepVisitBooking = () => {
                         </Link>
                       )}
                     </div>
-                    <p className="text-muted-foreground font-body text-sm mt-1 mb-5">
+                    <p className="text-muted-foreground font-body text-sm text-justify mt-1 mb-5">
                       {isAr ? dept.descAr : dept.desc}
                     </p>
 

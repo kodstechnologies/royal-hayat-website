@@ -1207,6 +1207,8 @@ export const doctors: Doctor[] = [
     name: 'Dr. Suraj V. Davis', nameAr: 'د. سوراج دايفس',
     specialty: 'Dermatology', specialtyAr: 'الأمراض الجلدية',
     department: 'Dermatology', departmentAr: 'الأمراض الجلدية',
+    providerCode: 'CE118',
+    clinicCode: 'R01DER',
     title: 'Head of Dermatology Clinic, Consultant Dermatologist & Venereologist',
     titleAr: 'رئيس عيادة الأمراض الجلدية، استشاري أمراض جلدية وتناسلية',
     bio: 'Dr. Suraj V. Davis is a specialist in the Dermatology department at Royale Hayat Hospital.',

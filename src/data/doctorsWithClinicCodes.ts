@@ -2062,7 +2062,7 @@ export const doctorsWithClinicCodes: DoctorWithClinicCode[] = [
     department: 'Dermatology',
     departmentAr: 'الأمراض الجلدية',
     departmentClinicCode: 'R01DER',
-    providerCode: 'PT102',
+    providerCode: 'CE118',
     title: 'Head of Dermatology Clinic, Consultant Dermatologist & Venereologist',
     titleAr: 'رئيس عيادة الأمراض الجلدية، استشاري الأمراض الجلدية والتناسلية',
     bio: 'Dr. Suraj V. Davis is a specialist in the Dermatology department at Royale Hayat Hospital.',

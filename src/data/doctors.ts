@@ -1017,6 +1017,8 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-anny-qaisser',
     image: '/images/doctors/anny.png',
+    providerCode: 'E2562',
+    clinicCode: 'R01FMC',
     name: 'Dr. Anny Qaisser', nameAr: 'د. آنـى قيصـر',
     specialty: 'Family Medicine', specialtyAr: 'طب الأسرة',
     department: 'Family Medicine', departmentAr: 'طب الأسرة',
@@ -1261,6 +1263,8 @@ export const doctors: Doctor[] = [
     department: 'La Cosmetique', departmentAr: 'التجميل',
     title: 'Consultant ENT (Plastic Surgery Department)',
     titleAr: 'إستشاري أنف وأذن وحنجرة (قسـم جراحـة التجميـل)',
+    providerCode: 'R060COS',
+    clinicCode: 'E3195',
     bio: 'Dr. Brook Assefa Ayele is a specialist in the La Cosmetique department at Royale Hayat Hospital.',
     bioAr: 'د. بروك أسيفا أيلي متخصص في قسم التجميل في مستشفى رويال حياة.',
     qualifications: [
@@ -1327,6 +1331,8 @@ export const doctors: Doctor[] = [
     department: 'La Cosmetique', departmentAr: 'التجميل',
     title: 'Specialist Facial Plastic and Reconstructive Surgery, Specialist ORL Maxillofacial Surgery (Plastic Surgery Department)',
     titleAr: 'اختصاصي جراحة أنف واذن وحنجره وجراحة تجميل وترميم الوجه والرقبة وجراحة الوجه والفكين (قسـم جراحـة التجميـل)',
+    providerCode: 'PT085',
+    clinicCode: 'R060COS',
     bio: 'Dr. Fatemah Faras is a specialist in the La Cosmetique department at Royale Hayat Hospital.',
     bioAr: 'د. فاطمة فرس متخصص في قسم التجميل في مستشفى رويال حياة.',
     qualifications: [
@@ -1398,6 +1404,8 @@ export const doctors: Doctor[] = [
     specialty: 'La Cosmetique', specialtyAr: 'التجميل',
     department: 'La Cosmetique', departmentAr: 'التجميل',
     title: 'Consultant Plastic Surgeon',
+    providerCode: 'CE050',
+    clinicCode: 'R060COS',
     titleAr: 'استشاري جراحة التجميل',
     bio: 'Dr. Gie Vandehult is a specialist in the La Cosmetique department at Royale Hayat Hospital.',
     bioAr: 'د. جي فاندهولت متخصص في قسم التجميل في مستشفى رويال حياة.',
@@ -1503,6 +1511,8 @@ export const doctors: Doctor[] = [
     name: 'Dr. Husain Alqattan', nameAr: 'د.هـيليــن الكـعبــي د. حسيــن القطــان',
     specialty: 'La Cosmetique', specialtyAr: 'التجميل',
     department: 'La Cosmetique', departmentAr: 'التجميل',
+    providerCode: 'PT079',
+    clinicCode: 'R060COS',
     title: 'Specialist Plastic Surgeon',
     titleAr: 'أخصائي جراحة التجميل',
     bio: 'Dr. Husain Alqattan is a specialist in the La Cosmetique department at Royale Hayat Hospital.',
@@ -1571,6 +1581,8 @@ export const doctors: Doctor[] = [
     department: 'La Cosmetique', departmentAr: 'التجميل',
     title: 'Plastic Surgery Doctor',
     titleAr: 'طبيب مسجل جراحة تجميل',
+    providerCode: 'CE055',
+    clinicCode: 'R060COS',
     bio: 'Dr. Mohammad Razzak is a specialist in the La Cosmetique department at Royale Hayat Hospital.',
     bioAr: 'د. محمد عبدالرزاق متخصص في قسم التجميل في مستشفى رويال حياة.',
     qualifications: [
@@ -1621,6 +1633,8 @@ export const doctors: Doctor[] = [
     department: 'La Cosmetique', departmentAr: 'التجميل',
     title: 'Senior Specialist Plastic Surgeon',
     titleAr: 'إختصاصي أول جراحة التجميل',
+    providerCode: 'PT062',
+    clinicCode: 'R060COS',
     bio: 'Dr. Sarah Al Youha is a specialist in the La Cosmetique department at Royale Hayat Hospital.',
     bioAr: 'د. ســارة اليوحـــة متخصص في قسم التجميل في مستشفى رويال حياة.',
     qualifications: [
@@ -3011,6 +3025,8 @@ export const doctors: Doctor[] = [
     name: 'Dr. Nourah Adnan Saad Alrubaian', nameAr: 'د.نوره عدنان سعد الربيعان',
     specialty: 'Dental', specialtyAr: 'طب الأسنان',
     department: 'Dental', departmentAr: 'طب الأسنان',
+    providerCode: 'PT074',
+    clinicCode: 'R002DEN',
     title: 'Specialist in Paediatric Dentistry',
     titleAr: 'اختصاصي طب أسنان أطفال',
     bio: 'Dr. Nourah Adnan Saad Alrubaian is a specialist in the Dental department at Royale Hayat Hospital.',
@@ -3060,6 +3076,8 @@ export const doctors: Doctor[] = [
     department: 'Dental', departmentAr: 'طب الأسنان',
     title: 'Endodontist and Restorative Dentist',
     titleAr: 'أخصائي علاج لب الأسنان وتقويم الأسنان',
+    providerCode: 'E2254',
+    clinicCode: 'R002DEN',
     bio: 'Dr. Rajesh R. Patil is a specialist in the Dental department at Royale Hayat Hospital.',
     bioAr: 'د. راجيش ر. باتيل متخصص في قسم طب الأسنان في مستشفى رويال حياة.',
     qualifications: [
@@ -3836,6 +3854,8 @@ export const doctors: Doctor[] = [
     name: 'Dr. Elisavet Angelaki', nameAr: 'الدكتورة إليزافيت أنجيلاكي',
     specialty: 'IVF', specialtyAr: 'أطفال الأنابيب',
     department: 'Reproductive Medicine & IVF', departmentAr: 'الطب التناسلي وأطفال الأنابيب',
+    providerCode: 'PT023',
+    clinicCode: 'R002IVF',
     title: 'Consultant infertility and IVF, University of Brussels Belgium',
     titleAr: 'استشاري العقم وأطفال الأنابيب، جامعة بروكسل، بلجيكا',
     bio: 'Dr. Elisavet Angelaki is a specialist in the IVF department at Royale Hayat Hospital.',
@@ -3890,7 +3910,8 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-naser-al-azemi',
     image: '/images/doctors/naser1.png',
-
+    providerCode: 'PT022',
+    clinicCode: 'R002IVF',
     name: 'Dr. Naser Al-azemi', nameAr: 'الدكتور ناصر العازمي',
     specialty: 'IVF', specialtyAr: 'أطفال الأنابيب',
     department: 'Reproductive Medicine & IVF', departmentAr: 'الطب التناسلي وأطفال الأنابيب',
@@ -4281,6 +4302,8 @@ export const doctors: Doctor[] = [
     department: 'ENT (Ear, Nose & Throat)', departmentAr: 'الأنف والأذن والحنجرة',
     title: 'Head of Department & Consultant ENT (Ear, Nose & Throat)',
     titleAr: 'رئيس القسم واستشاري أمراض الأنف والأذن والحنجرة',
+    providerCode: 'E1949',
+    clinicCode: 'R01ENT',
     bio: 'Dr. Hanafi Abdelsalam is a specialist in the ENT (Ear, Nose & Throat) department at Royale Hayat Hospital.',
     bioAr: 'د. حنفي عبدالسلام متخصص في قسم الأنف والأذن والحنجرة في مستشفى رويال حياة.',
     qualifications: [
@@ -4328,6 +4351,8 @@ export const doctors: Doctor[] = [
     department: 'ENT (Ear, Nose & Throat)', departmentAr: 'الأنف والأذن والحنجرة',
     title: 'Senior Specialist ENT',
     titleAr: 'MBBS، FRCSC، MSCI، FACS كبير أخصائي الأنف والأذن والحنجرة',
+    providerCode: 'PT078',
+    clinicCode: 'R01ENT',
     bio: 'Dr. Maha Al-gilani is a specialist in the ENT (Ear, Nose & Throat) department at Royale Hayat Hospital.',
     bioAr: 'د. مـهــا الـجـيـلانــي متخصص في قسم الأنف والأذن والحنجرة في مستشفى رويال حياة.',
     qualifications: [

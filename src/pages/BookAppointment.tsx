@@ -710,8 +710,8 @@ const BookAppointment = () => {
         setVerifyOperationId(response.operationId);
         setVerifyStatusMessage(
           isAr
-            ? "تمت معالجة التحقق، يرجى انتظار الموافقة ثم اضغط تحقق من الموافقة."
-            : "Authentication processed, please wait for approval and click Check Approval."
+            ? "تم إرسال الطلب. الرجاء فتح تطبيق Kuwait Mobile ID على هاتفك للموافقة على الطلب والمتابعة في الحجز."
+            : "Request sent. Please open the Kuwait Mobile ID app on your phone to approve the request and continue with your booking."
         );
         return;
       }
@@ -1434,13 +1434,28 @@ Clinic Code:`;
                     <h2 className="text-xl font-serif text-foreground mb-2">{isAr ? "تأكيد بيانات المريض" : "Confirm Patient Details"}</h2>
                     <p className="font-body text-xs text-muted-foreground mb-4">{isAr ? "أدخل اسمك الكامل كما هو مسجل في المستشفى." : "Enter your full name as registered with the hospital."}</p>
                     <div><label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{t("fullName")} <span className="text-destructive">*</span></label><input type="text" value={patientName} onChange={(e) => { setPatientName(e.target.value); setPatientErrors((prev) => ({ ...prev, name: "" })); }} placeholder={t("enterFullName")} className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all ${patientErrors.name ? "border-destructive" : "border-border"}`} />{patientErrors.name && <p className="font-body text-xs text-destructive mt-1">{patientErrors.name}</p>}</div>
+                    {verifiedIdentityDetails && (
+                      <div className="mt-4 rounded-xl border border-border bg-background/60 px-4 py-3">
+                        <h4 className="font-body text-xs tracking-widest uppercase text-muted-foreground mb-3">
+                          {isAr ? "بيانات الهوية" : "Identity Details"}
+                        </h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          <p className="font-body text-xs text-foreground"><span className="text-muted-foreground">{isAr ? "الاسم" : "Name"}:</span> {verifiedIdentityDetails.name}</p>
+                          <p className="font-body text-xs text-foreground"><span className="text-muted-foreground">{isAr ? "تاريخ الميلاد" : "Date of Birth"}:</span> {verifiedIdentityDetails.dateOfBirth}</p>
+                          <p className="font-body text-xs text-foreground"><span className="text-muted-foreground">{isAr ? "الرقم المدني" : "Civil ID Number"}:</span> {verifiedIdentityDetails.civilIdNumber}</p>
+                          <p className="font-body text-xs text-foreground"><span className="text-muted-foreground">{isAr ? "الجنسية" : "Nationality"}:</span> {verifiedIdentityDetails.nationality}</p>
+                          <p className="font-body text-xs text-foreground"><span className="text-muted-foreground">{isAr ? "الجنس" : "Gender"}:</span> {verifiedIdentityDetails.gender}</p>
+                          <p className="font-body text-xs text-foreground sm:col-span-2"><span className="text-muted-foreground">{isAr ? "رقم الجواز" : "Passport Number"}:</span> {verifiedIdentityDetails.passportNumber}</p>
+                        </div>
+                      </div>
+                    )}
                     <div className="mt-5 flex gap-3">
                       <button type="button" onClick={() => { if (!patientName.trim()) { setPatientErrors((prev) => ({ ...prev, name: isAr ? "الاسم الكامل مطلوب" : "Full name is required" })); return; } setPatientErrors((prev) => ({ ...prev, name: "" })); setStep(3); }} className="flex-1 bg-primary text-primary-foreground px-3 py-2.5 rounded-lg font-body text-xs tracking-widest uppercase hover:bg-primary/90 transition-colors inline-flex items-center justify-center text-center">{isAr ? "متابعة" : "Proceed"}</button>
                       <button type="button" onClick={goToInitialBookingScreen} className="flex-1 bg-secondary/40 text-foreground px-3 py-2.5 rounded-lg font-body text-xs tracking-widest uppercase hover:bg-secondary/60 transition-colors inline-flex items-center justify-center text-center">{isAr ? "إلغاء" : "Cancel"}</button>
                     </div>
                   </div>
                 )}
-                {patientType && <button onClick={() => { setPatientType(null); setNationalId(""); setNationalIdError(""); setVerifiedPersonName(null); setVerifyOperationId(null); setVerifyStatusMessage(""); }} className="mt-4 font-body text-xs text-muted-foreground hover:text-foreground transition-colors">← {t("changeSelection")}</button>}
+                {patientType && <button onClick={() => { setPatientType(null); setNationalId(""); setNationalIdError(""); setVerifiedPersonName(null); setVerifyOperationId(null); setVerifyStatusMessage(""); setVerifiedIdentityDetails(null); }} className="mt-4 font-body text-xs text-muted-foreground hover:text-foreground transition-colors">← {t("changeSelection")}</button>}
               </div>
             </motion.div>
           )}
@@ -1569,7 +1584,16 @@ Clinic Code:`;
                   {isAr ? "إلغاء" : "Cancel"}
                 </button>
               </div>
-              {verifyStatusMessage && <div className="mt-4 rounded-xl border border-accent/20 bg-accent/5 px-4 py-3"><p className="font-body text-xs text-foreground">{verifyStatusMessage}</p></div>}
+              {verifyStatusMessage && (
+                <div className="mt-4 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3">
+                  <p className="font-body text-xs font-semibold text-foreground mb-1">
+                    {isAr ? "تم إرسال الطلب" : "Request sent"}
+                  </p>
+                  <p className="font-body text-xs text-foreground">
+                    {verifyStatusMessage}
+                  </p>
+                </div>
+              )}
               {verifiedIdentityDetails && (
                 <div className="mt-4 rounded-xl border border-border bg-background/60 px-4 py-3">
                   <h4 className="font-body text-xs tracking-widest uppercase text-muted-foreground mb-3">

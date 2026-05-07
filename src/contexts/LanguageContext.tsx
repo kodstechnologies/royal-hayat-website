@@ -257,7 +257,7 @@ const translations: Translations = {
   step2: { en: "List of current medications", ar: "قائمة الأدوية الحالية" },
   step3: { en: "Previous medical reports or lab results", ar: "التقارير الطبية السابقة أو نتائج المختبر" },
   step4: { en: "Arrive 15 minutes before your scheduled time", ar: "الوصول قبل 15 دقيقة من الموعد" },
-  step5: { en: "Wear comfortable clothing for examination", ar: "ارتداء ملابس مريحة للفحص" },
+  // step5: { en: "Wear comfortable clothing for examination", ar: "ارتداء ملابس مريحة للفحص" },
   aiHealthInsights: { en: "AI Health Insights", ar: "رؤى صحية ذكية" },
   // Chairman
   chairmanMessage: { en: "Chairman's Message", ar: "رسالة رئيس مجلس الإدارة" },

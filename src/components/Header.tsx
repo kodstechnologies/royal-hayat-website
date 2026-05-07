@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import { Menu, X, Search, ChevronDown, Building2, Stethoscope, Users, Home, Heart, Star, ShieldCheck, Phone, MapPin, Bed, Sparkles, BookOpen, Coffee, Droplets, ClipboardList, UserCheck, ScrollText, Baby, Mail, Briefcase, Info, ConciergeBell } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { doctors } from "@/data/doctors";
 import logoFull from "@/assets/rhh-logo-full-color.png";
@@ -18,6 +18,7 @@ const Header = () => {
   const [showMedRecordsModal, setShowMedRecordsModal] = useState(false);
   const { lang, setLang, t } = useLanguage();
   const navigate = useNavigate();
+  const location = useLocation();
   const dropdownTimeout = useRef<NodeJS.Timeout | null>(null);
   const lastScrollY = useRef(0);
   const headerRef = useRef<HTMLElement>(null);
@@ -125,6 +126,16 @@ const Header = () => {
 
   const handleDropdownLeave = () => {
     dropdownTimeout.current = setTimeout(() => setActiveDropdown(null), 200);
+  };
+
+  const handleBookAppointmentClick = (e: any) => {
+    if (location.pathname === "/book-appointment") {
+      e.preventDefault();
+      navigate("/book-appointment", { state: { resetBookingFlow: Date.now() } });
+      window.requestAnimationFrame(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    }
   };
 
   // Build comprehensive search index
@@ -511,6 +522,7 @@ const Header = () => {
             </button>
             <Link
               to="/book-appointment"
+              onClick={handleBookAppointmentClick}
               className={`hidden sm:inline-flex items-center justify-center h-8 md:h-9 bg-primary text-primary-foreground rounded-full font-body tracking-wide hover:bg-primary/90 transition-colors duration-300 ${lang === "ar" ? "px-2.5 text-[9px]" : "px-3.5 text-[11px]"
                 }`}
             >
@@ -661,7 +673,7 @@ const Header = () => {
                 <Link
                   to="/book-appointment"
                   className="text-primary font-body text-sm tracking-wide py-3 border-b border-border/50 hover:text-accent transition-colors"
-                  onClick={() => setMenuOpen(false)}
+                  onClick={(e) => { setMenuOpen(false); handleBookAppointmentClick(e); }}
                 >
                   {t("bookAppointment")}
                 </Link>

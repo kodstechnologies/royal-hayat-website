@@ -523,6 +523,27 @@ const BookAppointment = () => {
     }
   }, [booked]);
 
+  useEffect(() => {
+    if (!locState?.resetBookingFlow) return;
+    setBookingPath(null);
+    setStep(0);
+    setSelectedDept(null);
+    setSelectedDoctor(null);
+    setDeptSearch("");
+    setDoctorSearch("");
+    setShowAllDepts(false);
+    setShowAllDoctors(false);
+    setSymptomChips([]);
+    setSymptomText("");
+    setSymptomResults(null);
+    setNationalId("");
+    setNationalIdError("");
+    setVerifyOperationId(null);
+    setVerifyStatusMessage("");
+    setVerifiedIdentityDetails(null);
+    setShowReturningPatientModal(false);
+  }, [locState?.resetBookingFlow]);
+
   const filteredDepts = useMemo(() => {
     return departmentsList.filter(
       (d) =>
@@ -710,8 +731,8 @@ const BookAppointment = () => {
         setVerifyOperationId(response.operationId);
         setVerifyStatusMessage(
           isAr
-            ? "تم إرسال الطلب. الرجاء فتح تطبيق Kuwait Mobile ID على هاتفك للموافقة على الطلب والمتابعة في الحجز."
-            : "Request sent. Please open the Kuwait Mobile ID app on your phone to approve the request and continue with your booking."
+            ? "الرجاء فتح تطبيق Kuwait Mobile ID على هاتفك للموافقة على الطلب والمتابعة في الحجز."
+            : "Please open the Kuwait Mobile ID app on your phone to approve the request and continue with your booking."
         );
         return;
       }
@@ -1010,7 +1031,7 @@ Clinic Code:`;
                 {t("nextSteps")}
               </h3>
               <ul className="space-y-3 font-body text-sm text-muted-foreground">
-                {[t("step1"), t("step2"), t("step3"), t("step4"), t("step5")].map((item, i) => (
+                {[t("step1"), t("step2"), t("step3"), t("step4"),].map((item, i) => (
                   <li key={i} className="flex items-start gap-2">
                     <CheckCircle2 className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
                     {item}
@@ -1435,17 +1456,35 @@ Clinic Code:`;
                     <p className="font-body text-xs text-muted-foreground mb-4">{isAr ? "أدخل اسمك الكامل كما هو مسجل في المستشفى." : "Enter your full name as registered with the hospital."}</p>
                     <div><label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{t("fullName")} <span className="text-destructive">*</span></label><input type="text" value={patientName} onChange={(e) => { setPatientName(e.target.value); setPatientErrors((prev) => ({ ...prev, name: "" })); }} placeholder={t("enterFullName")} className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all ${patientErrors.name ? "border-destructive" : "border-border"}`} />{patientErrors.name && <p className="font-body text-xs text-destructive mt-1">{patientErrors.name}</p>}</div>
                     {verifiedIdentityDetails && (
-                      <div className="mt-4 rounded-xl border border-border bg-background/60 px-4 py-3">
-                        <h4 className="font-body text-xs tracking-widest uppercase text-muted-foreground mb-3">
+                      <div className="mt-5 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 via-background to-accent/5 p-4 sm:p-5">
+                        <h4 className="font-body text-[11px] tracking-[0.18em] uppercase text-accent mb-3">
                           {isAr ? "بيانات الهوية" : "Identity Details"}
                         </h4>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                          <p className="font-body text-xs text-foreground"><span className="text-muted-foreground">{isAr ? "الاسم" : "Name"}:</span> {verifiedIdentityDetails.name}</p>
-                          <p className="font-body text-xs text-foreground"><span className="text-muted-foreground">{isAr ? "تاريخ الميلاد" : "Date of Birth"}:</span> {verifiedIdentityDetails.dateOfBirth}</p>
-                          <p className="font-body text-xs text-foreground"><span className="text-muted-foreground">{isAr ? "الرقم المدني" : "Civil ID Number"}:</span> {verifiedIdentityDetails.civilIdNumber}</p>
-                          <p className="font-body text-xs text-foreground"><span className="text-muted-foreground">{isAr ? "الجنسية" : "Nationality"}:</span> {verifiedIdentityDetails.nationality}</p>
-                          <p className="font-body text-xs text-foreground"><span className="text-muted-foreground">{isAr ? "الجنس" : "Gender"}:</span> {verifiedIdentityDetails.gender}</p>
-                          <p className="font-body text-xs text-foreground sm:col-span-2"><span className="text-muted-foreground">{isAr ? "رقم الجواز" : "Passport Number"}:</span> {verifiedIdentityDetails.passportNumber}</p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div className="rounded-xl border border-border/70 bg-popover/80 px-3 py-2.5">
+                            <p className="font-body text-[10px] uppercase tracking-wider text-muted-foreground">{isAr ? "الاسم" : "Name"}</p>
+                            <p className="font-body text-sm text-foreground font-medium mt-0.5">{verifiedIdentityDetails.name}</p>
+                          </div>
+                          <div className="rounded-xl border border-border/70 bg-popover/80 px-3 py-2.5">
+                            <p className="font-body text-[10px] uppercase tracking-wider text-muted-foreground">{isAr ? "تاريخ الميلاد" : "Date of Birth"}</p>
+                            <p className="font-body text-sm text-foreground font-medium mt-0.5">{verifiedIdentityDetails.dateOfBirth}</p>
+                          </div>
+                          <div className="rounded-xl border border-border/70 bg-popover/80 px-3 py-2.5">
+                            <p className="font-body text-[10px] uppercase tracking-wider text-muted-foreground">{isAr ? "الرقم المدني" : "Civil ID Number"}</p>
+                            <p className="font-body text-sm text-foreground font-medium mt-0.5">{verifiedIdentityDetails.civilIdNumber}</p>
+                          </div>
+                          <div className="rounded-xl border border-border/70 bg-popover/80 px-3 py-2.5">
+                            <p className="font-body text-[10px] uppercase tracking-wider text-muted-foreground">{isAr ? "الجنسية" : "Nationality"}</p>
+                            <p className="font-body text-sm text-foreground font-medium mt-0.5">{verifiedIdentityDetails.nationality}</p>
+                          </div>
+                          <div className="rounded-xl border border-border/70 bg-popover/80 px-3 py-2.5">
+                            <p className="font-body text-[10px] uppercase tracking-wider text-muted-foreground">{isAr ? "الجنس" : "Gender"}</p>
+                            <p className="font-body text-sm text-foreground font-medium mt-0.5">{verifiedIdentityDetails.gender}</p>
+                          </div>
+                          <div className="rounded-xl border border-border/70 bg-popover/80 px-3 py-2.5">
+                            <p className="font-body text-[10px] uppercase tracking-wider text-muted-foreground">{isAr ? "رقم الجواز" : "Passport Number"}</p>
+                            <p className="font-body text-sm text-foreground font-medium mt-0.5">{verifiedIdentityDetails.passportNumber}</p>
+                          </div>
                         </div>
                       </div>
                     )}
@@ -1592,21 +1631,6 @@ Clinic Code:`;
                   <p className="font-body text-xs text-foreground">
                     {verifyStatusMessage}
                   </p>
-                </div>
-              )}
-              {verifiedIdentityDetails && (
-                <div className="mt-4 rounded-xl border border-border bg-background/60 px-4 py-3">
-                  <h4 className="font-body text-xs tracking-widest uppercase text-muted-foreground mb-3">
-                    {isAr ? "بيانات الهوية" : "Identity Details"}
-                  </h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    <p className="font-body text-xs text-foreground"><span className="text-muted-foreground">{isAr ? "الاسم" : "Name"}:</span> {verifiedIdentityDetails.name}</p>
-                    <p className="font-body text-xs text-foreground"><span className="text-muted-foreground">{isAr ? "تاريخ الميلاد" : "Date of Birth"}:</span> {verifiedIdentityDetails.dateOfBirth}</p>
-                    <p className="font-body text-xs text-foreground"><span className="text-muted-foreground">{isAr ? "الرقم المدني" : "Civil ID Number"}:</span> {verifiedIdentityDetails.civilIdNumber}</p>
-                    <p className="font-body text-xs text-foreground"><span className="text-muted-foreground">{isAr ? "الجنسية" : "Nationality"}:</span> {verifiedIdentityDetails.nationality}</p>
-                    <p className="font-body text-xs text-foreground"><span className="text-muted-foreground">{isAr ? "الجنس" : "Gender"}:</span> {verifiedIdentityDetails.gender}</p>
-                    <p className="font-body text-xs text-foreground sm:col-span-2"><span className="text-muted-foreground">{isAr ? "رقم الجواز" : "Passport Number"}:</span> {verifiedIdentityDetails.passportNumber}</p>
-                  </div>
                 </div>
               )}
             </div>

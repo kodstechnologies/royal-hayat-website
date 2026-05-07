@@ -27,7 +27,7 @@ import {
   getPatient,
   type Slot
 } from "@/api/royalhayat";
-import { getIdentityStatus, startIdentityVerification } from "@/api/identity";
+  import { getIdentityData, getIdentityStatus, startIdentityVerification } from "@/api/identity";
 import { doctorsWithClinicCodes as staticDoctors } from "@/data/doctorsWithClinicCodes";
 import { departments as staticDepts, deptDoctorAliases, MAIN_CATEGORIES } from "@/data/departments";
 
@@ -44,6 +44,15 @@ type BookingDeptRow = {
   specialityCode?: string;
   mainCategory: string;
   icon: any;
+};
+
+type VerifiedIdentityDetails = {
+  name: string;
+  dateOfBirth: string;
+  civilIdNumber: string;
+  nationality: string;
+  gender: string;
+  passportNumber: string;
 };
 
 const OID = /^[0-9a-fA-F]{24}$/i;
@@ -394,6 +403,7 @@ const BookAppointment = () => {
   const [verifyOperationId, setVerifyOperationId] = useState<string | null>(null);
   const [isCheckingApproval, setIsCheckingApproval] = useState(false);
   const [verifyStatusMessage, setVerifyStatusMessage] = useState("");
+  const [verifiedIdentityDetails, setVerifiedIdentityDetails] = useState<VerifiedIdentityDetails | null>(null);
 
   // Symptom path
   const [symptomText, setSymptomText] = useState("");
@@ -441,7 +451,7 @@ const BookAppointment = () => {
           clinicCode: doc.clinicCode || doc.departmentClinicCode
         }));
 
-        setAllApiDoctors(enrichedDoctors);
+        setAllApiDoctors(enrichedDoctors.filter((d) => !d.hideBooking));
       } catch (err) {
         console.error("Error in static load:", err);
         if (!cancelled) {
@@ -484,7 +494,7 @@ const BookAppointment = () => {
           }));
 
         if (!cancelled) {
-          setDeptDoctorList(filtered);
+          setDeptDoctorList(filtered.filter(d => !d.hideBooking));
         }
       } catch (err) {
         console.error("Error in static doctor filter:", err);
@@ -553,16 +563,6 @@ const BookAppointment = () => {
     (isAr ? a.nameAr : a.name).localeCompare(isAr ? b.nameAr : b.name, isAr ? "ar" : "en"),
   );
 
-  const filteredDeptDoctors = useMemo(() => {
-    const q = doctorSearch.toLowerCase().trim();
-    if (!q) return doctors;
-    return doctors.filter(
-      (d) =>
-        d.name.toLowerCase().includes(q) ||
-        d.specialty.toLowerCase().includes(q),
-    );
-  }, [doctors, doctorSearch]);
-
   const filteredAllDoctors = allApiDoctors
     .filter((d) => !DOCTOR_PATH_EXCLUDED_IDS.has(d.id))
     .filter(
@@ -576,13 +576,10 @@ const BookAppointment = () => {
   const selectedDoctorObj =
     bookingPath === "doctor"
       ? allApiDoctors.find((d) => d.id === selectedDoctor)
-      : filteredDeptDoctors.find((d) => d.id === selectedDoctor);
+      : doctors.find((d) => d.id === selectedDoctor);
 
   const resolveDeptIdForDoctor = (doc: Doctor): string | null =>
     doc.departmentId ?? departmentsList.find((d) => d.name === doc.department)?.id ?? null;
-
-  const isRequestOnlyDoctor = (doc: Doctor): boolean =>
-    doc.hideBooking === true || doc.availableOnline === false;
 
   const formattedDob = patientDob
     ? patientDob.split("-").reverse().join("/")
@@ -691,7 +688,7 @@ const BookAppointment = () => {
   const handleNationalIdVerify = async () => {
     const civilId = nationalId.trim();
     if (!/^\d{12}$/.test(civilId)) {
-      setNationalIdError(isAr ? "أدخل رقمًا مدنيًا صحيحًا (12 رقم)" : "Enter a valid National ID (12 digits)");
+      setNationalIdError(isAr ? "أدخل رقمًا مدنيًا صحيحًا (12 رقم)" : "Enter a valid Kuwait Civil ID (12 digits)");
       return;
     }
     setIsVerifyingNationalId(true);
@@ -699,6 +696,7 @@ const BookAppointment = () => {
     setVerifiedPersonName(null);
     setVerifyOperationId(null);
     setVerifyStatusMessage("");
+    setVerifiedIdentityDetails(null);
     try {
       const response = await startIdentityVerification({
         civilId,
@@ -749,7 +747,7 @@ const BookAppointment = () => {
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : "";
       setNationalIdError(
-        message || (isAr ? "فشل التحقق من الرقم المدني" : "Failed to verify National ID")
+        message || (isAr ? "فشل التحقق من الرقم المدني" : "Failed to verify Kuwait Civil ID")
       );
     } finally {
       setIsVerifyingNationalId(false);
@@ -762,6 +760,7 @@ const BookAppointment = () => {
     setVerifiedPersonName(null);
     setVerifyOperationId(null);
     setVerifyStatusMessage("");
+    setVerifiedIdentityDetails(null);
     setShowReturningPatientModal(true);
   };
 
@@ -776,6 +775,7 @@ const BookAppointment = () => {
         setVerifyStatusMessage(
           isAr ? "الحالة ما زالت قيد الانتظار." : "Status is still pending."
         );
+        setVerifiedIdentityDetails(null);
         return;
       }
       const names = extractVerifiedName(statusData);
@@ -787,6 +787,36 @@ const BookAppointment = () => {
       const pickedName = isAr ? (names.arabic || names.english) : (names.english || names.arabic);
       setPatientName(pickedName);
       setPatientType("returning");
+      setVerifiedPersonName(names);
+
+      const civilIdForData = statusData?.civilId || nationalId.trim();
+      if (civilIdForData) {
+        const identityDataResponse = await getIdentityData(civilIdForData);
+        const rawData = (identityDataResponse?.raw || identityDataResponse?.identityData || {}) as Record<string, any>;
+        const rawName = (rawData?.name || {}) as Record<string, any>;
+        const nameFromRaw = rawData?.name
+          ? (isAr
+              ? rawName.arabic || rawName.ar || rawName.english || rawName.en || ""
+              : rawName.english || rawName.en || rawName.arabic || rawName.ar || "")
+          : pickedName;
+        const nationalityObj = (rawData?.nationality || {}) as Record<string, any>;
+        const nationalityNameObj = (nationalityObj?.name || {}) as Record<string, any>;
+        const nationalityName = nationalityObj?.name
+          ? (isAr
+              ? nationalityNameObj.arabic || nationalityNameObj.english || ""
+              : nationalityNameObj.english || nationalityNameObj.arabic || "")
+          : "";
+        const registration = (rawData?.registration || {}) as Record<string, any>;
+
+        setVerifiedIdentityDetails({
+          name: nameFromRaw || pickedName || "—",
+          dateOfBirth: rawData?.dateOfBirth ? new Date(rawData.dateOfBirth).toLocaleDateString(isAr ? "ar-KW" : "en-GB") : "—",
+          civilIdNumber: String(rawData?.civilId || civilIdForData || "—"),
+          nationality: nationalityName || nationalityObj?.iso3Letter || "—",
+          gender: rawData?.sex || "—",
+          passportNumber: String(registration?.passport || "—"),
+        });
+      }
 
       try {
         const pRes = await getPatient({ nationalid: nationalId });
@@ -821,6 +851,7 @@ const BookAppointment = () => {
     setVerifiedPersonName(null);
     setVerifyOperationId(null);
     setVerifyStatusMessage("");
+    setVerifiedIdentityDetails(null);
   };
 
   const handleBack = () => {
@@ -925,7 +956,7 @@ Clinic Code:`;
               <CheckCircle2 className="w-10 h-10 text-primary-foreground" />
             </motion.div>
             <h1 className="text-3xl md:text-5xl font-serif text-primary-foreground mb-3">
-              {isRequestMode ? t("requestSubmitted") : (isAr ? "تم تأكيد الموعد" : "Appointment Confirmed")}
+              {isRequestMode ? t("requestSubmitted") : t("appointmentConfirmed")}
             </h1>
             <p className="text-primary-foreground/70 font-body text-sm max-w-md mx-auto">
               {isRequestMode ? t("requestConfirmMsg") : t("bookingConfirmMsg")}
@@ -1252,7 +1283,7 @@ Clinic Code:`;
                       <div key={group.key}>
                         <div className="flex items-center gap-4 mb-5">
                           <div className="h-px flex-1 bg-border/50" />
-                          <h3 className="text-sm sm:text-base font-body font-bold tracking-[0.18em] sm:tracking-[0.22em] uppercase text-accent whitespace-nowrap px-1">
+                          <h3 className="text-xs sm:text-sm font-body font-bold tracking-[0.18em] sm:tracking-[0.22em] uppercase text-accent whitespace-nowrap px-1">
                             {isAr ? group.labelAr : group.label}
                           </h3>
                           <div className="h-px flex-1 bg-border/50" />
@@ -1263,8 +1294,6 @@ Clinic Code:`;
                               onClick={() => {
                                 if (isAlSafwaDept(dept)) { navigate("/al-safwa", { state: { fromBookAppointment: true } }); return; }
                                 if (isHomeHealthDept(dept)) { navigate("/home-health", { state: { fromBookAppointment: true } }); return; }
-                                // Ensure step 1 shows doctors for the selected department only.
-                                setBookingPath("primary");
                                 setSelectedDept(dept.id);
                                 setStep(1);
                               }}
@@ -1308,7 +1337,7 @@ Clinic Code:`;
                     className="w-full pl-11 pr-4 py-3 rounded-xl border border-border bg-popover font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 disabled:opacity-50" />
                 </div>
                 {(() => {
-                  const docList = bookingPath === "doctor" ? filteredAllDoctors : filteredDeptDoctors;
+                  const docList = bookingPath === "doctor" ? filteredAllDoctors : doctors;
                   const displayList = showAllDoctors || doctorSearch.trim() ? docList : docList.slice(0, 6);
                   if (catalogLoading || (bookingPath === "primary" && deptDoctorLoading)) {
                     return <div className="py-16 text-center text-muted-foreground font-body text-sm">{isAr ? "جاري تحميل الأطباء…" : "Loading doctors…"}</div>;
@@ -1321,9 +1350,8 @@ Clinic Code:`;
                             className={`relative rounded-2xl border flex flex-col cursor-pointer transition-all duration-300 overflow-hidden ${selectedDoctor === doc.id ? "border-primary shadow-md" : "border-border/50 hover:border-accent/40"}`}
                             onClick={() => {
                               const resolvedDeptId = selectedDept ?? resolveDeptIdForDoctor(doc);
-                              const requestOnly = isRequestOnlyDoctor(doc);
                               navigate(`/doctors/${doc.id}`, {
-                                state: { fromBookAppointment: true, step, bookingPath: bookingPath ?? "primary", selectedDept: resolvedDeptId, selectedDoctor: doc.id, isRequestMode: requestOnly, canBookSlot: !requestOnly }
+                                state: { fromBookAppointment: true, step, bookingPath: bookingPath ?? "primary", selectedDept: resolvedDeptId, selectedDoctor: doc.id, isRequestMode: doc.availableOnline === false, canBookSlot: doc.availableOnline !== false }
                               });
                             }}>
                             <div className="bg-white h-64 flex items-center justify-center relative overflow-hidden shrink-0 rounded-t-2xl">
@@ -1340,11 +1368,13 @@ Clinic Code:`;
                               <h4 className="font-serif text-sm text-foreground mb-0.5 leading-snug">{isAr ? doc.nameAr : doc.name}</h4>
                               <p className="text-muted-foreground font-body text-[11px] mb-2 line-clamp-1">{isAr ? doc.specialtyAr : doc.specialty}</p>
                               <div className="flex flex-wrap gap-1 mb-2">{(isAr ? doc.languagesAr : doc.languages).map((l) => <span key={l} className="px-2 py-0.5 rounded-full bg-secondary/40 text-[10px] font-body text-foreground">{l}</span>)}</div>
-                              <div className={`flex items-center gap-1.5 mb-3 ${isRequestOnlyDoctor(doc) ? "text-gray-500" : "text-green-600"}`}>
-                                <div className={`w-1.5 h-1.5 rounded-full ${isRequestOnlyDoctor(doc) ? "bg-muted-foreground" : "bg-green-500"}`} />
-                                <span className="font-body text-[10px]">{isRequestOnlyDoctor(doc) ? (isAr ? "غير متاح حالياً" : "Request Appointment") : (isAr ? "متاح للحجز" : "Book Online")}</span>
-                              </div>
-                              <button onClick={(e) => { e.stopPropagation(); const resolvedDeptId = selectedDept ?? resolveDeptIdForDoctor(doc); const requestOnly = isRequestOnlyDoctor(doc); navigate(`/doctors/${doc.id}`, { state: { fromBookAppointment: true, step, bookingPath: bookingPath ?? "primary", selectedDept: resolvedDeptId, selectedDoctor: doc.id, isRequestMode: requestOnly, canBookSlot: !requestOnly } }); }} className="mt-auto inline-flex items-center gap-1 text-primary font-body text-xs hover:text-accent transition-colors">{isAr ? "عرض الملف الشخصي ←" : "View Profile →"}</button>
+                              {doc.hideBooking !== true && (
+                                <div className={`flex items-center gap-1.5 mb-3 ${doc.availableOnline !== false ? "text-green-600" : "text-gray-500"}`}>
+                                  <div className={`w-1.5 h-1.5 rounded-full ${doc.availableOnline !== false ? "bg-green-500" : "bg-muted-foreground"}`} />
+                                  <span className="font-body text-[10px]">{doc.availableOnline !== false ? (isAr ? "متاح للحجز" : "Book Online") : (isAr ? "غير متاح حالياً" : "Request Appointment")}</span>
+                                </div>
+                              )}
+                              <button onClick={(e) => { e.stopPropagation(); const resolvedDeptId = selectedDept ?? resolveDeptIdForDoctor(doc); navigate(`/doctors/${doc.id}`, { state: { fromBookAppointment: true, step, bookingPath: bookingPath ?? "primary", selectedDept: resolvedDeptId, selectedDoctor: doc.id, isRequestMode: doc.availableOnline === false, canBookSlot: doc.availableOnline !== false } }); }} className="mt-auto inline-flex items-center gap-1 text-primary font-body text-xs hover:text-accent transition-colors">{isAr ? "عرض الملف الشخصي ←" : "View Profile →"}</button>
                             </div>
                           </motion.div>
                         ))}
@@ -1509,8 +1539,8 @@ Clinic Code:`;
             </div>
             <div className="p-6">
               <div className="rounded-2xl border border-border/70 bg-background/50 p-4">
-                <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "الرقم المدني" : "National ID"} <span className="text-destructive">*</span></label>
-                <input type="text" inputMode="numeric" value={nationalId} onChange={(e) => { setNationalId(e.target.value.replace(/\D/g, "").slice(0, 12)); setNationalIdError(""); setVerifiedPersonName(null); }} placeholder={isAr ? "ادخل 12 رقم" : "Enter 12 digits"} className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 ${nationalIdError ? "border-destructive" : "border-border"}`} />
+                <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "الرقم المدني" : "Kuwait Civil ID"} <span className="text-destructive">*</span></label>
+                <input type="text" inputMode="numeric" value={nationalId} onChange={(e) => { setNationalId(e.target.value.replace(/\D/g, "").slice(0, 12)); setNationalIdError(""); setVerifiedPersonName(null); setVerifiedIdentityDetails(null); }} placeholder={isAr ? "ادخل 12 رقم" : "Enter 12 digits"} className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 ${nationalIdError ? "border-destructive" : "border-border"}`} />
                 {nationalIdError && <p className="font-body text-xs text-destructive mt-2">{nationalIdError}</p>}
               </div>
               <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -1528,7 +1558,7 @@ Clinic Code:`;
                     disabled={isVerifyingNationalId}
                     className="w-full bg-primary text-primary-foreground px-4 py-3 rounded-xl font-body text-xs tracking-widest uppercase hover:bg-primary/90 transition-colors disabled:opacity-70 inline-flex items-center justify-center text-center"
                   >
-                    {isVerifyingNationalId ? (isAr ? "جارِ الفحص..." : "Verifying...") : (isAr ? "مصادقة" : "Authenticate")}
+                    {isVerifyingNationalId ? (isAr ? "جارِ الفحص..." : "Verifying...") : (isAr ? "مصادقة" : "Verify with Kuwait Mobile ID")}
                   </button>
                 )}
 
@@ -1540,6 +1570,21 @@ Clinic Code:`;
                 </button>
               </div>
               {verifyStatusMessage && <div className="mt-4 rounded-xl border border-accent/20 bg-accent/5 px-4 py-3"><p className="font-body text-xs text-foreground">{verifyStatusMessage}</p></div>}
+              {verifiedIdentityDetails && (
+                <div className="mt-4 rounded-xl border border-border bg-background/60 px-4 py-3">
+                  <h4 className="font-body text-xs tracking-widest uppercase text-muted-foreground mb-3">
+                    {isAr ? "بيانات الهوية" : "Identity Details"}
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <p className="font-body text-xs text-foreground"><span className="text-muted-foreground">{isAr ? "الاسم" : "Name"}:</span> {verifiedIdentityDetails.name}</p>
+                    <p className="font-body text-xs text-foreground"><span className="text-muted-foreground">{isAr ? "تاريخ الميلاد" : "Date of Birth"}:</span> {verifiedIdentityDetails.dateOfBirth}</p>
+                    <p className="font-body text-xs text-foreground"><span className="text-muted-foreground">{isAr ? "الرقم المدني" : "Civil ID Number"}:</span> {verifiedIdentityDetails.civilIdNumber}</p>
+                    <p className="font-body text-xs text-foreground"><span className="text-muted-foreground">{isAr ? "الجنسية" : "Nationality"}:</span> {verifiedIdentityDetails.nationality}</p>
+                    <p className="font-body text-xs text-foreground"><span className="text-muted-foreground">{isAr ? "الجنس" : "Gender"}:</span> {verifiedIdentityDetails.gender}</p>
+                    <p className="font-body text-xs text-foreground sm:col-span-2"><span className="text-muted-foreground">{isAr ? "رقم الجواز" : "Passport Number"}:</span> {verifiedIdentityDetails.passportNumber}</p>
+                  </div>
+                </div>
+              )}
             </div>
           </motion.div>
         </div>

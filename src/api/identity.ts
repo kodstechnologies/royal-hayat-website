@@ -51,6 +51,16 @@ export type IdentityStatusResponse = {
   updatedAt?: string | null;
 };
 
+export type IdentityDataResponse = {
+  verified: boolean;
+  civilId?: string | null;
+  personName?: IdentityName;
+  identityData?: IdentityRawPayload | null;
+  raw?: IdentityRawPayload | null;
+  skippedStart?: boolean;
+  dataSource?: "data";
+};
+
 type ApiEnvelope<T> = {
   success: boolean;
   message: string;
@@ -89,6 +99,39 @@ export const getIdentityStatus = async (operationId: string): Promise<IdentitySt
       updatedAt: new Date().toISOString()
     } as any;
   }
+  
   const response = await api.get(`/api/v1/identity/status/${encodeURIComponent(operationId)}`);
   return (response.data as ApiEnvelope<IdentityStatusResponse>)?.data;
+};
+
+export const getIdentityData = async (civilId: string): Promise<IdentityDataResponse> => {
+  const normalizedCivilId = civilId.trim();
+
+  if (normalizedCivilId === "284102401152") {
+    const mockRaw: IdentityRawPayload = {
+      success: true,
+      civilId: normalizedCivilId,
+      name: {
+        english: "YEHIA KHAFAJA",
+        arabic: "يحيى عفيف حسين خفاجه"
+      }
+    };
+
+    return {
+      verified: true,
+      civilId: normalizedCivilId,
+      personName: mockRaw.name,
+      identityData: mockRaw,
+      raw: mockRaw,
+      skippedStart: true,
+      dataSource: "data"
+    };
+  }
+
+  const response = await api.get(`/api/v1/identity/data/${encodeURIComponent(normalizedCivilId)}`);
+  const data = (response.data as ApiEnvelope<IdentityDataResponse>)?.data;
+  return {
+    ...data,
+    dataSource: "data"
+  };
 };

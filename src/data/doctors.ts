@@ -98,6 +98,8 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-abdulaziz-ramadhan',
     image: '/images/doctors/abdulaziz-ramadhan.png',
+    providerCode: 'E3195',
+    clinicCode: 'R060COS',
     name: 'Dr. Abdulaziz Ramadhan', nameAr: 'د. عبدالعزيز علي رمضان',
     specialty: 'Internal Medicine', specialtyAr: 'الطب الباطني',
     department: 'Internal Medicine', departmentAr: 'الطب الباطني',
@@ -195,6 +197,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'MA', color: 'bg-primary/90',
     symptoms: [],
+    providerCode: 'PT076',
+    clinicCode: 'R01ERC',
   },
   {
     id: 'dr-ahmed-al-qallaf',
@@ -362,6 +366,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'MA', color: 'bg-accent/80',
     symptoms: [],
+    clinicCode: 'R01FMC',
+    providerCode: 'PT070',
   },
   {
     id: 'dr-raed-al-swait',
@@ -472,6 +478,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'WA', color: 'bg-accent/70',
     symptoms: [],
+    providerCode: 'PT066',
+    clinicCode: 'R01GIC',
   },
   {
     id: 'dr-alia-ali-ibrahim',
@@ -698,6 +706,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'SO', color: 'bg-accent/90',
     symptoms: [],
+    providerCode: 'E2607',
+    clinicCode: 'R01FMC',
   },
   {
     id: 'dr-ahmed-al-mulla',
@@ -763,6 +773,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'AM', color: 'bg-primary/80',
     symptoms: [],
+    providerCode: 'E2196',
+    clinicCode: 'GI 1',
   },
   {
     id: 'dr-humoud-alrasheedi',
@@ -905,6 +917,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'HF', color: 'bg-primary/70',
     symptoms: [],
+    providerCode: 'E1224',
+    clinicCode: 'GI 1',
   },
   {
     id: 'dr-sulaiman-almazeedi',
@@ -961,6 +975,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'SA', color: 'bg-accent/70',
     symptoms: [],
+    providerCode:"PT054",
+    clinicCode:"GI 1"
   },
   {
     id: 'dr-noha-alsaleh',
@@ -1013,6 +1029,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'NA', color: 'bg-primary',
     symptoms: [],
+    providerCode:"E2237",
+    clinicCode:"R002GSC"
   },
   {
     id: 'dr-anny-qaisser',
@@ -1263,8 +1281,8 @@ export const doctors: Doctor[] = [
     department: 'La Cosmetique', departmentAr: 'التجميل',
     title: 'Consultant ENT (Plastic Surgery Department)',
     titleAr: 'إستشاري أنف وأذن وحنجرة (قسـم جراحـة التجميـل)',
-    providerCode: 'R060COS',
-    clinicCode: 'E3195',
+    providerCode: 'E3195',
+    clinicCode: 'R060COS',
     bio: 'Dr. Brook Assefa Ayele is a specialist in the La Cosmetique department at Royale Hayat Hospital.',
     bioAr: 'د. بروك أسيفا أيلي متخصص في قسم التجميل في مستشفى رويال حياة.',
     qualifications: [
@@ -1791,6 +1809,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'HG', color: 'bg-accent/80',
     symptoms: [],
+    clinicCode:"R002PAI",
+    providerCode:"E1076"
   },
   {
     id: 'dr-yasser-haggag',
@@ -1840,6 +1860,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'YH', color: 'bg-primary/70',
     symptoms: [],
+    providerCode:"E1461",
+    clinicCode:"R002ANA"
   },
   {
     id: 'dr-ahmad-abdulrahman-al-mulla',//////// same name issue
@@ -1875,6 +1897,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'AM', color: 'bg-accent/70',
     symptoms: [],
+    clinicCode:"R002PED",
+    providerCode:"PT036"
   },
   {
     id: 'dr-ahmad-al-mosawi',
@@ -1919,6 +1943,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'AM', color: 'bg-primary',
     symptoms: [],
+      clinicCode:"R002PED",
+    providerCode:"PT042"
   },
   {
     id: 'dr-mohammad-ebrahim',
@@ -1970,6 +1996,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'ME', color: 'bg-accent',
     symptoms: [],
+      clinicCode:"R002PED",
+    providerCode:"PT071"
   },
   {
     id: 'dr-rajendra-c-mishra',
@@ -2020,6 +2048,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'RM', color: 'bg-primary/90',
     symptoms: [],
+      clinicCode:"R002PED",
+    providerCode:"E1890"
   },
   {
     id: 'dr-wasmi-al-fadhli',
@@ -2073,6 +2103,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'WF', color: 'bg-accent/90',
     symptoms: [],
+      clinicCode:"R002PED",
+    providerCode:"PT038"
   },
   {
     id: 'dr-ehab-atteya',
@@ -2117,6 +2149,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'EA', color: 'bg-primary/80',
     symptoms: [],
+      clinicCode:"R002PED",
+    providerCode:"E0723"
   },
   {
     id: 'dr-fahed-abdulaziz-aljaser',
@@ -2127,6 +2161,8 @@ export const doctors: Doctor[] = [
     department: 'Pediatric', departmentAr: 'طب الأطفال',
     title: 'Consultant Pediatrician & Pediatric Endocrinologist',
     titleAr: 'إستشاري طب الاطفال وغدد صماء للأطفال و داء السكري',
+    providerCode:"PT069",
+    clinicCode:"R002PED",
     bio: 'Dr. Fahed Abdulaziz Aljaser is a specialist in the Pediatric department at Royale Hayat Hospital.',
     bioAr: 'د. فهد عبدالعزيز الجاسر متخصص في قسم طب الأطفال في مستشفى رويال حياة.',
     qualifications: [
@@ -2167,6 +2203,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'FA', color: 'bg-accent/80',
     symptoms: [],
+
+
   },
   {
     id: 'dr-omar-alkandari',
@@ -2205,6 +2243,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'OA', color: 'bg-primary/70',
     symptoms: [],
+      clinicCode:"R002PED",
+    providerCode:"PT047"
   },
   {
     id: 'dr-roland-waked',
@@ -2254,6 +2294,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'RW', color: 'bg-accent/70',
     symptoms: [],
+      clinicCode:"R002PED",
+    providerCode:"E1095"
   },
   {
     id: 'dr-adel-al-ali',
@@ -2612,6 +2654,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'MA', color: 'bg-primary/70',
     symptoms: [],
+      clinicCode:"R01NEO",
+    providerCode:"PT080"
   },
   {
     id: 'dr-mohamad-hassoun',
@@ -2666,6 +2710,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'MH', color: 'bg-accent/70',
     symptoms: [],
+      clinicCode:"R01NEO",
+    providerCode:"E2768"
   },
   {
     id: 'dr-deepak-vasudev',
@@ -2768,6 +2814,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'EB', color: 'bg-accent',
     symptoms: [],
+      clinicCode:"R01NEO",
+    providerCode:"E3267"
   },
   {
     id: 'dr-mirvat-sameer-ghanem',
@@ -2827,6 +2875,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'MG', color: 'bg-primary/90',
     symptoms: [],
+      clinicCode:"R002PED",
+    providerCode:"PT036"
   },
   {
     id: 'dr-anood-yousef-aljasser-alrajahi',
@@ -4055,6 +4105,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'SA', color: 'bg-primary/90',
     symptoms: [],
+    //   clinicCode:"R002PED",
+    // providerCode:"PT036"
   },
   {
     id: 'dr-alaa-abdullah',

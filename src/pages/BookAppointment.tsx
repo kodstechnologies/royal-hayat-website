@@ -1665,20 +1665,25 @@ Clinic Code:`;
           <motion.div
             initial={{ opacity: 0, scale: 0.97 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="w-full max-w-md rounded-2xl border border-border/70 bg-popover shadow-2xl p-6"
+            className="w-full max-w-md rounded-2xl border border-border/70 bg-popover shadow-2xl p-6 text-center"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-start gap-3 mb-4">
-              <AlertCircle className="w-5 h-5 text-destructive mt-0.5" />
+            <div className="flex flex-col items-center gap-3 mb-4">
+              <AlertCircle className="w-5 h-5 text-destructive" />
               <p className="font-body text-sm text-foreground">{bookingPopupMessage}</p>
             </div>
-            <button
-              type="button"
-              onClick={() => setBookingPopupMessage(null)}
-              className="w-full bg-primary text-primary-foreground px-4 py-2.5 rounded-lg font-body text-xs tracking-widest uppercase hover:bg-primary/90 transition-colors"
-            >
-              {isAr ? "حسناً" : "OK"}
-            </button>
+            <div className="flex justify-center">
+              <button
+                type="button"
+                onClick={() => {
+                  setBookingPopupMessage(null);
+                  navigate("/book-appointment");
+                }}
+                className="min-w-28 bg-primary text-primary-foreground px-6 py-2.5 rounded-lg font-body text-xs tracking-widest uppercase hover:bg-primary/90 transition-colors"
+              >
+                {isAr ? "حسناً" : "OK"}
+              </button>
+            </div>
           </motion.div>
         </div>
       )}

@@ -178,6 +178,7 @@ const workWithUsStaffActivitiesImages: string[] = [
 "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/15.jpg",
 "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/16.jpg",
 "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/17.jpg",
+"https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/18.jpg.jpeg"
 
 ];
 const workWithUsGalaDinnerImages: string[] = [

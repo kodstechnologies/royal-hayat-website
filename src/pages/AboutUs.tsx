@@ -294,45 +294,8 @@ const AboutUs = () => {
         </div>
       </section>}
 
-      {/* Chairman's Message */}
-      {show("chairman") && (
-        <>
-          <section className="pt-12 pb-0 bg-background">
-            <div className="container mx-auto px-4 md:px-6">
-              <ScrollAnimationWrapper>
-                <div className="max-w-5xl lg:max-w-7xl 2xl:max-w-[88rem] mx-auto">
-                  <h1 className="text-4xl md:text-5xl font-serif text-foreground mb-4 text-left lg:pl-[42%] xl:pl-[40%]">
-                    {lang === "ar" ? "رسالة رئيس مجلس الإدارة" : "Chairman's Message"}
-                  </h1>
-                </div>
-              </ScrollAnimationWrapper>
-            </div>
-          </section>
-          <ChairmanMessage />
-        </>
-      )}
-
-      {/* Leadership Team */}
-      {show("leadership") && <section className="pb-16 pt-16 bg-background" id="leadership">
-        <div className="container mx-auto px-6">
-          <ScrollAnimationWrapper>
-            <div className="text-center mb-10">
-              <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">
-                <Users className="w-4 h-4 inline mr-1" />
-                {t("leadership")}
-              </p>
-              <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-4">{t("leadershipSubtitle")}</h2>
-              <p className="text-muted-foreground font-body text-sm max-w-3xl mx-auto">{t("leadershipDesc")}</p>
-            </div>
-          </ScrollAnimationWrapper>
-
-          <div className="max-w-5xl mx-auto space-y-6">
-            {leaders.map((leader) => (
-              <LeaderCard key={leader.nameEn} leader={leader} lang={lang} />
-            ))}
-          </div>
-        </div>
-      </section>}
+  
+  
 
       {/* Mission & Values */}
       {show("mission") && <section className="pb-16 pt-2 bg-secondary/10" id="mission">
@@ -370,6 +333,49 @@ const AboutUs = () => {
           </div>
         </div>
       </section>}
+
+
+    {/* Chairman's Message */}
+    {show("chairman") && (
+        <>
+          <section className="pt-12 pb-0 bg-background">
+            <div className="container mx-auto px-4 md:px-6">
+              <ScrollAnimationWrapper>
+                <div className="max-w-5xl lg:max-w-7xl 2xl:max-w-[88rem] mx-auto">
+                  <h1 className="text-4xl md:text-5xl font-serif text-foreground mb-4 text-left lg:pl-[42%] xl:pl-[40%]">
+                    {lang === "ar" ? "رسالة رئيس مجلس الإدارة" : "Chairman's Message"}
+                  </h1>
+                </div>
+              </ScrollAnimationWrapper>
+            </div>
+          </section>
+          <ChairmanMessage />
+        </>
+      )}
+
+
+  {/* Leadership Team */}
+  {show("leadership") && <section className="pb-16 pt-16 bg-background" id="leadership">
+        <div className="container mx-auto px-6">
+          <ScrollAnimationWrapper>
+            <div className="text-center mb-10">
+              <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">
+                <Users className="w-4 h-4 inline mr-1" />
+                {t("leadership")}
+              </p>
+              <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-4">{t("leadershipSubtitle")}</h2>
+              <p className="text-muted-foreground font-body text-sm max-w-3xl mx-auto">{t("leadershipDesc")}</p>
+            </div>
+          </ScrollAnimationWrapper>
+
+          <div className="max-w-5xl mx-auto space-y-6">
+            {leaders.map((leader) => (
+              <LeaderCard key={leader.nameEn} leader={leader} lang={lang} />
+            ))}
+          </div>
+        </div>
+      </section>}
+
 
       {/* CSR */}
       {show("csr") && (

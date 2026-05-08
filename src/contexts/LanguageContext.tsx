@@ -243,8 +243,8 @@ const translations: Translations = {
   previous: { en: "Previous", ar: "السابق" },
   backToHome: { en: "Back to Home", ar: "العودة للرئيسية" },
   // Confirmation
-  requestSubmitted: { en: "Appointment's Request received", ar: "تم استلام طلب الموعد!" },
-  appointmentConfirmed: { en: "Appointment's Request received", ar: "تم استلام طلب الموعد!" },
+  requestSubmitted: { en: "Appointment Confirmed", ar: "تم استلام طلب الموعد!" },
+  appointmentConfirmed: { en: "Appointment Confirmed", ar: "تم استلام طلب الموعد!" },
   requestConfirmMsg: { en: "Thank you for your request, we will contact you soon", ar: "شكراً لطلبك، سنتواصل معك قريباً." },
   bookingConfirmMsg: { en: "Thank you for your request, we will contact you soon", ar: "شكراً لطلبك، سنتواصل معك قريباً." },
   appointmentDetails: { en: "Appointment Details", ar: "تفاصيل الموعد" },
@@ -327,7 +327,7 @@ const translations: Translations = {
   // Awards
   recognition: { en: "Recognition", ar: "التقدير" },
   certificatesAwards: { en: "Certificates &", ar: "الشهادات و" },
-
+  
   // Insurance
   trustedBy: { en: "Trusted By", ar: "موثوق من قبل" },
   insurancePartners: { en: "Insurance Partners", ar: "شركاء التأمين" },

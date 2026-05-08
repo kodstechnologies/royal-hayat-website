@@ -655,7 +655,20 @@ const BookAppointment = () => {
           setBooked(true);
           return;
         }
-        throw new Error(isAr ? "فشل تأكيد الموعد" : "Failed to confirm appointment");
+        const rawMessage =
+          res?.message ||
+          res?.status ||
+          res?.meta?.status ||
+          (isAr ? "فشل تأكيد الموعد" : "Failed to confirm appointment");
+        const cleanMessage = String(rawMessage).replace(/^Error:\s*/i, "").trim();
+        const duplicateBookingMessage = "Patient already has an active booking with this care provider on the same day";
+        const messageToShow =
+          cleanMessage.toLowerCase() === duplicateBookingMessage.toLowerCase()
+            ? duplicateBookingMessage
+            : cleanMessage;
+        setBookingError(messageToShow);
+        window.alert(messageToShow);
+        return;
       }
 
       // For non-returning flow, we intentionally skip enquiry API submission.

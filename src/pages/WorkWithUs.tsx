@@ -247,11 +247,11 @@ const WorkWithUs = ({
           <div className="grid lg:grid-cols-2 gap-0 items-stretch min-h-[480px]">
 
             {/* LEFT — image, full bleed */}
-            <div className="hidden lg:block relative overflow-hidden min-h-[480px]">
+            <div className="relative overflow-hidden h-[240px] sm:h-[300px] lg:min-h-[480px] lg:h-auto">
               <img
                 src="/images/Life at Royale hayat Hospital.jpg.jpeg"
                 alt={isAr ? "الحياة في رويال حياة" : "Life at Royale Hayat Hospital"}
-                className="absolute inset-0 w-full h-full object-cover object-center"
+                className="absolute inset-0 w-full h-full object-cover object-[50%_42%] lg:object-center"
               />
             </div>
 

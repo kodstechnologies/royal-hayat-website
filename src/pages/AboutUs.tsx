@@ -354,9 +354,8 @@ const AboutUs = () => {
         </>
       )}
 
-
   {/* Leadership Team */}
-  {show("leadership") && <section className="pb-16 pt-16 bg-background" id="leadership">
+  {show("leadership") && <section className="pb-16 pt-16 bg-muted/20" id="leadership">
         <div className="container mx-auto px-6">
           <ScrollAnimationWrapper>
             <div className="text-center mb-10">

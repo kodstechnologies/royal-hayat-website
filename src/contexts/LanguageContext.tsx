@@ -185,7 +185,7 @@ const translations: Translations = {
   showLess: { en: "SHOW LESS", ar: "عرض أقل" },
   // Booking flow
   aiAssistedBooking: { en: "AI-Assisted Booking", ar: "حجز بمساعدة الذكاء الاصطناعي" },
-  bookYourAppointment: { en: "Request for Appointment", ar: "طلب موعد" },
+  bookYourAppointment: { en: "Request for Appointment--", ar: "طلب موعد" },
   symptoms: { en: "Symptoms", ar: "الأعراض" },
   department: { en: "Department", ar: "القسم" },
   doctor: { en: "Doctor", ar: "الطبيب" },

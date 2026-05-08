@@ -645,6 +645,14 @@ const BookAppointment = () => {
   const handleConfirm = async () => {
     setIsSubmitting(true);
     setBookingError(null);
+    const duplicateBookingMessage = "Patient already has an active booking with this care provider on the same day";
+    const formatBookingErrorMessage = (raw: unknown) => {
+      const fallback = isAr ? "فشل تأكيد الموعد" : "Failed to confirm appointment";
+      const cleaned = String(raw || fallback).replace(/^Error:\s*/i, "").trim();
+      return cleaned.toLowerCase() === duplicateBookingMessage.toLowerCase()
+        ? duplicateBookingMessage
+        : cleaned;
+    };
     try {
       if (patientType === "returning" && patientId && selectedSlotId) {
         const res = await bookAppointment({
@@ -655,17 +663,8 @@ const BookAppointment = () => {
           setBooked(true);
           return;
         }
-        const rawMessage =
-          res?.message ||
-          res?.status ||
-          res?.meta?.status ||
-          (isAr ? "فشل تأكيد الموعد" : "Failed to confirm appointment");
-        const cleanMessage = String(rawMessage).replace(/^Error:\s*/i, "").trim();
-        const duplicateBookingMessage = "Patient already has an active booking with this care provider on the same day";
-        const messageToShow =
-          cleanMessage.toLowerCase() === duplicateBookingMessage.toLowerCase()
-            ? duplicateBookingMessage
-            : cleanMessage;
+        const rawMessage = res?.message || res?.status || res?.meta?.status;
+        const messageToShow = formatBookingErrorMessage(rawMessage);
         setBookingError(messageToShow);
         window.alert(messageToShow);
         return;
@@ -675,7 +674,14 @@ const BookAppointment = () => {
       setBooked(true);
     } catch (err: any) {
       console.error("Booking failed:", err);
-      setBookingError(err.message || (isAr ? "حدث خطأ أثناء معالجة طلبك" : "An error occurred while processing your request"));
+      const apiErrorMessage =
+        err?.response?.data?.message ||
+        err?.response?.data?.status ||
+        err?.response?.data?.meta?.status ||
+        err?.message;
+      const finalMessage = formatBookingErrorMessage(apiErrorMessage);
+      setBookingError(finalMessage);
+      window.alert(finalMessage);
     } finally {
       setIsSubmitting(false);
     }

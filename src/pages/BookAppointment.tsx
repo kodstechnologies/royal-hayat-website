@@ -650,9 +650,10 @@ const BookAppointment = () => {
     const formatBookingErrorMessage = (raw: unknown) => {
       const fallback = isAr ? "فشل تأكيد الموعد" : "Failed to confirm appointment";
       const cleaned = String(raw || fallback).replace(/^Error:\s*/i, "").trim();
-      return cleaned.toLowerCase() === duplicateBookingMessage.toLowerCase()
+      const normalized = cleaned.replace(/care provider/gi, "doctor");
+      return normalized.toLowerCase() === duplicateBookingMessage.toLowerCase()
         ? duplicateBookingMessage
-        : cleaned;
+        : normalized;
     };
     try {
       if (patientType === "returning" && patientId && selectedSlotId) {

@@ -232,6 +232,7 @@ const BookAppointment = () => {
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [bookingError, setBookingError] = useState<string | null>(null);
+  const [bookingPopupMessage, setBookingPopupMessage] = useState<string | null>(null);
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
 
   // Sync specialityCode with selectedDept (uses departmentId from department object)
@@ -666,7 +667,7 @@ const BookAppointment = () => {
         const rawMessage = res?.message || res?.status || res?.meta?.status;
         const messageToShow = formatBookingErrorMessage(rawMessage);
         setBookingError(messageToShow);
-        window.alert(messageToShow);
+        setBookingPopupMessage(messageToShow);
         return;
       }
 
@@ -681,7 +682,7 @@ const BookAppointment = () => {
         err?.message;
       const finalMessage = formatBookingErrorMessage(apiErrorMessage);
       setBookingError(finalMessage);
-      window.alert(finalMessage);
+      setBookingPopupMessage(finalMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -1653,6 +1654,31 @@ Clinic Code:`;
                 </div>
               )}
             </div>
+          </motion.div>
+        </div>
+      )}
+      {bookingPopupMessage && (
+        <div
+          className="fixed inset-0 z-[75] flex items-center justify-center bg-foreground/40 backdrop-blur-sm p-4"
+          onClick={() => setBookingPopupMessage(null)}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.97 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="w-full max-w-md rounded-2xl border border-border/70 bg-popover shadow-2xl p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start gap-3 mb-4">
+              <AlertCircle className="w-5 h-5 text-destructive mt-0.5" />
+              <p className="font-body text-sm text-foreground">{bookingPopupMessage}</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setBookingPopupMessage(null)}
+              className="w-full bg-primary text-primary-foreground px-4 py-2.5 rounded-lg font-body text-xs tracking-widest uppercase hover:bg-primary/90 transition-colors"
+            >
+              {isAr ? "حسناً" : "OK"}
+            </button>
           </motion.div>
         </div>
       )}

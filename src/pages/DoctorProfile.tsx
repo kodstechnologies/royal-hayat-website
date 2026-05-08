@@ -125,6 +125,10 @@ const DoctorProfile = () => {
   const isRequestOnlyDoctor = doctor.hideBooking === true || doctor.availableOnline === false;
   const isOnlineAvailable = !isRequestOnlyDoctor;
   const canBookSlot = bookingReturnState?.canBookSlot ?? isOnlineAvailable;
+  const hideRequestAppointmentButton = [
+    "Dr. Mirvat Sameer Ghanem",
+    "Dr. Mustafa Alfiki",
+  ].includes(doctor.name);
 
   const inferredDept = departments.find((d) => {
     const aliases = deptDoctorAliases[d.name] || [d.name];
@@ -184,18 +188,20 @@ const DoctorProfile = () => {
                   <p className="text-muted-foreground font-body text-sm mb-5">{lang === "ar" ? doctor.titleAr : doctor.title}</p>
 
                   {/* Availability Badge */}
-                  <div
-                    className={`flex items-center gap-1.5 mb-4 justify-center ${
-                      isRequestOnlyDoctor ? "text-muted-foreground" : "text-green-600"
-                    }`}
-                  >
-                    <div className={`w-2 h-2 rounded-full ${isRequestOnlyDoctor ? "bg-muted-foreground" : "bg-green-500"}`} />
-                    <span className="font-body text-xs">
-                      {isRequestOnlyDoctor
-                        ? (lang === "ar" ? "طلب موعد" : "Request Appointment")
-                        : (lang === "ar" ? "متاح للحجز الإلكتروني" : "Book Online")}
-                    </span>
-                  </div>
+                  {!hideRequestAppointmentButton && (
+                    <div
+                      className={`flex items-center gap-1.5 mb-4 justify-center ${
+                        isRequestOnlyDoctor ? "text-muted-foreground" : "text-green-600"
+                      }`}
+                    >
+                      <div className={`w-2 h-2 rounded-full ${isRequestOnlyDoctor ? "bg-muted-foreground" : "bg-green-500"}`} />
+                      <span className="font-body text-xs">
+                        {isRequestOnlyDoctor
+                          ? (lang === "ar" ? "طلب موعد" : "Request Appointment")
+                          : (lang === "ar" ? "متاح للحجز الإلكتروني" : "Book Online")}
+                      </span>
+                    </div>
+                  )}
 
                   {fromBooking ? (
                     canBookSlot ? (
@@ -207,7 +213,7 @@ const DoctorProfile = () => {
                       >
                         {lang === "ar" ? "احجز الموعد" : "Continue with the appointment"}
                       </motion.button>
-                    ) : (
+                    ) : hideRequestAppointmentButton ? null : (
                       <motion.button
                         whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.97 }}
@@ -226,7 +232,7 @@ const DoctorProfile = () => {
                     >
                       {t("bookAppointment")}
                     </motion.button>
-                  ) : (
+                  ) : hideRequestAppointmentButton ? null : (
                     <motion.button
                       whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.97 }}

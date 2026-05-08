@@ -351,7 +351,7 @@ const Doctors = () => {
                     {/* Category divider header */}
                     <div className="flex items-center gap-4 mb-10">
                       <div className="h-px flex-1 bg-border/50" />
-                      <h2 className="text-xs font-body font-bold tracking-[0.25em] uppercase text-accent whitespace-nowrap">
+                      <h2 className="text-base md:text-lg font-body font-bold tracking-[0.2em] md:tracking-[0.25em] uppercase text-accent whitespace-nowrap px-1">
                         {lang === "ar" ? cat.labelAr : cat.label}
                       </h2>
                       <div className="h-px flex-1 bg-border/50" />

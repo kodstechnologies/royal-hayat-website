@@ -34,7 +34,7 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-mustafa-alfiki',
     image: '/images/doctors/dr-mustafa-alfiki.png',
-    name: 'Dr. Mustafa Alfiki', nameAr: 'د. مصطفى الفقى',
+    name: 'Mustafa Alfiki', nameAr: 'مصطفى الفقى',
     specialty: 'Clinical Pharmacy', specialtyAr: 'الصيدلة الأكلينيكية',
     department: 'Clinical Pharmacy', departmentAr: 'الصيدلة الأكلينيكية',
     title: 'Head of Clinical Pharmacy',

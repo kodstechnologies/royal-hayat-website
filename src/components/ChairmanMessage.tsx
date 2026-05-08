@@ -13,10 +13,10 @@ const ChairmanMessage = () => {
               <div className="relative mx-auto w-full max-w-[320px] md:max-w-[420px] lg:max-w-none lg:w-full">
                 <div className="relative w-full pt-[115%] md:pt-[118%] lg:pt-[128%] xl:pt-[124%] rounded-2xl overflow-hidden bg-primary/5 shadow-lg lg:shadow-xl">
                   <picture className="absolute inset-0 block size-full">
-                    <source media="(max-width: 767px)" srcSet="/images/Chairman-mobile.jpeg" />
-                    <source media="(min-width: 768px)" srcSet="/images/Chairman-web.jpeg" />
+                    <source media="(max-width: 767px)" srcSet="https://royal-hayat.s3.eu-central-1.amazonaws.com/chairman/Chairman-mobile.jpeg" />
+                    <source media="(min-width: 768px)" srcSet="https://royal-hayat.s3.eu-central-1.amazonaws.com/chairman/Chairman-web.jpeg" />
                     <img
-                      src="/images/Chairman-web.jpeg"
+                      src="https://royal-hayat.s3.eu-central-1.amazonaws.com/chairman/Chairman-web.jpeg"
                       alt={lang === "ar" ? "رئيس مجلس رويال حياة التنفيذي" : "Chairman, Royale Hayat Executive Board"}
                       className="absolute inset-0 size-full object-cover object-top"
                       loading="eager"

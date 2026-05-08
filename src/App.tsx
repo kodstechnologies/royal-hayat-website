@@ -55,15 +55,15 @@ const inRoomEventGalleryImages = [
   "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776925643/DSC06052_ibvveb.jpg",
 ];
 const gardeniaHallImages = [
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776927275/DSC08789_jchzn4.jpg",
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776927267/DSC08760_co7jbw.jpg",
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776927266/DSC08758_rtqu6e.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/halls-gardenia/DSC08789_jchzn4.jpg.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/halls-gardenia/DSC08760_co7jbw.jpg.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/halls-gardenia/DSC08758_rtqu6e.jpg.jpeg",
 ];
 const alJouriHallImages = [
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776926516/DSC00056_hjzwvy.jpg",
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776926527/DSC00058_d8vsgp.jpg",
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776926678/DSC08997_okdxrp.jpg",
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776926911/DSC08998_tgjegx.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/al-jouri-halls/DSC00056_hjzwvy.jpg.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/al-jouri-halls/DSC00058_d8vsgp.jpg.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/al-jouri-halls/DSC08997_okdxrp.jpg.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/al-jouri-halls/DSC08998_tgjegx.jpg.jpeg",
 ];
 const orchidSuiteImages = [
   "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776942128/DSC08664_nlaap5.jpg",
@@ -102,17 +102,17 @@ const cafeImages = [
 ];
 const suiteCarouselImagesByIndex: Record<number, string[]> = {
   1: [
-    "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776948608/DSC08493_jlrmzf.jpg",
-    "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776948610/DSC08502_dcahkd.jpg",
-    "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776948614/DSC08561_d3kuke.jpg",
-    "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776948615/DSC08506_hmumk0.jpg",
-    "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776948619/DSC08588_zgvst4.jpg",
-    "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776948620/DSC08570_jc4ply.jpg",
-    "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776948616/DSC08554_pxevou.jpg",
-    "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776948622/DSC08513_qk9cwx.jpg",
-    "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776948623/DSC08517_kz7wnv.jpg",
-    "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776948623/DSC08534_qelfjq.jpg",
-    "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776948631/DSC08608_yt9anl.jpg",
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/royal+-orchid+suites/DSC08493.jpg+(1).jpeg",
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/royal+-orchid+suites/DSC08502.jpg.jpeg",
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/royal+-orchid+suites/DSC08561.jpg.jpeg",
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/royal+-orchid+suites/DSC08506.jpg.jpeg",
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/royal+-orchid+suites/DSC08588.jpg.jpeg",
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/royal+-orchid+suites/DSC08570.jpg.jpeg",
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/royal+-orchid+suites/DSC08554.jpg.jpeg",
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/royal+-orchid+suites/DSC08513.jpg.jpeg",
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/royal+-orchid+suites/DSC08517.jpg.jpeg",
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/royal+-orchid+suites/DSC08534.jpg.jpeg",
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/royal+-orchid+suites/DSC08608.jpg.jpeg",
   ],
   2: [
     "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776948216/DSC08721_bdez9o.jpg",

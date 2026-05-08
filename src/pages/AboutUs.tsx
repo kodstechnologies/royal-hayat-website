@@ -127,16 +127,17 @@ const LeaderCard = ({ leader, lang }: { leader: typeof leaders[0] & { image?: st
   const name = lang === "ar" ? leader.nameAr : leader.nameEn;
   const role = lang === "ar" ? leader.roleAr : leader.roleEn;
   const credentials = lang === "ar" ? leader.credentialsAr : leader.credentialsEn;
-  const bio = lang === "ar" ? leader.bioAr : leader.bioEn;
+  const bio = lang === "ar" ? leader.bioAr : leader.bioEn;.3 
   const roles = role.split("\n");
   const mobileImageOverride: Record<string, string> = {
-    "Dr. Abubakr Elmardi": "/images/doctors/abubkar.jpeg",
+    "Dr. Abubakr Elmardi": "https://royal-hayat.s3.eu-central-1.amazonaws.com/leadership/abubkar.jpeg",
+    "Dr. Sulaiman Al Mazeedi": "https://royal-hayat.s3.eu-central-1.amazonaws.com/leadership/sulaiman-mobile123.png",
   };
   const desktopImageOverride: Record<string, string> = {
-    "Dr. Sulaiman Al Mazeedi": "/images/doctors/sulaiman-web.png",
-    "Prof. Dr. Omar El Khateeb": "/images/doctors/omar-web.png",
-    "Dr. Hamid Ghaderi": "/images/doctors/hamid-web.png",
-    "Shibu Thomas Mathew": "/images/doctors/shibu-web2.png",
+    "Dr. Sulaiman Al Mazeedi": "https://royal-hayat.s3.eu-central-1.amazonaws.com/leadership/sulaiman-web.png",
+    "Prof. Dr. Omar El Khateeb": "https://royal-hayat.s3.eu-central-1.amazonaws.com/leadership/omar-web.png",
+    "Dr. Hamid Ghaderi": "https://royal-hayat.s3.eu-central-1.amazonaws.com/leadership/hamid-web.png",
+    "Shibu Thomas Mathew": "https://royal-hayat.s3.eu-central-1.amazonaws.com/leadership/shibu-web2+(1).png",
   };
   const mobileOverrideSrc = mobileImageOverride[leader.nameEn];
   const desktopOverrideSrc = desktopImageOverride[leader.nameEn];

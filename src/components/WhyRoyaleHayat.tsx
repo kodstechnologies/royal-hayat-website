@@ -20,7 +20,7 @@ const WhyRoyaleHayat = () => {
         <div className="flex flex-col lg:flex-row gap-10 lg:gap-16 items-center">
           <ScrollAnimationWrapper direction="left" className="lg:w-1/2 w-full">
             <div className="relative rounded-2xl overflow-hidden shadow-xl">
-              <img src="https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776942143/DSC08672_ubs2ca.jpg" alt="Luxury hospital suite at Royale Hayat" className="w-full h-auto" loading="lazy" width={1280} height={960} />
+              <img src="https://royal-hayat.s3.eu-central-1.amazonaws.com/home-luxury/DSC08672_ubs2ca.jpg.jpeg" alt="Luxury hospital suite at Royale Hayat" className="w-full h-auto" loading="lazy" width={1280} height={960} />
               {/* <img src="https://res.cloudinary.com/dwhc8kzpv/image/upload/v1777546445/DSC08672_zc7pu9.jpg" alt="Luxury hospital suite at Royale Hayat" className="w-full h-auto" loading="lazy" width={1280} height={960} /> */}
 
               <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.5, duration: 0.6 }}

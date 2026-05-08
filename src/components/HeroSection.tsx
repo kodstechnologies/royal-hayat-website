@@ -84,7 +84,8 @@ const HeroSection = () => {
         <video
           ref={videoRef}
           // src="https://royal-hayat.s3.eu-central-1.amazonaws.com/static/RHH+VIDEO+(1).mp4"
-          src="https://res.cloudinary.com/dwhc8kzpv/video/upload/v1777986296/RHH_SH_16_Website_1_h7dabt.mp4"
+          // src="https://res.cloudinary.com/dwhc8kzpv/video/upload/v1777986296/RHH_SH_16_Website_1_h7dabt.mp4"
+                   src="https://royal-hayat.s3.eu-central-1.amazonaws.com/static/RHH+SH+16+Website+(1).mp4"
           autoPlay
           loop
           muted          /* must start muted for autoplay to work in all browsers */

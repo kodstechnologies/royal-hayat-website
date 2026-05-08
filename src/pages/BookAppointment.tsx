@@ -654,7 +654,7 @@ const BookAppointment = () => {
       return normalized.toLowerCase() === duplicateBookingMessage.toLowerCase()
         ? duplicateBookingMessage
         : normalized;
-    };
+    };  
     try {
       if (patientType === "returning" && patientId && selectedSlotId) {
         const res = await bookAppointment({
@@ -787,6 +787,22 @@ const BookAppointment = () => {
           : "Could not verify right now. Complete Hawyti authentication and try again."
       );
     } catch (error: unknown) {
+      const statusCode = (error as any)?.response?.status;
+      const apiMessage = (error as any)?.response?.data?.message;
+      const isValidation400 =
+        statusCode === 400 &&
+        typeof apiMessage === "string" &&
+        apiMessage.toLowerCase().includes("failed to start identity verification");
+
+      if (isValidation400) {
+        setNationalIdError(
+          isAr
+            ? "بيانات غير صحيحة، يرجى المحاولة مرة أخرى."
+            : "Incorrect information, please try again."
+        );
+        return;
+      }
+
       const message = error instanceof Error ? error.message : "";
       setNationalIdError(
         message || (isAr ? "فشل التحقق من الرقم المدني" : "Failed to verify Kuwait Civil ID")

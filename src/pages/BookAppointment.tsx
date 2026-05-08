@@ -646,7 +646,7 @@ const BookAppointment = () => {
   const handleConfirm = async () => {
     setIsSubmitting(true);
     setBookingError(null);
-    const duplicateBookingMessage = "Patient already has an active booking with this care provider on the same day";
+    const duplicateBookingMessage = "Patient already has an active booking with this doctor on the same day";
     const formatBookingErrorMessage = (raw: unknown) => {
       const fallback = isAr ? "فشل تأكيد الموعد" : "Failed to confirm appointment";
       const cleaned = String(raw || fallback).replace(/^Error:\s*/i, "").trim();
@@ -1677,7 +1677,10 @@ Clinic Code:`;
                 type="button"
                 onClick={() => {
                   setBookingPopupMessage(null);
-                  navigate("/book-appointment");
+                  navigate("/book-appointment", {
+                    state: { resetBookingFlow: true },
+                    replace: true,
+                  });
                 }}
                 className="min-w-28 bg-primary text-primary-foreground px-6 py-2.5 rounded-lg font-body text-xs tracking-widest uppercase hover:bg-primary/90 transition-colors"
               >

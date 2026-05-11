@@ -1548,11 +1548,11 @@ Clinic Code:`;
                     <div className="flex flex-wrap gap-x-6 gap-y-2 mb-6 font-body text-xs uppercase tracking-wider">
                       <div className="flex gap-2 items-center">
                         <span className="text-muted-foreground">{isAr ? "القسم:" : "Speciality:"}</span>
-                        <span className="text-foreground font-medium">{isAr ? selectedDeptObj?.nameAr : selectedDeptObj?.name}</span>
+                        <span className="text-muted-foreground">{isAr ? selectedDeptObj?.nameAr : selectedDeptObj?.name}</span>
                       </div>
                       <div className="flex gap-2 items-center">
                         <span className="text-muted-foreground">{isAr ? "الطبيب:" : "Provider:"}</span>
-                        <span className="text-foreground font-medium">{isAr ? selectedDoctorObj?.nameAr : selectedDoctorObj?.name}</span>
+                        <span className="text-muted-foreground">{isAr ? selectedDoctorObj?.nameAr : selectedDoctorObj?.name}</span>
                       </div>
                     </div>
                   )}

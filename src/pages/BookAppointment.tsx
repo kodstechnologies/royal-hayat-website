@@ -643,65 +643,6 @@ const BookAppointment = () => {
     }
   };
 
-  const handleSlotClick = async (slot: Slot) => {
-    setSelectedSlot(slot.slot_from_time);
-    setSelectedSlotId(slot.slot_booking_id);
-
-    if (patientType === "returning" && patientId && slot.slot_booking_id) {
-      setIsSubmitting(true);
-      setBookingError(null);
-      const duplicateBookingMessage = "Patient already has an active booking with this doctor on the same day";
-      const formatBookingErrorMessage = (raw: unknown) => {
-        const fallback = isAr ? "فشل تأكيد الموعد" : "Failed to confirm appointment";
-        const cleaned = String(raw || fallback).replace(/^Error:\s*/i, "").trim();
-        const normalized = cleaned.replace(/care provider/gi, "doctor");
-        return normalized.toLowerCase() === duplicateBookingMessage.toLowerCase()
-          ? duplicateBookingMessage
-          : normalized;
-      };
-
-      try {
-        const res = await bookAppointment({
-          patientId: patientId,
-          slotBookingId: slot.slot_booking_id
-        });
-
-        if (res.success) {
-          setBooked(true);
-          return;
-        }
-
-        const rawMessage = res?.message || res?.status || res?.meta?.status;
-        const messageToShow = formatBookingErrorMessage(rawMessage);
-
-        if (messageToShow.toLowerCase() === duplicateBookingMessage.toLowerCase()) {
-          setBookingError(messageToShow);
-          setBookingPopupMessage(messageToShow);
-        } else {
-          setStep(4);
-        }
-      } catch (err: any) {
-        const apiErrorMessage =
-          err?.response?.data?.message ||
-          err?.response?.data?.status ||
-          err?.response?.data?.meta?.status ||
-          err?.message;
-        const finalMessage = formatBookingErrorMessage(apiErrorMessage);
-
-        if (finalMessage.toLowerCase() === duplicateBookingMessage.toLowerCase()) {
-          setBookingError(finalMessage);
-          setBookingPopupMessage(finalMessage);
-        } else {
-          setStep(4);
-        }
-      } finally {
-        setIsSubmitting(false);
-      }
-    } else {
-      setStep(4);
-    }
-  };
-
   const handleConfirm = async () => {
     setIsSubmitting(true);
     setBookingError(null);
@@ -1633,19 +1574,18 @@ Clinic Code:`;
                             {slots.map((slot) => (
                               <button
                                 key={slot.slot_booking_id || slot.slot_from_time}
-                                onClick={() => handleSlotClick(slot)}
-                                disabled={isSubmitting}
+                                onClick={() => {
+                                  setSelectedSlot(slot.slot_from_time);
+                                  setSelectedSlotId(slot.slot_booking_id);
+                                  setStep(4);
+                                }}
                                 className={`p-4 rounded-xl border text-sm font-body transition-all text-center flex items-center justify-center min-h-[56px] ${
                                   selectedSlot === slot.slot_from_time
                                     ? "bg-primary text-primary-foreground border-primary shadow-md"
                                     : "bg-background border-border hover:border-accent/40 hover:bg-accent/5 text-foreground"
-                                } ${isSubmitting ? "opacity-70 cursor-not-allowed" : ""}`}
+                                }`}
                               >
-                                {isSubmitting && selectedSlot === slot.slot_from_time ? (
-                                  <Loader2 className="w-5 h-5 animate-spin" />
-                                ) : (
-                                  formatSlotRange(slot)
-                                )}
+                                {formatSlotRange(slot)}
                               </button>
                             ))}
                           </div>

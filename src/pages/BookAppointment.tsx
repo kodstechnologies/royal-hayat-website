@@ -27,7 +27,7 @@ import {
   getPatient,
   type Slot
 } from "@/api/royalhayat";
-import { getIdentityData, getIdentityStatus, startIdentityVerification } from "@/api/identity";
+  import { getIdentityData, getIdentityStatus, startIdentityVerification } from "@/api/identity";
 import { doctorsWithClinicCodes as staticDoctors } from "@/data/doctorsWithClinicCodes";
 import { departments as staticDepts, deptDoctorAliases, MAIN_CATEGORIES } from "@/data/departments";
 
@@ -428,9 +428,9 @@ const BookAppointment = () => {
           fetchAllActiveDoctors(),
         ]);
         */
-
+        
         if (cancelled) return;
-
+        
         // 1. Load departments directly from staticDepts
         const combinedDepartments = staticDepts.map(dept => ({
           id: dept.id.toString(),
@@ -643,67 +643,6 @@ const BookAppointment = () => {
     }
   };
 
-  const handleSlotClick = async (slot: Slot) => {
-    setSelectedSlot(slot.slot_from_time);
-    setSelectedSlotId(slot.slot_booking_id);
-
-    if (patientType === "returning" && patientId && slot.slot_booking_id) {
-      setIsSubmitting(true);
-      setBookingError(null);
-      const duplicateBookingMessage = "Patient already has an active booking with this doctor on the same day";
-      const formatBookingErrorMessage = (raw: unknown) => {
-        const fallback = isAr ? "فشل تأكيد الموعد" : "Failed to confirm appointment";
-        const cleaned = String(raw || fallback).replace(/^Error:\s*/i, "").trim();
-        const normalized = cleaned.replace(/care provider/gi, "doctor");
-        return normalized.toLowerCase() === duplicateBookingMessage.toLowerCase()
-          ? duplicateBookingMessage
-          : normalized;
-      };
-
-      try {
-        const res = await bookAppointment({
-          patientId: patientId,
-          slotBookingId: slot.slot_booking_id
-        });
-
-        if (res.success) {
-          setBooked(true);
-          return;
-        }
-
-        const rawMessage = res?.message || res?.status || res?.meta?.status;
-        const messageToShow = formatBookingErrorMessage(rawMessage);
-
-        if (messageToShow.toLowerCase() === duplicateBookingMessage.toLowerCase()) {
-          setBookingError(messageToShow);
-          setBookingPopupMessage(messageToShow);
-        } else {
-          // If not the specific message, then follow the current flow (Step 4)
-          setStep(4);
-        }
-      } catch (err: any) {
-        const apiErrorMessage =
-          err?.response?.data?.message ||
-          err?.response?.data?.status ||
-          err?.response?.data?.meta?.status ||
-          err?.message;
-        const finalMessage = formatBookingErrorMessage(apiErrorMessage);
-
-        if (finalMessage.toLowerCase() === duplicateBookingMessage.toLowerCase()) {
-          setBookingError(finalMessage);
-          setBookingPopupMessage(finalMessage);
-        } else {
-          // If not that message present then follow the current flow
-          setStep(4);
-        }
-      } finally {
-        setIsSubmitting(false);
-      }
-    } else {
-      setStep(4);
-    }
-  };
-
   const handleConfirm = async () => {
     setIsSubmitting(true);
     setBookingError(null);
@@ -715,7 +654,7 @@ const BookAppointment = () => {
       return normalized.toLowerCase() === duplicateBookingMessage.toLowerCase()
         ? duplicateBookingMessage
         : normalized;
-    };
+    };  
     try {
       if (patientType === "returning" && patientId && selectedSlotId) {
         const res = await bookAppointment({
@@ -915,15 +854,15 @@ const BookAppointment = () => {
         const rawName = (rawData?.name || {}) as Record<string, any>;
         const nameFromRaw = rawData?.name
           ? (isAr
-            ? rawName.arabic || rawName.ar || rawName.english || rawName.en || ""
-            : rawName.english || rawName.en || rawName.arabic || rawName.ar || "")
+              ? rawName.arabic || rawName.ar || rawName.english || rawName.en || ""
+              : rawName.english || rawName.en || rawName.arabic || rawName.ar || "")
           : pickedName;
         const nationalityObj = (rawData?.nationality || {}) as Record<string, any>;
         const nationalityNameObj = (nationalityObj?.name || {}) as Record<string, any>;
         const nationalityName = nationalityObj?.name
           ? (isAr
-            ? nationalityNameObj.arabic || nationalityNameObj.english || ""
-            : nationalityNameObj.english || nationalityNameObj.arabic || "")
+              ? nationalityNameObj.arabic || nationalityNameObj.english || ""
+              : nationalityNameObj.english || nationalityNameObj.arabic || "")
           : "";
         const registration = (rawData?.registration || {}) as Record<string, any>;
 
@@ -1625,23 +1564,9 @@ Clinic Code:`;
                       {Object.entries(slotsByPeriod).map(([period, slots]) => slots.length > 0 && (
                         <div key={period}>
                           <h3 className="font-body text-sm font-medium text-foreground mb-3 capitalize">{period}</h3>
-                          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             {slots.map((slot) => (
-                              <button
-                                key={slot.slot_booking_id || slot.slot_from_time}
-                                onClick={() => handleSlotClick(slot)}
-                                disabled={isSubmitting}
-                                className={`p-4 rounded-xl border text-sm font-body transition-all text-center flex items-center justify-center min-h-[56px] ${selectedSlot === slot.slot_from_time
-                                    ? "bg-primary text-primary-foreground border-primary shadow-md"
-                                    : "bg-background border-border hover:border-accent/40 hover:bg-accent/5 text-foreground"
-                                  } ${isSubmitting ? "opacity-70 cursor-not-allowed" : ""}`}
-                              >
-                                {isSubmitting && selectedSlot === slot.slot_from_time ? (
-                                  <Loader2 className="w-5 h-5 animate-spin" />
-                                ) : (
-                                  formatSlotRange(slot)
-                                )}
-                              </button>
+                              <button key={slot.slot_booking_id || slot.slot_from_time} onClick={() => { setSelectedSlot(slot.slot_from_time); setSelectedSlotId(slot.slot_booking_id); setStep(4); }} className={`p-4 rounded-xl border text-sm font-body transition-all text-center ${selectedSlot === slot.slot_from_time ? "bg-primary text-primary-foreground border-primary shadow-md" : "bg-background border-border hover:border-accent/40 hover:bg-accent/5 text-foreground"}`}>{formatSlotRange(slot)}</button>
                             ))}
                           </div>
                         </div>

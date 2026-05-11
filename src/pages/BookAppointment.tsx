@@ -1545,13 +1545,13 @@ Clinic Code:`;
                     <div><h2 className="text-xl font-serif text-foreground">{isAr ? "اختر الموعد" : "Select Date & Time"}</h2><p className="text-muted-foreground font-body text-xs">{isAr ? "اختر التاريخ والوقت المناسب لك" : "Pick a date and available time slot"}</p></div>
                   </div>
                   {specialityCode && providerCode && (
-                    <div className="flex flex-wrap gap-x-6 gap-y-2 mb-6 font-body text-sm">
+                    <div className="flex flex-wrap gap-x-6 gap-y-2 mb-6 font-body text-xs uppercase tracking-wider">
                       <div className="flex gap-2 items-center">
-                        <span className="text-muted-foreground text-xs uppercase tracking-wider">{isAr ? "القسم:" : "Speciality:"}</span>
+                        <span className="text-muted-foreground">{isAr ? "القسم:" : "Speciality:"}</span>
                         <span className="text-foreground font-medium">{isAr ? selectedDeptObj?.nameAr : selectedDeptObj?.name}</span>
                       </div>
                       <div className="flex gap-2 items-center">
-                        <span className="text-muted-foreground text-xs uppercase tracking-wider">{isAr ? "الطبيب:" : "Provider:"}</span>
+                        <span className="text-muted-foreground">{isAr ? "الطبيب:" : "Provider:"}</span>
                         <span className="text-foreground font-medium">{isAr ? selectedDoctorObj?.nameAr : selectedDoctorObj?.name}</span>
                       </div>
                     </div>
@@ -1572,7 +1572,7 @@ Clinic Code:`;
                           <h3 className="font-body text-sm font-medium text-foreground mb-3 capitalize">{period}</h3>
                           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                             {slots.map((slot) => (
-                              <button key={slot.slot_booking_id || slot.slot_from_time} onClick={() => { setSelectedSlot(slot.slot_from_time); setSelectedSlotId(slot.slot_booking_id); setStep(4); }} className={`p-4 rounded-xl border text-base font-medium font-body transition-all text-center ${selectedSlot === slot.slot_from_time ? "bg-primary text-primary-foreground border-primary shadow-md" : "bg-background border-border hover:border-accent/40 hover:bg-accent/5 text-foreground"}`}>{formatSlotRange(slot)}</button>
+                              <button key={slot.slot_booking_id || slot.slot_from_time} onClick={() => { setSelectedSlot(slot.slot_from_time); setSelectedSlotId(slot.slot_booking_id); setStep(4); }} className={`p-3 sm:p-4 rounded-xl border text-xs sm:text-sm font-body transition-all text-center ${selectedSlot === slot.slot_from_time ? "bg-primary text-primary-foreground border-primary shadow-md" : "bg-background border-border hover:border-accent/40 hover:bg-accent/5 text-foreground"}`}>{formatSlotRange(slot)}</button>
                             ))}
                           </div>
                         </div>

@@ -190,9 +190,8 @@ const DoctorProfile = () => {
                   {/* Availability Badge */}
                   {!hideRequestAppointmentButton && (
                     <div
-                      className={`flex items-center gap-1.5 mb-4 justify-center ${
-                        isRequestOnlyDoctor ? "text-muted-foreground" : "text-green-600"
-                      }`}
+                      className={`flex items-center gap-1.5 mb-4 justify-center ${isRequestOnlyDoctor ? "text-muted-foreground" : "text-green-600"
+                        }`}
                     >
                       <div className={`w-2 h-2 rounded-full ${isRequestOnlyDoctor ? "bg-muted-foreground" : "bg-green-500"}`} />
                       <span className="font-body text-xs">
@@ -265,13 +264,24 @@ const DoctorProfile = () => {
               {doctor.qualifications && doctor.qualifications.length > 0 && (
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
                   className="bg-popover rounded-2xl border border-border/50 p-5 md:p-6 shadow-sm">
-                  <h2 className="text-xl md:text-2xl font-serif text-primary  font-bold mb-5">
+                  <h2 className="text-xl md:text-2xl font-serif text-primary font-bold mb-5">
                     {lang === "ar" ? "المؤهلات:" : "QUALIFICATIONS:"}
                   </h2>
-                  <ul className="space-y-3 list-disc pl-6">
-                    {(lang === "ar" ? doctor.qualificationsAr : doctor.qualifications).map((q, i) => (
-                      <li key={i} className="font-body text-base text-muted-foreground leading-relaxed">{q}</li>
-                    ))}
+                  <ul className="space-y-3 list-outside ml-6">
+                    {(lang === "ar" ? doctor.qualificationsAr : doctor.qualifications).map((q, i) => {
+                      const trimmed = q.trim();
+                      const isManualBullet = trimmed.startsWith("•") || trimmed.startsWith("-");
+                      const isHeader = !isManualBullet && (trimmed.endsWith(":") || trimmed.endsWith("："));
+
+                      return (
+                        <li key={i} className={`font-body text-base leading-relaxed ${isHeader
+                          ? "list-none -ml-6 font-serif text-lg font-bold text-primary mt-6 mb-2"
+                          : "text-muted-foreground list-disc"
+                          }`}>
+                          {isManualBullet ? trimmed.substring(1).trim() : q}
+                        </li>
+                      );
+                    })}
                   </ul>
                 </motion.div>
               )}
@@ -279,13 +289,25 @@ const DoctorProfile = () => {
               {/* Experienced In */}
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
                 className="bg-popover rounded-2xl border border-border/50 p-5 md:p-6 shadow-sm">
-                <h2 className="text-xl md:text-2xl font-serif text-primary  font-bold mb-5">
+                <h2 className="text-xl md:text-2xl font-serif text-primary font-bold mb-5">
                   {lang === "ar" ? "الخبرات:" : "EXPERIENCED IN:"}
                 </h2>
-                <ul className="space-y-3 list-disc pl-6">
-                  {(lang === "ar" ? doctor.expertiseAr : doctor.expertise).map((exp, i) => (
-                    <li key={i} className="font-body text-base text-muted-foreground leading-relaxed">{exp}</li>
-                  ))}
+                <ul className="space-y-3 list-outside ml-6">
+                  {(lang === "ar" ? doctor.expertiseAr : doctor.expertise).map((exp, i) => {
+                    const trimmed = exp.trim();
+                    const isManualBullet = trimmed.startsWith("•") || trimmed.startsWith("-");
+                    const hasAnyManualBullets = (lang === "ar" ? doctor.expertiseAr : doctor.expertise).some(item => item.trim().startsWith("•") || item.trim().startsWith("-"));
+                    const isHeader = !isManualBullet && (trimmed.endsWith(":") || trimmed.endsWith("：") || (hasAnyManualBullets && !isManualBullet));
+
+                    return (
+                      <li key={i} className={`font-body text-base leading-relaxed ${isHeader
+                        ? "list-none -ml-6 font-serif text-lg font-bold text-primary mt-6 mb-2 uppercase tracking-wide"
+                        : "text-muted-foreground list-disc"
+                        }`}>
+                        {isManualBullet ? trimmed.substring(1).trim() : exp}
+                      </li>
+                    );
+                  })}
                 </ul>
               </motion.div>
             </div>

@@ -342,7 +342,7 @@ const BookAppointment = () => {
       end = { h: m >= 60 ? start.h + 1 : start.h, m: m >= 60 ? m - 60 : m };
     }
 
-    return `${fmt(start.h, start.m)} – ${fmt(end.h, end.m)}`;
+    return `${fmt(start.h, start.m)}-${fmt(end.h, end.m)}`;
   };
 
   const formatTimeString = (time: string | null) => {
@@ -1572,7 +1572,7 @@ Clinic Code:`;
                           <h3 className="font-body text-sm font-medium text-foreground mb-3 capitalize">{period}</h3>
                           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                             {slots.map((slot) => (
-                              <button key={slot.slot_booking_id || slot.slot_from_time} onClick={() => { setSelectedSlot(slot.slot_from_time); setSelectedSlotId(slot.slot_booking_id); setStep(4); }} className={`p-3 sm:p-4 rounded-xl border text-xs sm:text-sm font-body transition-all text-center ${selectedSlot === slot.slot_from_time ? "bg-primary text-primary-foreground border-primary shadow-md" : "bg-background border-border hover:border-accent/40 hover:bg-accent/5 text-foreground"}`}>{formatSlotRange(slot)}</button>
+                              <button key={slot.slot_booking_id || slot.slot_from_time} onClick={() => { setSelectedSlot(slot.slot_from_time); setSelectedSlotId(slot.slot_booking_id); setStep(4); }} className={`p-3 sm:p-4 rounded-xl border text-xs sm:text-sm font-body transition-all text-center whitespace-nowrap ${selectedSlot === slot.slot_from_time ? "bg-primary text-primary-foreground border-primary shadow-md" : "bg-background border-border hover:border-accent/40 hover:bg-accent/5 text-foreground"}`}>{formatSlotRange(slot)}</button>
                             ))}
                           </div>
                         </div>

@@ -975,8 +975,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'SA', color: 'bg-accent/70',
     symptoms: [],
-    providerCode:"PT054",
-    clinicCode:"GI 1"
+    providerCode: "PT054",
+    clinicCode: "GI 1"
   },
   {
     id: 'dr-noha-alsaleh',
@@ -1029,8 +1029,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'NA', color: 'bg-primary',
     symptoms: [],
-    providerCode:"E2237",
-    clinicCode:"R002GSC"
+    providerCode: "E2237",
+    clinicCode: "R002GSC"
   },
   {
     id: 'dr-anny-qaisser',
@@ -1809,8 +1809,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'HG', color: 'bg-accent/80',
     symptoms: [],
-    clinicCode:"R002PAI",
-    providerCode:"E1076"
+    clinicCode: "R002PAI",
+    providerCode: "E1076"
   },
   {
     id: 'dr-yasser-haggag',
@@ -1860,8 +1860,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'YH', color: 'bg-primary/70',
     symptoms: [],
-    providerCode:"E1461",
-    clinicCode:"R002ANA"
+    providerCode: "E1461",
+    clinicCode: "R002ANA"
   },
   {
     id: 'dr-ahmad-abdulrahman-al-mulla',//////// same name issue
@@ -1897,8 +1897,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'AM', color: 'bg-accent/70',
     symptoms: [],
-    clinicCode:"R002PED",
-    providerCode:"PT036"
+    clinicCode: "R002PED",
+    providerCode: "PT036"
   },
   {
     id: 'dr-ahmad-al-mosawi',
@@ -1943,8 +1943,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'AM', color: 'bg-primary',
     symptoms: [],
-      clinicCode:"R002PED",
-    providerCode:"PT042"
+    clinicCode: "R002PED",
+    providerCode: "PT042"
   },
   {
     id: 'dr-mohammad-ebrahim',
@@ -1996,8 +1996,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'ME', color: 'bg-accent',
     symptoms: [],
-      clinicCode:"R002PED",
-    providerCode:"PT071"
+    clinicCode: "R002PED",
+    providerCode: "PT071"
   },
   {
     id: 'dr-rajendra-c-mishra',
@@ -2048,8 +2048,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'RM', color: 'bg-primary/90',
     symptoms: [],
-      clinicCode:"R002PED",
-    providerCode:"E1890"
+    clinicCode: "R002PED",
+    providerCode: "E1890"
   },
   {
     id: 'dr-wasmi-al-fadhli',
@@ -2103,8 +2103,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'WF', color: 'bg-accent/90',
     symptoms: [],
-      clinicCode:"R002PED",
-    providerCode:"PT038"
+    clinicCode: "R002PED",
+    providerCode: "PT038"
   },
   {
     id: 'dr-ehab-atteya',
@@ -2149,8 +2149,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'EA', color: 'bg-primary/80',
     symptoms: [],
-      clinicCode:"R002PED",
-    providerCode:"E0723"
+    clinicCode: "R002PED",
+    providerCode: "E0723"
   },
   {
     id: 'dr-fahed-abdulaziz-aljaser',
@@ -2161,8 +2161,8 @@ export const doctors: Doctor[] = [
     department: 'Pediatric', departmentAr: 'طب الأطفال',
     title: 'Consultant Pediatrician & Pediatric Endocrinologist',
     titleAr: 'إستشاري طب الاطفال وغدد صماء للأطفال و داء السكري',
-    providerCode:"PT069",
-    clinicCode:"R002PED",
+    providerCode: "PT069",
+    clinicCode: "R002PED",
     bio: 'Dr. Fahed Abdulaziz Aljaser is a specialist in the Pediatric department at Royale Hayat Hospital.',
     bioAr: 'د. فهد عبدالعزيز الجاسر متخصص في قسم طب الأطفال في مستشفى رويال حياة.',
     qualifications: [
@@ -2243,8 +2243,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'OA', color: 'bg-primary/70',
     symptoms: [],
-      clinicCode:"R002PED",
-    providerCode:"PT047"
+    clinicCode: "R002PED",
+    providerCode: "PT047"
   },
   {
     id: 'dr-roland-waked',
@@ -2294,8 +2294,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'RW', color: 'bg-accent/70',
     symptoms: [],
-      clinicCode:"R002PED",
-    providerCode:"E1095"
+    clinicCode: "R002PED",
+    providerCode: "E1095"
   },
   {
     id: 'dr-adel-al-ali',
@@ -2654,8 +2654,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'MA', color: 'bg-primary/70',
     symptoms: [],
-      clinicCode:"R01NEO",
-    providerCode:"PT080"
+    clinicCode: "R01NEO",
+    providerCode: "PT080"
   },
   {
     id: 'dr-mohamad-hassoun',
@@ -2710,8 +2710,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'MH', color: 'bg-accent/70',
     symptoms: [],
-      clinicCode:"R01NEO",
-    providerCode:"E2768"
+    clinicCode: "R01NEO",
+    providerCode: "E2768"
   },
   {
     id: 'dr-deepak-vasudev',
@@ -2814,8 +2814,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'EB', color: 'bg-accent',
     symptoms: [],
-      clinicCode:"R01NEO",
-    providerCode:"E3267"
+    clinicCode: "R01NEO",
+    providerCode: "E3267"
   },
   {
     id: 'dr-mirvat-sameer-ghanem',
@@ -2875,8 +2875,8 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'MG', color: 'bg-primary/90',
     symptoms: [],
-      clinicCode:"R002PED",
-    providerCode:"PT036"
+    clinicCode: "R002PED",
+    providerCode: "PT036"
   },
   {
     id: 'dr-anood-yousef-aljasser-alrajahi',
@@ -3685,57 +3685,63 @@ export const doctors: Doctor[] = [
     bio: 'Dr. Nourah Al Ibrahim is a specialist in the Obstetrics & Gynecology department at Royale Hayat Hospital.',
     bioAr: 'د. نـوره الإبراهيـم متخصص في قسم أمراض النساء والولادة في مستشفى رويال حياة.',
     qualifications: [
-      'Specialist in Obstetrics & Gynecology',
-      'Gynecologic Oncology',
-      'Bachelor of Medicine and Surgery, Kuwait University',
-      'Canadian Board of Obstetrics & Gynecology, McMaster University, Canada',
-      'Fellowship in Gynecology Oncology, University of Manitoba, Canada',
-      'Program of Clinical Effectiveness, Harvard University, USA',
+      '• Bachelor of Medicine and Surgery, Kuwait University',
+      '• Canadian Board of Obstetrics & Gynecology, McMaster University, Canada',
+      '• Fellowship in Gynecology Oncology, University of Manitoba, Canada',
+      '• Program of Clinical Effectiveness, Harvard University, USA',
     ],
     qualificationsAr: [
-      'اختصاصي أمراض النساء والولادة والأورام النسائية',
-      'بكالوريوس الطب والجراحة - جامعة الكويت',
-      'البورد الكندي في أمراض النساء والتوليد - جامعة ماكماستر، كندا',
-      'زمالة في طب الأورام النسائية - جامعة مانيتوبا، كندا',
-      'برنامج الكفاءة الإكلينيكية - جامعة هارفارد، الولايات المتحدة الأمريكية',
+      '• بكالوريوس الطب والجراحة – جامعة الكويت',
+      '• البورد الكندي في أمراض النساء والتوليد – جامعة ماكماستر، كندا',
+      '• زمالة في طب الأورام النسائية – جامعة مانيتوبا، كندا',
+      '• برنامج الكفاءة الإكلينيكية – جامعة هارفارد، الولايات المتحدة الأمريكية',
     ],
     expertise: [
-      'All advanced abdominal & pelvic gynecology surgery',
-      'Advanced laparoscopic gynecology surgery, including fibroids, ovarian cysts, endometriosis, ectopic pregnancy, hysterectomy, oophorectomy, tubal ligation, removal of fallopian tubes, and release of adhesions',
-      'Minimally invasive techniques, including advanced laparoscopy and da Vinci robotic surgery',
-      'Management of abnormal uterine and postmenopausal bleeding',
-      'Management of fibroids, ovarian cysts, and adnexal masses',
-      'Hysteroscopic surgery including removal of uterine polyp, fibroids, septum, and endometrial ablation',
-      'Colposcopy for cervical, vulvar, and vaginal assessment in HPV-related disease',
-      'Diagnostic evaluations for suspected gynecologic cancers',
-      'Gynecological cancer screening for high-risk patients',
-      'Surgical treatment of ovarian, fallopian tube, and primary peritoneal cancers',
-      'Surgical treatment of uterine and endometrial cancers',
-      'Surgical treatment of cervical, vulvar, and vaginal cancers',
-      'Sarcoma and gestational trophoblast disease management',
-      'Risk-reducing surgeries and surveillance for patients with genetic mutations',
-      'Cancer genetics screening',
-      'Genetic counseling coordination for women with a family history of gynecologic cancer',
-      'Quality of life enhancement and well-being during cancer therapy',
-      'Management of cancer and pregnancy',
-      'Management of cancer and fertility preservation',
+      'Gynecological Surgical Procedures:',
+      '• All advanced abdominal & pelvic gynecology surgery',
+      '• Advanced laparoscopic gynecology surgery, including:',
+      '• Fibroids, ovarian cysts, endometriosis, ectopic pregnancy, hysterectomy, opherectomy, tubal ligation, removal of fallopian tubes, and release of adhesions',
+      '• Minimally invasive techniques, including advanced laparoscopy and (da Vinci®) Robotic surgery',
+      '• Management of abnormal uterine and postmenopausal bleeding',
+      '• Management of fibroids and ovarian cysts & adnexal masses',
+      '• Hysteroscopic surgery – removal of uterine polyp, fibroids, and septum, and endometrial ablation',
+      'Specialized Evaluations and Screenings:',
+      '• HPV-Related Disease: Colposcopy for cervical, vulvar, and vaginal Assessment',
+      '• Diagnostic evaluations for suspected gynecologic cancers',
+      '• Gynecological cancer screening for high-risk patients',
+      'Cancer Management and Surgical Treatment of:',
+      '• Ovarian, fallopian tube, and primary peritoneal cancers',
+      '• Uterine and endometrial cancers',
+      '• Cervical, vulvar, and vaginal cancers',
+      '• Sarcoma',
+      '• Gestational trophoblast disease',
+      'Genetic Services:',
+      '• Risk-reducing surgeries and surveillance for patients with genetic mutations',
+      '• Cancer genetics screening',
+      '• Genetic counseling co-ordination for testing women with a family history of gynecologic cancer',
+      '• Quality of life enhancement and well-being during cancer therapy',
+      '• Management of cancer and pregnancy',
+      '• Management of cancer and fertility preservation',
     ],
     expertiseAr: [
-      'خبرة في إجراء أدق وأحدث الجراحات النسائية، بما في ذلك جراحات الأورام النسائية المتقدمة في البطن والحوض',
-      'جراحات المنظار والعمليات باستخدام أحدث التقنيات مثل الجراحات الروبوتية (da Vinci)',
-      'جراحات المنظار الرحمي لإزالة الأورام الليفية واللحميات ومعالجة بطانة الرحم',
-      'معالجة النزيف الرحمي غير الطبيعي وأعراض ما بعد سن اليأس',
-      'علاج الأورام الليفية والأكياس المبيضية',
-      'تشخيص ومتابعة الأورام النسائية مبكراً خاصة لدى النساء الأكثر عرضة',
-      'الفحوصات الدورية لفيروس HPV المرتبطة به وعلاج الحالات',
-      'علاج الأورام النسائية، مختلف سرطانات النساء مثل سرطان المبيض وقنوات فالوب',
-      'سرطانات الرحم وبطانة الرحم',
-      'سرطان عنق الرحم والمهبل والفرج',
-      'الساركوما وأمراض الأرومة الغاذية الحملية',
-      'برامج متابعة الناجيات من السرطان',
-      'الاستشارات الخاصة بالصحة الجنسية أثناء وبعد العلاج',
-      'دعم المريضات الحوامل المصابات بالسرطان مع الحفاظ على الخصوبة وخيارات الإنجاب المستقبلية',
-      'الرعاية التلطيفية والداعمة للمرضى وعائلاتهم',
+      'خبرة في إجراء أدق وأحدث الجراحات النسائية، بما في ذلك جراحات الأورام النسائية المتقدمة في البطن والحوض:',
+      '• جراحات المنظار والعمليات باستخدام أحدث التقنيات مثل الجراحة الروبوتية (da Vinci®)',
+      '• جراحات المنظار الرحمي لإزالة الأورام الليفية واللحميات ومعالجة بطانة الرحم',
+      'رعاية متكاملة وشاملة للمرأة في مختلف المراحل، وتشمل:',
+      '• معالجة النزيف الرحمي غير الطبيعي وأعراض ما بعد سن اليأس',
+      '• علاج الأورام الليفية والأكياس المبيضية',
+      '• تشخيص ومتابعة الأورام النسائية مبكرًا خاصة لدى النساء الأكثر عرضة',
+      '• الفحوصات الدورية لفيروس HPV المرتبطة به وعلاج الحالات',
+      'علاج الأورام النسائية، مختلف سرطانات النساء مثل:',
+      '• سرطان المبيض وقنوات فالوب',
+      '• سرطانات الرحم وبطانة الرحم',
+      '• سرطان عنق الرحم والمهبل والفرج',
+      '• الساركوما وأمراض الأرومة الغاذية الحملية',
+      'دعم شامل للمرأة خلال رحلتها العلاجية وبرامج مخصصة لتحسين جودة الحياة تشمل:',
+      '• برامج متابعة الناجيات من السرطان',
+      '• الاستشارات الخاصة بالصحة الجنسية أثناء وبعد العلاج',
+      '• دعم المريضات الحوامل المصابات بالسرطان مع الحفاظ على الخصوبة وخيارات الإنجاب المستقبلية',
+      '• الرعاية التلطيفية والداعمة للمرضى وعائلاتهم',
     ],
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'NI', color: 'bg-primary/90',

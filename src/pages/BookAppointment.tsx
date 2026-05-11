@@ -1572,21 +1572,7 @@ Clinic Code:`;
                           <h3 className="font-body text-sm font-medium text-foreground mb-3 capitalize">{period}</h3>
                           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                             {slots.map((slot) => (
-                              <button
-                                key={slot.slot_booking_id || slot.slot_from_time}
-                                onClick={() => {
-                                  setSelectedSlot(slot.slot_from_time);
-                                  setSelectedSlotId(slot.slot_booking_id);
-                                  setStep(4);
-                                }}
-                                className={`p-4 rounded-xl border text-sm font-body transition-all text-center flex items-center justify-center min-h-[56px] ${
-                                  selectedSlot === slot.slot_from_time
-                                    ? "bg-primary text-primary-foreground border-primary shadow-md"
-                                    : "bg-background border-border hover:border-accent/40 hover:bg-accent/5 text-foreground"
-                                }`}
-                              >
-                                {formatSlotRange(slot)}
-                              </button>
+                              <button key={slot.slot_booking_id || slot.slot_from_time} onClick={() => { setSelectedSlot(slot.slot_from_time); setSelectedSlotId(slot.slot_booking_id); setStep(4); }} className={`p-4 rounded-xl border text-base font-medium font-body transition-all text-center ${selectedSlot === slot.slot_from_time ? "bg-primary text-primary-foreground border-primary shadow-md" : "bg-background border-border hover:border-accent/40 hover:bg-accent/5 text-foreground"}`}>{formatSlotRange(slot)}</button>
                             ))}
                           </div>
                         </div>

@@ -27,7 +27,7 @@ import {
   getPatient,
   type Slot
 } from "@/api/royalhayat";
-  import { getIdentityData, getIdentityStatus, startIdentityVerification } from "@/api/identity";
+import { getIdentityData, getIdentityStatus, startIdentityVerification } from "@/api/identity";
 import { doctorsWithClinicCodes as staticDoctors } from "@/data/doctorsWithClinicCodes";
 import { departments as staticDepts, deptDoctorAliases, MAIN_CATEGORIES } from "@/data/departments";
 
@@ -428,9 +428,9 @@ const BookAppointment = () => {
           fetchAllActiveDoctors(),
         ]);
         */
-        
+
         if (cancelled) return;
-        
+
         // 1. Load departments directly from staticDepts
         const combinedDepartments = staticDepts.map(dept => ({
           id: dept.id.toString(),
@@ -643,6 +643,65 @@ const BookAppointment = () => {
     }
   };
 
+  const handleSlotClick = async (slot: Slot) => {
+    setSelectedSlot(slot.slot_from_time);
+    setSelectedSlotId(slot.slot_booking_id);
+
+    if (patientType === "returning" && patientId && slot.slot_booking_id) {
+      setIsSubmitting(true);
+      setBookingError(null);
+      const duplicateBookingMessage = "Patient already has an active booking with this doctor on the same day";
+      const formatBookingErrorMessage = (raw: unknown) => {
+        const fallback = isAr ? "فشل تأكيد الموعد" : "Failed to confirm appointment";
+        const cleaned = String(raw || fallback).replace(/^Error:\s*/i, "").trim();
+        const normalized = cleaned.replace(/care provider/gi, "doctor");
+        return normalized.toLowerCase() === duplicateBookingMessage.toLowerCase()
+          ? duplicateBookingMessage
+          : normalized;
+      };
+
+      try {
+        const res = await bookAppointment({
+          patientId: patientId,
+          slotBookingId: slot.slot_booking_id
+        });
+
+        if (res.success) {
+          setBooked(true);
+          return;
+        }
+
+        const rawMessage = res?.message || res?.status || res?.meta?.status;
+        const messageToShow = formatBookingErrorMessage(rawMessage);
+
+        if (messageToShow.toLowerCase() === duplicateBookingMessage.toLowerCase()) {
+          setBookingError(messageToShow);
+          setBookingPopupMessage(messageToShow);
+        } else {
+          setStep(4);
+        }
+      } catch (err: any) {
+        const apiErrorMessage =
+          err?.response?.data?.message ||
+          err?.response?.data?.status ||
+          err?.response?.data?.meta?.status ||
+          err?.message;
+        const finalMessage = formatBookingErrorMessage(apiErrorMessage);
+
+        if (finalMessage.toLowerCase() === duplicateBookingMessage.toLowerCase()) {
+          setBookingError(finalMessage);
+          setBookingPopupMessage(finalMessage);
+        } else {
+          setStep(4);
+        }
+      } finally {
+        setIsSubmitting(false);
+      }
+    } else {
+      setStep(4);
+    }
+  };
+
   const handleConfirm = async () => {
     setIsSubmitting(true);
     setBookingError(null);
@@ -654,7 +713,7 @@ const BookAppointment = () => {
       return normalized.toLowerCase() === duplicateBookingMessage.toLowerCase()
         ? duplicateBookingMessage
         : normalized;
-    };  
+    };
     try {
       if (patientType === "returning" && patientId && selectedSlotId) {
         const res = await bookAppointment({
@@ -854,15 +913,15 @@ const BookAppointment = () => {
         const rawName = (rawData?.name || {}) as Record<string, any>;
         const nameFromRaw = rawData?.name
           ? (isAr
-              ? rawName.arabic || rawName.ar || rawName.english || rawName.en || ""
-              : rawName.english || rawName.en || rawName.arabic || rawName.ar || "")
+            ? rawName.arabic || rawName.ar || rawName.english || rawName.en || ""
+            : rawName.english || rawName.en || rawName.arabic || rawName.ar || "")
           : pickedName;
         const nationalityObj = (rawData?.nationality || {}) as Record<string, any>;
         const nationalityNameObj = (nationalityObj?.name || {}) as Record<string, any>;
         const nationalityName = nationalityObj?.name
           ? (isAr
-              ? nationalityNameObj.arabic || nationalityNameObj.english || ""
-              : nationalityNameObj.english || nationalityNameObj.arabic || "")
+            ? nationalityNameObj.arabic || nationalityNameObj.english || ""
+            : nationalityNameObj.english || nationalityNameObj.arabic || "")
           : "";
         const registration = (rawData?.registration || {}) as Record<string, any>;
 
@@ -1489,9 +1548,9 @@ Clinic Code:`;
                 )}
                 {patientType === "returning" && patientName && (
                   <div className="bg-popover rounded-2xl p-5 sm:p-8 border border-border shadow-sm">
-                    <h2 className="text-xl font-serif text-foreground mb-2">{isAr ? "تأكيد بيانات المريض" : "Confirm Patient Details"}</h2>
-                    <p className="font-body text-xs text-muted-foreground mb-4">{isAr ? "أدخل اسمك الكامل كما هو مسجل في المستشفى." : "Enter your full name as registered with the hospital."}</p>
-                    <div><label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{t("fullName")} <span className="text-destructive">*</span></label><input type="text" value={patientName} onChange={(e) => { setPatientName(e.target.value); setPatientErrors((prev) => ({ ...prev, name: "" })); }} placeholder={t("enterFullName")} className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all ${patientErrors.name ? "border-destructive" : "border-border"}`} />{patientErrors.name && <p className="font-body text-xs text-destructive mt-1">{patientErrors.name}</p>}</div>
+                    {/* <h2 className="text-xl font-serif text-foreground mb-2">{isAr ? "تأكيد بيانات المريض" : "Confirm Patient Details"}</h2>
+                    <p className="font-body text-xs text-muted-foreground mb-4">{isAr ? "أدخل اسمك الكامل كما هو مسجل في المستشفى." : "Enter your full name as registered with the hospital."}</p> */}
+                    {/* <div><label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{t("fullName")} <span className="text-destructive">*</span></label><input type="text" value={patientName} onChange={(e) => { setPatientName(e.target.value); setPatientErrors((prev) => ({ ...prev, name: "" })); }} placeholder={t("enterFullName")} className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all ${patientErrors.name ? "border-destructive" : "border-border"}`} />{patientErrors.name && <p className="font-body text-xs text-destructive mt-1">{patientErrors.name}</p>}</div> */}
                     {verifiedIdentityDetails && (
                       <div className="mt-5 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 via-background to-accent/5 p-4 sm:p-5">
                         <h4 className="font-body text-[11px] tracking-[0.18em] uppercase text-accent mb-3">
@@ -1545,9 +1604,15 @@ Clinic Code:`;
                     <div><h2 className="text-xl font-serif text-foreground">{isAr ? "اختر الموعد" : "Select Date & Time"}</h2><p className="text-muted-foreground font-body text-xs">{isAr ? "اختر التاريخ والوقت المناسب لك" : "Pick a date and available time slot"}</p></div>
                   </div>
                   {specialityCode && providerCode && (
-                    <div className="flex gap-4 mb-4 text-[10px] font-mono text-muted-foreground/60 uppercase tracking-tight">
-                      <span>Speciality: {specialityCode}</span>
-                      <span>Provider: {providerCode}</span>
+                    <div className="flex flex-wrap gap-x-6 gap-y-2 mb-6 font-body text-sm">
+                      <div className="flex gap-2 items-center">
+                        <span className="text-muted-foreground text-xs uppercase tracking-wider">{isAr ? "القسم:" : "Speciality:"}</span>
+                        <span className="text-foreground font-medium">{isAr ? selectedDeptObj?.nameAr : selectedDeptObj?.name}</span>
+                      </div>
+                      <div className="flex gap-2 items-center">
+                        <span className="text-muted-foreground text-xs uppercase tracking-wider">{isAr ? "الطبيب:" : "Provider:"}</span>
+                        <span className="text-foreground font-medium">{isAr ? selectedDoctorObj?.nameAr : selectedDoctorObj?.name}</span>
+                      </div>
                     </div>
                   )}
                   <p className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-3">{isAr ? "التاريخ" : "Date"}</p>
@@ -1564,9 +1629,24 @@ Clinic Code:`;
                       {Object.entries(slotsByPeriod).map(([period, slots]) => slots.length > 0 && (
                         <div key={period}>
                           <h3 className="font-body text-sm font-medium text-foreground mb-3 capitalize">{period}</h3>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                             {slots.map((slot) => (
-                              <button key={slot.slot_booking_id || slot.slot_from_time} onClick={() => { setSelectedSlot(slot.slot_from_time); setSelectedSlotId(slot.slot_booking_id); setStep(4); }} className={`p-4 rounded-xl border text-sm font-body transition-all text-center ${selectedSlot === slot.slot_from_time ? "bg-primary text-primary-foreground border-primary shadow-md" : "bg-background border-border hover:border-accent/40 hover:bg-accent/5 text-foreground"}`}>{formatSlotRange(slot)}</button>
+                              <button
+                                key={slot.slot_booking_id || slot.slot_from_time}
+                                onClick={() => handleSlotClick(slot)}
+                                disabled={isSubmitting}
+                                className={`p-4 rounded-xl border text-sm font-body transition-all text-center flex items-center justify-center min-h-[56px] ${
+                                  selectedSlot === slot.slot_from_time
+                                    ? "bg-primary text-primary-foreground border-primary shadow-md"
+                                    : "bg-background border-border hover:border-accent/40 hover:bg-accent/5 text-foreground"
+                                } ${isSubmitting ? "opacity-70 cursor-not-allowed" : ""}`}
+                              >
+                                {isSubmitting && selectedSlot === slot.slot_from_time ? (
+                                  <Loader2 className="w-5 h-5 animate-spin" />
+                                ) : (
+                                  formatSlotRange(slot)
+                                )}
+                              </button>
                             ))}
                           </div>
                         </div>

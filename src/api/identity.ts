@@ -38,6 +38,16 @@ export type StartIdentityResponse = {
   callbackUrl?: string;
   civilId?: string;
   raw?: IdentityRawPayload;
+  // Present when the backend returns success: false
+  success?: boolean;
+  message?: string;
+  meta?: {
+    type?: string;
+    title?: string;
+    status?: number;
+    waitSeconds?: number;
+    [key: string]: unknown;
+  };
 };
 
 export type IdentityStatusResponse = {
@@ -81,7 +91,17 @@ export const startIdentityVerification = async (payload: StartIdentityPayload): 
   }
 
   const response = await api.post("/api/v1/identity/start", payload);
-  return (response.data as ApiEnvelope<StartIdentityResponse>)?.data;
+  const envelope = response.data as ApiEnvelope<StartIdentityResponse>;
+  // Surface error info so callers can inspect success/meta
+  if (envelope?.success === false) {
+    return {
+      operationId: null,
+      success: false,
+      message: envelope.message,
+      meta: (envelope as any).meta,
+    };
+  }
+  return envelope?.data;
 };
 
 export const getIdentityStatus = async (operationId: string): Promise<IdentityStatusResponse> => {

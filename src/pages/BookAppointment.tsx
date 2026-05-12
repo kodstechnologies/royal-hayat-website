@@ -753,6 +753,27 @@ const BookAppointment = () => {
 
       // USER REQUEST: Always call push notification api/flow. 
       // Even if already verified, we want to show the 'Check Approval' button for demonstration/testing.
+
+      // Handle error responses that resolve without throwing (success: false)
+      if (response?.success === false) {
+        const metaType: string = response?.meta?.type ?? "";
+        if (metaType.includes("too-many-requests")) {
+          setNationalIdError(
+            isAr
+              ? "طلبات مصادقة كثيرة جداً لهذا الرقم المدني، يرجى المحاولة لاحقاً."
+              : "Too many concurrent authentication requests for this Civil ID. Please try again later."
+          );
+          return;
+        }
+        // Generic failure (validation errors, etc.)
+        setNationalIdError(
+          isAr
+            ? "بيانات غير صحيحة، يرجى المحاولة مرة أخرى."
+            : "Incorrect information, please try again."
+        );
+        return;
+      }
+
       if (response?.operationId) {
         setVerifyOperationId(response.operationId);
         setVerifyStatusMessage(

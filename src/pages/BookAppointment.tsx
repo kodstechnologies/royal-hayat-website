@@ -815,13 +815,14 @@ const BookAppointment = () => {
     } catch (error: unknown) {
       const statusCode = (error as any)?.response?.status;
       const apiMessage = (error as any)?.response?.data?.message;
-      const apiType = (error as any)?.response?.data?.type ?? "";
+     const apiType =
+  (error as any)?.response?.data?.meta?.type ?? "";
 
       // Too-many-requests from PACI
-      const isTooMany =
-        statusCode === 400 &&
-        typeof apiType === "string" &&
-        apiType.includes("too-many-requests");
+     const isTooMany =
+  statusCode === 400 &&
+  typeof apiType === "string" &&
+  apiType.includes("too-many-requests");
 
       if (isTooMany) {
         setNationalIdError(
@@ -833,13 +834,9 @@ const BookAppointment = () => {
       }
 
       // Validation error (empty errors object or failed to start)
-      const isValidation400 =
-        statusCode === 400 &&
-        (
-          (typeof apiMessage === "string" &&
-            apiMessage.toLowerCase().includes("failed to start identity verification")) ||
-          (apiType.includes("rfc9110") || apiType.includes("validation"))
-        );
+    const isValidation400 =
+  statusCode === 400 &&
+  !apiType.includes("too-many-requests");
 
       if (isValidation400) {
         setNationalIdError(

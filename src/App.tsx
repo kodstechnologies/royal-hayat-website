@@ -137,11 +137,13 @@ const suiteCarouselImagesByIndex: Record<number, string[]> = {
     "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776947846/DSC08302_dxchtu.jpg",
   ],
   4: [
-    "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776946405/DSC08353_xiv5vw.jpg",
-    "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776946413/DSC08360_okofcu.jpg",
-    "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776946419/DSC08375_smjff2.jpg",
-    "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776946498/DSC08382_jtv4sq.jpg",
-    "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776946507/DSC08388_je9e59.jpg",
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/camelia/DSC08353.jpg",
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/camelia/DSC08360.jpg",
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/camelia/DSC08375.jpg",
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/camelia/DSC08382.jpg",
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/camelia/DSC08388.jpg",
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/camelia/DSC08396.jpg",
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/camelia/DSC08413.jpg"
   ],
   5: [
     "https://royal-hayat.s3.eu-central-1.amazonaws.com/lilly/DSC08428.jpg",

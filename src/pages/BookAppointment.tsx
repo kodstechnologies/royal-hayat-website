@@ -794,10 +794,31 @@ const BookAppointment = () => {
     } catch (error: unknown) {
       const statusCode = (error as any)?.response?.status;
       const apiMessage = (error as any)?.response?.data?.message;
+      const apiType = (error as any)?.response?.data?.type ?? "";
+
+      // Too-many-requests from PACI
+      const isTooMany =
+        statusCode === 400 &&
+        typeof apiType === "string" &&
+        apiType.includes("too-many-requests");
+
+      if (isTooMany) {
+        setNationalIdError(
+          isAr
+            ? "طلبات مصادقة كثيرة جداً لهذا الرقم المدني، يرجى المحاولة لاحقاً."
+            : "Too many concurrent authentication requests for this Civil ID. Please try again later."
+        );
+        return;
+      }
+
+      // Validation error (empty errors object or failed to start)
       const isValidation400 =
         statusCode === 400 &&
-        typeof apiMessage === "string" &&
-        apiMessage.toLowerCase().includes("failed to start identity verification");
+        (
+          (typeof apiMessage === "string" &&
+            apiMessage.toLowerCase().includes("failed to start identity verification")) ||
+          (apiType.includes("rfc9110") || apiType.includes("validation"))
+        );
 
       if (isValidation400) {
         setNationalIdError(

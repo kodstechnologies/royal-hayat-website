@@ -13,12 +13,17 @@ import { useLanguage } from "@/contexts/LanguageContext";
 
 const DepartmentDoctors = ({ doctors, lang }: { doctors: typeof allDoctors; lang: string }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const autoSlideRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const isPausedRef = useRef(false);
 
   const scroll = (dir: "left" | "right") => {
     if (scrollRef.current) {
       const isMobile = window.innerWidth < 768;
       const amount = isMobile ? (280 + 80) : (280 + 24);
       scrollRef.current.scrollBy({ left: dir === "left" ? -amount : amount, behavior: "smooth" });
+      // Pause auto-slide for 5 s after manual interaction
+      isPausedRef.current = true;
+      setTimeout(() => { isPausedRef.current = false; }, 5000);
     }
   };
 
@@ -28,6 +33,25 @@ const DepartmentDoctors = ({ doctors, lang }: { doctors: typeof allDoctors; lang
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // Auto-slide
+  useEffect(() => {
+    if (doctors.length <= 1) return;
+    autoSlideRef.current = setInterval(() => {
+      if (isPausedRef.current || !scrollRef.current) return;
+      const el = scrollRef.current;
+      const isMob = window.innerWidth < 768;
+      const cardWidth = isMob ? (280 + 80) : (280 + 24);
+      if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 4) {
+        el.scrollTo({ left: 0, behavior: "smooth" });
+      } else {
+        el.scrollBy({ left: cardWidth, behavior: "smooth" });
+      }
+    }, 3000);
+    return () => {
+      if (autoSlideRef.current) clearInterval(autoSlideRef.current);
+    };
+  }, [doctors.length]);
 
   const showArrows = doctors.length > (isMobile ? 1 : 4);
 
@@ -44,7 +68,10 @@ const DepartmentDoctors = ({ doctors, lang }: { doctors: typeof allDoctors; lang
             </h2>
           </div>
         </ScrollAnimationWrapper>
-        <div className="relative max-w-[1188px] mx-auto group/carousel">
+        <div className="relative max-w-[1188px] mx-auto group/carousel"
+          onMouseEnter={() => { isPausedRef.current = true; }}
+          onMouseLeave={() => { isPausedRef.current = false; }}
+        >
           {showArrows && (
             <>
               <button onClick={() => scroll("left")}

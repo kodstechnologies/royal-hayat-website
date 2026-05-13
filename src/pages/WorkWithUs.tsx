@@ -247,11 +247,11 @@ const WorkWithUs = ({
           <div className="grid lg:grid-cols-2 gap-0 items-stretch min-h-[480px]">
 
             {/* LEFT — image, full bleed */}
-            <div className="relative overflow-hidden h-[240px] sm:h-[300px] lg:min-h-[480px] lg:h-auto">
+            <div className="relative overflow-hidden h-[300px] sm:h-[450px] md:h-[550px] lg:min-h-[600px] lg:h-auto">
               <img
                 src="https://royal-hayat.s3.eu-central-1.amazonaws.com/infant-secyrity/Life+at+Royale+hayat+Hospital.jpg.jpeg"
                 alt={isAr ? "الحياة في رويال حياة" : "Life at Royale Hayat Hospital"}
-                className="absolute inset-0 w-full h-full object-cover object-[50%_42%] lg:object-center"
+                className="absolute inset-0 w-full h-full object-cover object-center"
               />
             </div>
 
@@ -348,7 +348,7 @@ const WorkWithUs = ({
         </section>
       )}
 
-   
+
 
       {/* Recognition & Appreciation gallery */}
       {showSection("culture") && (
@@ -496,11 +496,10 @@ const WorkWithUs = ({
                   <button
                     key={cat}
                     onClick={() => setActiveCategory(cat)}
-                    className={`whitespace-nowrap px-5 py-2 rounded-full text-xs font-body tracking-wide border transition-all ${
-                      activeCategory === cat
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "bg-popover text-foreground border-border hover:border-primary/40"
-                    }`}
+                    className={`whitespace-nowrap px-5 py-2 rounded-full text-xs font-body tracking-wide border transition-all ${activeCategory === cat
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-popover text-foreground border-border hover:border-primary/40"
+                      }`}
                   >
                     {cat.toUpperCase()}
                   </button>

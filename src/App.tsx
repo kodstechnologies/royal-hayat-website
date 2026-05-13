@@ -36,15 +36,15 @@ import ScrollToTopOnNav from "./components/ScrollToTopOnNav.tsx";
 
 const queryClient = new QueryClient();
 const inRoomEventsTopCarouselImages = [
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1778038620/DSC02570_udxrpg.jpg",
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1778039575/DSC02560_copy_oj1xqd.jpg",
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1778039577/DSC00364_copy_g2hgt2.jpg",
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1778039578/DSC01274_copy_el7r0l.jpg",
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1778039579/DSC02516_copy_ydrkma.jpg",
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1778039581/DSC02068_1_copy_fbu2ap.jpg",
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1778039581/DSC00382_copy_sbialz.jpg",
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1778039582/DSC00345_copy_y3w4lm.jpg",
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1778039609/DSC00381_copy_lnaijo.jpg"
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/in-romm-experiences/DSC02570.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/in-romm-experiences/DSC02560+copy.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/in-romm-experiences/DSC00364+copy.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/in-romm-experiences/DSC01274+copy.jpgg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/in-romm-experiences/DSC02516+copy.jpgg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/in-romm-experiences/DSC02068_1+copy.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/in-romm-experiences/DSC00382+copy.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/in-romm-experiences/DSC00345+copy.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/in-romm-experiences/DSC00381+copy.jpg"
 ];
 const inRoomEventGalleryImages = [
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/in-room/DSC06020.JPG",
@@ -147,12 +147,12 @@ const suiteCarouselImagesByIndex: Record<number, string[]> = {
   ],
   5: [
     "https://royal-hayat.s3.eu-central-1.amazonaws.com/lilly/DSC08428.jpg",
-    "https://royal-hayat.s3.eu-central-1.amazonaws.com/lilly/DSC08431.jpg", 
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/lilly/DSC08431.jpg",
     "https://royal-hayat.s3.eu-central-1.amazonaws.com/lilly/DSC08437.jpg",
     "https://royal-hayat.s3.eu-central-1.amazonaws.com/lilly/DSC08433.jpg",
     "https://royal-hayat.s3.eu-central-1.amazonaws.com/lilly/DSC08443.jpg",
     "https://royal-hayat.s3.eu-central-1.amazonaws.com/lilly/DSC08466.jpg",
-   
+
   ],
   6: [
     "https://royal-hayat.s3.eu-central-1.amazonaws.com/Daisy-suite/1.JPG",
@@ -164,24 +164,24 @@ const suiteCarouselImagesByIndex: Record<number, string[]> = {
 };
 // Paste your final gallery links here
 const workWithUsStaffActivitiesImages: string[] = [
-"https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/1.jpg",
-"https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/2.jpg",
-"https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/3.jpg",
-"https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/4.jpg",
-"https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/5.jpg",
-"https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/6.jpg",
-"https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/7.jpg",
-"https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/8.jpg",
-"https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/9.jpg",
-"https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/10.jpg",
-"https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/11.jpg",
-"https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/12.jpg",
-"https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/13.jpg",
-"https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/14.jpg",
-"https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/15.jpg",
-"https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/16.jpg",
-"https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/17.jpg",
-"https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/18.jpg.jpeg"
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/1.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/2.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/3.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/4.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/5.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/6.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/7.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/8.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/9.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/10.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/11.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/12.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/13.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/14.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/15.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/16.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/17.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/18.jpg.jpeg"
 
 ];
 const workWithUsGalaDinnerImages: string[] = [

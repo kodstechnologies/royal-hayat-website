@@ -30,7 +30,7 @@ const leaders = [
       "بدأ رحلته التعليمية في كلية الطب بجامعة الكويت. الدكتور المزيدي عضو في البورد الكويتي للجراحة العامة والكلية الملكية للجراحين (إنجلترا)، حيث تدرب على جراحة السمنة والقولون والمستقيم في لندن، المملكة المتحدة.",
       "الدكتور المزيدي ملتزم بتحويل المشهد الصحي في الكويت. قاد العديد من المبادرات الهادفة إلى دمج التقنيات المتطورة في أنظمة تقديم الرعاية الصحية وتحسين نتائج المرضى وتعزيز الكفاءة العامة.",
     ],
-    image: "/images/doctors/Dr. Sulaiman.jpg",
+    image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/leadership/sulaiman-web.png",
   },
   {
     initials: "AE",
@@ -54,7 +54,7 @@ const leaders = [
       "في مجال اضطرابات الدورة الشهرية، يقدم علاجات مبتكرة مثل الاستئصال البطاني بتقنية نوفاشور. تشمل خبرته الجراحية إجراءات المنظار الرحمي وجراحات المنظار البطني.",
       "بالإضافة إلى ذلك، يكرس الدكتور المرضي جهوده لإدارة اضطرابات المسالك البولية الأنثوية وقاع الحوض، وإجراء دراسات ديناميكية البول ومسح المثانة وقاع الحوض.",
     ],
-    image: "/images/doctors/abubakr-elmardi.png",
+    image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/abubakr-elmardi.png",
   },
   {
     initials: "OE",
@@ -74,7 +74,7 @@ const leaders = [
       "حاصل على درجة الماجستير في التخدير والعناية المركزة الجراحية من كلية الطب بالإسكندرية، تليها درجة الدكتوراه في التخدير والعناية المركزة وإدارة الألم من جامعة الإسكندرية عام 1982. عضو في الجمعية الدولية لدراسة الألم.",
       "الدكتور الخطيب ذو خبرة عالية في مجالات متخصصة متعددة، بما في ذلك تخدير التوليد والتسكين، وإجراء التخدير فوق الجافية للولادة. لديه فهم عميق لإدارة التخدير للمرضى عاليي الخطورة وكبار السن، وخبرة في طب العناية المركزة الجراحية للبالغين والأطفال.",
     ],
-    image: "/images/doctors/Dr. Omar.jpg",
+    image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/Dr.+Omar.jpg",
   },
   {
     initials: "SM",
@@ -96,7 +96,7 @@ const leaders = [
       "مع خبرة قيادية سابقة في أدوار التمويل والمحاسبة والخزينة عبر المنظمات متعددة الجنسيات، يقدم السيد شيبو نهجاً متوازناً يجمع بين الانضباط العملياتي والرؤية الاستراتيجية والالتزام العميق تجاه الناس والهدف.",
       "وهو حاصل على شهادات CMA (الولايات المتحدة الأمريكية) وACMA الهند مع مؤهلات IFRS وتعليم تنفيذي في استراتيجية الرعاية الصحية من كلية هارفارد تي إتش تشان للصحة العامة.",
     ],
-    image: "/images/doctors/Mr. Shibu.jpg",
+    image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/Mr.+Shibu.jpg",
   },
   {
     initials: "HG",
@@ -118,7 +118,7 @@ const leaders = [
       "يتمتع بخبرة واسعة في التخدير العام والموضعي لجميع التخصصات والمرضى عاليي الخطورة، بما في ذلك تخدير جراحات السمنة والتخدير فوق الجافية للولادة الطبيعية والقيصرية. لديه تخصص فرعي في تخدير الأطفال وحديثي الولادة وذوي الاحتياجات الخاصة.",
       "في إدارة الألم المزمن، يركز على آلام العمود الفقري بالحقن العلاجية وقد كان رائداً في الحقن العلاجية الموجهة بالأشعة المقطعية للعمود الفقري، مؤسساً أول مركز مؤهل في الكويت والشرق الأوسط. تشمل خبرته إدارة الألم المزمن لحالات مثل الصداع والهربس النطاقي والألم العضلي الليفي وألم السرطان.",
     ],
-    image: "/images/doctors/Dr. Hamid.jpg",
+    image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/Dr.+Hamid.jpg",
   },
 ];
 
@@ -127,14 +127,14 @@ const LeaderCard = ({ leader, lang }: { leader: typeof leaders[0] & { image?: st
   const name = lang === "ar" ? leader.nameAr : leader.nameEn;
   const role = lang === "ar" ? leader.roleAr : leader.roleEn;
   const credentials = lang === "ar" ? leader.credentialsAr : leader.credentialsEn;
-  const bio = lang === "ar" ? leader.bioAr : leader.bioEn;.3 
+  const bio = lang === "ar" ? leader.bioAr : leader.bioEn; .3
   const roles = role.split("\n");
   const mobileImageOverride: Record<string, string> = {
     "Dr. Abubakr Elmardi": "https://royal-hayat.s3.eu-central-1.amazonaws.com/leadership/abubkar.jpeg",
     "Dr. Sulaiman Al Mazeedi": "https://royal-hayat.s3.eu-central-1.amazonaws.com/leadership/sulaiman-mobile123.png",
   };
   const desktopImageOverride: Record<string, string> = {
-    "Dr. Sulaiman Al Mazeedi": "https://royal-hayat.s3.eu-central-1.amazonaws.com/leadership/sulaiman-web.png",
+    // "Dr. Sulaiman Al Mazeedi": "https://royal-hayat.s3.eu-central-1.amazonaws.com/leadership/sulaiman-web.png",
     "Prof. Dr. Omar El Khateeb": "https://royal-hayat.s3.eu-central-1.amazonaws.com/leadership/omar-web.png",
     "Dr. Hamid Ghaderi": "https://royal-hayat.s3.eu-central-1.amazonaws.com/leadership/hamid-web.png",
     "Shibu Thomas Mathew": "https://royal-hayat.s3.eu-central-1.amazonaws.com/leadership/shibu-web2+(1).png",
@@ -214,7 +214,7 @@ const AboutUs = () => {
   const [searchParams] = useSearchParams();
   const section = searchParams.get("section");
   const showAll = !section;
-  const show = (s: string) => showAll || section === s; 
+  const show = (s: string) => showAll || section === s;
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
@@ -295,8 +295,8 @@ const AboutUs = () => {
         </div>
       </section>}
 
-  
-  
+
+
 
       {/* Mission & Values */}
       {show("mission") && <section className="pb-16 pt-2 bg-secondary/10" id="mission">
@@ -336,8 +336,8 @@ const AboutUs = () => {
       </section>}
 
 
-    {/* Chairman's Message */}
-    {show("chairman") && (
+      {/* Chairman's Message */}
+      {show("chairman") && (
         <>
           <section className="pt-12 pb-0 bg-background">
             <div className="container mx-auto px-4 md:px-6">
@@ -354,8 +354,8 @@ const AboutUs = () => {
         </>
       )}
 
-  {/* Leadership Team */}
-  {show("leadership") && <section className="pb-16 pt-16 bg-muted/20" id="leadership">
+      {/* Leadership Team */}
+      {show("leadership") && <section className="pb-16 pt-16 bg-muted/20" id="leadership">
         <div className="container mx-auto px-6">
           <ScrollAnimationWrapper>
             <div className="text-center mb-10">

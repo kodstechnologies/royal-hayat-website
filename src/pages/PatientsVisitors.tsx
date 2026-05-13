@@ -207,8 +207,8 @@ const PatientsVisitors = () => {
                     {/* Desktop (md+): PC version images */}
                     <div className="hidden md:block w-full space-y-6 px-6 py-6 bg-background">
                       {(lang === "ar"
-                        ? [1,2,3,4,5,6].map(n => `/images/Birthing-packages/Birthing Packages for_PC Version_AR jpg/Birthing Packages for_PC Version_AR_${n}.jpg`)
-                        : [1,2,3,4,5,6,7].map(n => `/images/Birthing-packages/Birthing Packages for_PC Version_Eng jpg/Birthing Packages for_PC Version_Eng_${n}.jpg`)
+                        ? [1, 2, 3, 4, 5, 6].map(n => `https://royal-hayat.s3.eu-central-1.amazonaws.com/pc-version/birthing-packages-AR/Birthing+Packages+for_PC+Version_AR_${n}.jpg`)
+                        : [1, 2, 3, 4, 5, 6, 7].map(n => `https://royal-hayat.s3.eu-central-1.amazonaws.com/pc-version/birthing-packages-EN/Birthing+Packages+for_PC+Version_Eng_${n}.jpg`)
                       ).map((src, i) => (
                         <img
                           key={i}
@@ -223,8 +223,8 @@ const PatientsVisitors = () => {
                     {/* Mobile (< md): Mobile version images */}
                     <div className="md:hidden w-full">
                       {(lang === "ar"
-                        ? [1,2,3,4,5,6,7].map(n => `/images/Birthing-packages/Birthing Packages for_Mobile Version_AR JPG/Birthing Packages for_Mobile Version_AR_${n}.jpg`)
-                        : [1,2,3,4,5,6,7].map(n => `/images/Birthing-packages/Birthing Packages for_Mobile Version_Eng jpg/Birthing Packages for_Mobile Version_Eng_${n}.jpg`)
+                        ? [1, 2, 3, 4, 5, 6, 7].map(n => `https://royal-hayat.s3.eu-central-1.amazonaws.com/mobile-version/birthing-packages-AR/Birthing+Packages+for_Mobile+Version_AR_${n}.jpg`)
+                        : [1, 2, 3, 4, 5, 6, 7].map(n => `https://royal-hayat.s3.eu-central-1.amazonaws.com/mobile-version/birthing-packages-EN/Birthing+Packages+for_Mobile+Version_Eng_${n}.jpg`)
                       ).map((src, i) => (
                         <img
                           key={i}
@@ -245,7 +245,7 @@ const PatientsVisitors = () => {
                       </div>
                       <h2 className="text-2xl md:text-3xl font-serif text-foreground">{lang === "ar" ? "باقات أجنحة الولادة" : "Birthing Suites Packages"}</h2>
                     </div>}
-{/* 
+                    {/* 
                     <p className="font-body text-sm text-muted-foreground leading-relaxed mb-6">
                       {lang === "ar"
                         ? "يوفر مستشفى رويال حياة مجموعة من الأجنحة الفاخرة. يمكنك استعراض كافة التفاصيل والباقات."
@@ -255,7 +255,7 @@ const PatientsVisitors = () => {
                     {/* Single preview image */}
                     <div className="w-full rounded-2xl shadow-lg bg-white border border-border/30 overflow-hidden mb-6">
                       <img
-                        src={lang === "ar" 
+                        src={lang === "ar"
                           ? "/images/Birthing-packages/Birthing Packages for_PC Version_AR jpg/Birthing Packages for_PC Version_AR_1.jpg"
                           : "/images/Birthing-packages/Birthing Packages for_PC Version_Eng jpg/Birthing Packages for_PC Version_Eng_1.jpg"
                         }

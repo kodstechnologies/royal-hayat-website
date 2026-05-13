@@ -199,7 +199,7 @@ const workWithUsHospitalityWeekImages: string[] = [
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/hospitality/DSC09149_qfnzht.jpg",
   // "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776935736/DSC09306_fihok4.jpg",
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/hospitality/DSC09247_khdp4n.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/hospitality/DSC09612_hhn0fv.jpgg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/hospitality/DSC09612_hhn0fv.jpg",
   // "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776935748/DSC09610_srzdoh.jpg",
   // "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776935753/DSC09634_eknzqv.jpg",
   // "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776935760/DSC09636_ichbwp.jpg",

@@ -221,7 +221,7 @@ const workWithUsHospitalityWeekImages: string[] = [
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/hospitality/3_h5btrw.jpg",
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/hospitality/4_ivnfjs.jpg",
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/hospitality/5_kap6ph.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/hospitality/6_tbyu3i.jpgg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/hospitality/6_tbyu3i.jpg",
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/hospitality/7_cgiufp.jpg"
 ];
 const workWithUsRhhQuizImages: string[] = [

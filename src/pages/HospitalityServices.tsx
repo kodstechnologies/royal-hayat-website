@@ -53,8 +53,8 @@ const HospitalityServices = ({
   }, [section]);
 
   const babyImages = [
-    "/images/baby/baby1.jpg",
-    "/images/baby/baby2.jpg",
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/baby-images/WhatsApp+Image+2026-05-12+at+2.39.52+PM+(1).jpeg",
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/baby-images/WhatsApp+Image+2026-05-12+at+2.39.52+PM.jpeg",
   ];
   const activeSuiteImages = suiteCarouselImagesByIndex[activeSuite] ?? suiteCarouselImagesByIndex[6];
 

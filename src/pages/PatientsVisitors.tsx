@@ -23,8 +23,8 @@ const PatientsVisitors = () => {
 
   // ─── ROOMS PACKAGE PDF LINKS ───────────────────────────────────────────
   // Using local PDF files from /public/images/doctors/
-  const roomsPdfEn = "/images/doctors/RHHBirthingPackagesEng6Jan2026.pdf";
-  const roomsPdfAr = "/images/doctors/RHHBirthingPackagesArb6Jan2026.pdf";
+  const roomsPdfEn = "https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/RHHBirthingPackagesEng6Jan2026.pdf";
+  const roomsPdfAr = "https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/RHHBirthingPackagesArb6Jan2026.pdf";
   // ───────────────────────────────────────────────────────────────────────
 
   const sectionClass = "scroll-mt-[calc(var(--header-height,76px)+2rem)]";
@@ -579,7 +579,7 @@ const PatientsVisitors = () => {
                 <div className="mb-10 rounded-2xl overflow-hidden border border-border/50 bg-muted/30">
                   <div className="aspect-video relative">
                     <video
-                      src="https://res.cloudinary.com/dqznbmfja/video/upload/v1775822694/RHH_TRACKER_WAVE_F_F_1_m9ojmp.mp4"
+                      src="https://royal-hayat.s3.eu-central-1.amazonaws.com/infant-secyrity/RHH_TRACKER_WAVE_F_F_1_m9ojmp.mp4"
                       playsInline
                       autoPlay
                       muted

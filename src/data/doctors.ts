@@ -1865,7 +1865,7 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-ahmad-abdulrahman-al-mulla',//////// same name issue
-    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/ahmad-al-mulla.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/ahmed-al-mulla.png',
 
     name: 'Dr. Ahmad Abdulrahman Al Mulla', nameAr: 'د. أحمد عبدالرحمن المُلا',
     specialty: 'Pediatric', specialtyAr: 'طب الأطفال',

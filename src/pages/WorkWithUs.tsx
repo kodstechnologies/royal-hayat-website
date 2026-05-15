@@ -244,14 +244,14 @@ const WorkWithUs = ({
       {/* Hero */}
       {showSection("culture") && (
         <section className="py-0 bg-primary/5 overflow-hidden">
-          <div className="grid lg:grid-cols-2 gap-0 items-stretch min-h-[480px]">
+      <div className="grid lg:grid-cols-[1.3fr_0.7fr] gap-0 items-stretch min-h-[480px] ">
 
             {/* LEFT — image, full bleed */}
-            <div className="relative overflow-hidden h-[300px] sm:h-[450px] md:h-[550px] lg:min-h-[600px] lg:h-auto">
+            <div className="relative overflow-hidden h-[300px] sm:h-[450px] md:h-[550px] lg:h-full lg:min-h-0 bg-red-500">
               <img
                 src="https://royal-hayat.s3.eu-central-1.amazonaws.com/infant-secyrity/Life+at+Royale+hayat+Hospital.jpg.jpeg"
                 alt={isAr ? "الحياة في رويال حياة" : "Life at Royale Hayat Hospital"}
-                className="absolute inset-0 w-full h-full object-cover object-center"
+                className="absolute inset-0 h-full w-full object-cover object-left"
               />
             </div>
 

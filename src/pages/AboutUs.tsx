@@ -126,8 +126,8 @@ const leaders = [
   nameAr: "مارتا أبريل غارسيا",
   roleEn: "Director of Hospitality",
   roleAr: "مديرة الضيافة",
-  credentialsEn: "Master's in Tourism Companies Management and Strategic Communication",
-  credentialsAr: "ماجستير في إدارة شركات السياحة والاتصال الاستراتيجي",
+  credentialsEn: "",
+  credentialsAr: "",
   bioEn: [
     "Marta Abril Garcia brings almost two decades of international hospitality expertise to her role as Director of Hospitality at Royale Hayat Hospital, where she has been instrumental in shaping a patient and guest experience that consistently sets the standard for luxury healthcare in Kuwait.",
     

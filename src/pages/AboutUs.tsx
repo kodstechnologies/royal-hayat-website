@@ -120,6 +120,38 @@ const leaders = [
     ],
     image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/Dr.+Hamid.jpg",
   },
+  {
+  initials: "MA",
+  nameEn: "Marta Abril Garcia",
+  nameAr: "مارتا أبريل غارسيا",
+  roleEn: "Director of Hospitality",
+  roleAr: "مديرة الضيافة",
+  credentialsEn: "Master's in Tourism Companies Management and Strategic Communication",
+  credentialsAr: "ماجستير في إدارة شركات السياحة والاتصال الاستراتيجي",
+  bioEn: [
+    "Marta Abril Garcia brings almost two decades of international hospitality expertise to her role as Director of Hospitality at Royale Hayat Hospital, where she has been instrumental in shaping a patient and guest experience that consistently sets the standard for luxury healthcare in Kuwait.",
+    
+    "With a Master's in Tourism Companies Management and Strategic Communication from ESERP Business School in Madrid, Marta built her career across some of the world's most demanding hospitality environments — from the front lines of luxury hotels in London to boutique wellness resorts in Bali — before channeling that depth of experience into the healthcare sector.",
+    
+    "At Royale Hayat, Marta oversees an exceptionally broad portfolio of departments spanning both guest-facing and back-of-house operations — including Guest Relations, Admissions, Outpatient Department, Patient Experience, the Spa, Food & Beverage, Events, the Call Center, Housekeeping, Maintenance, Security, and Kitchen — ensuring that every touchpoint, seen and unseen, reflects the Hospital's hallmark standard of care and elegance.",
+    
+    "Her leadership has contributed directly to Royale Hayat's recognition as the Best Private Hospital in Kuwait for 16 consecutive years, as well as its distinction as one of Kuwait's Top 3 Brands in 2022 and Top 10 Brands in 2025.",
+    
+    "Having lived and worked across Europe, Asia, the Middle East, and with extended personal travel experience across all five continents, Marta brings a truly global perspective to her work, one grounded in the belief that exceptional hospitality, whether in a five-star resort or a world-class hospital, is always, at its heart, about people."
+  ],
+  bioAr: [
+    "تتمتع مارتا أبريل غارسيا بخبرة دولية تمتد لما يقارب عقدين في مجال الضيافة، وتشغل منصب مديرة الضيافة في مستشفى رويال حياة، حيث لعبت دورًا محوريًا في تطوير تجربة المرضى والضيوف بما يرسّخ معايير الرعاية الصحية الفاخرة في الكويت.",
+    
+    "تحمل مارتا درجة الماجستير في إدارة شركات السياحة والاتصال الاستراتيجي من كلية ESERP للأعمال في مدريد، وقد بنت مسيرتها المهنية عبر بعض أكثر بيئات الضيافة تطلبًا في العالم — بدءًا من الفنادق الفاخرة في لندن وصولًا إلى المنتجعات الصحية البوتيكية في بالي — قبل أن توظف هذه الخبرات الواسعة في قطاع الرعاية الصحية.",
+    
+    "في رويال حياة، تشرف مارتا على مجموعة واسعة من الأقسام التي تشمل العمليات المرتبطة بالضيوف والعمليات التشغيلية الداخلية، بما في ذلك: علاقات الضيوف، القبول، العيادات الخارجية، تجربة المرضى، السبا، الأغذية والمشروبات، الفعاليات، مركز الاتصال، التدبير المنزلي، الصيانة، الأمن، والمطبخ، مع الحرص على أن تعكس كل نقطة تواصل، سواء كانت ظاهرة أو خلف الكواليس، مستوى الرعاية والأناقة الذي يتميز به المستشفى.",
+    
+    "وقد ساهمت قيادتها بشكل مباشر في حصول رويال حياة على لقب أفضل مستشفى خاص في الكويت لمدة 16 عامًا متتالية، بالإضافة إلى تصنيفه ضمن أفضل 3 علامات تجارية في الكويت لعام 2022، وأفضل 10 علامات تجارية لعام 2025.",
+    
+    "وبفضل إقامتها وعملها في أوروبا وآسيا والشرق الأوسط، إلى جانب خبراتها الواسعة في السفر عبر القارات الخمس، تمتلك مارتا رؤية عالمية حقيقية تنعكس في عملها، وترتكز على إيمانها بأن الضيافة الاستثنائية — سواء في منتجع فاخر من فئة الخمس نجوم أو في مستشفى عالمي المستوى — تتمحور دائمًا حول الإنسان."
+  ],
+  image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/leadership/marta+(2).png",
+}
 ];
 
 const LeaderCard = ({ leader, lang }: { leader: typeof leaders[0] & { image?: string }; lang: string }) => {

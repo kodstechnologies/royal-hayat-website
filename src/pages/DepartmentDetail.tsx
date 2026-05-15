@@ -5,6 +5,7 @@ import ChatButton from "@/components/ChatButton";
 import ScrollToTop from "@/components/ScrollToTop";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
 import { departmentDetails } from "@/data/departmentDetails";
+import { departments as staticDepartments } from "@/data/departments";
 import { doctors as allDoctors } from "@/data/doctors";
 import { motion } from "framer-motion";
 import { ChevronRight, ChevronLeft, ArrowLeft, CheckCircle2, ChevronDown, Stethoscope, MessageCircle, Phone } from "lucide-react";
@@ -182,6 +183,10 @@ const DepartmentDetail = () => {
   const activeSub = subSlug ? dept.subDepartments?.find((s) => s.slug === subSlug) : null;
   const displayDept = activeSub || dept;
 
+  // Get the department image from static departments data (matched by slug)
+  const staticDept = staticDepartments.find((d) => d.slug === dept.slug);
+  const deptImage = staticDept?.img || "";
+
   // Map department detail names to doctor data department values
   const deptNameToDoctorDept: Record<string, string[]> = {
     "Obstetrics & Gynecology": ["Obstetrics & Gynecology"],
@@ -277,11 +282,21 @@ const DepartmentDetail = () => {
       </section>
 
       {/* Image/Video Placeholder */}
-      {/* <section className="container mx-auto px-6 py-8">
-        <div className="aspect-video bg-muted/30 rounded-2xl border border-border/50 flex items-center justify-center">
-          <p className="text-muted-foreground font-body text-sm">Department Image / Video</p>
+      <section className="container mx-auto px-6 py-8 flex justify-center">
+        <div className="aspect-video w-full max-w-4xl bg-muted/30 rounded-2xl border border-border/50 flex items-center justify-center overflow-hidden">
+          {deptImage ? (
+            <img
+              src={deptImage}
+              alt={displayDept.name}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <p className="text-muted-foreground font-body text-sm">
+              Image / Video Content
+            </p>
+          )}
         </div>
-      </section> */}
+      </section>
 
       {/* Content Sections */}
       <section className="py-8 md:py-12">

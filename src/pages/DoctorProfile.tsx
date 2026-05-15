@@ -65,39 +65,48 @@ const DoctorProfile = () => {
   const bookingReturnState = (location.state as any) ?? {};
   const fromBooking = Boolean(bookingReturnState?.fromBookAppointment || bookingReturnState?.step != null);
   const [isTestimonialOpen, setIsTestimonialOpen] = useState(false);
+  const [showThankYou, setShowThankYou] = useState(false);
 
   const [testimonialForm, setTestimonialForm] = useState({
+    name: "",
+    comment: "",
+    rating: 0,
+  });
+
+  const [testimonials, setTestimonials] = useState(patientFeedback);
+const handleAddTestimonial = () => {
+  if (!testimonialForm.name || !testimonialForm.comment) return;
+
+  const newTestimonial = {
+    name: testimonialForm.name,
+    nameAr: testimonialForm.name,
+    rating: testimonialForm.rating,
+    comment: testimonialForm.comment,
+    commentAr: testimonialForm.comment,
+    date: new Date().toLocaleDateString("en-US", {
+      month: "long",
+      year: "numeric",
+    }),
+  };
+
+  setTestimonials((prev) => [newTestimonial, ...prev]);
+
+  setTestimonialForm({
     name: "",
     comment: "",
     rating: 5,
   });
 
-  const [testimonials, setTestimonials] = useState(patientFeedback);
-  const handleAddTestimonial = () => {
-    if (!testimonialForm.name || !testimonialForm.comment) return;
+  // show thank you overlay
+  setShowThankYou(true);
 
-    const newTestimonial = {
-      name: testimonialForm.name,
-      nameAr: testimonialForm.name,
-      rating: testimonialForm.rating,
-      comment: testimonialForm.comment,
-      commentAr: testimonialForm.comment,
-      date: new Date().toLocaleDateString("en-US", {
-        month: "long",
-        year: "numeric",
-      }),
-    };
-
-    setTestimonials((prev) => [newTestimonial, ...prev]);
-
-    setTestimonialForm({
-      name: "",
-      comment: "",
-      rating: 5,
-    });
-
+  // close after animation
+  setTimeout(() => {
+    setShowThankYou(false);
     setIsTestimonialOpen(false);
-  };
+  }, 2200);
+};
+
 
   const handleGoBack = () => {
     if (fromBooking) {
@@ -544,10 +553,99 @@ const DoctorProfile = () => {
               <Star className="w-4 h-4 fill-current" />
 
               <span className="text-center">
-               {lang === "ar" ? "إرسال التقييم" : "Submit Feedback"}
+                {lang === "ar" ? "إرسال التقييم" : "Submit Feedback"}
               </span>
             </button>
+            {showThankYou && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{
+                  duration: 0.45,
+                  type: "spring",
+                  stiffness: 180,
+                }}
+                className="
+      absolute
+      inset-0
+      z-50
+      flex
+      items-center
+      justify-center
+      rounded-3xl
+      bg-background/90
+      backdrop-blur-md
+      px-6
+    "
+              >
+                <div
+                  className="
+        flex
+        items-center
+        gap-4
+        rounded-2xl
+        border
+        border-primary/20
+        bg-primary/10
+        px-6
+        py-5
+        shadow-2xl
+      "
+                >
+                  {/* Animated Icon */}
+                  <motion.div
+                    initial={{ scale: 0, rotate: -180 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{
+                      delay: 0.15,
+                      type: "spring",
+                      stiffness: 260,
+                    }}
+                    className="
+          w-12
+          h-12
+          rounded-full
+          bg-primary/15
+          border
+          border-primary/20
+          flex
+          items-center
+          justify-center
+        "
+                  >
+                    <Star className="w-6 h-6 text-primary fill-primary/20" />
+                  </motion.div>
+
+                  {/* Text */}
+                  <div>
+                    <motion.p
+                      initial={{ opacity: 0, x: 10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.2 }}
+                      className="text-primary font-semibold text-base"
+                    >
+                      {lang === "ar"
+                        ? "شكراً لك على ملاحظاتك"
+                        : "Thank you for your feedback"}
+                    </motion.p>
+
+                    <motion.p
+                      initial={{ opacity: 0, x: 10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.3 }}
+                      className="text-muted-foreground text-sm mt-1"
+                    >
+                      {lang === "ar"
+                        ? "نحن نقدر وقتك ومشاركتك"
+                        : "We truly appreciate your response"}
+                    </motion.p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
           </motion.div>
+
         </div>
       )}
       <Footer />

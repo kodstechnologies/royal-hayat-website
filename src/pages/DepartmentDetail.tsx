@@ -282,21 +282,24 @@ const DepartmentDetail = () => {
       </section>
 
       {/* Image/Video Placeholder */}
-      <section className="container mx-auto px-6 py-8 flex justify-center">
-        <div className="aspect-video w-full max-w-4xl bg-muted/30 rounded-2xl border border-border/50 flex items-center justify-center overflow-hidden">
-          {deptImage ? (
-            <img
-              src={deptImage}
-              alt={displayDept.name}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <p className="text-muted-foreground font-body text-sm">
-              Image / Video Content
-            </p>
-          )}
-        </div>
-      </section>
+      {/* Show image only for main department */}
+      {!activeSub && (
+        <section className="container mx-auto px-6 py-8 flex justify-center">
+          <div className="aspect-video w-full max-w-4xl bg-muted/30 rounded-2xl border border-border/50 flex items-center justify-center overflow-hidden">
+            {deptImage ? (
+              <img
+                src={deptImage}
+                alt={displayDept.name}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <p className="text-muted-foreground font-body text-sm">
+                Image / Video Content
+              </p>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* Content Sections */}
       <section className="py-8 md:py-12">

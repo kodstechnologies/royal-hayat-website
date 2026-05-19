@@ -247,7 +247,7 @@ const WorkWithUs = ({
       <div className="grid lg:grid-cols-[1.3fr_0.7fr] gap-0 items-stretch min-h-[480px] ">
 
             {/* LEFT — image, full bleed */}
-            <div className="relative overflow-hidden h-[300px] sm:h-[450px] md:h-[550px] lg:h-full lg:min-h-0 bg-red-500">
+            <div className="relative overflow-hidden h-[300px] sm:h-[450px] md:h-[550px] lg:h-full lg:min-h-0 ">
               <img
                 src="https://royal-hayat.s3.eu-central-1.amazonaws.com/infant-secyrity/Life+at+Royale+hayat+Hospital.jpg.jpeg"
                 alt={isAr ? "الحياة في رويال حياة" : "Life at Royale Hayat Hospital"}
@@ -351,64 +351,194 @@ const WorkWithUs = ({
 
 
       {/* Recognition & Appreciation gallery */}
-      {showSection("culture") && (
-        <section className="py-16 bg-secondary/10">
-          <div className="container mx-auto px-6">
-            <div className="text-center mb-8">
-              <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">
-                {isAr ? "حياة في رويال حياة" : "Life at Royale Hayat"}
-              </p>
-              <h2 className="text-2xl md:text-3xl font-serif text-foreground">
-                {isAr ? "التقدير والامتنان" : "Recognition & Appreciation"}
-              </h2>
-              <p className="text-muted-foreground font-body text-sm max-w-2xl mx-auto mt-3">
-                {isAr
-                  ? "موظف الشهر، تكريمات الإنجاز، وامتنان يومي — لأن الجهد يستحق أن يُرى."
-                  : "Employee of the Month, achievement honors, and everyday gratitude — because effort deserves to be seen."}
-              </p>
+   {showSection("culture") && (
+  <section className="py-16 bg-secondary/10">
+    <div className="container mx-auto px-6">
+      <div className="text-center mb-8">
+        <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">
+          {isAr ? "حياة في رويال حياة" : "Life at Royale Hayat"}
+        </p>
+
+        <h2 className="text-2xl md:text-3xl font-serif text-foreground">
+          {isAr ? "التقدير والامتنان" : "Recognition & Appreciation"}
+        </h2>
+
+        <p className="text-muted-foreground font-body text-sm max-w-2xl mx-auto mt-3">
+          {isAr
+            ? "موظف الشهر، تكريمات الإنجاز، وامتنان يومي — لأن الجهد يستحق أن يُرى."
+            : "Employee of the Month, achievement honors, and everyday gratitude — because effort deserves to be seen."}
+        </p>
+      </div>
+
+      <div className="max-w-5xl mx-auto space-y-8">
+
+        {/* Employee 1 */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="bg-popover border border-border/50 rounded-2xl overflow-hidden"
+        >
+          <div className="flex flex-col md:flex-row">
+            <div className="md:w-72 flex-shrink-0 bg-primary/5 p-6 flex items-center justify-center">
+              <img
+                src="https://royal-hayat.s3.eu-central-1.amazonaws.com/employee-of-the-month/ranga-tara.jpeg"
+                alt="Rangaa TaRA Mahawan"
+                className="w-full h-[320px] object-cover rounded-2xl"
+              />
             </div>
 
-            <div className="max-w-5xl mx-auto">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="bg-popover border border-border/50 rounded-2xl overflow-hidden"
-              >
-                <div className="flex flex-col md:flex-row">
-                  <div className="md:w-64 flex-shrink-0 bg-primary/5 flex items-center justify-center p-8 md:p-10">
-                    {/* Placeholder image area intentionally kept blank */}
-                    <div className="w-44 h-44 md:w-60 md:h-60 rounded-2xl border-4 border-primary/20 bg-primary/10" />
-                  </div>
+            <div className="flex-1 p-6 md:p-8">
+              <h3 className="font-serif text-2xl text-foreground mb-1">
+                Rangaa Tara Mahawan
+              </h3>
 
-                  <div className="flex-1 p-6 md:p-8">
-                    <h3 className="font-serif text-xl text-foreground mb-1">
-                      {isAr ? "اسم الموظف" : "Employee Name"}
-                    </h3>
-                    <p className="font-body text-xs text-accent mb-2">
-                      {isAr ? "المسمى الوظيفي" : "Title"}
-                    </p>
-                    <p className="font-body text-sm text-accent mb-4">
-                      {isAr ? "الدور" : "Role"}
-                    </p>
+              <p className="font-body text-xs text-accent uppercase tracking-wide mb-2">
+                {isAr
+                  ? "قسم علاقات الضيوف"
+                  : "Guest Relation Department"}
+              </p>
 
-                    <div>
-                      <h4 className="font-serif text-base text-foreground mb-2">
-                        {isAr ? "الإنجازات" : "Achievements"}
-                      </h4>
-                      <p className="font-body text-sm text-muted-foreground leading-relaxed">
-                        {isAr
-                          ? "أضف الإنجازات الرئيسية هنا (مثل: موظف الشهر، جائزة التميز، مبادرات تحسين تجربة المريض)."
-                          : "Add key achievements here (e.g., Employee of the Month, Excellence Award, patient-experience initiatives)."}
+              <p className="font-body text-sm text-accent mb-5">
+                {isAr
+                  ? "عامل الجرس - علاقات الضيوف"
+                  : "Bell Man - Guest Relations"}
+              </p>
+
+              <div>
+                <h4 className="font-serif text-base text-foreground mb-3">
+                  {isAr ? "الإنجازات" : "Achievements"}
+                </h4>
+
+                <div className="space-y-4 text-sm text-muted-foreground leading-relaxed font-body">
+                  {isAr ? (
+                    <>
+                      <p>
+                        حصل رانغا على هذا التقدير من خلال تعاونه الاستثنائي
+                        وموقفه الإيجابي المستمر. يُعتبر عضوًا موثوقًا في الفريق
+                        ويتمتع بسجل حضور مثالي، مما يضمن أن تكون الانطباعات الأولى
+                        لضيوف رويال حياة مليئة بالراحة والضيافة الراقية.
                       </p>
-                    </div>
-                  </div>
+
+                      <p>
+                        عضو فريق يعتمد عليه ومخلص في عمله ويتعاون بانسجام مع
+                        الجميع. يتميز بالمرونة والاستعداد الدائم لتمديد ساعات
+                        عمله عند الحاجة، وينجز مهامه بكفاءة ودون تذمر. كما أنه
+                        يقظ في منطقة الاستقبال ويتعامل دائمًا باحترام، مما يجعله
+                        جزءًا قيّمًا من الفريق.
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <p>
+                        Rangaa has earned this recognition through his
+                        exceptional helpfulness and a consistently positive
+                        attitude. A dependable team member with an exemplary
+                        attendance record, he ensures that our guests’ first
+                        impression of Royale Hayat is one of comfort and
+                        high-standard hospitality.
+                      </p>
+
+                      <p>
+                        Dependable and dedicated team member who works
+                        harmoniously with others. He is reliable, always willing
+                        to extend his duty when needed, and completes tasks
+                        efficiently without complaint. Attentive in the lobby
+                        and consistently respectful, he is a valued part of the
+                        team.
+                      </p>
+                    </>
+                  )}
                 </div>
-              </motion.div>
+              </div>
             </div>
           </div>
-        </section>
-      )}
+        </motion.div>
+
+        {/* Employee 2 */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="bg-popover border border-border/50 rounded-2xl overflow-hidden"
+        >
+          <div className="flex flex-col md:flex-row">
+            <div className="md:w-72 flex-shrink-0 bg-primary/5 p-6 flex items-center justify-center">
+              <img
+                src="https://royal-hayat.s3.eu-central-1.amazonaws.com/employee-of-the-month/mohammad-niyaz.jpeg"
+                alt="Mohammad Niyaz Salam"
+                className="w-full h-[320px] object-cover rounded-2xl"
+              />
+            </div>
+
+            <div className="flex-1 p-6 md:p-8">
+              <h3 className="font-serif text-2xl text-foreground mb-1">
+                Mohammad Niyaz Salam
+              </h3>
+
+              <p className="font-body text-xs text-accent uppercase tracking-wide mb-2">
+                {isAr
+                  ? "قسم مركز الاتصال"
+                  : "Call Center Department"}
+              </p>
+
+              <p className="font-body text-sm text-accent mb-5">
+                {isAr
+                  ? "مشغل خدمات الضيوف - مركز الاتصال"
+                  : "Guest Services Operator - Call Center"}
+              </p>
+
+              <div>
+                <h4 className="font-serif text-base text-foreground mb-3">
+                  {isAr ? "الإنجازات" : "Achievements"}
+                </h4>
+
+                <div className="space-y-4 text-sm text-muted-foreground leading-relaxed font-body">
+                  {isAr ? (
+                    <>
+                      <p>
+                        يتميز محمد بالكفاءة والالتزام بالتميز في الخدمة. إن
+                        تعامله المهني مع استفسارات الضيوف، إلى جانب حضوره
+                        المنتظم وأخلاقيات العمل المنضبطة، كان له دور أساسي في
+                        نجاح فريق خدمات الضيوف لدينا.
+                      </p>
+
+                      <p>
+                        عضو فريق موثوق ومرن للغاية، يجلب دائمًا الطاقة الإيجابية
+                        والدعم إلى بيئة العمل. ينجز مهامه باستمرار في الوقت
+                        المحدد ولا يتردد أبدًا في تقديم المساعدة عند الحاجة، حتى
+                        في تغطية المناوبات في وقت قصير مع الحفاظ على أداء ممتاز.
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <p>
+                        Mohammad distinguishes himself through efficiency and a
+                        commitment to service excellence. His professional
+                        handling of guest inquiries, combined with his reliable
+                        attendance and disciplined work ethic, has been
+                        essential to the success of our Guest Services team.
+                      </p>
+
+                      <p>
+                        Highly reliable and flexible team member who always
+                        brings positive energy and support to the workplace. He
+                        consistently completes tasks on time and never hesitates
+                        to step in when needed, even covering shifts at short
+                        notice while maintaining excellent performance.
+                      </p>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+      </div>
+    </div>
+  </section>
+)}
 
       {/* Staff Activities (includes Volley Ball Tournament photos) */}
       {showSection("culture") && (

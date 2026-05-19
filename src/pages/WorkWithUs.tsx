@@ -358,16 +358,19 @@ const WorkWithUs = ({
               <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">
                 {isAr ? "حياة في رويال حياة" : "Life at Royale Hayat"}
               </p>
-
-              <h2 className="text-2xl md:text-3xl font-serif text-foreground">
+              <h2 className="text-xl md:text-2xl font-serif text-foreground">
                 {isAr ? "التقدير والامتنان" : "Recognition & Appreciation"}
               </h2>
 
-              <p className="text-muted-foreground font-body text-sm max-w-2xl mx-auto mt-3">
-                {isAr
-                  ? "موظف الشهر، تكريمات الإنجاز، وامتنان يومي — لأن الجهد يستحق أن يُرى."
-                  : "Employee of the Month, achievement honors, and everyday gratitude — because effort deserves to be seen."}
-              </p>
+              <div className="mt-4 space-y-2">
+                <h3 className="text-xl md:text-4xl font-serif text-foreground">
+                  {isAr ? "أفضل موظفي شهر أبريل" : "April Month's Best Employees"}
+                </h3>
+
+                <p className="text-accent font-body text-sm uppercase tracking-[0.2em]">
+                  {isAr ? "قسم الضيافة" : "Hospitality Division"}
+                </p>
+              </div>
             </div>
 
             <div className="max-w-5xl mx-auto space-y-8">

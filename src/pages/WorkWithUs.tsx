@@ -390,7 +390,7 @@ const WorkWithUs = ({
 
                   <div className="flex-1 p-6 md:p-8">
                     <h3 className="font-serif text-2xl text-foreground mb-1">
-                      Rangaa Tara Mahawan
+                      {isAr ? "رانغا تارا مهاوان" : "Rangaa Tara Mahawan"}
                     </h3>
 
                     <p className="font-body text-xs text-accent uppercase tracking-wide mb-2">
@@ -467,13 +467,13 @@ const WorkWithUs = ({
                     <img
                       src="https://royal-hayat.s3.eu-central-1.amazonaws.com/employee-of-the-month/mohammad-niyaz.jpeg"
                       alt="Mohammad Niyaz Salam"
-                        className="w-full h-[400px ] object-cover rounded-2xl"
+                      className="w-full h-[400px ] object-cover rounded-2xl"
                     />
                   </div>
 
                   <div className="flex-1 p-6 md:p-8">
                     <h3 className="font-serif text-2xl text-foreground mb-1">
-                      Mohammad Niyaz Salam
+                      {isAr ? "محمد نياز سلام" : "Mohammad Niyaz Salam"}
                     </h3>
 
                     <p className="font-body text-xs text-accent uppercase tracking-wide mb-2">

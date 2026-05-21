@@ -27,6 +27,7 @@ const VerifyNationalId = () => {
   const [identityPayload, setIdentityPayload] = useState<Record<string, unknown> | null>(null);
 
   const socketUnsubscribeRef = useRef<(() => void) | null>(null);
+  const verificationDoneRef = useRef(false);
 
   const applyStatusResult = (statusData: IdentityStatusResponse) => {
     if (statusData?.status === "pending") {
@@ -120,26 +121,31 @@ const VerifyNationalId = () => {
   };
 
   useEffect(() => {
-    if (!operationId || phase === "done" || phase === "failed") {
+    if (!operationId || phase !== "waiting") {
+      verificationDoneRef.current = false;
       return;
     }
 
+    verificationDoneRef.current = false;
     socketUnsubscribeRef.current?.();
 
-    const { unsubscribe } = subscribeToIdentityVerification(operationId, (statusData) => {
+    const finishIfReady = (statusData: IdentityStatusResponse) => {
+      if (verificationDoneRef.current || statusData?.status === "pending") return;
+      verificationDoneRef.current = true;
       setError("");
       applyStatusResult(statusData);
-      unsubscribe();
+      socketUnsubscribeRef.current?.();
       socketUnsubscribeRef.current = null;
-    });
+    };
 
+    const { unsubscribe } = subscribeToIdentityVerification(operationId, finishIfReady);
     socketUnsubscribeRef.current = unsubscribe;
 
     return () => {
       unsubscribe();
       socketUnsubscribeRef.current = null;
     };
-  }, [operationId, lang]);
+  }, [operationId, phase, lang]);
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();

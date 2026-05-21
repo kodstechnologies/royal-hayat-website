@@ -409,6 +409,7 @@ const BookAppointment = () => {
   const [verifyOperationId, setVerifyOperationId] = useState<string | null>(null);
   const [isWaitingForApproval, setIsWaitingForApproval] = useState(false);
   const verifySocketCleanupRef = useRef<(() => void) | null>(null);
+  const verificationDoneRef = useRef(false);
   const [verifiedIdentityDetails, setVerifiedIdentityDetails] = useState<VerifiedIdentityDetails | null>(null);
 
   // Symptom path
@@ -963,16 +964,22 @@ const BookAppointment = () => {
 
   useEffect(() => {
     if (!verifyOperationId || !showReturningPatientModal || !isWaitingForApproval) {
+      verificationDoneRef.current = false;
       return;
     }
 
+    verificationDoneRef.current = false;
     verifySocketCleanupRef.current?.();
 
-    const { unsubscribe } = subscribeToIdentityVerification(verifyOperationId, (statusData) => {
-      if (statusData?.status === "pending") return;
+    const finishIfReady = (statusData: IdentityStatusResponse) => {
+      if (verificationDoneRef.current || statusData?.status === "pending") return;
+      verificationDoneRef.current = true;
+      verifySocketCleanupRef.current?.();
+      verifySocketCleanupRef.current = null;
       void completeVerificationFromStatus(statusData);
-    });
+    };
 
+    const { unsubscribe } = subscribeToIdentityVerification(verifyOperationId, finishIfReady);
     verifySocketCleanupRef.current = unsubscribe;
 
     return () => {

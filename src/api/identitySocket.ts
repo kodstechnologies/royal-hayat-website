@@ -38,6 +38,10 @@ export const subscribeToIdentityVerification = (
 
   socket.on("identity:complete", handleComplete);
 
+  socket.on("connect_error", (err) => {
+    console.error("[identity] socket connect_error", err.message);
+  });
+
   if (socket.connected) {
     socket.emit("identity:subscribe", { operationId });
   }

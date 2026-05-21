@@ -1,13 +1,12 @@
 import { useState, useEffect, useRef, type FormEvent } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, CheckCircle2, XCircle, Loader2, RefreshCcw } from "lucide-react";
+import { ArrowRight, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ChatButton from "@/components/ChatButton";
 import ScrollToTop from "@/components/ScrollToTop";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
-  getIdentityStatus,
   startIdentityVerification,
   type IdentityRawPayload,
   type IdentityStatusResponse,
@@ -16,22 +15,18 @@ import {
 } from "@/api/identity";
 import { subscribeToIdentityVerification } from "@/api/identitySocket";
 
-const MOCK_OPERATION_PREFIX = "mock-op-id";
-
 const VerifyNationalId = () => {
   const { lang, t } = useLanguage();
 
   const [nationalId, setNationalId] = useState("");
   const [error, setError] = useState<string>("");
-  const [phase, setPhase] = useState<"idle" | "starting" | "waiting" | "checking" | "done" | "failed">("idle");
+  const [phase, setPhase] = useState<"idle" | "starting" | "waiting" | "done" | "failed">("idle");
   const [operationId, setOperationId] = useState<string>("");
   const [isVerified, setIsVerified] = useState<boolean | null>(null);
   const [personName, setPersonName] = useState<string>("");
   const [identityPayload, setIdentityPayload] = useState<Record<string, unknown> | null>(null);
 
   const socketUnsubscribeRef = useRef<(() => void) | null>(null);
-
-  const isMockOperation = (opId: string) => opId.startsWith(MOCK_OPERATION_PREFIX);
 
   const applyStatusResult = (statusData: IdentityStatusResponse) => {
     if (statusData?.status === "pending") {
@@ -125,7 +120,7 @@ const VerifyNationalId = () => {
   };
 
   useEffect(() => {
-    if (!operationId || isMockOperation(operationId) || phase === "done" || phase === "failed") {
+    if (!operationId || phase === "done" || phase === "failed") {
       return;
     }
 
@@ -182,7 +177,7 @@ const VerifyNationalId = () => {
         if (!opId) throw new Error(lang === "ar" ? "لم يتم استلام operationId" : "Missing operationId");
 
         setOperationId(opId);
-        setPhase(isMockOperation(opId) ? "idle" : "waiting");
+        setPhase("waiting");
       } catch (err: unknown) {
         setPhase("failed");
         const message = err instanceof Error ? err.message : "";
@@ -197,40 +192,6 @@ const VerifyNationalId = () => {
     })();
   };
 
-  const onCheckStatus = () => {
-    if (!operationId) return;
-
-    void (async () => {
-      try {
-        setPhase("checking");
-        setError("");
-
-        const statusData = await getIdentityStatus(operationId);
-        if (statusData?.status === "pending") {
-          setIsVerified(null);
-          setPersonName("");
-          setIdentityPayload(null);
-          setPhase(isMockOperation(operationId) ? "idle" : "waiting");
-          setError(lang === "ar" ? "الحالة ما زالت قيد الانتظار" : "Status is still pending");
-          return;
-        }
-
-        applyStatusResult(statusData);
-      } catch (err: unknown) {
-        setPhase("failed");
-        const message = err instanceof Error ? err.message : "";
-        setError(
-          message
-            ? message
-            : lang === "ar"
-              ? "تعذر جلب الحالة. يرجى المحاولة مرة أخرى."
-              : "Failed to fetch status. Please try again."
-        );
-      }
-    })();
-  };
-
-  const showManualCheck = operationId && isMockOperation(operationId);
   const showWaiting = operationId && phase === "waiting";
 
   return (
@@ -301,29 +262,6 @@ const VerifyNationalId = () => {
                   <>
                     {lang === "ar" ? "تحقق من الرقم المدني" : "Check National ID"}
                     <ArrowRight className="w-4 h-4" />
-                  </>
-                )}
-              </motion.button>
-            )}
-
-            {showManualCheck && (
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.97 }}
-                type="button"
-                onClick={onCheckStatus}
-                disabled={phase === "checking" || phase === "starting"}
-                className="w-full bg-secondary/40 text-foreground py-3.5 rounded-xl font-body text-sm tracking-widest uppercase hover:bg-secondary/60 transition-all flex items-center justify-center gap-2"
-              >
-                {phase === "checking" ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    {lang === "ar" ? "جارِ التحقق من الحالة..." : "Checking status..."}
-                  </>
-                ) : (
-                  <>
-                    {lang === "ar" ? "تحقق من الموافقة" : "Check Approval"}
-                    <RefreshCcw className="w-4 h-4" />
                   </>
                 )}
               </motion.button>

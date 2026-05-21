@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import {
@@ -27,7 +27,12 @@ import {
   getPatient,
   type Slot
 } from "@/api/royalhayat";
-import { getIdentityData, getIdentityStatus, startIdentityVerification } from "@/api/identity";
+import {
+  getIdentityData,
+  startIdentityVerification,
+  type IdentityStatusResponse,
+} from "@/api/identity";
+import { subscribeToIdentityVerification } from "@/api/identitySocket";
 import { doctorsWithClinicCodes as staticDoctors } from "@/data/doctorsWithClinicCodes";
 import { departments as staticDepts, deptDoctorAliases, MAIN_CATEGORIES } from "@/data/departments";
 
@@ -402,8 +407,8 @@ const BookAppointment = () => {
   const [isVerifyingNationalId, setIsVerifyingNationalId] = useState(false);
   const [verifiedPersonName, setVerifiedPersonName] = useState<{ english: string; arabic: string } | null>(null);
   const [verifyOperationId, setVerifyOperationId] = useState<string | null>(null);
-  const [isCheckingApproval, setIsCheckingApproval] = useState(false);
-  const [verifyStatusMessage, setVerifyStatusMessage] = useState("");
+  const [isWaitingForApproval, setIsWaitingForApproval] = useState(false);
+  const verifySocketCleanupRef = useRef<(() => void) | null>(null);
   const [verifiedIdentityDetails, setVerifiedIdentityDetails] = useState<VerifiedIdentityDetails | null>(null);
 
   // Symptom path
@@ -545,7 +550,9 @@ const BookAppointment = () => {
     setNationalId("");
     setNationalIdError("");
     setVerifyOperationId(null);
-    setVerifyStatusMessage("");
+    setIsWaitingForApproval(false);
+    verifySocketCleanupRef.current?.();
+    verifySocketCleanupRef.current = null;
     setVerifiedIdentityDetails(null);
     setShowReturningPatientModal(false);
   }, [locState?.resetBookingFlow]);
@@ -742,7 +749,9 @@ const BookAppointment = () => {
     setNationalIdError("");
     setVerifiedPersonName(null);
     setVerifyOperationId(null);
-    setVerifyStatusMessage("");
+    setIsWaitingForApproval(false);
+    verifySocketCleanupRef.current?.();
+    verifySocketCleanupRef.current = null;
     setVerifiedIdentityDetails(null);
     try {
       const response = await startIdentityVerification({
@@ -776,11 +785,7 @@ const BookAppointment = () => {
 
       if (response?.operationId) {
         setVerifyOperationId(response.operationId);
-        setVerifyStatusMessage(
-          isAr
-            ? "الرجاء فتح تطبيق Kuwait Mobile ID على هاتفك للموافقة على الطلب والمتابعة في الحجز."
-            : "Please open the Kuwait Mobile ID app on your phone to approve the request and continue with your booking."
-        );
+        setIsWaitingForApproval(true);
         return;
       }
 
@@ -856,36 +861,49 @@ const BookAppointment = () => {
     }
   };
 
+  const closeReturningPatientModal = () => {
+    verifySocketCleanupRef.current?.();
+    verifySocketCleanupRef.current = null;
+    setIsWaitingForApproval(false);
+    setVerifyOperationId(null);
+    setShowReturningPatientModal(false);
+  };
+
   const openReturningPatientModal = () => {
     setNationalId("");
     setNationalIdError("");
     setVerifiedPersonName(null);
     setVerifyOperationId(null);
-    setVerifyStatusMessage("");
+    setIsWaitingForApproval(false);
+    verifySocketCleanupRef.current?.();
+    verifySocketCleanupRef.current = null;
     setVerifiedIdentityDetails(null);
     setShowReturningPatientModal(true);
   };
 
-  const handleCheckApproval = async () => {
-    if (!verifyOperationId) return;
-    setIsCheckingApproval(true);
-    setNationalIdError("");
-    try {
-      const statusData = await getIdentityStatus(verifyOperationId);
+  const completeVerificationFromStatus = useCallback(
+    async (statusData: IdentityStatusResponse) => {
+      if (statusData?.status === "pending") return;
 
-      if (statusData?.status === "pending") {
-        setVerifyStatusMessage(
-          isAr ? "الحالة ما زالت قيد الانتظار." : "Status is still pending."
+      if (statusData?.verified === false) {
+        setNationalIdError(
+          isAr ? "لم يتم التحقق. يرجى المحاولة مرة أخرى." : "Verification was not approved. Please try again."
         );
-        setVerifiedIdentityDetails(null);
+        setIsWaitingForApproval(false);
+        setVerifyOperationId(null);
         return;
       }
+
       const names = extractVerifiedName(statusData);
       const hasName = Boolean(names.english || names.arabic);
       if (!hasName) {
-        setNationalIdError(isAr ? "تمت الموافقة ولكن لا يوجد اسم متاح حالياً." : "Approved but no name is available yet.");
+        setNationalIdError(
+          isAr ? "تمت الموافقة ولكن لا يوجد اسم متاح حالياً." : "Approved but no name is available yet."
+        );
+        setIsWaitingForApproval(false);
         return;
       }
+
       const pickedName = isAr ? (names.arabic || names.english) : (names.english || names.arabic);
       setPatientName(pickedName);
       setPatientType("returning");
@@ -894,28 +912,33 @@ const BookAppointment = () => {
       const civilIdForData = statusData?.civilId || nationalId.trim();
       if (civilIdForData) {
         const identityDataResponse = await getIdentityData(civilIdForData);
-        const rawData = (identityDataResponse?.raw || identityDataResponse?.identityData || {}) as Record<string, any>;
-        const rawName = (rawData?.name || {}) as Record<string, any>;
+        const rawData = (identityDataResponse?.raw || identityDataResponse?.identityData || {}) as Record<
+          string,
+          unknown
+        >;
+        const rawName = (rawData?.name || {}) as Record<string, unknown>;
         const nameFromRaw = rawData?.name
           ? (isAr
-            ? rawName.arabic || rawName.ar || rawName.english || rawName.en || ""
-            : rawName.english || rawName.en || rawName.arabic || rawName.ar || "")
+              ? String(rawName.arabic || rawName.ar || rawName.english || rawName.en || "")
+              : String(rawName.english || rawName.en || rawName.arabic || rawName.ar || ""))
           : pickedName;
-        const nationalityObj = (rawData?.nationality || {}) as Record<string, any>;
-        const nationalityNameObj = (nationalityObj?.name || {}) as Record<string, any>;
+        const nationalityObj = (rawData?.nationality || {}) as Record<string, unknown>;
+        const nationalityNameObj = (nationalityObj?.name || {}) as Record<string, unknown>;
         const nationalityName = nationalityObj?.name
           ? (isAr
-            ? nationalityNameObj.arabic || nationalityNameObj.english || ""
-            : nationalityNameObj.english || nationalityNameObj.arabic || "")
+              ? String(nationalityNameObj.arabic || nationalityNameObj.english || "")
+              : String(nationalityNameObj.english || nationalityNameObj.arabic || ""))
           : "";
-        const registration = (rawData?.registration || {}) as Record<string, any>;
+        const registration = (rawData?.registration || {}) as Record<string, unknown>;
 
         setVerifiedIdentityDetails({
           name: nameFromRaw || pickedName || "—",
-          dateOfBirth: rawData?.dateOfBirth ? new Date(rawData.dateOfBirth).toLocaleDateString(isAr ? "ar-KW" : "en-GB") : "—",
+          dateOfBirth: rawData?.dateOfBirth
+            ? new Date(String(rawData.dateOfBirth)).toLocaleDateString(isAr ? "ar-KW" : "en-GB")
+            : "—",
           civilIdNumber: String(rawData?.civilId || civilIdForData || "—"),
-          nationality: nationalityName || nationalityObj?.iso3Letter || "—",
-          gender: rawData?.sex || "—",
+          nationality: nationalityName || String(nationalityObj?.iso3Letter || "—"),
+          gender: String(rawData?.sex || "—"),
           passportNumber: String(registration?.passport || "—"),
         });
       }
@@ -929,20 +952,40 @@ const BookAppointment = () => {
         console.error("Failed to fetch patient data:", err);
       }
 
-      setShowReturningPatientModal(false);
+      setIsWaitingForApproval(false);
       setVerifyOperationId(null);
-      setVerifyStatusMessage("");
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : "";
-      setNationalIdError(
-        message || (isAr ? "تعذر جلب حالة الموافقة." : "Failed to fetch approval status.")
-      );
-    } finally {
-      setIsCheckingApproval(false);
+      verifySocketCleanupRef.current?.();
+      verifySocketCleanupRef.current = null;
+      setShowReturningPatientModal(false);
+    },
+    [isAr, nationalId]
+  );
+
+  useEffect(() => {
+    if (!verifyOperationId || !showReturningPatientModal || !isWaitingForApproval) {
+      return;
     }
-  };
+
+    verifySocketCleanupRef.current?.();
+
+    const { unsubscribe } = subscribeToIdentityVerification(verifyOperationId, (statusData) => {
+      if (statusData?.status === "pending") return;
+      void completeVerificationFromStatus(statusData);
+    });
+
+    verifySocketCleanupRef.current = unsubscribe;
+
+    return () => {
+      unsubscribe();
+      verifySocketCleanupRef.current = null;
+    };
+  }, [verifyOperationId, showReturningPatientModal, isWaitingForApproval, completeVerificationFromStatus]);
 
   const goToInitialBookingScreen = () => {
+    verifySocketCleanupRef.current?.();
+    verifySocketCleanupRef.current = null;
+    setIsWaitingForApproval(false);
+    setVerifyOperationId(null);
     setShowReturningPatientModal(false);
     setBookingPath("primary"); // Go to department selection
     setStep(0);
@@ -952,7 +995,7 @@ const BookAppointment = () => {
     setNationalIdError("");
     setVerifiedPersonName(null);
     setVerifyOperationId(null);
-    setVerifyStatusMessage("");
+    setIsWaitingForApproval(false);
     setVerifiedIdentityDetails(null);
   };
 
@@ -1498,7 +1541,7 @@ Clinic Code:`;
               <div className="max-w-3xl mx-auto">
                 {!patientType && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                    <motion.button whileHover={{ y: -4 }} whileTap={{ scale: 0.98 }} onClick={() => { setNationalId(""); setNationalIdError(""); setVerifiedPersonName(null); setVerifyOperationId(null); setVerifyStatusMessage(""); setPatientErrors({}); setPatientName(""); setPatientType("returning"); openReturningPatientModal(); }} className="bg-popover rounded-2xl p-8 border border-border text-center transition-all hover:border-primary/40">
+                    <motion.button whileHover={{ y: -4 }} whileTap={{ scale: 0.98 }} onClick={() => { setNationalId(""); setNationalIdError(""); setVerifiedPersonName(null); setVerifyOperationId(null); setIsWaitingForApproval(false); setPatientErrors({}); setPatientName(""); setPatientType("returning"); openReturningPatientModal(); }} className="bg-popover rounded-2xl p-8 border border-border text-center transition-all hover:border-primary/40">
                       <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4"><LogIn className="w-7 h-7 text-primary" /></div>
                       <h3 className="font-serif text-lg text-foreground mb-2">{t("registeredPatient")}</h3>
                       <p className="font-body text-xs text-muted-foreground">{isAr ? "اختر موعدك في الخطوة التالية" : "Choose your appointment time next"}</p>
@@ -1575,7 +1618,7 @@ Clinic Code:`;
                     </div>
                   </div>
                 )}
-                {patientType && <button onClick={() => { setPatientType(null); setNationalId(""); setNationalIdError(""); setVerifiedPersonName(null); setVerifyOperationId(null); setVerifyStatusMessage(""); setVerifiedIdentityDetails(null); }} className="mt-4 font-body text-xs text-muted-foreground hover:text-foreground transition-colors">← {t("changeSelection")}</button>}
+                {patientType && <button onClick={() => { setPatientType(null); setNationalId(""); setNationalIdError(""); setVerifiedPersonName(null); setVerifyOperationId(null); setIsWaitingForApproval(false); setVerifiedIdentityDetails(null); }} className="mt-4 font-body text-xs text-muted-foreground hover:text-foreground transition-colors">← {t("changeSelection")}</button>}
               </div>
             </motion.div>
           )}
@@ -1670,54 +1713,74 @@ Clinic Code:`;
         </div>
       </div>
       {showReturningPatientModal && (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-foreground/40 backdrop-blur-sm p-4" onClick={() => setShowReturningPatientModal(false)}>
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-foreground/40 backdrop-blur-sm p-4" onClick={closeReturningPatientModal}>
           <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-xl rounded-3xl border border-border/70 bg-popover shadow-2xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
             <div className="px-6 pt-5 pb-4 border-b border-border/60 bg-gradient-to-r from-primary/5 to-accent/5">
               <div className="flex items-start justify-between gap-4">
                 <div><p className="font-body text-[10px] tracking-[0.18em] uppercase text-accent mb-1">{isAr ? "مريض مسجل" : "Registered Patient"}</p><h3 className="font-serif text-xl text-foreground">{isAr ? "التحقق من الرقم المدني" : "Kuwait Civil ID Verification"}</h3><p className="font-body text-xs text-muted-foreground mt-1">{isAr ? "أدخل الرقم المدني لإحضار الاسم ومتابعة الحجز." : "Please enter your Kuwait Civil ID to retrieve your details and continue booking."}</p></div>
-                <button onClick={() => setShowReturningPatientModal(false)} className="w-8 h-8 rounded-full inline-flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-background/70 transition-colors" aria-label={isAr ? "إغلاق" : "Close"}>×</button>
+                <button onClick={closeReturningPatientModal} className="w-8 h-8 rounded-full inline-flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-background/70 transition-colors" aria-label={isAr ? "إغلاق" : "Close"}>×</button>
               </div>
             </div>
             <div className="p-6">
               <div className="rounded-2xl border border-border/70 bg-background/50 p-4">
                 <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "الرقم المدني" : "Kuwait Civil ID"} <span className="text-destructive">*</span></label>
-                <input type="text" inputMode="numeric" value={nationalId} onChange={(e) => { setNationalId(e.target.value.replace(/\D/g, "").slice(0, 12)); setNationalIdError(""); setVerifiedPersonName(null); setVerifiedIdentityDetails(null); }} placeholder={isAr ? "ادخل 12 رقم" : "Enter 12 digits"} className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 ${nationalIdError ? "border-destructive" : "border-border"}`} />
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={nationalId}
+                  disabled={isWaitingForApproval}
+                  onChange={(e) => {
+                    setNationalId(e.target.value.replace(/\D/g, "").slice(0, 12));
+                    setNationalIdError("");
+                    setVerifiedPersonName(null);
+                    setVerifiedIdentityDetails(null);
+                  }}
+                  placeholder={isAr ? "ادخل 12 رقم" : "Enter 12 digits"}
+                  className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 disabled:opacity-60 ${nationalIdError ? "border-destructive" : "border-border"}`}
+                />
                 {nationalIdError && <p className="font-body text-xs text-destructive mt-2">{nationalIdError}</p>}
               </div>
-              <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {verifyOperationId ? (
-                  <button
-                    onClick={handleCheckApproval}
-                    disabled={isCheckingApproval}
-                    className="w-full bg-primary text-primary-foreground px-4 py-3 rounded-xl font-body text-xs tracking-widest uppercase hover:bg-primary/90 transition-colors disabled:opacity-70 inline-flex items-center justify-center text-center"
-                  >
-                    {isCheckingApproval ? (isAr ? "جارِ التحقق..." : "Checking...") : (isAr ? "هل تمت المصادقة في التطبيق؟" : "Authenticated in App?")}
-                  </button>
-                ) : (
+
+              {isWaitingForApproval ? (
+                <div className="mt-6 flex flex-col items-center justify-center py-8">
+                  <Loader2 className="w-10 h-10 animate-spin text-accent" />
+                  <p className="font-body text-xs text-muted-foreground mt-4">
+                    {isAr ? "جارِ انتظار الموافقة..." : "Waiting for approval..."}
+                  </p>
+                </div>
+              ) : (
+                <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <button
                     onClick={handleNationalIdVerify}
                     disabled={isVerifyingNationalId}
                     className="w-full bg-primary text-primary-foreground px-4 py-3 rounded-xl font-body text-xs tracking-widest uppercase hover:bg-primary/90 transition-colors disabled:opacity-70 inline-flex items-center justify-center text-center"
                   >
-                    {isVerifyingNationalId ? (isAr ? "جارِ الفحص..." : "Verifying...") : (isAr ? "مصادقة" : "Verify with Kuwait Mobile ID")}
+                    {isVerifyingNationalId
+                      ? isAr
+                        ? "جارِ الفحص..."
+                        : "Verifying..."
+                      : isAr
+                        ? "مصادقة"
+                        : "Verify with Kuwait Mobile ID"}
                   </button>
-                )}
 
-                <button
-                  onClick={goToInitialBookingScreen}
-                  className="w-full bg-secondary/40 text-foreground px-4 py-3 rounded-xl font-body text-xs tracking-widest uppercase hover:bg-secondary/60 transition-colors inline-flex items-center justify-center text-center"
-                >
-                  {isAr ? "إلغاء" : "Cancel"}
-                </button>
-              </div>
-              {verifyStatusMessage && (
-                <div className="mt-4 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3">
-                  <p className="font-body text-xs font-semibold text-foreground mb-1">
-                    {isAr ? "تم إرسال الطلب" : "Request sent"}
-                  </p>
-                  <p className="font-body text-xs text-foreground">
-                    {verifyStatusMessage}
-                  </p>
+                  <button
+                    onClick={goToInitialBookingScreen}
+                    className="w-full bg-secondary/40 text-foreground px-4 py-3 rounded-xl font-body text-xs tracking-widest uppercase hover:bg-secondary/60 transition-colors inline-flex items-center justify-center text-center"
+                  >
+                    {isAr ? "إلغاء" : "Cancel"}
+                  </button>
+                </div>
+              )}
+
+              {isWaitingForApproval && (
+                <div className="mt-3">
+                  <button
+                    onClick={goToInitialBookingScreen}
+                    className="w-full bg-secondary/40 text-foreground px-4 py-3 rounded-xl font-body text-xs tracking-widest uppercase hover:bg-secondary/60 transition-colors inline-flex items-center justify-center text-center"
+                  >
+                    {isAr ? "إلغاء" : "Cancel"}
+                  </button>
                 </div>
               )}
             </div>

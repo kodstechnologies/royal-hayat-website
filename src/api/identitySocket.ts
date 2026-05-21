@@ -20,9 +20,12 @@ export const subscribeToIdentityVerification = (
   onComplete: (data: IdentityStatusResponse) => void
 ): IdentitySocketSubscription => {
   const socket = io(getSocketBaseUrl(), {
-    path: "/socket.io",
-    transports: ["websocket", "polling"],
+    path: "/api/socket.io",
+    transports: ["websocket"],
+    upgrade: false,
+    withCredentials: true,
     autoConnect: true,
+    reconnectionAttempts: 8,
   });
 
   const handleComplete = (data: IdentityStatusResponse) => {

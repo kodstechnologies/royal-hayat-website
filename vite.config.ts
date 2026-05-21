@@ -16,7 +16,7 @@ export default defineConfig(({ mode }) => ({
         target: "http://localhost:8000",
         changeOrigin: true,
       },
-      "/socket.io": {
+      "/api/socket.io": {
         target: "http://localhost:8000",
         changeOrigin: true,
         ws: true,

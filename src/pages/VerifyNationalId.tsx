@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useState, useEffect, useRef, type FormEvent } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle2, XCircle, Loader2, RefreshCcw } from "lucide-react";
 import Header from "@/components/Header";
@@ -14,17 +14,45 @@ import {
   type StartIdentityPayload,
   type StartIdentityResponse
 } from "@/api/identity";
+import { subscribeToIdentityVerification } from "@/api/identitySocket";
+
+const MOCK_OPERATION_PREFIX = "mock-op-id";
 
 const VerifyNationalId = () => {
   const { lang, t } = useLanguage();
 
   const [nationalId, setNationalId] = useState("");
   const [error, setError] = useState<string>("");
-  const [phase, setPhase] = useState<"idle" | "starting" | "checking" | "done" | "failed">("idle");
+  const [phase, setPhase] = useState<"idle" | "starting" | "waiting" | "checking" | "done" | "failed">("idle");
   const [operationId, setOperationId] = useState<string>("");
   const [isVerified, setIsVerified] = useState<boolean | null>(null);
   const [personName, setPersonName] = useState<string>("");
   const [identityPayload, setIdentityPayload] = useState<Record<string, unknown> | null>(null);
+
+  const socketUnsubscribeRef = useRef<(() => void) | null>(null);
+
+  const isMockOperation = (opId: string) => opId.startsWith(MOCK_OPERATION_PREFIX);
+
+  const applyStatusResult = (statusData: IdentityStatusResponse) => {
+    if (statusData?.status === "pending") {
+      setIsVerified(null);
+      setPersonName("");
+      setIdentityPayload(null);
+      setPhase("waiting");
+      return;
+    }
+
+    setIsVerified(statusData?.verified === true);
+
+    const nameFromStatus = (() => {
+      const nameEn = statusData?.personName?.english || "";
+      const nameAr = statusData?.personName?.arabic || "";
+      return (lang === "ar" ? nameAr : nameEn) || "";
+    })();
+    setPersonName(nameFromStatus || extractDisplayName(statusData));
+    setIdentityPayload(extractIdentityPayload(statusData));
+    setPhase("done");
+  };
 
   const extractDisplayName = (payload: StartIdentityResponse | IdentityStatusResponse) => {
     const source =
@@ -96,13 +124,34 @@ const VerifyNationalId = () => {
     return "";
   };
 
+  useEffect(() => {
+    if (!operationId || isMockOperation(operationId) || phase === "done" || phase === "failed") {
+      return;
+    }
+
+    socketUnsubscribeRef.current?.();
+
+    const { unsubscribe } = subscribeToIdentityVerification(operationId, (statusData) => {
+      setError("");
+      applyStatusResult(statusData);
+      unsubscribe();
+      socketUnsubscribeRef.current = null;
+    });
+
+    socketUnsubscribeRef.current = unsubscribe;
+
+    return () => {
+      unsubscribe();
+      socketUnsubscribeRef.current = null;
+    };
+  }, [operationId, lang]);
+
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     const err = validate();
     setError(err);
     if (err) return;
 
-    // Frontend -> backend -> SharperIntegration
     void (async () => {
       try {
         setPhase("starting");
@@ -111,6 +160,8 @@ const VerifyNationalId = () => {
         setPersonName("");
         setIdentityPayload(null);
         setOperationId("");
+        socketUnsubscribeRef.current?.();
+        socketUnsubscribeRef.current = null;
 
         const payload: StartIdentityPayload = {
           civilId: nationalId.trim(),
@@ -131,8 +182,7 @@ const VerifyNationalId = () => {
         if (!opId) throw new Error(lang === "ar" ? "لم يتم استلام operationId" : "Missing operationId");
 
         setOperationId(opId);
-        // Callback-first flow: after starting, user can click "Check Status".
-        setPhase("idle");
+        setPhase(isMockOperation(opId) ? "idle" : "waiting");
       } catch (err: unknown) {
         setPhase("failed");
         const message = err instanceof Error ? err.message : "";
@@ -160,22 +210,12 @@ const VerifyNationalId = () => {
           setIsVerified(null);
           setPersonName("");
           setIdentityPayload(null);
-          setPhase("idle");
+          setPhase(isMockOperation(operationId) ? "idle" : "waiting");
           setError(lang === "ar" ? "الحالة ما زالت قيد الانتظار" : "Status is still pending");
           return;
         }
 
-        setIsVerified(statusData?.verified === true);
-
-        const nameFromStatus = (() => {
-          const nameEn = statusData?.personName?.english || "";
-          const nameAr = statusData?.personName?.arabic || "";
-          return (lang === "ar" ? nameAr : nameEn) || "";
-        })();
-        setPersonName(nameFromStatus || extractDisplayName(statusData));
-        setIdentityPayload(extractIdentityPayload(statusData));
-
-        setPhase("done");
+        applyStatusResult(statusData);
       } catch (err: unknown) {
         setPhase("failed");
         const message = err instanceof Error ? err.message : "";
@@ -189,6 +229,9 @@ const VerifyNationalId = () => {
       }
     })();
   };
+
+  const showManualCheck = operationId && isMockOperation(operationId);
+  const showWaiting = operationId && phase === "waiting";
 
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)] overflow-x-hidden">
@@ -230,7 +273,10 @@ const VerifyNationalId = () => {
                   setNationalId(next);
                   setPhase("idle");
                   setError("");
+                  socketUnsubscribeRef.current?.();
+                  socketUnsubscribeRef.current = null;
                 }}
+                disabled={phase === "waiting" || phase === "starting"}
                 className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 ${
                   error ? "border-destructive" : "border-border"
                 }`}
@@ -243,7 +289,7 @@ const VerifyNationalId = () => {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.97 }}
                 type="submit"
-                disabled={phase === "starting" || phase === "checking"}
+                disabled={phase === "starting" || phase === "waiting"}
                 className="w-full bg-primary text-primary-foreground py-3.5 rounded-xl font-body text-sm tracking-widest uppercase hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
               >
                 {phase === "starting" ? (
@@ -260,7 +306,7 @@ const VerifyNationalId = () => {
               </motion.button>
             )}
 
-            {operationId && (
+            {showManualCheck && (
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.97 }}
@@ -283,12 +329,13 @@ const VerifyNationalId = () => {
               </motion.button>
             )}
 
-            {operationId && phase !== "done" && (
+            {showWaiting && (
               <div className="bg-muted/30 rounded-xl p-4 text-center border border-border">
+                <Loader2 className="w-6 h-6 animate-spin text-accent mx-auto mb-2" />
                 <p className="font-body text-sm text-foreground">
                   {lang === "ar"
-                    ? "تمت معالجة التحقق، يرجى انتظار الموافقة."
-                    : "Authentication processed, please wait for approval."}
+                    ? "تم إرسال طلب الموافقة. يرجى الموافقة على الهاتف — سيتم التحديث تلقائياً."
+                    : "Approval request sent. Please approve on your phone — this page will update automatically."}
                 </p>
                 <p className="font-body text-[11px] text-muted-foreground mt-2 break-all">
                   operationId: {operationId}
@@ -362,4 +409,3 @@ const VerifyNationalId = () => {
 };
 
 export default VerifyNationalId;
-

@@ -24,7 +24,10 @@ import { doctors } from "@/data/doctors";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const Index = () => {
-  const featuredDoctors = doctors.slice(0, 12);
+  // Exclude Clinical Pharmacy and specific administrative/support doctors from the featured homepage list
+  const featuredDoctors = doctors
+    .filter(doc => doc.id !== "dr-mustafa-alfiki" && doc.specialty?.toLowerCase() !== "clinical pharmacy")
+    .slice(0, 12);
   const { lang } = useLanguage();
 
   // Preload doctor images for instant loading in DoctorsSection

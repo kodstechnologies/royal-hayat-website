@@ -262,11 +262,18 @@ body {
   overflow-x: hidden;
 }
 
-/* Justify only large content paragraphs in article/prose blocks */
+/* Justify content paragraphs with hyphenation to prevent large word gaps */
+.text-justify,
 .whitespace-pre-line,
 article p,
 .prose p {
   text-align: justify;
+  text-justify: inter-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
 }
 
 h1, h2, h3, h4, h5, h6, button, a, label, span, .text-center p {

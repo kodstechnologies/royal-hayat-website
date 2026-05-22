@@ -42,13 +42,15 @@ const Header = () => {
   useEffect(() => {
     const updateHeaderHeight = () => {
       if (headerRef.current) {
-        const fullHeight = headerRef.current.offsetHeight;
         if (logoRowRef.current) {
           logoRowHeight.current = logoRowRef.current.offsetHeight;
           setLogoHeight(logoRowRef.current.offsetHeight);
         }
-        // Use the total height for the layout padding to ensure stability
-        document.documentElement.style.setProperty('--header-height', `${fullHeight}px`);
+        // Only update layout padding when header is fully visible to prevent content jumping on scroll
+        if (headerVisible) {
+          const fullHeight = headerRef.current.offsetHeight;
+          document.documentElement.style.setProperty('--header-height', `${fullHeight}px`);
+        }
       }
     };
     updateHeaderHeight();
@@ -573,6 +575,29 @@ const Header = () => {
           </div>
         </div>
 
+        {/* Row 3 (Action Bar): Book Appointment & My Medical Reports */}
+        <div className={`lg:hidden transition-all duration-300 ease-in-out overflow-hidden ${headerVisible ? 'max-h-16 opacity-100' : 'max-h-0 opacity-0 pointer-events-none'}`}>
+          <div className="border-t border-border bg-popover/95 backdrop-blur-sm">
+            <div className="flex w-full divide-x divide-border rtl:divide-x-reverse">
+              <Link
+                to="/book-appointment"
+                onClick={handleBookAppointmentClick}
+                className="flex-1 py-3 flex items-center justify-center gap-2 font-body text-xs text-[#816107] hover:bg-muted/20 transition-colors tracking-wide"
+              >
+                <Stethoscope className="w-4 h-4 text-[#816107]" />
+                <span>{t("bookAppointment")}</span>
+              </Link>
+              <button
+                onClick={() => setShowMedRecordsModal(true)}
+                className="flex-1 py-3 flex items-center justify-center gap-2 font-body text-xs text-foreground hover:bg-muted/20 transition-colors tracking-wide"
+              >
+                <ClipboardList className="w-4 h-4 text-primary" />
+                <span>{t("login")}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
         {/* Mobile menu */}
         <AnimatePresence>
           {menuOpen && (
@@ -668,21 +693,8 @@ const Header = () => {
                       )}
                     </AnimatePresence>
                   </div>
-                  );
-                })}
-                <Link
-                  to="/book-appointment"
-                  className="text-primary font-body text-sm tracking-wide py-3 border-b border-border/50 hover:text-accent transition-colors"
-                  onClick={(e) => { setMenuOpen(false); handleBookAppointmentClick(e); }}
-                >
-                  {t("bookAppointment")}
-                </Link>
-                <button
-                  className="text-left text-foreground font-body text-sm tracking-wide py-3 border-b border-border/50 hover:text-accent transition-colors"
-                  onClick={() => { setMenuOpen(false); setShowMedRecordsModal(true); }}
-                >
-                  {t("login")}
-                </button>
+                );
+              })}
               </nav>
             </motion.div>
           )}

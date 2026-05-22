@@ -171,7 +171,7 @@ const employees = [
     role: "Bell Man - Guest Relations",
     roleAr: "عامل الجرس - علاقات الضيوف",
     image:
-      "https://royal-hayat.s3.eu-central-1.amazonaws.com/employee-of-the-month/ranga-tara.jpeg",
+      "/images/ranga-tara.png",
     achievements: [
       "Rangaa has earned this recognition through his exceptional helpfulness and a consistently positive attitude. A dependable team member with an exemplary attendance record, he ensures that our guests’ first impression of Royale Hayat is one of comfort and high-standard hospitality.",
       "Dependable and dedicated team member who works harmoniously with others. He is reliable, always willing to extend his duty when needed, and completes tasks efficiently without complaint. Attentive in the lobby and consistently respectful, he is a valued part of the team.",
@@ -189,7 +189,7 @@ const employees = [
     role: "Guest Services Operator - Call Center",
     roleAr: "مشغل خدمات الضيوف - مركز الاتصال",
     image:
-      "https://royal-hayat.s3.eu-central-1.amazonaws.com/employee-of-the-month/mohammad-niyaz.jpeg",
+      "/images/mohammad-niyaz.png",
     achievements: [
       "Mohammad distinguishes himself through efficiency and a commitment to service excellence. His professional handling of guest inquiries, combined with his reliable attendance and disciplined work ethic, has been essential to the success of our Guest Services team.",
       "Highly reliable and flexible team member who always brings positive energy and support to the workplace. He consistently completes tasks on time and never hesitates to step in when needed, even covering shifts at short notice while maintaining excellent performance.",

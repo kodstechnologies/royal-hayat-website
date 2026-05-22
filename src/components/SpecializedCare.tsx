@@ -339,9 +339,86 @@ const SpecializedCare = () => {
           {reorderedServices.map((s) => {
             const origIdx = getOriginalIndex(s);
             const isExpanded = expandedIndex === origIdx;
-            const deptDoctors = getDeptDoctors(s.department);
-            const showImageCard = isInFirstSix(origIdx);
             const selectedSubSlug = selectedSubByService[s.num];
+            const deptDoctors = (() => {
+              const aliases = deptDoctorAliases[s.department] || [s.department];
+              const extraTerms: string[] = [];
+              if (s.name === "Internal Medicine") {
+                extraTerms.push("Nutricare");
+              } else if (s.name === "General & Laparoscopic Surgery") {
+                extraTerms.push("Nutricare", "La Cosmetique");
+              }
+              const allTerms = [...aliases, ...extraTerms];
+              const allDeptDoctors = doctors.filter((d) =>
+                allTerms.some(a => d.department.includes(a) || d.specialty.includes(a))
+              );
+
+              if (selectedSubSlug && s.subspecialties && s.subspecialties.length > 0) {
+                const subSpecialtyDoctorMap: Record<string, string[]> = {
+                  // Internal Medicine subs
+                  "cardiology": ["alturki", "turki"],
+                  "nephrology": ["qallaf"],
+                  "gastroenterology": ["swait", "jaser"],
+                  "endocrinology-and-metabolism": ["ramadhan", "alroudhan", "roudhan"],
+                  "rheumatology": ["aldei", "dei"],
+                  "clinical-nutrition-and-dietetics": ["hachem", "khreis", "salamah"],
+                  "respiratory-clinic-pulmonology": ["alia", "ibrahim"],
+                  "allergy-and-immunology": ["othman", "yassmin"],
+                  // OB/GYN subs
+                  "cosmetic-gynecology": ["abubakr", "elmardi", "nada", "samar", "nagaty"],
+                  "gynecologic-oncology": ["nourah-al-ibrahim"],
+                  "urogynecology": ["abubakr", "elmardi", "nada"],
+                  "women-s-health": [], // All OBGYN doctors
+                  "physiotherapy": [],
+                  "parent-and-childbirth-education": [],
+                  // General & Laparoscopic Surgery subs
+                  "obesity-bariatric-surgery": ["ahmed-al-mulla", "mulla", "humoud", "alrasheedi", "hussein", "faour", "sulaiman", "almazeedi"],
+                  "breast-surgical-oncology": ["noha", "alsaleh"],
+                  "abdominal-wall-reconstruction": ["humoud", "alrasheedi", "sarah", "youha"],
+                  "nutrition-and-diet-surgery": ["hachem", "khreis", "salamah"],
+                };
+
+                // Try explicit map first
+                const mapKey = Object.keys(subSpecialtyDoctorMap).find(
+                  (k) => selectedSubSlug.includes(k) || k.includes(selectedSubSlug)
+                );
+
+                if (mapKey && subSpecialtyDoctorMap[mapKey].length > 0) {
+                  const keywords = subSpecialtyDoctorMap[mapKey];
+                  const filtered = allDeptDoctors.filter((doc) =>
+                    keywords.some((kw) => doc.id.toLowerCase().includes(kw) || doc.name.toLowerCase().includes(kw))
+                  );
+                  if (filtered.length > 0) {
+                    return [...filtered].sort((a, b) =>
+                      (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en")
+                    );
+                  }
+                }
+
+                // Fallback: keyword match on title/specialty
+                const selectedSub = s.subspecialties.find(
+                  (sub) => getSubSlug(s, sub.name) === selectedSubSlug
+                );
+                if (selectedSub) {
+                  const subKeywords = selectedSub.name.toLowerCase().split(/[\s&,/()+]+/).filter(w => w.length > 3);
+                  const filtered = allDeptDoctors.filter((doc) => {
+                    const haystack = `${doc.title} ${doc.specialty} ${doc.titleAr} ${doc.id}`.toLowerCase();
+                    return subKeywords.some((kw) => haystack.includes(kw));
+                  });
+                  if (filtered.length > 0) {
+                    return [...filtered].sort((a, b) =>
+                      (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en")
+                    );
+                  }
+                }
+              }
+
+              return [...allDeptDoctors]
+                .sort((a, b) => (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en"))
+                .slice(0, 3);
+            })();
+
+            const showImageCard = isInFirstSix(origIdx);
             const departmentSlug = getDepartmentSlug(s);
 
             return (

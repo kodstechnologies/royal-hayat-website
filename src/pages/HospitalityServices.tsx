@@ -240,15 +240,18 @@ const HospitalityServices = ({
             <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-6">{isAr ? "مقدمة" : "Introduction"}</h2>
             <div className="space-y-4 font-body text-sm text-muted-foreground leading-relaxed text-justify">
               {isAr ? (<>
-                <p>يقدم مستشفى رويال حياة خدمات فاخرة لتعزيز تجارب المرضى والضيوف خلال المناسبات الخاصة. نقدم عناصر مخصصة مثل زجاجات المياه وعلب المناديل والهدايا لضمان إقامة لا تُنسى. يلبي طهاتنا التنفيذيون الأنظمة الغذائية الخاصة بطعام طازج ومغذٍ.</p>
-                <p>الطابق السادس مخصص للفخامة ويشبه أرقى الفنادق، ويضم طاقم خدمة عملاء مدرب تدريباً عالياً. يتميز بأربعة أنواع من الأجنحة المزينة بأناقة مع وسائل الراحة الحديثة.</p>
+                <p>يقدم مستشفى رويال حياة خدمات حصرية لتعزيز تجارب المرضى والضيوف خلال المناسبات الخاصة. نقدم عناصر مخصصة مثل زجاجات المياه وعلب المناديل والهدايا لضمان إقامة لا تُنسى. يلبي طهاتنا التنفيذيون الأنظمة الغذائية الخاصة بطعام طازج ومغذٍ.</p>
+
+                <p>الطابق السادس مخصص للحصرية ويشبه أرقى الفنادق، ويضم طاقم خدمة عملاء مدرب تدريباً عالياً. يتميز بأربعة أنواع من الأجنحة المزينة بأناقة مع وسائل الراحة الحديثة.</p>
+
                 <p>أجنحة رويال أوركيد الأكثر فخامة مصممة لكبار الشخصيات وتوفر خصوصية وأماناً لا مثيل لهما مع مفروشات فاخرة وخيارات طعام خاصة.</p>
-                <p>تضمن ضيافة رويال حياة الفاخرة مجموعة من الخدمات بما في ذلك تقديم الطعام وتصاميم الزهور والترفيه المصممة حسب الاحتياجات الفردية.</p>
+
+                <p>تضمن ضيافة رويال حياة الحصرية مجموعة من الخدمات بما في ذلك تقديم الطعام وتصاميم الزهور والترفيه المصممة حسب الاحتياجات الفردية.</p>
               </>) : (<>
-                <p>RHH offers luxury services to enhance patient and guest experiences during special occasions. They provide personalized items such as water bottles, tissue boxes, and gifts, ensuring a memorable stay. RHH's executive chefs cater to special diets with fresh, nutritious food, allowing guests to enjoy gourmet hors d'oeuvres or desserts.</p>
-                <p>The sixth floor of RHH is dedicated to luxury, resembling the finest hotels, and boasts a highly trained customer service staff. It features four types of elegantly decorated inpatient suites with modern amenities like interactive TVs, kitchens, and 24-hour housekeeping.</p>
+                <p>RHH offers exclusive services to enhance patient and guest experiences during special occasions. They provide personalized items such as water bottles, tissue boxes, and gifts, ensuring a memorable stay. RHH's executive chefs cater to special diets with fresh, nutritious food, allowing guests to enjoy gourmet hors d'oeuvres or desserts.</p>
+                <p>The sixth floor of RHH is dedicated to exclusivity, resembling the finest hotels, and boasts a highly trained customer service staff. It features four types of elegantly decorated inpatient suites with modern amenities like interactive TVs, kitchens, and 24-hour housekeeping.</p>
                 <p>The most extravagant Royale Orchid Suites, designed for VIPs, provide unmatched privacy and security, featuring a large suite with an adjoining reception hall. Guests enjoy lavish furnishings, private dining options, and a selection of high-quality personal care products.</p>
-                <p>RHH's luxurious hospitality ensures a range of services, including catering, floral designs, and entertainment, tailored to individual needs. Furthermore, a Lactation & Lamaze facility is available on the sixth floor.</p>
+                <p>RHH's exclusive hospitality ensures a range of services, including catering, floral designs, and entertainment, tailored to individual needs. Furthermore, a Lactation & Lamaze facility is available on the sixth floor.</p>
               </>)}
             </div>
           </ScrollAnimationWrapper>
@@ -1036,9 +1039,9 @@ const HospitalityServices = ({
                 {/* 3 services compact */}
                 <div className="space-y-3 mb-5">
                   {[
-                    { icon: Gift,           title: isAr ? "التصميم والديكور المخصص" : "Custom Design & Décor",  desc: isAr ? "بالونات، زهور، إضاءة وأقمشة مصممة خصيصاً لمناسبتك." : "Balloons, flowers, lighting and fabrics tailored to your occasion." },
-                    { icon: UtensilsCrossed, title: isAr ? "المأكولات الراقية" : "Gourmet Catering",            desc: isAr ? "أطباق مختارة من مطبخنا الراقي، من المقبلات إلى الحلويات." : "Curated dishes from our kitchen, from appetizers to desserts." },
-                    { icon: UserCheck,      title: isAr ? "خدمة الخادم الشخصي" : "Butler Service",             desc: isAr ? "خدمة احترافية من الاستقبال حتى التنظيف." : "Professional service from reception to cleanup." },
+                    { icon: Gift, title: isAr ? "التصميم والديكور المخصص" : "Custom Design & Décor", desc: isAr ? "بالونات، زهور، إضاءة وأقمشة مصممة خصيصاً لمناسبتك." : "Balloons, flowers, lighting and fabrics tailored to your occasion." },
+                    { icon: UtensilsCrossed, title: isAr ? "المأكولات الراقية" : "Gourmet Catering", desc: isAr ? "أطباق مختارة من مطبخنا الراقي، من المقبلات إلى الحلويات." : "Curated dishes from our kitchen, from appetizers to desserts." },
+                    { icon: UserCheck, title: isAr ? "خدمة الخادم الشخصي" : "Butler Service", desc: isAr ? "خدمة احترافية من الاستقبال حتى التنظيف." : "Professional service from reception to cleanup." },
                   ].map((item, i) => (
                     <div key={i} className="flex items-start gap-3">
                       <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -1159,7 +1162,7 @@ const HospitalityServices = ({
             </ScrollAnimationWrapper>
           </div>
         </div>
-      </section>} 
+      </section>}
 
       {/* ===== AL LIWAN BISTRO (Show All Order) ===== */}
       {showAll && <section className="py-6 bg-white">

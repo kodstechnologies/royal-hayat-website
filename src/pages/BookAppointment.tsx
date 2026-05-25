@@ -1569,21 +1569,24 @@ Clinic Code:`;
                   </div>
                 )}
                 {patientType === "new" && (
-                  <div className="bg-popover rounded-2xl p-5 sm:p-8 md:p-10 border border-border shadow-sm">
+                  <div className="bg-popover rounded-2xl p-5 sm:p-8 md:p-10 border border-border shadow-sm min-w-0 overflow-hidden">
                     <div className="flex items-center gap-3 mb-6">
                       <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center"><ClipboardList className="w-5 h-5 text-accent" /></div>
                       <div><h2 className="text-xl font-serif text-foreground">{t("patientDetails")}</h2><p className="text-muted-foreground font-body text-xs">{t("provideInfo")}</p></div>
                     </div>
-                    <div className="space-y-5">
+                    <div className="space-y-5 min-w-0">
                       <div><label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{t("fullName")} <span className="text-destructive">*</span></label><input type="text" value={patientName} onChange={(e) => { setPatientName(e.target.value); setPatientErrors(prev => ({ ...prev, name: "" })); }} placeholder={t("enterFullName")} className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all ${patientErrors.name ? "border-destructive" : "border-border"}`} />{patientErrors.name && <p className="font-body text-xs text-destructive mt-1">{patientErrors.name}</p>}</div>
-                      <div><label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{t("phoneNumber")} <span className="text-destructive">*</span></label>
-                        <div className="flex gap-2">
-                          <select value={patientCountryCode} onChange={(e) => setPatientCountryCode(e.target.value)} className="w-24 px-3 py-3 rounded-xl border border-border bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30"><option value="+965">+965</option><option value="+966">+966</option><option value="+971">+971</option></select>
-                          <input type="tel" value={patientPhone} onChange={(e) => { setPatientPhone(e.target.value.replace(/\D/g, "").slice(0, 8)); setPatientErrors(prev => ({ ...prev, phone: "" })); }} inputMode="numeric" maxLength={8} pattern="\d{8}" placeholder={t("phonePlaceholder")} className={`flex-1 px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all ${patientErrors.phone ? "border-destructive" : "border-border"}`} />
+                      <div className="min-w-0 w-full">
+                        <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{t("phoneNumber")} <span className="text-destructive">*</span></label>
+                        <div className="flex w-full min-w-0 gap-2">
+                          <select value={patientCountryCode} onChange={(e) => setPatientCountryCode(e.target.value)} className="shrink-0 w-[5.25rem] sm:w-24 px-2 sm:px-3 py-3 rounded-xl border border-border bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30"><option value="+965">+965</option><option value="+966">+966</option><option value="+971">+971</option></select>
+                          <input type="tel" value={patientPhone} onChange={(e) => { setPatientPhone(e.target.value.replace(/\D/g, "").slice(0, 8)); setPatientErrors(prev => ({ ...prev, phone: "" })); }} inputMode="numeric" maxLength={8} pattern="\d{8}" placeholder={t("phonePlaceholder")} className={`min-w-0 flex-1 w-full px-3 sm:px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all ${patientErrors.phone ? "border-destructive" : "border-border"}`} />
                         </div>{patientErrors.phone && <p className="font-body text-xs text-destructive mt-1">{patientErrors.phone}</p>}
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div><label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "تاريخ الميلاد" : "Date of Birth"} <span className="text-destructive">*</span></label><input type="date" value={patientDob} max={new Date().toISOString().split("T")[0]} onChange={(e) => { setPatientDob(e.target.value); setPatientErrors(prev => ({ ...prev, dob: "" })); }} className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all ${patientErrors.dob ? "border-destructive" : "border-border"}`} />{patientErrors.dob && <p className="font-body text-xs text-destructive mt-1">{patientErrors.dob}</p>}</div>
+                        <div>
+                          <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "تاريخ الميلاد" : "Date of Birth"} <span className="text-destructive">*</span></label>
+                          <input type="date" value={patientDob} max={new Date().toISOString().split("T")[0]} onChange={(e) => { setPatientDob(e.target.value); setPatientErrors(prev => ({ ...prev, dob: "" })); }} className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all ${patientErrors.dob ? "border-destructive" : "border-border"}`} />{patientErrors.dob && <p className="font-body text-xs text-destructive mt-1">{patientErrors.dob}</p>}</div>
                         <div><label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{t("gender")} <span className="text-destructive">*</span></label><select value={patientGender} onChange={(e) => { setPatientGender(e.target.value); setPatientErrors(prev => ({ ...prev, gender: "" })); }} className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all ${patientErrors.gender ? "border-destructive" : "border-border"}`}><option value="">{t("selectGender")}</option><option value="male">{t("male")}</option><option value="female">{t("female")}</option></select>{patientErrors.gender && <p className="font-body text-xs text-destructive mt-1">{patientErrors.gender}</p>}</div>
                       </div>
                     </div>
@@ -1653,7 +1656,7 @@ Clinic Code:`;
                         <span className="text-muted-foreground">{isAr ? selectedDeptObj?.nameAr : selectedDeptObj?.name}</span>
                       </div>
                       <div className="flex gap-2 items-center">
-                        <span className="text-muted-foreground">{isAr ? "الطبيب:" : "Provider:"}</span>
+                        <span className="text-muted-foreground">{isAr ? "الطبيب:" : "Doctor:"}</span>
                         <span className="text-muted-foreground">{isAr ? selectedDoctorObj?.nameAr : selectedDoctorObj?.name}</span>
                       </div>
                     </div>

@@ -24,9 +24,6 @@ const Header = () => {
   const headerRef = useRef<HTMLElement>(null);
   const logoRowRef = useRef<HTMLDivElement>(null);
   const navRowRef = useRef<HTMLDivElement>(null);
-  const logoRowHeight = useRef(88);
-  const [scrollHideOffset, setScrollHideOffset] = useState(88);
-
   useEffect(() => {
     const handleScroll = () => {
       const currentY = window.scrollY;
@@ -44,13 +41,6 @@ const Header = () => {
   useEffect(() => {
     const updateHeaderHeight = () => {
       if (headerRef.current) {
-        if (logoRowRef.current) {
-          logoRowHeight.current = logoRowRef.current.offsetHeight;
-        }
-        const isDesktop = window.matchMedia("(min-width: 768px)").matches;
-        const hideOffset = isDesktop ? logoRowHeight.current : navRowRef.current?.offsetHeight ?? 48;
-        setScrollHideOffset(hideOffset);
-        document.documentElement.style.setProperty('--scroll-hide-offset', `${hideOffset}px`);
         const fullHeight = headerRef.current.offsetHeight;
         document.documentElement.style.setProperty('--header-height', `${fullHeight}px`);
       }
@@ -305,7 +295,7 @@ const Header = () => {
           className={`transition-all duration-300 ease-in-out max-lg:overflow-hidden lg:overflow-visible ${
             headerVisible
               ? "max-lg:max-h-[min(80vh,600px)] max-lg:opacity-100"
-              : "max-lg:max-h-0 max-lg:opacity-0 max-lg:pointer-events-none lg:-translate-y-[var(--scroll-hide-offset,88px)]"
+              : "max-lg:max-h-0 max-lg:opacity-0 max-lg:pointer-events-none"
           }`}
         >
         {/* Search Popup */}
@@ -370,8 +360,15 @@ const Header = () => {
           )}
         </AnimatePresence>
 
-        {/* Row 1: Logo */}
-        <div ref={logoRowRef} className="hidden md:block border-b border-border/50">
+        {/* Row 1: Logo — collapses on scroll (desktop) so no empty gap remains */}
+        <div
+          ref={logoRowRef}
+          className={`hidden md:block border-b border-border/50 transition-all duration-300 ease-in-out overflow-hidden ${
+            headerVisible
+              ? "md:max-h-[240px] md:opacity-100"
+              : "md:max-h-0 md:opacity-0 md:border-b-0 md:pointer-events-none"
+          }`}
+        >
           <div className="container mx-auto flex items-center justify-between py-2.5 md:py-3 px-4 md:px-6 gap-3">
             <div className="flex-1 flex items-center justify-start">
               {/* Language capsule toggle EN | العربية */}

@@ -11,7 +11,6 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
-import ChatButton from "@/components/ChatButton";
 
 import type { DoctorWithClinicCode as Doctor } from "@/data/doctorsWithClinicCodes";
 import { fetchAllDepartmentsPages } from "@/api/department";
@@ -35,9 +34,14 @@ import {
 import { subscribeToIdentityVerification } from "@/api/identitySocket";
 import { doctorsWithClinicCodes as staticDoctors } from "@/data/doctorsWithClinicCodes";
 import { departments as staticDepts, deptDoctorAliases, MAIN_CATEGORIES } from "@/data/departments";
+import { Calendar as DatePickerCalendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
 
 /** Hidden on "I know my doctor" only — incomplete static data. */
 const DOCTOR_PATH_EXCLUDED_IDS = new Set<string>(["dr-madiha-khisaf", "dr-wael-ibrahim", "dr-fatima-alazemi"]);
+
+const SKIP_CIVIL_ID_VERIFICATION = false;
 
 // Helper types and functions for dynamic API data
 type BookingDeptRow = {
@@ -227,6 +231,7 @@ const BookAppointment = () => {
   // Step 2: Time Slots
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+  const [showSlotSelection, setShowSlotSelection] = useState(false);
 
   // Dynamic Availability State
   const [specialityCode, setSpecialityCode] = useState<string | null>(null);
@@ -376,22 +381,30 @@ const BookAppointment = () => {
     }),
   };
 
-  // Get next 7 days (excluding Fridays = day 5)
-  const availableDates = (() => {
-    const dates: { value: string; label: string }[] = [];
+  const todayStart = useMemo(() => {
     const d = new Date();
-    d.setDate(d.getDate() + 1);
-    while (dates.length < 7) {
-      if (d.getDay() !== 5) {
-        dates.push({
-          value: d.toISOString().split("T")[0],
-          label: d.toLocaleDateString(lang === "ar" ? "ar-KW" : "en-GB", { weekday: "short", day: "numeric", month: "short" }),
-        });
-      }
-      d.setDate(d.getDate() + 1);
-    }
-    return dates;
-  })();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }, []);
+
+  const selectedCalendarDate = useMemo(
+    () => (selectedDate ? new Date(`${selectedDate}T12:00:00`) : undefined),
+    [selectedDate],
+  );
+
+  const isAppointmentDateDisabled = (date: Date) => {
+    const d = new Date(date);
+    d.setHours(0, 0, 0, 0);
+    return d < todayStart;
+  };
+
+  const handleAppointmentDateSelect = (date: Date | undefined) => {
+    if (!date) return;
+    setSelectedDate(format(date, "yyyy-MM-dd"));
+    setSelectedSlot(null);
+    setSelectedSlotId(null);
+    setShowSlotSelection(false);
+  };
 
   // Patient Details State
   const [patientType, setPatientType] = useState<"returning" | "new" | null>(null);
@@ -533,6 +546,10 @@ const BookAppointment = () => {
   // Scroll to top on every step change so mobile users always start at the top
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [step]);
+
+  useEffect(() => {
+    if (step !== 3) setShowSlotSelection(false);
   }, [step]);
 
   useEffect(() => {
@@ -882,6 +899,23 @@ const BookAppointment = () => {
     setShowReturningPatientModal(true);
   };
 
+  const continueReturningPatientWithoutVerification = () => {
+    verifySocketCleanupRef.current?.();
+    verifySocketCleanupRef.current = null;
+    setNationalId("");
+    setNationalIdError("");
+    setVerifiedPersonName(null);
+    setVerifyOperationId(null);
+    setIsWaitingForApproval(false);
+    setVerifiedIdentityDetails(null);
+    setShowReturningPatientModal(false);
+    setPatientErrors({});
+    setPatientId(null);
+    setPatientType("returning");
+    setPatientName("");
+    setStep(3);
+  };
+
   const completeVerificationFromStatus = useCallback(
     async (statusData: IdentityStatusResponse) => {
       if (statusData?.status === "pending") return;
@@ -1181,7 +1215,6 @@ Clinic Code:`;
         </div>
         <Footer />
         <ScrollToTop />
-        <ChatButton />
       </div>
     );
   }
@@ -1242,7 +1275,6 @@ Clinic Code:`;
         </div>
         <Footer />
         <ScrollToTop />
-        <ChatButton />
       </div>
     );
   }
@@ -1342,7 +1374,6 @@ Clinic Code:`;
         </div>
         <Footer />
         <ScrollToTop />
-        <ChatButton />
       </div>
     );
   }
@@ -1387,7 +1418,6 @@ Clinic Code:`;
         </div>
         <Footer />
         <ScrollToTop />
-        <ChatButton />
       </div>
     );
   }
@@ -1556,7 +1586,26 @@ Clinic Code:`;
               <div className="max-w-3xl mx-auto">
                 {!patientType && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                    <motion.button whileHover={{ y: -4 }} whileTap={{ scale: 0.98 }} onClick={() => { setNationalId(""); setNationalIdError(""); setVerifiedPersonName(null); setVerifyOperationId(null); setIsWaitingForApproval(false); setPatientErrors({}); setPatientName(""); setPatientType("returning"); openReturningPatientModal(); }} className="bg-popover rounded-2xl p-8 border border-border text-center transition-all hover:border-primary/40">
+                    <motion.button
+                      whileHover={{ y: -4 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => {
+                        if (SKIP_CIVIL_ID_VERIFICATION) {
+                          continueReturningPatientWithoutVerification();
+                          return;
+                        }
+                        setNationalId("");
+                        setNationalIdError("");
+                        setVerifiedPersonName(null);
+                        setVerifyOperationId(null);
+                        setIsWaitingForApproval(false);
+                        setPatientErrors({});
+                        setPatientName("");
+                        setPatientType("returning");
+                        openReturningPatientModal();
+                      }}
+                      className="bg-popover rounded-2xl p-8 border border-border text-center transition-all hover:border-primary/40"
+                    >
                       <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4"><LogIn className="w-7 h-7 text-primary" /></div>
                       <h3 className="font-serif text-lg text-foreground mb-2">{t("registeredPatient")}</h3>
                       <p className="font-body text-xs text-muted-foreground">{isAr ? "اختر موعدك في الخطوة التالية" : "Choose your appointment time next"}</p>
@@ -1653,31 +1702,79 @@ Clinic Code:`;
                     <div className="flex flex-wrap gap-x-6 gap-y-2 mb-6 font-body text-xs uppercase tracking-wider">
                       <div className="flex gap-2 items-center">
                         <span className="text-muted-foreground">{isAr ? "القسم:" : "Speciality:"}</span>
-                        <span className="text-muted-foreground">{isAr ? selectedDeptObj?.nameAr : selectedDeptObj?.name}</span>
+                        <span className="font-semibold text-foreground">{isAr ? selectedDeptObj?.nameAr : selectedDeptObj?.name}</span>
                       </div>
                       <div className="flex gap-2 items-center">
                         <span className="text-muted-foreground">{isAr ? "الطبيب:" : "Doctor:"}</span>
-                        <span className="text-muted-foreground">{isAr ? selectedDoctorObj?.nameAr : selectedDoctorObj?.name}</span>
+                        <span className="font-semibold text-foreground">{isAr ? selectedDoctorObj?.nameAr : selectedDoctorObj?.name}</span>
                       </div>
                     </div>
                   )}
-                  <p className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-3">{isAr ? "التاريخ" : "Date"}</p>
-                  <div className="flex gap-2 flex-wrap justify-center mb-8">
-                    {availableDates.map((d) => (
-                      <button key={d.value} onClick={() => { setSelectedDate(d.value); setSelectedSlot(null); }} className={`px-4 py-2.5 rounded-xl border font-body text-xs transition-all ${selectedDate === d.value ? "bg-primary text-primary-foreground border-primary shadow-sm" : "bg-background border-border text-foreground hover:border-accent/50"}`}>{d.label}</button>
-                    ))}
+                  <p className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-3">{isAr ? "اختر تاريخاً" : "Select a date"}</p>
+                  <div className="flex justify-center mb-4">
+                    <DatePickerCalendar
+                      mode="single"
+                      selected={selectedCalendarDate}
+                      onSelect={handleAppointmentDateSelect}
+                      disabled={isAppointmentDateDisabled}
+                      className={cn("rounded-xl border border-border bg-background p-3 pointer-events-auto")}
+                    />
                   </div>
+                  {selectedDate && (
+                    <p className="font-body text-sm text-center text-foreground mb-4">
+                      {isAr ? "التاريخ المحدد:" : "Selected date:"}{" "}
+                      <span className="font-medium text-primary">
+                        {selectedCalendarDate?.toLocaleDateString(lang === "ar" ? "ar-KW" : "en-GB", {
+                          weekday: "long",
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                        })}
+                      </span>
+                    </p>
+                  )}
+                  {selectedDate && !showSlotSelection && (
+                    <div className="flex justify-center mb-6">
+                      <motion.button
+                        type="button"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => setShowSlotSelection(true)}
+                        className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-xl font-body text-xs tracking-widest uppercase hover:bg-primary/90 shadow-md transition-colors"
+                      >
+                        {isAr ? "اختر موعداً" : "Select a slot"}
+                        <ArrowRight className="w-4 h-4" />
+                      </motion.button>
+                    </div>
+                  )}
 
-                  {isLoadingSlots && <div className="flex flex-col items-center justify-center py-12"><motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }} className="w-10 h-10 rounded-full border-2 border-accent/20 border-t-accent mb-4" /><p className="font-body text-sm text-muted-foreground">{isAr ? "جارِ جلب المواعيد المتاحة..." : "Fetching available time slots..."}</p></div>}
+                  {showSlotSelection && selectedDate && isLoadingSlots && (
+                    <div className="flex flex-col items-center justify-center py-12">
+                      <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }} className="w-10 h-10 rounded-full border-2 border-accent/20 border-t-accent mb-4" />
+                      <p className="font-body text-sm text-muted-foreground">{isAr ? "جارِ جلب المواعيد المتاحة..." : "Fetching available time slots..."}</p>
+                    </div>
+                  )}
 
-                  {!isLoadingSlots && selectedDate && fetchedSlots.length > 0 && (
+                  {showSlotSelection && selectedDate && !isLoadingSlots && fetchedSlots.length > 0 && (
                     <div className="space-y-6">
+                      <p className="font-body text-xs text-muted-foreground uppercase tracking-wider">{isAr ? "الأوقات المتاحة" : "Available times"}</p>
                       {Object.entries(slotsByPeriod).map(([period, slots]) => slots.length > 0 && (
                         <div key={period}>
                           <h3 className="font-body text-sm font-medium text-foreground mb-3 capitalize">{period}</h3>
                           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                             {slots.map((slot) => (
-                              <button key={slot.slot_booking_id || slot.slot_from_time} onClick={() => { setSelectedSlot(slot.slot_from_time); setSelectedSlotId(slot.slot_booking_id); setStep(4); }} className={`p-3 sm:p-4 rounded-xl border text-xs sm:text-sm font-body transition-all text-center whitespace-nowrap ${selectedSlot === slot.slot_from_time ? "bg-primary text-primary-foreground border-primary shadow-md" : "bg-background border-border hover:border-accent/40 hover:bg-accent/5 text-foreground"}`}>{formatSlotRange(slot)}</button>
+                              <button
+                                key={slot.slot_booking_id || slot.slot_from_time}
+                                type="button"
+                                onClick={() => {
+                                  setSelectedSlot(slot.slot_from_time);
+                                  setSelectedSlotId(slot.slot_booking_id);
+                                  setStep(4);
+                                }}
+                                className={`p-3 sm:p-4 rounded-xl border text-xs sm:text-sm font-body transition-all text-center whitespace-nowrap ${selectedSlot === slot.slot_from_time ? "bg-primary text-primary-foreground border-primary shadow-md" : "bg-background border-border hover:border-accent/40 hover:bg-accent/5 text-foreground"}`}
+                              >
+                                {formatSlotRange(slot)}
+                              </button>
                             ))}
                           </div>
                         </div>
@@ -1685,8 +1782,11 @@ Clinic Code:`;
                     </div>
                   )}
 
-                  {!isLoadingSlots && selectedDate && fetchedSlots.length === 0 && (
-                    <div className="text-center py-12 text-muted-foreground font-body text-sm bg-muted/20 rounded-2xl border border-dashed border-border"><AlertCircle className="w-8 h-8 mx-auto mb-2 opacity-30" />{isAr ? "لا توجد مواعيد متاحة لهذا اليوم" : "No available appointments for this date"}</div>
+                  {showSlotSelection && selectedDate && !isLoadingSlots && fetchedSlots.length === 0 && (
+                    <div className="text-center py-12 text-muted-foreground font-body text-sm bg-muted/20 rounded-2xl border border-dashed border-border">
+                      <AlertCircle className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                      {isAr ? "لا توجد مواعيد متاحة لهذا اليوم" : "No available appointments for this date"}
+                    </div>
                   )}
                 </div>
               </div>
@@ -1730,7 +1830,7 @@ Clinic Code:`;
           )}
         </div>
       </div>
-      {showReturningPatientModal && (
+      {showReturningPatientModal && !SKIP_CIVIL_ID_VERIFICATION && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center bg-foreground/40 backdrop-blur-sm p-4" onClick={closeReturningPatientModal}>
           <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-xl rounded-3xl border border-border/70 bg-popover shadow-2xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
             <div className="px-6 pt-5 pb-4 border-b border-border/60 bg-gradient-to-r from-primary/5 to-accent/5">
@@ -1840,7 +1940,6 @@ Clinic Code:`;
       )}
       <Footer />
       <ScrollToTop />
-      <ChatButton />
     </div>
   );
 };

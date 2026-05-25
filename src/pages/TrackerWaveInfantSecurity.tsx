@@ -1,7 +1,6 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
-import ChatButton from "@/components/ChatButton";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
 import { Baby, Shield, Lock, Search, Users, Radio, CheckCircle2 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -193,7 +192,6 @@ const TrackerWaveInfantSecurity = () => {
       </section>
 
       <Footer />
-      <ChatButton />
       <ScrollToTop />
     </div>
   );

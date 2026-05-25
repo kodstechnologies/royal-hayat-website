@@ -1,7 +1,6 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
-import ChatButton from "@/components/ChatButton";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
 import { CheckCircle2 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -69,7 +68,6 @@ const FifthFloorCafe = () => {
       </section>
 
       <Footer />
-      <ChatButton />
       <ScrollToTop />
     </div>
   );

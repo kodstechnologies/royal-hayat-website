@@ -1,8 +1,8 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import ChatButton from "@/components/ChatButton";
 import ScrollToTop from "@/components/ScrollToTop";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
+import WorkCultureHeroImage from "@/components/WorkCultureHeroImage";
 import LifePhotoCarousel from "@/components/LifePhotoCarousel.tsx";
 import type { LifePhoto } from "@/components/LifePhotoCarousel.tsx";
 import VoicesFromOurPeople from "@/components/VoicesFromOurPeople.tsx";
@@ -311,22 +311,24 @@ const WorkWithUs = ({
       {/* Hero */}
       {showSection("culture") && (
         <section className="py-0 bg-primary/5 overflow-hidden">
-          <div className="grid lg:grid-cols-[1.3fr_0.7fr] gap-0 items-stretch min-h-[480px] ">
-            {/* LEFT — image, full bleed (contain so bottom is not cropped) */}
-            <div className="relative flex h-full min-h-[300px] sm:min-h-[400px] md:min-h-[480px] items-center justify-center bg-primary/5">
-              <img
-                src="https://royal-hayat.s3.eu-central-1.amazonaws.com/infant-secyrity/Life+at+Royale+hayat+Hospital.jpg.jpeg"
+          <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_0.7fr] gap-0 items-stretch lg:min-h-[480px] 2xl:min-h-[620px]">
+            {/* LEFT — phone: natural height; tablet: bg cover; 2xl+ desktop: img cover */}
+            <div
+              dir="ltr"
+              className="work-culture-hero-wrap relative w-full overflow-hidden bg-primary/5 lg:min-h-[480px] lg:h-full 2xl:min-h-[620px]"
+            >
+              <WorkCultureHeroImage
                 alt={
                   isAr
                     ? "الحياة في رويال حياة"
                     : "Life at Royale Hayat Hospital"
                 }
-                className="h-full w-full object-contain object-left"
+                className="work-culture-hero-img block w-full h-auto max-w-none object-contain object-left 2xl:absolute 2xl:inset-0 2xl:h-full 2xl:w-full 2xl:object-cover 2xl:object-left"
               />
             </div>
 
             {/* RIGHT — content */}
-            <ScrollAnimationWrapper className="flex flex-col justify-center py-16 md:py-24 px-8 md:px-14 lg:px-16">
+            <ScrollAnimationWrapper className="flex h-full flex-col justify-center py-16 md:py-24 px-8 md:px-14 lg:px-16">
               <h1 className="text-4xl md:text-5xl font-serif text-primary mb-6 leading-tight">
                 {isAr
                   ? "الحياة في مستشفى رويال حياة"
@@ -749,7 +751,6 @@ const WorkWithUs = ({
       )}
 
       <Footer />
-      <ChatButton />
       <ScrollToTop />
     </div>
   );

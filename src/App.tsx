@@ -4,6 +4,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { ChatProvider } from "@/contexts/ChatContext";
+import ChatButton from "@/components/ChatButton";
 import Index from "./pages/Index.tsx";
 import BookAppointment from "./pages/BookAppointment.tsx";
 import HospitalityServices from "./pages/HospitalityServices.tsx";
@@ -243,11 +245,12 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <LanguageProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <ScrollToTopOnNav />
-          <Routes>
+        <ChatProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <ScrollToTopOnNav />
+            <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/book-appointment" element={<BookAppointment />} />
             <Route
@@ -309,8 +312,10 @@ const App = () => (
             <Route path="/verify-national-id" element={<VerifyNationalId />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+            </Routes>
+            <ChatButton />
+          </BrowserRouter>
+        </ChatProvider>
       </LanguageProvider>
     </TooltipProvider>
   </QueryClientProvider>

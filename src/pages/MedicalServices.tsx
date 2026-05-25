@@ -1,6 +1,5 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import ChatButton from "@/components/ChatButton";
 import ScrollToTop from "@/components/ScrollToTop";
 import DepartmentsSection from "@/components/DepartmentsSection";
 import DoctorsSection from "@/components/DoctorsSection";
@@ -47,7 +46,6 @@ const MedicalServices = () => {
       <DoctorsSection featuredDoctors={featuredDoctors} />
       <HomeHealthPreview />
       <Footer />
-      <ChatButton />
       <ScrollToTop />
     </div>
   );

@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { Phone, Mail, MapPin, Clock, Send, CheckCircle2 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import ChatButton from "@/components/ChatButton";
 import ScrollToTop from "@/components/ScrollToTop";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "sonner";
@@ -254,7 +253,6 @@ const ContactUs = () => {
       </div>
 
       <Footer />
-      <ChatButton />
       <ScrollToTop />
     </div>
   );

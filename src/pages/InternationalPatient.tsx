@@ -1,6 +1,5 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import ChatButton from "@/components/ChatButton";
 import ScrollToTop from "@/components/ScrollToTop";
 import { Globe, Phone, Calendar, Languages, Car, Hotel, UtensilsCrossed, Send } from "lucide-react";
 import { motion } from "framer-motion";
@@ -200,7 +199,6 @@ const InternationalPatient = () => {
       </section>
 
       <Footer />
-      <ChatButton />
       <ScrollToTop />
     </div>
   );

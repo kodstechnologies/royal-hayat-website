@@ -1,6 +1,5 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import ChatButton from "@/components/ChatButton";
 import ScrollToTop from "@/components/ScrollToTop";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -122,7 +121,6 @@ const FAQ = () => {
       )}
 
       <Footer />
-      <ChatButton />
       <ScrollToTop />
     </div>
   );

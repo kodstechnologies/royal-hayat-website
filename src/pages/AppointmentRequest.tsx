@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { ClipboardList, CheckCircle2, ArrowRight, ArrowLeft, User, Phone, Calendar } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import ChatButton from "@/components/ChatButton";
 import ScrollToTop from "@/components/ScrollToTop";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
@@ -248,7 +247,6 @@ const AppointmentRequest = () => {
       </div>
 
       <Footer />
-      <ChatButton />
       <ScrollToTop />
     </div>
   );

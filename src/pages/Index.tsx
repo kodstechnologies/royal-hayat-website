@@ -18,7 +18,6 @@ import HospitalityBanner from "@/components/HospitalityBanner";
 import AlSafwaSpotlight from "@/components/AlSafwaSpotlight";
 import PatientsQuickLinks from "@/components/PatientsQuickLinks";
 import Footer from "@/components/Footer";
-import ChatButton from "@/components/ChatButton";
 import ScrollToTop from "@/components/ScrollToTop";
 import { getFeaturedDoctors } from "@/data/doctors";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -67,7 +66,6 @@ const Index = () => {
       <PatientsQuickLinks />
       <TestimonialsSection />
       <Footer />
-      <ChatButton />
       <ScrollToTop />
     </div>
   );

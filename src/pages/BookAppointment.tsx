@@ -1748,11 +1748,17 @@ Clinic Code:`;
                 {nationalIdError && <p className="font-body text-xs text-destructive mt-2">{nationalIdError}</p>}
               </div>
 
-              {isWaitingForApproval ? (
-                <div className="mt-6 flex flex-col items-center justify-center py-8">
+              {isVerifyingNationalId ? (
+                <div className="mt-6 flex flex-col items-center justify-center py-6 rounded-2xl border border-border/70 bg-muted/20 px-4">
                   <Loader2 className="w-10 h-10 animate-spin text-accent" />
-                  <p className="font-body text-xs text-muted-foreground mt-4">
-                    {isAr ? "جارِ انتظار الموافقة..." : "Waiting for approval..."}
+                  <p className="font-body text-sm text-foreground mt-4 text-center">{t("identitySendingRequest")}</p>
+                </div>
+              ) : isWaitingForApproval ? (
+                <div className="mt-6 flex flex-col items-center justify-center py-8 rounded-2xl border border-accent/20 bg-accent/5 px-4">
+                  <Loader2 className="w-10 h-10 animate-spin text-accent" />
+                  <p className="font-body text-sm font-medium text-foreground mt-4 text-center">{t("identityWaitingTitle")}</p>
+                  <p className="font-body text-xs text-muted-foreground mt-2 text-center max-w-md leading-relaxed">
+                    {t("identityWaitingBody")}
                   </p>
                 </div>
               ) : (

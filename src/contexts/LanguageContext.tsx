@@ -332,6 +332,18 @@ const translations: Translations = {
   trustedBy: { en: "Trusted By", ar: "موثوق من قبل" },
   insurancePartners: { en: "Insurance Partners", ar: "شركاء التأمين" },
   verified: { en: "Verified", ar: "معتمد" },
+  identitySendingRequest: {
+    en: "Sending authentication request to your phone…",
+    ar: "جارِ إرسال طلب المصادقة إلى هاتفك…",
+  },
+  identityWaitingTitle: {
+    en: "Authenticate in Kuwait Mobile ID",
+    ar: "المصادقة عبر تطبيق هويتي",
+  },
+  identityWaitingBody: {
+    en: "Open the Kuwait Mobile ID (Hawyti) app on your phone and approve the authentication request. This page will update automatically when you finish.",
+    ar: "افتح تطبيق الهوية الرقمية (هويتي) على هاتفك ووافق على طلب المصادقة. سيتم تحديث هذه الصفحة تلقائياً بعد إتمام الموافقة.",
+  },
   dontSeeInsurance: { en: "Don't see your insurance provider?", ar: "لا ترى شركة التأمين الخاصة بك؟" },
   contactUs: { en: "Contact us", ar: "اتصل بنا" },
   toVerifyCoverage: { en: "to verify your coverage.", ar: "للتحقق من تغطيتك." },

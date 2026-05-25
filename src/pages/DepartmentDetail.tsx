@@ -474,7 +474,7 @@ const DepartmentDetail = () => {
                         </p>
                         {sub.sections.map((section, j) => (
                           <div key={j} className="mb-4">
-                            <h4 className="font-serif text-sm text-foreground mb-2">{section.title}</h4>
+                            <h4 className="font-serif font-bold text-foreground mb-2">{section.title}</h4>
                             {section.content && (
                               <p className="font-body text-sm text-muted-foreground leading-relaxed mb-2 whitespace-pre-line">
                                 {section.content}
@@ -492,12 +492,12 @@ const DepartmentDetail = () => {
                             )}
                           </div>
                         ))}
-                        <Link
+                        {/* <Link
                           to={`/medical-services/${dept.slug}/${sub.slug}`}
                           className="inline-flex items-center gap-2 text-accent font-body text-xs tracking-wide hover:underline mt-2"
                         >
                           View Full Details <ChevronRight className="w-3.5 h-3.5" />
-                        </Link>
+                        </Link> */}
                       </motion.div>
                     )}
                   </div>

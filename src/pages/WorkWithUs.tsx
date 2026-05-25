@@ -606,11 +606,16 @@ const WorkWithUs = ({
       {showSection("culture") && (
         <section className="py-12 bg-background text-center">
           <div className="container mx-auto px-6">
-            <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground">
-              {isAr
-                ? "اكتشف الوظائف في مستشفى رويال حياة"
-                : "Explore Careers at Royale Hayat Hospital"}
-            </h2>
+            <Link
+              to="/work-with-us?section=positions"
+              className="inline-block group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded-sm"
+            >
+              <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground group-hover:text-primary transition-colors">
+                {isAr
+                  ? "اكتشف الوظائف في مستشفى رويال حياة"
+                  : "Explore Careers at Royale Hayat Hospital"}
+              </h2>
+            </Link>
           </div>
         </section>
       )}

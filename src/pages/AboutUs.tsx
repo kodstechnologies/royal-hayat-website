@@ -82,7 +82,7 @@ const leaders = [
     nameAr: "شيبو توماس ماثيو",
     roleEn: "Chief Financial Officer & Director – Human Resources Capital",
     roleAr: "المدير المالي الرئيسي ومدير رأس المال البشري",
-    credentialsEn: "CMA (USA), ACMA India, IFRS",
+    credentialsEn: "",
     credentialsAr: "",
     bioEn: [
       "Shibu Thomas Mathew has been part of Royale Hayat Hospital’s leadership journey since its inception, joining the pre-opening team in 2006 and contributing to the establishment of a trusted, world-class healthcare institution. He was appointed Financial Controller in 2007 and promoted to Chief Financial Officer in 2010.",

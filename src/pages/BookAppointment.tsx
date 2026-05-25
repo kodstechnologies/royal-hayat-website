@@ -865,16 +865,22 @@ const BookAppointment = () => {
     [loadVerifiedIdentityDetails, resetPatientLookupFailure, t]
   );
 
-  const switchToFirstTimeAfterPatientLookup = () => {
+  /** Close Civil ID modal and return to returning / first-time choice (step before national ID). */
+  const goBackFromPatientLookupModal = () => {
+    verificationDoneRef.current = false;
     setPatientLookupOfferFirstTime(false);
     setNationalIdError("");
+    setNationalId("");
     setIsWaitingForApproval(false);
     setIsConfirmingPatientRecord(false);
     setVerifyOperationId(null);
     verifySocketCleanupRef.current?.();
     verifySocketCleanupRef.current = null;
-    setPatientType("new");
+    setPatientType(null);
+    setPatientName("");
     setPatientId(null);
+    setVerifiedPersonName(null);
+    setVerifiedIdentityDetails(null);
     setShowReturningPatientModal(false);
   };
 
@@ -1813,10 +1819,11 @@ Clinic Code:`;
                 {patientLookupOfferFirstTime && !isWaitingForApproval && !isConfirmingPatientRecord && (
                   <button
                     type="button"
-                    onClick={switchToFirstTimeAfterPatientLookup}
-                    className="mt-3 w-full bg-accent/15 text-foreground px-4 py-3 rounded-xl font-body text-xs tracking-widest uppercase hover:bg-accent/25 transition-colors"
+                    onClick={goBackFromPatientLookupModal}
+                    className="mt-3 w-full bg-secondary/40 text-foreground px-4 py-3 rounded-xl font-body text-xs tracking-widest uppercase hover:bg-secondary/60 transition-colors inline-flex items-center justify-center gap-2"
                   >
-                    {t("bookAsFirstTimePatient")}
+                    <ArrowLeft className="w-4 h-4" />
+                    {t("patientLookupGoBack")}
                   </button>
                 )}
               </div>

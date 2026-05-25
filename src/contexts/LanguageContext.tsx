@@ -349,8 +349,8 @@ const translations: Translations = {
     ar: "جارِ التحقق من تسجيلك في المستشفى…",
   },
   patientNotFoundAfterPaci: {
-    en: "You were verified in Kuwait Mobile ID, but you are not registered as a patient at Royale Hayat. Please book as a first-time patient or contact reception.",
-    ar: "تم التحقق من هويتك عبر هويتي، لكنك غير مسجل كمريض في رويال حياة. يرجى الحجز كمريض لأول مرة أو التواصل مع الاستقبال.",
+    en: "You were verified in Kuwait Mobile ID, but you are not registered as a patient at Royale Hayat. Go back to choose how you would like to continue, or contact reception.",
+    ar: "تم التحقق من هويتك عبر هويتي، لكنك غير مسجل كمريض في رويال حياة. ارجع للخلف لاختيار طريقة المتابعة، أو تواصل مع الاستقبال.",
   },
   patientDuplicateNationalId: {
     en: "Multiple patient records were found for this Civil ID. Please contact reception to resolve this before booking.",
@@ -379,6 +379,10 @@ const translations: Translations = {
   bookAsFirstTimePatient: {
     en: "Book as first-time patient",
     ar: "الحجز كمريض لأول مرة",
+  },
+  patientLookupGoBack: {
+    en: "Go back",
+    ar: "رجوع",
   },
   dontSeeInsurance: { en: "Don't see your insurance provider?", ar: "لا ترى شركة التأمين الخاصة بك؟" },
   contactUs: { en: "Contact us", ar: "اتصل بنا" },

@@ -9,7 +9,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { doctors as allDoctors } from "@/data/doctors";
 import { createAppointmentRequest } from "@/api/appointmentRequest";
-import { createAppointmentRequest } from "@/api/appointmentRequest";
+// import { createAppointmentRequest } from "@/api/appointmentRequest";
 
 const AppointmentRequest = () => {
   const { lang, t } = useLanguage();
@@ -303,6 +303,7 @@ const AppointmentRequest = () => {
       <ScrollToTop />
     </div>
   );
-};
+}
+}
 
 export default AppointmentRequest;

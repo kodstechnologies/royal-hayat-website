@@ -101,16 +101,9 @@ const WorkWithUs = ({
   const { lang } = useLanguage();
   const isAr = lang === "ar";
   const [activeCategory, setActiveCategory] = useState("View All");
-  const [positions, setPositions] = useState<Position[]>(
-    openPositions.map((p, index) => ({
-      id: String(index),
-      title: p.title,
-      category: p.category,
-      location: p.location,
-      type: p.type,
-      desc: p.desc,
-    })),
-  );
+  const [positions, setPositions] = useState<Position[]>([]);
+  const [jobsLoading, setJobsLoading] = useState(true);
+  const [jobsError, setJobsError] = useState(false);
   const [empIndex, setEmpIndex] = useState(0);
   const [isEmpPaused, setIsEmpPaused] = useState(false);
 
@@ -148,8 +141,10 @@ const WorkWithUs = ({
               job.description?.toString().trim() ||
               job.desc?.toString().trim() ||
               "";
+            const mongoId = String(job._id ?? job.id ?? index);
             return {
-              id: String(job._id ?? job.id ?? index),
+              id: mongoId,
+              _id: mongoId,
               title,
               category: categoryRaw || "General",
               location: job.location?.toString().trim() || "On-site",
@@ -372,21 +367,28 @@ const WorkWithUs = ({
               </div>
             </div>
 
-            <div className="max-w-5xl mx-auto">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="bg-popover border border-border/50 rounded-2xl overflow-hidden"
-              >
-                <div className="flex flex-col md:flex-row">
-                  <div className="md:w-96 flex-shrink-0 bg-primary/5 p-6 flex items-center justify-center">
-                    <img
-                      src="https://royal-hayat.s3.eu-central-1.amazonaws.com/employee-of-the-month/ranga-tara.jpeg"
-                      alt="Rangaa Tara Mahawan"
-                      className="w-full h-[400px ] object-cover rounded-2xl"
-                    />
-                  </div>
+            <div
+              className="max-w-5xl mx-auto relative"
+              onMouseEnter={() => setIsEmpPaused(true)}
+              onMouseLeave={() => setIsEmpPaused(false)}
+            >
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={empIndex}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="bg-popover border border-border/50 rounded-2xl overflow-hidden"
+                >
+                  <div className="flex flex-col md:flex-row">
+                    <div className="md:w-96 flex-shrink-0 bg-primary/5 p-6 flex items-center justify-center">
+                      <img
+                        src={employees[empIndex].image}
+                        alt={employees[empIndex].name}
+                        className="w-full h-[400px] object-cover rounded-2xl"
+                      />
+                    </div>
 
                     <div className="flex-1 p-6 md:p-8">
                       <h3 className="font-serif text-2xl text-foreground mb-1">
@@ -628,17 +630,7 @@ const WorkWithUs = ({
 
             {/* Job cards */}
             <div className="max-w-5xl mx-auto space-y-5">
-              {positionsLoading ? (
-                // Loading skeleton
-                [...Array(4)].map((_, i) => (
-                  <div key={i} className="bg-popover border border-border/50 rounded-2xl p-6 md:p-8 animate-pulse">
-                    <div className="h-5 bg-muted rounded w-2/3 mb-3" />
-                    <div className="h-3 bg-muted rounded w-1/4 mb-4" />
-                    <div className="h-3 bg-muted rounded w-full" />
-                  </div>
-                ))
-              ) : (
-                filtered.map((pos) => (
+              {filtered.map((pos) => (
                   <motion.div
                     key={pos._id}
                     initial={{ opacity: 0, y: 20 }}
@@ -682,8 +674,7 @@ const WorkWithUs = ({
                       </div>
                     </div>
                   </motion.div>
-                ))
-              )}
+                ))}
             </div>
 
             <div className="text-center mt-10">
@@ -699,6 +690,8 @@ const WorkWithUs = ({
                 </a>
               </p>
             </div>
+              </>
+            )}
           </div>
         </section>
       )}

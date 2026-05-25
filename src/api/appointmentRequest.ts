@@ -7,6 +7,8 @@ export type CreateAppointmentRequestPayload = {
   age?: number;
   gender?: "male" | "female" | "other";
   additionalNotes?: string;
+  preferredDate:any
+  timeSlot:any
 };
 
 export const createAppointmentRequest = async (

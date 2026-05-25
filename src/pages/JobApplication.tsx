@@ -10,16 +10,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Mail, Share2, ChevronRight, Loader2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { Mail, Share2, ChevronRight } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
 import { toast } from "@/hooks/use-toast";
 import { getAllJobs, getJobById, applyForJob, type JobPosting } from "@/api/job";
 
 // ── Static fallback positions (same as WorkWithUs) ────────────────────────────
 const staticPositions: JobPosting[] = [
-import { Skeleton } from "@/components/ui/skeleton";
-import { getJobById } from "@/api/job";
-const openPositions = [
   { title: "Floor Coordinator only Female, Bilingual (Arabic & English)", category: "Hospitality / Guest Services", location: "Royale Hayat Hospital", type: "Full-time", date: "March 19, 2026", desc: "Royale Hayat Hospital have devoted considerable effort to applying established strategies for quality improvement thus they created a position of Floor coordinator that make patient experience more valuable and focusing on patient satisfaction in the inpatient setting and how to improve it.", responsibilities: ["To ensure a differences and service recovery every day with every patient throughout his or her hospitalization.", "Positive outcomes of stay.", "Improved quality outcomes, and patient satisfaction which may help transform the acute care delivery model toward a more rational and safe approach.", "Coordinate floor operations and ensure smooth patient flow", "Liaise between departments to resolve patient concerns"], requirements: ["Bilingual proficiency in Arabic and English (mandatory)", "Female candidates only", "Minimum 2 years of experience in hospitality or healthcare coordination", "Excellent communication and organizational skills"] },
   { title: "Guest Relations Officer", category: "Hospitality / Guest Services", location: "Royale Hayat Hospital", type: "Full-time", date: "March 15, 2026", desc: "Provide outstanding hospitality and patient experience throughout the hospital premises.", responsibilities: ["Welcome and assist patients and visitors", "Handle complaints and feedback professionally", "Coordinate with departments for patient needs", "Maintain guest satisfaction records"], requirements: ["Experience in hospitality or guest relations", "Excellent interpersonal skills", "Bilingual preferred", "Professional appearance and demeanor"] },
   { title: "Marketing Specialist – Digital & Social Media", category: "Marketing & Communications", location: "Royale Hayat Hospital", type: "Full-time", date: "March 10, 2026", desc: "Drive digital marketing campaigns, manage social media channels, and enhance brand visibility for the hospital.", responsibilities: ["Plan and execute digital marketing campaigns", "Manage hospital social media accounts", "Analyze campaign performance metrics", "Create engaging content for various platforms"], requirements: ["Bachelor's degree in Marketing or related field", "3+ years of digital marketing experience", "Proficiency in social media management tools", "Strong analytical and creative skills"] },
@@ -39,6 +34,7 @@ const JobApplication = () => {
 
   const [job, setJob] = useState<JobPosting | null>(null);
   const [jobLoading, setJobLoading] = useState(true);
+  const [jobError, setJobError] = useState(false);
 
   const [showForm, setShowForm] = useState(false);
   const [cvFile, setCvFile] = useState<File | null>(null);
@@ -55,6 +51,7 @@ const JobApplication = () => {
   useEffect(() => {
     const load = async () => {
       setJobLoading(true);
+      setJobError(false);
 
       // jobParam is either a MongoDB _id (24-char hex) or a numeric index
       const isMongoId = /^[0-9a-fA-F]{24}$/.test(jobParam);
@@ -79,7 +76,10 @@ const JobApplication = () => {
             return;
           }
         } catch {
-          // fall through to static fallback
+          setJobError(true);
+          setJob(null);
+          setJobLoading(false);
+          return;
         }
       }
 
@@ -196,13 +196,11 @@ const JobApplication = () => {
     );
   }
 
-  if (!job) return null;
-
-  const responsibilities = (job.responsibilities ?? []) as string[];
-  const requirements = (job.requirements ?? []) as string[];
-  const postedDate = job.postedDate
+  const responsibilities = (job?.responsibilities ?? []) as string[];
+  const requirements = (job?.requirements ?? []) as string[];
+  const postedDate = job?.postedDate
     ? new Date(job.postedDate).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
-    : (job as any).date ?? "";
+    : (job?.date as string | undefined) ?? "";
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
@@ -227,13 +225,7 @@ const JobApplication = () => {
             <span className="text-muted-foreground">{isAr ? "تقديم" : "Apply"}</span>
           </div>
 
-          {jobLoading ? (
-            <div className="space-y-6 py-4">
-              <Skeleton className="h-12 w-3/4 max-w-2xl" />
-              <Skeleton className="h-32 w-full" />
-              <Skeleton className="h-40 w-full" />
-            </div>
-          ) : jobError || !job ? (
+          {jobError || !job ? (
             <div className="rounded-2xl border border-destructive/30 bg-destructive/5 px-6 py-14 text-center max-w-xl mx-auto">
               <p className="font-serif text-lg text-foreground mb-2">
                 {isAr ? "تعذر تحميل تفاصيل الوظيفة" : "Could not load this job"}
@@ -246,210 +238,213 @@ const JobApplication = () => {
               </Link>
             </div>
           ) : (
+            <>
             <div className="grid lg:grid-cols-3 gap-10">
               {/* Left: Job Details */}
               <div className="lg:col-span-2">
                 <h1 className="text-3xl md:text-4xl font-serif text-foreground mb-6 uppercase leading-tight">{job.title}</h1>
 
-              <p className="font-body text-base text-muted-foreground leading-relaxed mb-8 text-justify">
-                {job.desc ?? job.description}
-              </p>
+                <p className="font-body text-base text-muted-foreground leading-relaxed mb-8 text-justify">
+                  {job.desc ?? job.description}
+                </p>
 
-              <Link
-                to="/work-with-us?section=positions"
-                className="text-primary hover:text-accent font-body text-sm underline underline-offset-4 inline-block mb-10"
-              >
-                {isAr ? "عرض جميع الوظائف المتاحة" : "View All open positions"}
-              </Link>
-
-              {/* Duties */}
-              {responsibilities.length > 0 && (
-                <div className="mb-8">
-                  <h2 className="font-serif text-sm uppercase tracking-widest text-muted-foreground mb-4">
-                    {isAr ? "المهام والمسؤوليات" : "Duties and Responsibilities"}
-                  </h2>
-                  <ul className="space-y-3">
-                    {responsibilities.map((r, i) => (
-                      <li key={i} className="flex items-start gap-3 font-body text-sm text-muted-foreground">
-                        <span className="text-foreground mt-0.5">•</span>
-                        <span className="text-justify">{r}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Requirements */}
-              {requirements.length > 0 && (
-                <div className="mb-8">
-                  <h2 className="font-serif text-sm uppercase tracking-widest text-muted-foreground mb-4">
-                    {isAr ? "المتطلبات" : "Requirements"}
-                  </h2>
-                  <ul className="space-y-3">
-                    {requirements.map((r, i) => (
-                      <li key={i} className="flex items-start gap-3 font-body text-sm text-muted-foreground">
-                        <span className="text-foreground mt-0.5">•</span>
-                        <span className="text-justify">{r}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-
-            {/* Right Sidebar */}
-            <div className="lg:col-span-1 space-y-6">
-              {/* Action Buttons */}
-              <div className="space-y-3">
-                <Button
-                  onClick={() => {
-                    setShowForm(true);
-                    setTimeout(() => {
-                      formRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-                    }, 100);
-                  }}
-                  className="w-full gap-2 rounded-full py-6 text-sm tracking-wider uppercase"
+                <Link
+                  to="/work-with-us?section=positions"
+                  className="text-primary hover:text-accent font-body text-sm underline underline-offset-4 inline-block mb-10"
                 >
-                  <Mail className="w-4 h-4" />
-                  {isAr ? "قدّم الآن" : "Apply Now"}
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={handleShare}
-                  className="w-full gap-2 rounded-full py-6 text-sm tracking-wider uppercase"
-                >
-                  <Share2 className="w-4 h-4" />
-                  {isAr ? "شارك الآن" : "Share Now"}
-                </Button>
-              </div>
+                  {isAr ? "عرض جميع الوظائف المتاحة" : "View All open positions"}
+                </Link>
 
-              {/* Job Meta */}
-              <div className="bg-popover border border-border/50 rounded-2xl p-6 space-y-5">
-                {postedDate && (
-                  <p className="font-serif text-lg text-foreground">{postedDate}</p>
+                {/* Duties */}
+                {responsibilities.length > 0 && (
+                  <div className="mb-8">
+                    <h2 className="font-serif text-sm uppercase tracking-widest text-muted-foreground mb-4">
+                      {isAr ? "المهام والمسؤوليات" : "Duties and Responsibilities"}
+                    </h2>
+                    <ul className="space-y-3">
+                      {responsibilities.map((r, i) => (
+                        <li key={i} className="flex items-start gap-3 font-body text-sm text-muted-foreground">
+                          <span className="text-foreground mt-0.5">•</span>
+                          <span className="text-justify">{r}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 )}
-                <div>
-                  <p className="font-body text-xs uppercase tracking-widest text-foreground font-semibold mb-1">
-                    {isAr ? "الموقع" : "Location"}
-                  </p>
-                  <p className="font-body text-sm text-muted-foreground">{job.location ?? "On-Site"}</p>
+
+                {/* Requirements */}
+                {requirements.length > 0 && (
+                  <div className="mb-8">
+                    <h2 className="font-serif text-sm uppercase tracking-widest text-muted-foreground mb-4">
+                      {isAr ? "المتطلبات" : "Requirements"}
+                    </h2>
+                    <ul className="space-y-3">
+                      {requirements.map((r, i) => (
+                        <li key={i} className="flex items-start gap-3 font-body text-sm text-muted-foreground">
+                          <span className="text-foreground mt-0.5">•</span>
+                          <span className="text-justify">{r}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+
+              {/* Right Sidebar */}
+              <div className="lg:col-span-1 space-y-6">
+                {/* Action Buttons */}
+                <div className="space-y-3">
+                  <Button
+                    onClick={() => {
+                      setShowForm(true);
+                      setTimeout(() => {
+                        formRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+                      }, 100);
+                    }}
+                    className="w-full gap-2 rounded-full py-6 text-sm tracking-wider uppercase"
+                  >
+                    <Mail className="w-4 h-4" />
+                    {isAr ? "قدّم الآن" : "Apply Now"}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={handleShare}
+                    className="w-full gap-2 rounded-full py-6 text-sm tracking-wider uppercase"
+                  >
+                    <Share2 className="w-4 h-4" />
+                    {isAr ? "شارك الآن" : "Share Now"}
+                  </Button>
                 </div>
-                <div>
-                  <p className="font-body text-xs uppercase tracking-widest text-foreground font-semibold mb-1">
-                    {isAr ? "نوع العمل" : "Work Type"}
-                  </p>
-                  <p className="font-body text-sm text-muted-foreground">{job.type ?? "Full-time"}</p>
-                </div>
-                <div>
-                  <p className="font-body text-xs uppercase tracking-widest text-foreground font-semibold mb-1">
-                    {isAr ? "التصنيف" : "Classification"}
-                  </p>
-                  <p className="font-body text-sm text-muted-foreground">
-                    {job.category ?? job.department ?? "General"}
-                  </p>
+
+                {/* Job Meta */}
+                <div className="bg-popover border border-border/50 rounded-2xl p-6 space-y-5">
+                  {postedDate && (
+                    <p className="font-serif text-lg text-foreground">{postedDate}</p>
+                  )}
+                  <div>
+                    <p className="font-body text-xs uppercase tracking-widest text-foreground font-semibold mb-1">
+                      {isAr ? "الموقع" : "Location"}
+                    </p>
+                    <p className="font-body text-sm text-muted-foreground">{job.location ?? "On-Site"}</p>
+                  </div>
+                  <div>
+                    <p className="font-body text-xs uppercase tracking-widest text-foreground font-semibold mb-1">
+                      {isAr ? "نوع العمل" : "Work Type"}
+                    </p>
+                    <p className="font-body text-sm text-muted-foreground">{job.type ?? "Full-time"}</p>
+                  </div>
+                  <div>
+                    <p className="font-body text-xs uppercase tracking-widest text-foreground font-semibold mb-1">
+                      {isAr ? "التصنيف" : "Classification"}
+                    </p>
+                    <p className="font-body text-sm text-muted-foreground">
+                      {job.category ?? job.department ?? "General"}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
-          )}
 
-          {/* Application Form */}
-          {showForm && (
-            <div
-              ref={formRef}
-              className="bg-popover border border-border/50 rounded-2xl p-6 md:p-8 mt-10 max-w-2xl mx-auto"
-            >
-              <h2 className="font-serif text-lg text-foreground mb-6 text-center">
-                {isAr ? "نموذج التقديم" : "Application Form"}
-              </h2>
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <div className="space-y-2">
-                  <Label htmlFor="fullName">
-                    {isAr ? "الاسم الكامل" : "Full Name"}{" "}
-                    <span className="text-destructive">*</span>
-                  </Label>
-                  <Input
-                    id="fullName"
-                    ref={fullNameRef}
-                    required
-                    placeholder={isAr ? "أدخل اسمك الكامل" : "Enter your full name"}
-                  />
+            {/* Application Form */}
+            {showForm && (
+                <div
+                  ref={formRef}
+                  className="bg-popover border border-border/50 rounded-2xl p-6 md:p-8 mt-10 max-w-2xl mx-auto"
+                >
+                  <h2 className="font-serif text-lg text-foreground mb-6 text-center">
+                    {isAr ? "نموذج التقديم" : "Application Form"}
+                  </h2>
+                  <form onSubmit={handleSubmit} className="space-y-5">
+                    <div className="space-y-2">
+                      <Label htmlFor="fullName">
+                        {isAr ? "الاسم الكامل" : "Full Name"}{" "}
+                        <span className="text-destructive">*</span>
+                      </Label>
+                      <Input
+                        id="fullName"
+                        ref={fullNameRef}
+                        required
+                        placeholder={isAr ? "أدخل اسمك الكامل" : "Enter your full name"}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="email">
+                        {isAr ? "البريد الإلكتروني" : "Email"}{" "}
+                        <span className="text-destructive">*</span>
+                      </Label>
+                      <Input
+                        id="email"
+                        ref={emailRef}
+                        type="email"
+                        required
+                        placeholder={isAr ? "أدخل بريدك الإلكتروني" : "Enter your email address"}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="phone">
+                        {isAr ? "رقم الهاتف" : "Phone Number"}{" "}
+                        <span className="text-destructive">*</span>
+                      </Label>
+                      <Input
+                        id="phone"
+                        ref={phoneRef}
+                        type="tel"
+                        required
+                        placeholder={isAr ? "أدخل رقم هاتفك" : "Enter your phone number"}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="cv">
+                        {isAr ? "السيرة الذاتية" : "Upload CV"}{" "}
+                        <span className="text-destructive">*</span>
+                      </Label>
+                      <Input
+                        id="cv"
+                        type="file"
+                        required
+                        accept=".pdf,.doc,.docx"
+                        onChange={(e) => setCvFile(e.target.files?.[0] ?? null)}
+                        className="text-sm"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        {isAr ? "PDF, DOC, DOCX — الحد الأقصى 5 ميغابايت" : "Accepted: PDF, DOC, DOCX — max 5 MB"}
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="coverLetter">
+                        {isAr ? "خطاب التقديم (اختياري)" : "Cover Letter (Optional)"}
+                      </Label>
+                      <Textarea
+                        id="coverLetter"
+                        ref={coverLetterRef}
+                        placeholder={
+                          isAr
+                            ? "اكتب خطاب التقديم هنا..."
+                            : "Write your cover letter here..."
+                        }
+                        rows={5}
+                        maxLength={1000}
+                      />
+                    </div>
+
+                    <Button type="submit" className="w-full gap-2" disabled={submitting}>
+                      {submitting ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          {isAr ? "جارٍ الإرسال..." : "Submitting..."}
+                        </>
+                      ) : (
+                        isAr ? "إرسال الطلب" : "Submit Application"
+                      )}
+                    </Button>
+                  </form>
                 </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="email">
-                    {isAr ? "البريد الإلكتروني" : "Email"}{" "}
-                    <span className="text-destructive">*</span>
-                  </Label>
-                  <Input
-                    id="email"
-                    ref={emailRef}
-                    type="email"
-                    required
-                    placeholder={isAr ? "أدخل بريدك الإلكتروني" : "Enter your email address"}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="phone">
-                    {isAr ? "رقم الهاتف" : "Phone Number"}{" "}
-                    <span className="text-destructive">*</span>
-                  </Label>
-                  <Input
-                    id="phone"
-                    ref={phoneRef}
-                    type="tel"
-                    required
-                    placeholder={isAr ? "أدخل رقم هاتفك" : "Enter your phone number"}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="cv">
-                    {isAr ? "السيرة الذاتية" : "Upload CV"}{" "}
-                    <span className="text-destructive">*</span>
-                  </Label>
-                  <Input
-                    id="cv"
-                    type="file"
-                    required
-                    accept=".pdf,.doc,.docx"
-                    onChange={(e) => setCvFile(e.target.files?.[0] ?? null)}
-                    className="text-sm"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    {isAr ? "PDF, DOC, DOCX — الحد الأقصى 5 ميغابايت" : "Accepted: PDF, DOC, DOCX — max 5 MB"}
-                  </p>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="coverLetter">
-                    {isAr ? "خطاب التقديم (اختياري)" : "Cover Letter (Optional)"}
-                  </Label>
-                  <Textarea
-                    id="coverLetter"
-                    ref={coverLetterRef}
-                    placeholder={
-                      isAr
-                        ? "اكتب خطاب التقديم هنا..."
-                        : "Write your cover letter here..."
-                    }
-                    rows={5}
-                    maxLength={1000}
-                  />
-                </div>
-
-                <Button type="submit" className="w-full gap-2" disabled={submitting}>
-                  {submitting ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      {isAr ? "جارٍ الإرسال..." : "Submitting..."}
-                    </>
-                  ) : (
-                    isAr ? "إرسال الطلب" : "Submit Application"
-                  )}
-                </Button>
-              </form>
-            </div>
+            )}
+            </>
           )}
         </div>
       </section>

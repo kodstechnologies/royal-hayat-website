@@ -176,8 +176,13 @@ const DepartmentsSection = ({
   );
   const deptDoctors = useMemo(() => {
     if (!selectedDept) return [];
-    const origIdx = openIndex!;
-    const selectedSubSlug = selectedSubByDept[origIdx];
+    const apiDoctors = subDoctorsByDept[selectedDept.slug];
+    if (apiDoctors !== undefined) {
+      return [...apiDoctors].sort((a, b) =>
+        (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en"),
+      );
+    }
+    const selectedSubSlug = selectedSubByDept[selectedDept.slug];
 
     // Explicit sub-specialty → doctor name keywords map for reliable filtering
     const subSpecialtyDoctorMap: Record<string, string[]> = {
@@ -237,7 +242,7 @@ const DepartmentsSection = ({
 
       // Fallback: keyword match on title/specialty
       const selectedSub = selectedDept.subs.find(
-        (s) => getSubSlug(selectedDept.slug, s.name) === selectedSubSlug
+        (s) => getSubSlugForDepartment(selectedDept.slug, s.name) === selectedSubSlug,
       );
       if (selectedSub) {
         const subKeywords = selectedSub.name.toLowerCase().split(/[\s&,/()+]+/).filter(w => w.length > 3);
@@ -254,15 +259,11 @@ const DepartmentsSection = ({
     }
 
     // No sub selected or no match — show all dept doctors (excluding Nutricare unless sub selected)
-    const baseDoctors = deptDoctorsMap[selectedDept.name] || [];
+    const baseDoctors = deptDoctorsMap[selectedDept.slug] || [];
     return [...baseDoctors].sort((a, b) =>
-      (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en")
+      (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en"),
     );
-  }, [deptDoctorsMap, selectedDept, openIndex, selectedSubByDept, lang]);
-
-  // Reorder: expanded first, rest after
-  const getOriginalIndex = (dept: Department) =>
-    departments.findIndex((d) => d.name === dept.name);
+  }, [deptDoctorsMap, selectedDept, selectedSubByDept, subDoctorsByDept, lang]);
 
   return (
     <section className="py-16 md:py-24 bg-background" ref={sectionRef} id="departments">
@@ -310,19 +311,19 @@ const DepartmentsSection = ({
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
                   {catDepts.map((dept) => {
-                    const origIdx = getOriginalIndex(dept);
-                    const isExpanded = openIndex === origIdx;
-                    const selectedSubSlug = selectedSubByDept[origIdx];
+                    const isExpanded = openSlug === dept.slug;
+                    const selectedSubSlug = selectedSubByDept[dept.slug];
+                    const subDoctorsLoading = Boolean(subDoctorsLoadingByDept[dept.slug]);
 
                     return (
                       <motion.div
-                        key={dept.name}
+                        key={dept.slug}
                         layout
                         initial={{ opacity: 0, y: 30, scale: 0.97 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         transition={{ duration: 0.4, delay: 0.05, ease: [0.25, 0.46, 0.45, 0.94] }}
                         className={`bg-popover rounded-2xl overflow-hidden border border-border/50 cursor-pointer group transition-all duration-500 ${isExpanded ? "sm:col-span-2 lg:col-span-3" : ""}`}
-                        onClick={() => !isExpanded && handleToggle(origIdx)}
+                        onClick={() => !isExpanded && handleToggle(dept.slug)}
                       >
                         {!isExpanded ? (
                           <>
@@ -372,12 +373,26 @@ const DepartmentsSection = ({
                                           <button key={sub.name} type="button"
                                             onClick={(e) => {
                                               e.stopPropagation();
-                                              const subSlug = getSubSlug(dept.slug, sub.name);
+                                              const subSlug = getSubSlugForDepartment(dept.slug, sub.name);
                                               const isAlreadySelected = selectedSubSlug === subSlug;
-                                              setSelectedSubByDept((prev) => ({ ...prev, [origIdx]: isAlreadySelected ? "" : subSlug }));
+                                              if (isAlreadySelected) {
+                                                setSelectedSubByDept((prev) => ({ ...prev, [dept.slug]: "" }));
+                                                setSubDoctorsByDept((p) => {
+                                                  const next = { ...p };
+                                                  delete next[dept.slug];
+                                                  return next;
+                                                });
+                                                setSubDoctorsLoadingByDept((p) => {
+                                                  const next = { ...p };
+                                                  delete next[dept.slug];
+                                                  return next;
+                                                });
+                                              } else {
+                                                selectSubspecialityPill(dept, sub);
+                                              }
                                               if (doctorScrollRef.current) doctorScrollRef.current.scrollTo({ left: 0, behavior: "smooth" });
                                             }}
-                                            className={`px-3 py-1.5 rounded-full text-xs font-body border transition-colors ${selectedSubSlug === getSubSlug(dept.slug, sub.name) ? "bg-primary text-primary-foreground border-primary" : "bg-secondary/50 text-foreground border-border/30 hover:bg-secondary"}`}
+                                            className={`px-3 py-1.5 rounded-full text-xs font-body border transition-colors ${selectedSubSlug === getSubSlugForDepartment(dept.slug, sub.name) ? "bg-primary text-primary-foreground border-primary" : "bg-secondary/50 text-foreground border-border/30 hover:bg-secondary"}`}
                                           >
                                             {lang === "ar" ? sub.nameAr : sub.name}
                                           </button>
@@ -386,11 +401,16 @@ const DepartmentsSection = ({
                                     </>
                                   )}
                                 </div>
-                                <button onClick={() => setOpenIndex(null)} className="w-8 h-8 rounded-full bg-secondary/50 flex items-center justify-center hover:bg-primary/20 transition-colors flex-shrink-0 ml-4">
+                                <button onClick={() => setOpenSlug(null)} className="w-8 h-8 rounded-full bg-secondary/50 flex items-center justify-center hover:bg-primary/20 transition-colors flex-shrink-0 ml-4">
                                   <X className="w-4 h-4 text-muted-foreground" />
                                 </button>
                               </div>
-                              {deptDoctors.length > 0 ? (
+                              {subDoctorsLoading ? (
+                                <div className="mt-auto flex gap-4 overflow-hidden py-2">
+                                  <Skeleton className="h-48 w-[280px] rounded-2xl shrink-0" />
+                                  <Skeleton className="h-48 w-[280px] rounded-2xl shrink-0 hidden md:block" />
+                                </div>
+                              ) : deptDoctors.length > 0 ? (
                                 <div className="mt-auto">
                                   <p className="text-accent text-center text-xl tracking-[0.2em] uppercase font-body font-semibold mb-4">{lang === "ar" ? "أطباء القسم" : "Department Doctors"}</p>
                                   <div className="relative max-w-[576px] mx-auto lg:mt-6">
@@ -452,7 +472,6 @@ const DepartmentsSection = ({
             </div>
           )}
         </div>
-        )}
       </div>
     </section>
   );

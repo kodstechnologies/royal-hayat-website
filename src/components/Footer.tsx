@@ -11,7 +11,7 @@ const Footer = () => {
     { labelKey: "disclaimer", href: "/faq#disclaimer", isRoute: true },
     // { labelKey: "exchangeLogin", href: "#", isRoute: false },
     // { labelKey: "sitemailLogin", href: "#", isRoute: false },
-    { labelKey: "internationalPatients", href: "#", isRoute: false },
+    { labelKey: "internationalPatients", href: "/international-patient", isRoute: false },
     { labelKey: "termsPrivacy", href: "/faq#terms", isRoute: true },
     { labelKey: "medicalRepVisitBooking", href: "/medical-rep-visit-booking", isRoute: true },
     { labelKey: "medicalRecordsRequestForm", href: "/medical-records-request", isRoute: true },

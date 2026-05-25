@@ -99,16 +99,16 @@ const NewbornPhotography = () => {
             </div>
 
             {/* RIGHT — content */}
-            <ScrollAnimationWrapper>
-              <div>
-                <div className="flex items-center gap-3 mb-4">
+            <ScrollAnimationWrapper className="h-full flex items-start pt-2 md:pt-4">
+              <div className="w-full text-left">
+                {/* <div className="flex items-center gap-3 mb-4">
                   <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
                     <Baby className="w-6 h-6 text-accent" />
                   </div>
                   <h2 className="text-2xl md:text-3xl font-serif text-foreground">
                     {isAr ? "خدمات تصوير المواليد" : "Newborn Photography Services"}
                   </h2>
-                </div>
+                </div> */}
 
                 <h3 className="font-serif text-lg text-foreground mb-4">
                   {isAr ? "التقط أثمن لحظات الحياة" : "Capture Life's Most Precious Moments"}

@@ -38,11 +38,33 @@ export function mapApiDoctorRowToDoctor(
   const id = String(row._id ?? row.doctorId ?? "");
   const name = String(row.name ?? "");
   const nameAr = String(row.nameAr ?? name);
-  const specialty = String(row.specialty ?? "");
-  const specialtyAr = String(row.specialtyAr ?? specialty);
+
+  const depRaw = row.department;
+  let resolvedDeptEn = departmentNameEn;
+  let resolvedDeptAr = departmentNameAr;
+  let departmentId: string | undefined;
+
+  if (depRaw && typeof depRaw === "object" && depRaw !== null) {
+    const d = depRaw as { _id?: unknown; name?: string; nameAr?: string };
+    if (d._id != null) departmentId = String(d._id);
+    if (typeof d.name === "string" && d.name.trim()) {
+      resolvedDeptEn = d.name.trim();
+    }
+    if (typeof d.nameAr === "string" && d.nameAr.trim()) {
+      resolvedDeptAr = d.nameAr.trim();
+    }
+  } else if (typeof depRaw === "string" && /^[0-9a-fA-F]{24}$/i.test(depRaw)) {
+    departmentId = depRaw;
+  }
+
+  // Fallback specialty to department name if missing
+  const specialty = String(row.specialty ?? resolvedDeptEn ?? "");
+  const specialtyAr = String(row.specialtyAr ?? resolvedDeptAr ?? specialty);
+
   const title = String(row.title ?? "");
   const titleAr = String(row.titleAr ?? title);
   const initialsRaw = String(row.initials ?? (name.replace(/^Dr\.?\s*/i, "").slice(0, 2) || "DR")).toUpperCase();
+
   const quals = Array.isArray(row.qualifications) ? (row.qualifications as string[]) : [];
   const qualsAr = Array.isArray(row.qualificationsAr) ? (row.qualificationsAr as string[]) : quals;
   const exp = Array.isArray(row.expertise) ? (row.expertise as string[]) : [];
@@ -54,21 +76,6 @@ export function mapApiDoctorRowToDoctor(
   const bioAr = String(row.bioAr ?? bio);
   const image = typeof row.image === "string" ? row.image : "";
   const isActive = row.isActive !== false;
-
-  const depRaw = row.department;
-  let resolvedDeptEn = departmentNameEn;
-  let resolvedDeptAr = departmentNameAr;
-  let departmentId: string | undefined;
-  if (depRaw && typeof depRaw === "object" && depRaw !== null) {
-    const d = depRaw as { _id?: unknown; name?: string };
-    if (d._id != null) departmentId = String(d._id);
-    if (typeof d.name === "string" && d.name.trim()) {
-      resolvedDeptEn = d.name.trim();
-      resolvedDeptAr = resolvedDeptAr || resolvedDeptEn;
-    }
-  } else if (typeof depRaw === "string" && /^[0-9a-fA-F]{24}$/i.test(depRaw)) {
-    departmentId = depRaw;
-  }
 
   return {
     id,

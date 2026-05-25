@@ -91,7 +91,7 @@ const HomeHealth = () => {
         <div className="container mx-auto px-6 max-w-4xl">
           <ScrollAnimationWrapper>
             <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-4">{isAr ? "عن الرعاية المنزلية" : "About Us"}</h2>
-            <p className="font-body text-sm text-muted-foreground leading-relaxed">
+            <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify">
               {isAr
                 ? "رويال للرعاية المنزلية هي امتداد حصري لمستشفى رويال حياة، تقدم دعماً استثنائياً للصحة والعافية مباشرة في منزلك. تمزج خدماتنا بين الرعاية الطبية عالية الجودة والفخامة والضيافة المميزة التي يُعرف بها مستشفى رويال حياة. مدعومين بفريق متعدد التخصصات من المتخصصين في الرعاية الصحية، نقدم رعاية شخصية ورحيمة ومتخصصة تتوافق مع أعلى المعايير الدولية."
                 : "Royale Home Health is an exclusive extension of Royale Hayat Hospital, offering exceptional health and wellness support delivered directly to your home. Our services blend high-quality medical care with the signature luxury and hospitality that Royale Hayat is known for. Backed by a multi-disciplinary team of healthcare professionals, we provide personalized, compassionate, and expert care aligned with the highest international standards."}
@@ -138,7 +138,7 @@ const HomeHealth = () => {
               </div>
               <h2 className="text-2xl md:text-3xl font-serif text-foreground">{isAr ? "خدمات التمريض المتخصصة" : "Specialized Nursing Services"}</h2>
             </div>
-            <p className="font-body text-sm text-muted-foreground leading-relaxed mb-8 ml-15">
+            <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify mb-8 ml-15">
               {isAr
                 ? "يقدم فريق التمريض المتخصص لدينا خدمات طبية شاملة في راحة منزلك، تشمل:"
                 : "Our specialized nursing team offers comprehensive medical services in the comfort of your home, including:"}

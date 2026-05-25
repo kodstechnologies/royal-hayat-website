@@ -1,30 +1,54 @@
-import { useState, type FormEvent } from "react";
+import { useState, useEffect, useRef, type FormEvent } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, CheckCircle2, XCircle, Loader2, RefreshCcw } from "lucide-react";
+import { ArrowRight, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ChatButton from "@/components/ChatButton";
 import ScrollToTop from "@/components/ScrollToTop";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
-  getIdentityStatus,
   startIdentityVerification,
   type IdentityRawPayload,
   type IdentityStatusResponse,
   type StartIdentityPayload,
   type StartIdentityResponse
 } from "@/api/identity";
+import { subscribeToIdentityVerification } from "@/api/identitySocket";
 
 const VerifyNationalId = () => {
   const { lang, t } = useLanguage();
 
   const [nationalId, setNationalId] = useState("");
   const [error, setError] = useState<string>("");
-  const [phase, setPhase] = useState<"idle" | "starting" | "checking" | "done" | "failed">("idle");
+  const [phase, setPhase] = useState<"idle" | "starting" | "waiting" | "done" | "failed">("idle");
   const [operationId, setOperationId] = useState<string>("");
   const [isVerified, setIsVerified] = useState<boolean | null>(null);
   const [personName, setPersonName] = useState<string>("");
   const [identityPayload, setIdentityPayload] = useState<Record<string, unknown> | null>(null);
+
+  const socketUnsubscribeRef = useRef<(() => void) | null>(null);
+  const verificationDoneRef = useRef(false);
+
+  const applyStatusResult = (statusData: IdentityStatusResponse) => {
+    if (statusData?.status === "pending") {
+      setIsVerified(null);
+      setPersonName("");
+      setIdentityPayload(null);
+      setPhase("waiting");
+      return;
+    }
+
+    setIsVerified(statusData?.verified === true);
+
+    const nameFromStatus = (() => {
+      const nameEn = statusData?.personName?.english || "";
+      const nameAr = statusData?.personName?.arabic || "";
+      return (lang === "ar" ? nameAr : nameEn) || "";
+    })();
+    setPersonName(nameFromStatus || extractDisplayName(statusData));
+    setIdentityPayload(extractIdentityPayload(statusData));
+    setPhase("done");
+  };
 
   const extractDisplayName = (payload: StartIdentityResponse | IdentityStatusResponse) => {
     const source =
@@ -96,13 +120,39 @@ const VerifyNationalId = () => {
     return "";
   };
 
+  useEffect(() => {
+    if (!operationId || phase !== "waiting") {
+      verificationDoneRef.current = false;
+      return;
+    }
+
+    verificationDoneRef.current = false;
+    socketUnsubscribeRef.current?.();
+
+    const finishIfReady = (statusData: IdentityStatusResponse) => {
+      if (verificationDoneRef.current || statusData?.status === "pending") return;
+      verificationDoneRef.current = true;
+      setError("");
+      applyStatusResult(statusData);
+      socketUnsubscribeRef.current?.();
+      socketUnsubscribeRef.current = null;
+    };
+
+    const { unsubscribe } = subscribeToIdentityVerification(operationId, finishIfReady);
+    socketUnsubscribeRef.current = unsubscribe;
+
+    return () => {
+      unsubscribe();
+      socketUnsubscribeRef.current = null;
+    };
+  }, [operationId, phase, lang]);
+
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     const err = validate();
     setError(err);
     if (err) return;
 
-    // Frontend -> backend -> SharperIntegration
     void (async () => {
       try {
         setPhase("starting");
@@ -111,6 +161,8 @@ const VerifyNationalId = () => {
         setPersonName("");
         setIdentityPayload(null);
         setOperationId("");
+        socketUnsubscribeRef.current?.();
+        socketUnsubscribeRef.current = null;
 
         const payload: StartIdentityPayload = {
           civilId: nationalId.trim(),
@@ -131,8 +183,7 @@ const VerifyNationalId = () => {
         if (!opId) throw new Error(lang === "ar" ? "لم يتم استلام operationId" : "Missing operationId");
 
         setOperationId(opId);
-        // Callback-first flow: after starting, user can click "Check Status".
-        setPhase("idle");
+        setPhase("waiting");
       } catch (err: unknown) {
         setPhase("failed");
         const message = err instanceof Error ? err.message : "";
@@ -147,48 +198,7 @@ const VerifyNationalId = () => {
     })();
   };
 
-  const onCheckStatus = () => {
-    if (!operationId) return;
-
-    void (async () => {
-      try {
-        setPhase("checking");
-        setError("");
-
-        const statusData = await getIdentityStatus(operationId);
-        if (statusData?.status === "pending") {
-          setIsVerified(null);
-          setPersonName("");
-          setIdentityPayload(null);
-          setPhase("idle");
-          setError(lang === "ar" ? "الحالة ما زالت قيد الانتظار" : "Status is still pending");
-          return;
-        }
-
-        setIsVerified(statusData?.verified === true);
-
-        const nameFromStatus = (() => {
-          const nameEn = statusData?.personName?.english || "";
-          const nameAr = statusData?.personName?.arabic || "";
-          return (lang === "ar" ? nameAr : nameEn) || "";
-        })();
-        setPersonName(nameFromStatus || extractDisplayName(statusData));
-        setIdentityPayload(extractIdentityPayload(statusData));
-
-        setPhase("done");
-      } catch (err: unknown) {
-        setPhase("failed");
-        const message = err instanceof Error ? err.message : "";
-        setError(
-          message
-            ? message
-            : lang === "ar"
-              ? "تعذر جلب الحالة. يرجى المحاولة مرة أخرى."
-              : "Failed to fetch status. Please try again."
-        );
-      }
-    })();
-  };
+  const showWaiting = operationId && phase === "waiting";
 
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)] overflow-x-hidden">
@@ -230,7 +240,10 @@ const VerifyNationalId = () => {
                   setNationalId(next);
                   setPhase("idle");
                   setError("");
+                  socketUnsubscribeRef.current?.();
+                  socketUnsubscribeRef.current = null;
                 }}
+                disabled={phase === "waiting" || phase === "starting"}
                 className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 ${
                   error ? "border-destructive" : "border-border"
                 }`}
@@ -243,7 +256,7 @@ const VerifyNationalId = () => {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.97 }}
                 type="submit"
-                disabled={phase === "starting" || phase === "checking"}
+                disabled={phase === "starting" || phase === "waiting"}
                 className="w-full bg-primary text-primary-foreground py-3.5 rounded-xl font-body text-sm tracking-widest uppercase hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
               >
                 {phase === "starting" ? (
@@ -260,35 +273,13 @@ const VerifyNationalId = () => {
               </motion.button>
             )}
 
-            {operationId && (
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.97 }}
-                type="button"
-                onClick={onCheckStatus}
-                disabled={phase === "checking" || phase === "starting"}
-                className="w-full bg-secondary/40 text-foreground py-3.5 rounded-xl font-body text-sm tracking-widest uppercase hover:bg-secondary/60 transition-all flex items-center justify-center gap-2"
-              >
-                {phase === "checking" ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    {lang === "ar" ? "جارِ التحقق من الحالة..." : "Checking status..."}
-                  </>
-                ) : (
-                  <>
-                    {lang === "ar" ? "تحقق من الموافقة" : "Check Approval"}
-                    <RefreshCcw className="w-4 h-4" />
-                  </>
-                )}
-              </motion.button>
-            )}
-
-            {operationId && phase !== "done" && (
+            {showWaiting && (
               <div className="bg-muted/30 rounded-xl p-4 text-center border border-border">
+                <Loader2 className="w-6 h-6 animate-spin text-accent mx-auto mb-2" />
                 <p className="font-body text-sm text-foreground">
                   {lang === "ar"
-                    ? "تمت معالجة التحقق، يرجى انتظار الموافقة."
-                    : "Authentication processed, please wait for approval."}
+                    ? "تم إرسال طلب الموافقة. يرجى الموافقة على الهاتف — سيتم التحديث تلقائياً."
+                    : "Approval request sent. Please approve on your phone — this page will update automatically."}
                 </p>
                 <p className="font-body text-[11px] text-muted-foreground mt-2 break-all">
                   operationId: {operationId}
@@ -362,4 +353,3 @@ const VerifyNationalId = () => {
 };
 
 export default VerifyNationalId;
-

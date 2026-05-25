@@ -48,9 +48,13 @@ const HospitalityServices = ({
   const [babySlide, setBabySlide] = useState(0);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [section]);
+
   const babyImages = [
-    "/images/baby/baby1.jpg",
-    "/images/baby/baby2.jpg",
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/baby-images/WhatsApp+Image+2026-05-12+at+2.39.52+PM+(1).jpeg",
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/baby-images/WhatsApp+Image+2026-05-12+at+2.39.52+PM.jpeg",
   ];
   const activeSuiteImages = suiteCarouselImagesByIndex[activeSuite] ?? suiteCarouselImagesByIndex[6];
 
@@ -219,8 +223,8 @@ const HospitalityServices = ({
           <ScrollAnimationWrapper>
             <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">{t("premiumExperience")}</p>
             <h1 className="text-4xl md:text-5xl font-serif text-foreground mb-4">
-              {section === "halls" ? (isAr ? "القاعات الفاخرة" : " Halls")
-                : section === "suites" ? (isAr ? "الأجنحة الفاخرة" : " Suites")
+              {section === "halls" ? (isAr ? "القاعات الفاخرة" : "Birth Celebration Halls")
+                : section === "suites" ? (isAr ? "الأجنحة الفاخرة" : "Exclusive Suites")
                   : section === "spa" ? (isAr ? "سبا إليمنتس" : "Elements Spa")
                     : section === "cafe" ? (isAr ? "بيسترو الليوان" : "Al Liwan Bistro")
                       : (isAr ? "خدمات الضيافة" : "Hospitality Services")}
@@ -234,17 +238,20 @@ const HospitalityServices = ({
         <div className="container mx-auto px-6 max-w-7xl">
           <ScrollAnimationWrapper>
             <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-6">{isAr ? "مقدمة" : "Introduction"}</h2>
-            <div className="space-y-4 font-body text-sm text-muted-foreground leading-relaxed">
+            <div className="space-y-4 font-body text-sm text-muted-foreground leading-relaxed text-justify">
               {isAr ? (<>
-                <p>يقدم مستشفى رويال حياة خدمات فاخرة لتعزيز تجارب المرضى والضيوف خلال المناسبات الخاصة. نقدم عناصر مخصصة مثل زجاجات المياه وعلب المناديل والهدايا لضمان إقامة لا تُنسى. يلبي طهاتنا التنفيذيون الأنظمة الغذائية الخاصة بطعام طازج ومغذٍ.</p>
-                <p>الطابق السادس مخصص للفخامة ويشبه أرقى الفنادق، ويضم طاقم خدمة عملاء مدرب تدريباً عالياً. يتميز بأربعة أنواع من الأجنحة المزينة بأناقة مع وسائل الراحة الحديثة.</p>
+                <p>يقدم مستشفى رويال حياة خدمات حصرية لتعزيز تجارب المرضى والضيوف خلال المناسبات الخاصة. نقدم عناصر مخصصة مثل زجاجات المياه وعلب المناديل والهدايا لضمان إقامة لا تُنسى. يلبي طهاتنا التنفيذيون الأنظمة الغذائية الخاصة بطعام طازج ومغذٍ.</p>
+
+                <p>الطابق السادس مخصص للحصرية ويشبه أرقى الفنادق، ويضم طاقم خدمة عملاء مدرب تدريباً عالياً. يتميز بأربعة أنواع من الأجنحة المزينة بأناقة مع وسائل الراحة الحديثة.</p>
+
                 <p>أجنحة رويال أوركيد الأكثر فخامة مصممة لكبار الشخصيات وتوفر خصوصية وأماناً لا مثيل لهما مع مفروشات فاخرة وخيارات طعام خاصة.</p>
-                <p>تضمن ضيافة رويال حياة الفاخرة مجموعة من الخدمات بما في ذلك تقديم الطعام وتصاميم الزهور والترفيه المصممة حسب الاحتياجات الفردية.</p>
+
+                <p>تضمن ضيافة رويال حياة الحصرية مجموعة من الخدمات بما في ذلك تقديم الطعام وتصاميم الزهور والترفيه المصممة حسب الاحتياجات الفردية.</p>
               </>) : (<>
-                <p>RHH offers luxury services to enhance patient and guest experiences during special occasions. They provide personalized items such as water bottles, tissue boxes, and gifts, ensuring a memorable stay. RHH's executive chefs cater to special diets with fresh, nutritious food, allowing guests to enjoy gourmet hors d'oeuvres or desserts.</p>
-                <p>The sixth floor of RHH is dedicated to luxury, resembling the finest hotels, and boasts a highly trained customer service staff. It features four types of elegantly decorated inpatient suites with modern amenities like interactive TVs, kitchens, and 24-hour housekeeping.</p>
+                <p>RHH offers exclusive services to enhance patient and guest experiences during special occasions. They provide personalized items such as water bottles, tissue boxes, and gifts, ensuring a memorable stay. RHH's executive chefs cater to special diets with fresh, nutritious food, allowing guests to enjoy gourmet hors d'oeuvres or desserts.</p>
+                <p>The sixth floor of RHH is dedicated to exclusivity, resembling the finest hotels, and boasts a highly trained customer service staff. It features four types of elegantly decorated inpatient suites with modern amenities like interactive TVs, kitchens, and 24-hour housekeeping.</p>
                 <p>The most extravagant Royale Orchid Suites, designed for VIPs, provide unmatched privacy and security, featuring a large suite with an adjoining reception hall. Guests enjoy lavish furnishings, private dining options, and a selection of high-quality personal care products.</p>
-                <p>RHH's luxurious hospitality ensures a range of services, including catering, floral designs, and entertainment, tailored to individual needs. Furthermore, a Lactation & Lamaze facility is available on the sixth floor.</p>
+                <p>RHH's exclusive hospitality ensures a range of services, including catering, floral designs, and entertainment, tailored to individual needs. Furthermore, a Lactation & Lamaze facility is available on the sixth floor.</p>
               </>)}
             </div>
           </ScrollAnimationWrapper>
@@ -259,7 +266,7 @@ const HospitalityServices = ({
           {/* <div className="mt-10 aspect-video bg-muted/30 rounded-2xl border border-border flex items-center justify-center">
             <div className="text-center">
               <Video className="w-10 h-10 text-muted-foreground/50 mx-auto mb-2" />
-              <p className="font-body text-sm text-muted-foreground">{isAr ? "فيديو ترويجي للخدمات الفاخرة قريباً" : "Luxury Services promotional video coming soon"}</p>
+              <p className="font-body text-sm text-muted-foreground text-justify">{isAr ? "فيديو ترويجي للخدمات الفاخرة قريباً" : "Luxury Services promotional video coming soon"}</p>
             </div>
           </div> */}
         </div>
@@ -269,7 +276,7 @@ const HospitalityServices = ({
       {show("halls") && <section className="py-6 bg-white">
         <div className="container mx-auto px-6 max-w-7xl">
           <ScrollAnimationWrapper>
-            {showAll && <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-2 text-center">{isAr ? "القاعات الفاخرة" : "Halls"}</h2>}
+            {showAll && <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-2 text-center">{isAr ? "القاعات الفاخرة" : "Birth Celebration Halls"}</h2>}
             <div className={`flex justify-center gap-2 flex-wrap ${showAll ? 'mt-6' : 'mt-2'} mb-10`}>
               {hallsNav.map((h) => (
                 <button key={h.id} onClick={() => setActiveHall(h.id)}
@@ -333,7 +340,7 @@ const HospitalityServices = ({
                 <ScrollAnimationWrapper>
                   <div>
                     <h3 className="text-xl font-serif text-foreground mb-4">{isAr ? "قاعة غاردينيا" : "Gardenia Banquet Hall"}</h3>
-                    <p className="font-body text-sm text-muted-foreground leading-relaxed mb-5">
+                    <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify mb-5">
                       {isAr
                         ? "قاعة غاردينيا هي مكاننا الرئيسي، مصممة بعناية لاستيعاب التجمعات المتوسطة إلى الكبيرة في بيئة أنيقة ومتعددة الاستخدامات. بسعة تصل إلى 150 ضيفاً بتنسيق المسرح، توفر هذه القاعة مساحة استثنائية لمجموعة متنوعة من الفعاليات."
                         : "The Gardenia Banquet Hall is our premier venue, thoughtfully designed to accommodate medium to large gatherings in an elegant and versatile setting. With a generous seating capacity of up to 150 guests in theatre-style configuration, this hall offers an exceptional space for a wide variety of events."}
@@ -362,14 +369,14 @@ const HospitalityServices = ({
                         </div>
                       ))}
                     </div>
-                    <p className="font-body text-sm text-muted-foreground leading-relaxed mb-5">
+                    <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify mb-5">
                       {isAr
                         ? "بتصميمها المرن وديكورها الداخلي المذهل وخدمتها الشخصية، تضمن قاعة غاردينيا تجربة راقية وسلسة لفعاليتك."
                         : "With its flexible layout, stunning interior, and personalized service, the Gardenia Banquet Hall guarantees a refined and seamless experience for your event."}
                     </p>
                     <div className="flex items-center gap-2">
                       <Phone className="w-4 h-4 text-accent" />
-                      <p className="font-body text-sm text-foreground">
+                      <p className="font-body text-sm text-foreground text-justify">
                         {isAr ? "للحجز والمزيد من المعلومات، اتصل:" : "For bookings and more information, please call:"}{" "}
                         <a href="tel:+96525360573" className="text-accent hover:underline font-semibold">+96525360573</a>
                       </p>
@@ -433,7 +440,7 @@ const HospitalityServices = ({
                 <ScrollAnimationWrapper>
                   <div>
                     <h3 className="text-xl font-serif text-foreground mb-4">{isAr ? "قاعة الجوري" : "Al Jouri Banquet Hall"}</h3>
-                    <p className="font-body text-sm text-muted-foreground leading-relaxed mb-5">
+                    <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify mb-5">
                       {isAr
                         ? "للمناسبات الأكثر حميمية، تقدم قاعة الجوري أجواءً دافئة ومرحبة، مما يجعلها الخيار المثالي للفعاليات الأصغر حجماً حيث التواصل الشخصي والراحة هما الأولوية."
                         : "For more intimate occasions, Al Jouri Hall offers a warm and inviting atmosphere, making it the ideal choice for smaller-scale events where personal connection and comfort are paramount."}
@@ -452,7 +459,7 @@ const HospitalityServices = ({
                     </div>
                     <div className="flex items-center gap-2">
                       <Phone className="w-4 h-4 text-accent" />
-                      <p className="font-body text-sm text-foreground">
+                      <p className="font-body text-sm text-foreground text-justify">
                         {isAr ? "للحجز والمزيد من المعلومات، اتصل:" : "For bookings and more information, please call:"}{" "}
                         <a href="tel:+96525360573" className="text-accent hover:underline font-semibold">+96525360573</a>
                       </p>
@@ -532,17 +539,17 @@ const HospitalityServices = ({
                   </div>
                   <h2 className="text-2xl md:text-3xl font-serif text-foreground">{t("alLiwanCafe")}</h2>
                 </div>
-                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
+                <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify mb-4">
                   {isAr
                     ? "في قلب الردهة، يقدم بيسترو الليوان (مطعم وصالة) أجواءً مدعوة حيث تملأ روائح الأطباق المحضرة طازجاً والحلويات المصنوعة يدوياً الهواء برفق. استرخِ في مساحة راقية محاطة بديكورات أنيقة وأصوات الموسيقى الحية الهادئة، مما يخلق أجواءً هادئة وترحيبية."
                     : "At the heart of the lobby, Al Liwan Bistro (Restaurant & Lounge) offers an inviting setting where the aromas of freshly prepared dishes and handcrafted desserts gently fill the air. Relax in a sophisticated space, surrounded by elegant interiors and the soft sounds of live music, creating a calm and welcoming atmosphere."}
                 </p>
-                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
+                <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify mb-4">
                   {isAr
                     ? "استمتع بتجربة طعام راقية تضم تخصصات عربية إلى جانب تشكيلة مختارة من المأكولات الدولية. تشمل القائمة عصائر طازجة، سموذي، برغر راقي، سلطات، ساندويتشات ولفائف. أتمم تجربتك بقطعة كيك أو معجنات طازجة مع قهوة متخصصة أو شاي."
                     : "Enjoy a refined dining experience featuring Arabian specialties alongside a curated selection of international cuisine. The menu includes freshly squeezed juices, smoothies, gourmet burgers, salads, sandwiches, and wraps. Complete your experience with a slice of cake or a freshly baked pastry, paired with specialty coffees and teas."}
                 </p>
-                <p className="font-body text-sm text-muted-foreground leading-relaxed">
+                <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify">
                   {isAr
                     ? "مفتوح يومياً من 8 صباحاً حتى 11 مساءً، بيسترو الليوان وجهة مثالية للإفطار والغداء والعشاء أو وجبة خفيفة في أي وقت من اليوم."
                     : "Open daily from 8 a.m. to 11 p.m., Al Liwan Bistro is an ideal destination for breakfast, lunch, dinner, or a light bite at any time of day."}
@@ -611,7 +618,7 @@ const HospitalityServices = ({
                   </div>
                   <h2 className="text-2xl md:text-3xl font-serif text-foreground">{isAr ? "سبا إليمنتس من بانيان تري" : "Elements Spa by (Banyan Tree)"}</h2>
                 </div>
-                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-5">
+                <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify mb-5">
                   {isAr
                     ? "سبا إليمنتس، بالتعاون مع فنادق ومنتجعات بانيان تري الحائزة على جوائز، يجلب جوهر العلاجات التقليدية وتقاليد العافية الشاملة إلى مستشفى رويال حياة."
                     : "Elements Spa, in collaboration with the award-winning Banyan Tree Hotels & Resorts, brings the essence of time-honored remedies and holistic wellness traditions to Royale Hayat Hospital."}
@@ -629,7 +636,7 @@ const HospitalityServices = ({
                       ))}
                   </div>
                 </div>
-                <p className="font-body text-sm text-muted-foreground leading-relaxed">
+                <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify">
                   {isAr ? "لمزيد من التفاصيل، يرجى زيارة: " : "For more details, please visit: "}
                   <a href="https://www.banyantreespa.com" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline font-semibold">www.banyantreespa.com</a>
                 </p>
@@ -645,8 +652,8 @@ const HospitalityServices = ({
       {show("suites") && <section className="py-6 bg-primary/5">
         <div className="container mx-auto px-6 max-w-7xl">
           <ScrollAnimationWrapper>
-            {showAll && <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-2 text-center">{isAr ? "الأجنحة الفاخرة" : "Suites"}</h2>}
-            <p className="text-muted-foreground font-body text-sm text-center mb-8 max-w-xl mx-auto">
+            {showAll && <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-2 text-center">{isAr ? "الأجنحة الفاخرة" : "Exclusive Suites"}</h2>}
+            <p className="text-muted-foreground font-body text-sm text-justify mb-8 max-w-xl mx-auto">
               {isAr ? "اختر من سبع فئات أجنحة مميزة، كل منها مسمى على اسم زهرة ومصمم لتقديم تجربة فريدة." : "Choose from seven distinctive suite categories, each named after a flower and designed to offer a unique experience."}
             </p>
           </ScrollAnimationWrapper>
@@ -708,7 +715,7 @@ const HospitalityServices = ({
                 <div>
                   <h3 className="text-xl font-serif text-foreground mb-2">{currentSuite.name}</h3>
                   <p className="font-body text-xs text-accent tracking-wide uppercase mb-4">{currentSuite.area}</p>
-                  <p className="font-body text-sm text-muted-foreground leading-relaxed mb-6">{currentSuite.desc}</p>
+                  <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify mb-6">{currentSuite.desc}</p>
 
                   {currentSuite.highlights && (
                     <div className="space-y-2 mb-6 text-left">
@@ -751,7 +758,7 @@ const HospitalityServices = ({
 
                   <div className="flex items-center gap-2 mt-6">
                     <Phone className="w-4 h-4 text-accent" />
-                    <p className="font-body text-sm text-foreground">{isAr ? "للحجز والمزيد من المعلومات، اتصل:" : "For bookings and more information, please call:"} <a href={`tel:${currentSuite.phone}`} className="text-accent hover:underline font-semibold">{currentSuite.phone}</a></p>
+                    <p className="font-body text-sm text-foreground text-justify">{isAr ? "للحجز والمزيد من المعلومات، اتصل:" : "For bookings and more information, please call:"} <a href={`tel:${currentSuite.phone}`} className="text-accent hover:underline font-semibold">{currentSuite.phone}</a></p>
                   </div>
                 </div>
               </div>
@@ -774,7 +781,7 @@ const HospitalityServices = ({
                       <div className="w-full h-full bg-muted/30 flex items-center justify-center">
                         <div className="text-center">
                           <Image className="w-8 h-8 text-muted-foreground/50 mx-auto mb-2" />
-                          <p className="font-body text-xs text-muted-foreground">{isAr ? "صور الجناح قريباً" : `${currentSuite.name} images coming soon`}</p>
+                          <p className="font-body text-xs text-muted-foreground text-justify">{isAr ? "صور الجناح قريباً" : `${currentSuite.name} images coming soon`}</p>
                         </div>
                       </div>
                     )}
@@ -782,7 +789,7 @@ const HospitalityServices = ({
                   <div className="order-1 lg:order-1">
                     <h3 className="text-xl font-serif text-foreground mb-2">{currentSuite.name}</h3>
                     <p className="font-body text-xs text-accent tracking-wide uppercase mb-4">{currentSuite.area}</p>
-                    <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">{currentSuite.desc}</p>
+                    <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify mb-4">{currentSuite.desc}</p>
 
                     {currentSuite.highlights && (
                       <div className="space-y-2 mb-4">
@@ -796,7 +803,7 @@ const HospitalityServices = ({
                     )}
 
                     {currentSuite.extraDesc && (
-                      <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">{currentSuite.extraDesc}</p>
+                      <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify mb-4">{currentSuite.extraDesc}</p>
                     )}
 
                     {currentSuite.dimensions && (
@@ -894,7 +901,7 @@ const HospitalityServices = ({
 
                     <div className="flex items-center gap-2 mt-6">
                       <Phone className="w-4 h-4 text-accent" />
-                      <p className="font-body text-sm text-foreground">
+                      <p className="font-body text-sm text-foreground text-justify">
                         {isAr ? "للحجز والمزيد من المعلومات، اتصل:" : "For bookings and more information, please call:"}{" "}
                         <a href={`tel:${currentSuite.phone}`} className="text-accent hover:underline font-semibold">
                           {currentSuite.phone}
@@ -909,7 +916,7 @@ const HospitalityServices = ({
             {currentSuite.hall && (
               <div className="bg-popover border border-border/50 rounded-2xl p-6 mt-16">
                 <h4 className="font-serif text-base text-foreground mb-2">{currentSuite.hall.title}</h4>
-                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-3">{currentSuite.hall.desc}</p>
+                <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify mb-3">{currentSuite.hall.desc}</p>
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
                     <h5 className="font-serif text-sm text-foreground mb-2">{isAr ? "مواصفات القاعة:" : "Hall Specifications:"}</h5>
@@ -978,7 +985,7 @@ const HospitalityServices = ({
                       <div className="w-full h-full flex items-center justify-center bg-muted/30">
                         <div className="text-center">
                           <Image className="w-10 h-10 text-muted-foreground/50 mx-auto mb-2" />
-                          <p className="font-body text-xs text-muted-foreground">{isAr ? "صور قريباً" : "Photos coming soon"}</p>
+                          <p className="font-body text-xs text-muted-foreground text-justify">{isAr ? "صور قريباً" : "Photos coming soon"}</p>
                         </div>
                       </div>
                     )}
@@ -1019,11 +1026,11 @@ const HospitalityServices = ({
                     <Sparkles className="w-6 h-6 text-primary" />
                   </div>
                   <h2 className="text-2xl md:text-3xl font-serif text-foreground">
-                    {isAr ? "خدمات الفعاليات في الغرف" : "In-Room Event Services"}
+                    {isAr ? "تجارب الاحتفال داخل الجناح" : "In-Suite Celebration Experiences"}
                   </h2>
                 </div>
 
-                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-5">
+                <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify mb-5">
                   {isAr
                     ? "تفضل احتفالاً أكثر خصوصية وحميمية؟ نقدم الفرصة المثالية لاستضافة لحظات لا تُنسى في راحة وأناقة جناحك."
                     : "Prefer a more private and intimate celebration? We offer the perfect opportunity to host unforgettable moments right within the comfort and elegance of your suite."}
@@ -1032,9 +1039,9 @@ const HospitalityServices = ({
                 {/* 3 services compact */}
                 <div className="space-y-3 mb-5">
                   {[
-                    { icon: Gift,           title: isAr ? "التصميم والديكور المخصص" : "Custom Design & Décor",  desc: isAr ? "بالونات، زهور، إضاءة وأقمشة مصممة خصيصاً لمناسبتك." : "Balloons, flowers, lighting and fabrics tailored to your occasion." },
-                    { icon: UtensilsCrossed, title: isAr ? "المأكولات الراقية" : "Gourmet Catering",            desc: isAr ? "أطباق مختارة من مطبخنا الراقي، من المقبلات إلى الحلويات." : "Curated dishes from our kitchen, from appetizers to desserts." },
-                    { icon: UserCheck,      title: isAr ? "خدمة الخادم الشخصي" : "Butler Service",             desc: isAr ? "خدمة احترافية من الاستقبال حتى التنظيف." : "Professional service from reception to cleanup." },
+                    { icon: Gift, title: isAr ? "التصميم والديكور المخصص" : "Custom Design & Décor", desc: isAr ? "بالونات، زهور، إضاءة وأقمشة مصممة خصيصاً لمناسبتك." : "Balloons, flowers, lighting and fabrics tailored to your occasion." },
+                    { icon: UtensilsCrossed, title: isAr ? "المأكولات الراقية" : "Gourmet Catering", desc: isAr ? "أطباق مختارة من مطبخنا الراقي، من المقبلات إلى الحلويات." : "Curated dishes from our kitchen, from appetizers to desserts." },
+                    { icon: UserCheck, title: isAr ? "خدمة الخادم الشخصي" : "Butler Service", desc: isAr ? "خدمة احترافية من الاستقبال حتى التنظيف." : "Professional service from reception to cleanup." },
                   ].map((item, i) => (
                     <div key={i} className="flex items-start gap-3">
                       <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -1042,7 +1049,7 @@ const HospitalityServices = ({
                       </div>
                       <div>
                         <p className="font-body text-sm font-semibold text-foreground">{item.title}</p>
-                        <p className="font-body text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
+                        <p className="font-body text-xs text-muted-foreground leading-relaxed text-justify">{item.desc}</p>
                       </div>
                     </div>
                   ))}
@@ -1129,7 +1136,7 @@ const HospitalityServices = ({
                   </div>
                   <h2 className="text-2xl md:text-3xl font-serif text-foreground">{isAr ? "سبا إليمنتس من بانيان تري" : "Elements Spa by Banyan Tree"}</h2>
                 </div>
-                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-5">
+                <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify mb-5">
                   {isAr
                     ? "سبا إليمنتس، بالتعاون مع فنادق ومنتجعات بانيان تري الحائزة على جوائز، يجلب جوهر العلاجات التقليدية وتقاليد العافية الشاملة إلى مستشفى رويال حياة."
                     : "Elements Spa, in collaboration with the award-winning Banyan Tree Hotels & Resorts, brings the essence of time-honored remedies and holistic wellness traditions to Royale Hayat Hospital."}
@@ -1147,7 +1154,7 @@ const HospitalityServices = ({
                       ))}
                   </div>
                 </div>
-                <p className="font-body text-sm text-muted-foreground leading-relaxed">
+                <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify">
                   {isAr ? "لمزيد من التفاصيل، يرجى زيارة: " : "For more details, please visit: "}
                   <a href="https://www.banyantreespa.com" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline font-semibold">www.banyantreespa.com</a>
                 </p>
@@ -1155,7 +1162,7 @@ const HospitalityServices = ({
             </ScrollAnimationWrapper>
           </div>
         </div>
-      </section>} 
+      </section>}
 
       {/* ===== AL LIWAN BISTRO (Show All Order) ===== */}
       {showAll && <section className="py-6 bg-white">
@@ -1221,17 +1228,17 @@ const HospitalityServices = ({
                   </div>
                   <h2 className="text-2xl md:text-3xl font-serif text-foreground">{t("alLiwanCafe")}</h2>
                 </div>
-                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
+                <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify mb-4">
                   {isAr
                     ? "في قلب الردهة، يقدم بيسترو الليوان (مطعم وصالة) أجواءً مدعوة حيث تملأ روائح الأطباق المحضرة طازجاً والحلويات المصنوعة يدوياً الهواء برفق. استرخِ في مساحة راقية محاطة بديكورات أنيقة وأصوات الموسيقى الحية الهادئة، مما يخلق أجواءً هادئة وترحيبية."
                     : "At the heart of the lobby, Al Liwan Bistro (Restaurant & Lounge) offers an inviting setting where the aromas of freshly prepared dishes and handcrafted desserts gently fill the air. Relax in a sophisticated space, surrounded by elegant interiors and the soft sounds of live music, creating a calm and welcoming atmosphere."}
                 </p>
-                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
+                <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify mb-4">
                   {isAr
                     ? "استمتع بتجربة طعام راقية تضم تخصصات عربية إلى جانب تشكيلة مختارة من المأكولات الدولية. تشمل القائمة عصائر طازجة، سموذي، برغر راقي، سلطات، ساندويتشات ولفائف. أتمم تجربتك بقطعة كيك أو معجنات طازجة مع قهوة متخصصة أو شاي."
                     : "Enjoy a refined dining experience featuring Arabian specialties alongside a curated selection of international cuisine. The menu includes freshly squeezed juices, smoothies, gourmet burgers, salads, sandwiches, and wraps. Complete your experience with a slice of cake or a freshly baked pastry, paired with specialty coffees and teas."}
                 </p>
-                <p className="font-body text-sm text-muted-foreground leading-relaxed">
+                <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify">
                   {isAr
                     ? "مفتوح يومياً من 8 صباحاً حتى 11 مساءً، بيسترو الليوان وجهة مثالية للإفطار والغداء والعشاء أو وجبة خفيفة في أي وقت من اليوم."
                     : "Open daily from 8 a.m. to 11 p.m., Al Liwan Bistro is an ideal destination for breakfast, lunch, dinner, or a light bite at any time of day."}
@@ -1242,40 +1249,24 @@ const HospitalityServices = ({
         </div>
       </section>}
 
-      {/* ===== 5TH FLOOR CAFÉ (Show All Order) ===== */}
+      {/* ===== 5TH FLOOR CAFÉ (Show All Order) — layout aligned with FifthFloorCafe page */}
       {showAll && <section className="py-6 bg-muted/10">
         <div className="container mx-auto px-6 max-w-6xl">
-          {/* Mobile header */}
-          <div className="lg:hidden flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
-              <Coffee className="w-6 h-6 text-accent" />
-            </div>
-            <h2 className="text-2xl font-serif text-foreground">{isAr ? "كافيه الطابق الخامس" : "The 5th Floor Café"}</h2>
-          </div>
-
-          <div className="grid lg:grid-cols-2 gap-10 items-start">
-            {/* LEFT — content */}
-            <ScrollAnimationWrapper className="order-1">
-              <div>
-                <div className="hidden lg:flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
-                    <Coffee className="w-6 h-6 text-accent" />
-                  </div>
-                  <h2 className="text-2xl md:text-3xl font-serif text-foreground">
-                    {isAr ? "كافيه الطابق الخامس" : "The 5th Floor Café"}
-                  </h2>
-                </div>
-                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
+          <div className="w-full">
+            <ScrollAnimationWrapper>
+              <div className="text-left">
+                <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-4 text-center">
+                  {isAr ? "كافيه الطابق الخامس" : "The 5th Floor Café"}
+                </h2>
+                <p className="w-full font-body text-sm text-muted-foreground leading-relaxed text-justify mb-6">
                   {isAr
-                    ? "يقع كافيه الطابق الخامس في الطابق الخامس، ويوفر مساحة مريحة وترحيبية للضيوف للاسترخاء أثناء انتظار المواعيد أو زيارة أحبائهم. مصمم بعناية للعائلات التي تنتظر قدوم مولود جديد أو اكتمال إجراء طبي، يوفر بيئة هادئة ومطمئنة."
-                    : "The Fifth Café, located on the 5th floor, offers a welcoming and comfortable space for guests to relax while waiting for appointments or visiting loved ones. Thoughtfully designed for families awaiting the arrival of a newborn or the completion of a procedure, it provides a calm and reassuring environment."}
+                    ? "يقع كافيه الطابق الخامس في الطابق الخامس، ويوفر مساحة مريحة وترحيبية للضيوف للاسترخاء أثناء انتظار المواعيد أو زيارة أحبائهم. مصمم بعناية للعائلات التي تنتظر قدوم مولود جديد أو اكتمال إجراء طبي، يوفر بيئة هادئة ومطمئنة. يمكن للضيوف الاستمتاع بالقهوة المعدة طازجاً، وتشكيلة من الساندويتشات، والسلطات الطازجة، والحلويات الشهية — كل ذلك في أجواء مريحة تجمع بين الراحة والملاءمة."
+                    : "The Fifth Café, located on the 5th floor, offers a welcoming and comfortable space for guests to relax while waiting for appointments or visiting loved ones. Thoughtfully designed for families awaiting the arrival of a newborn or the completion of a procedure, it provides a calm and reassuring environment. Guests can enjoy freshly brewed coffee, a selection of sandwiches, fresh salads, and indulgent desserts — all served in a cozy setting that blends comfort with convenience."}
                 </p>
-                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-5">
-                  {isAr
-                    ? "يمكن للضيوف الاستمتاع بالقهوة المعدة طازجاً، وتشكيلة من الساندويتشات، والسلطات الطازجة، والحلويات الشهية — كل ذلك في أجواء مريحة تجمع بين الراحة والملاءمة."
-                    : "Guests can enjoy freshly brewed coffee, a selection of sandwiches, fresh salads, and indulgent desserts — all served in a cozy setting that blends comfort with convenience."}
-                </p>
-                <div className="space-y-2 mb-5">
+                <h3 className="font-serif text-base text-foreground mb-3 text-left">
+                  {isAr ? "ما نقدمه:" : "What We Offer:"}
+                </h3>
+                <div className="space-y-2 mb-6 w-full text-left">
                   {(isAr
                     ? ["قهوة مختصة طازجة", "تشكيلة من الساندويتشات", "سلطات طازجة", "حلويات شهية"]
                     : ["Freshly brewed specialty coffee", "A selection of sandwiches", "Fresh salads", "Indulgent desserts"]
@@ -1286,21 +1277,11 @@ const HospitalityServices = ({
                     </div>
                   ))}
                 </div>
-                <p className="font-body text-xs text-muted-foreground">
+                <p className="font-body text-sm text-muted-foreground text-justify">
                   {isAr ? "الطابق الخامس — مستشفى رويال حياة" : "5th Floor — Royale Hayat Hospital"}
                 </p>
               </div>
             </ScrollAnimationWrapper>
-
-            {/* RIGHT — image placeholder */}
-            <div className="order-2 aspect-[5/4] rounded-2xl overflow-hidden bg-muted/30 border border-border flex items-center justify-center">
-              <div className="text-center">
-                <Image className="w-12 h-12 text-muted-foreground/40 mx-auto mb-3" />
-                <p className="font-body text-xs text-muted-foreground tracking-widest uppercase">
-                  {isAr ? "صور قريباً" : "Photos Coming Soon"}
-                </p>
-              </div>
-            </div>
           </div>
         </div>
       </section>}
@@ -1371,19 +1352,19 @@ const HospitalityServices = ({
                   <h2 className="text-2xl md:text-3xl font-serif text-foreground">{isAr ? "خدمات تصوير المواليد" : "Newborn Photography Services"}</h2>
                 </div>
                 <h3 className="font-serif text-lg text-foreground mb-4">{isAr ? "التقط أثمن لحظات الحياة" : "Capture Life's Most Precious Moments"}</h3>
-                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
+                <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify mb-4">
                   {isAr
                     ? "استقبال مولودك الجديد هو من أغلى لحظات الحياة. في مستشفى رويال حياة، نقدم خدمات تصوير احترافية لتوثيق هذه اللحظات الخاصة خلال إقامتك."
                     : "Welcoming your newborn is one of life's most cherished milestones. At Royale Hayat Hospital, we offer professional photography services to beautifully capture these special moments during your stay."}
                 </p>
-                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-6">
+                <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify mb-6">
                   {isAr
                     ? "يضمن مصورونا المهرة، من أحد الاستوديوهات الرقمية الرائدة في الكويت، الحفاظ على كل ابتسامة ونظرة وذكرى سعيدة لك ولعائلتك لتخزّنوها لسنوات قادمة."
                     : "Our skilled photographers, from one of Kuwait's leading digital studios, ensure every smile, glance, and joyful memory is preserved for you and your family to treasure for years to come."}
                 </p>
                 <div className="flex items-center gap-2">
                   <Phone className="w-4 h-4 text-accent" />
-                  <p className="font-body text-sm text-foreground">
+                  <p className="font-body text-sm text-foreground text-justify">
                     {isAr ? "للاستفسارات والمواعيد، اتصل:" : "For inquiries and appointments, please contact:"}{" "}
                     <a href="tel:25360960" className="text-accent hover:underline font-semibold">2536 0960</a>
                   </p>

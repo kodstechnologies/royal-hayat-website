@@ -1,4 +1,4 @@
-import { Crown, Sparkles, Bed, Coffee, Droplets } from "lucide-react";
+import { Crown, Sparkles, Bed, Coffee, Droplets, Baby } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
@@ -8,11 +8,13 @@ const HospitalityBanner = () => {
   const { t } = useLanguage();
 
   const features = [
-    { icon: Crown, label: t("luxuryHalls") },
-    { icon: Bed, label: t("vipSuites") },
+    { icon: Crown, label: t("Birth Celebration Halls") },
+    { icon: Bed, label: t("Exclusive Suites") },
     { icon: Sparkles, label: t("inRoomEvents") },
-    { icon: Droplets, label: t("elementsSpa") },
+    { icon: Droplets, label: t("Elements Spa (by Banyan Tree)") },
     { icon: Coffee, label: t("alLiwanCafe") },
+    { icon: Coffee, label: t("The 5th Floor Café") },
+    { icon: Baby, label: t("Newborn Photography services ") },
   ];
 
   return (
@@ -47,7 +49,7 @@ const HospitalityBanner = () => {
           <ScrollAnimationWrapper direction="right" className="lg:w-1/2">
             <div className="rounded-2xl overflow-hidden shadow-xl">
               <img
-                src="https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776940549/DSC08659_fyiftq.jpg"
+                src="https://royal-hayat.s3.eu-central-1.amazonaws.com/home-luxury/DSC08659_fyiftq.jpg.jpeg"
                 alt="VIP Hospital Suite"
                 className="w-full h-auto"
                 loading="lazy"

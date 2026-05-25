@@ -1,4 +1,4 @@
-﻿import Header from "@/components/Header";
+import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ChatButton from "@/components/ChatButton";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -7,9 +7,10 @@ import ChairmanMessage from "@/components/ChairmanMessage";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Heart, Star, Sparkles, Shield, Target, BookOpen, Users, ChevronDown, ChevronUp } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Link } from "react-router-dom";
+
 const leaders = [
   {
     initials: "SA",
@@ -29,7 +30,7 @@ const leaders = [
       "بدأ رحلته التعليمية في كلية الطب بجامعة الكويت. الدكتور المزيدي عضو في البورد الكويتي للجراحة العامة والكلية الملكية للجراحين (إنجلترا)، حيث تدرب على جراحة السمنة والقولون والمستقيم في لندن، المملكة المتحدة.",
       "الدكتور المزيدي ملتزم بتحويل المشهد الصحي في الكويت. قاد العديد من المبادرات الهادفة إلى دمج التقنيات المتطورة في أنظمة تقديم الرعاية الصحية وتحسين نتائج المرضى وتعزيز الكفاءة العامة.",
     ],
-    image: "/images/doctors/Dr. Sulaiman.jpg",
+    image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/leadership/sulaiman-web.png",
   },
   {
     initials: "AE",
@@ -53,7 +54,7 @@ const leaders = [
       "في مجال اضطرابات الدورة الشهرية، يقدم علاجات مبتكرة مثل الاستئصال البطاني بتقنية نوفاشور. تشمل خبرته الجراحية إجراءات المنظار الرحمي وجراحات المنظار البطني.",
       "بالإضافة إلى ذلك، يكرس الدكتور المرضي جهوده لإدارة اضطرابات المسالك البولية الأنثوية وقاع الحوض، وإجراء دراسات ديناميكية البول ومسح المثانة وقاع الحوض.",
     ],
-    image: "/images/doctors/abubakr-elmardi.png",
+    image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/abubakr-elmardi.png",
   },
   {
     initials: "OE",
@@ -73,7 +74,7 @@ const leaders = [
       "حاصل على درجة الماجستير في التخدير والعناية المركزة الجراحية من كلية الطب بالإسكندرية، تليها درجة الدكتوراه في التخدير والعناية المركزة وإدارة الألم من جامعة الإسكندرية عام 1982. عضو في الجمعية الدولية لدراسة الألم.",
       "الدكتور الخطيب ذو خبرة عالية في مجالات متخصصة متعددة، بما في ذلك تخدير التوليد والتسكين، وإجراء التخدير فوق الجافية للولادة. لديه فهم عميق لإدارة التخدير للمرضى عاليي الخطورة وكبار السن، وخبرة في طب العناية المركزة الجراحية للبالغين والأطفال.",
     ],
-    image: "/images/doctors/Dr. Omar.jpg",
+    image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/Dr.+Omar.jpg",
   },
   {
     initials: "SM",
@@ -81,11 +82,11 @@ const leaders = [
     nameAr: "شيبو توماس ماثيو",
     roleEn: "Chief Financial Officer & Director – Human Resources Capital",
     roleAr: "المدير المالي الرئيسي ومدير رأس المال البشري",
-    credentialsEn: "CMA (USA), ACMA India, IFRS",
+    credentialsEn: "",
     credentialsAr: "",
     bioEn: [
-      "Shibu Thomas Mathew has been part of Royale Hayat Hospital’s leadership journey since its inception, joining the preu{2011}opening team in 2006 and contributing to the establishment of a trusted, worldu{2011}class healthcare institution. He was appointed Financial Controller in 2007 and promoted to Chief Financial Officer in 2010.",
-      "In his role as Chief Financial Officer and Director u{2013} Human Resources Capital, Mr. Mathew provides strategic leadership that integrates financial stewardship with peopleu{2011}centric governance. He oversees longu{2011}term investment planning, financial performance management, budget governance, and human capital strategy across all Group companies. He also serves as a Board Member for several subsidiaries, supporting strong governance, ethical decisionu{2011}making, and sustainable growth.",
+      "Shibu Thomas Mathew has been part of Royale Hayat Hospital’s leadership journey since its inception, joining the pre-opening team in 2006 and contributing to the establishment of a trusted, world-class healthcare institution. He was appointed Financial Controller in 2007 and promoted to Chief Financial Officer in 2010.",
+      "In his role as Chief Financial Officer and Director – Human Resources Capital, Mr. Mathew provides strategic leadership that integrates financial stewardship with people-centric governance. He oversees long-term investment planning, financial performance management, budget governance, and human capital strategy across all Group companies. He also serves as a Board Member for several subsidiaries, supporting strong governance, ethical decision-making, and sustainable growth.",
       "With prior senior leadership experience in finance, accounting, and treasury roles across multinational organizations, Mr. Shibu brings a balanced approach combining operational discipline, strategic foresight, and a deep commitment to people and purpose.",
       "He is a CMA (USA), ACMA India with IFRS credentials and executive education in healthcare strategy from Harvard T.H. Chan School of Public Health.",
     ],
@@ -95,7 +96,7 @@ const leaders = [
       "مع خبرة قيادية سابقة في أدوار التمويل والمحاسبة والخزينة عبر المنظمات متعددة الجنسيات، يقدم السيد شيبو نهجاً متوازناً يجمع بين الانضباط العملياتي والرؤية الاستراتيجية والالتزام العميق تجاه الناس والهدف.",
       "وهو حاصل على شهادات CMA (الولايات المتحدة الأمريكية) وACMA الهند مع مؤهلات IFRS وتعليم تنفيذي في استراتيجية الرعاية الصحية من كلية هارفارد تي إتش تشان للصحة العامة.",
     ],
-    image: "/images/doctors/Mr. Shibu.jpg",
+    image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/Mr.+Shibu.jpg",
   },
   {
     initials: "HG",
@@ -117,8 +118,40 @@ const leaders = [
       "يتمتع بخبرة واسعة في التخدير العام والموضعي لجميع التخصصات والمرضى عاليي الخطورة، بما في ذلك تخدير جراحات السمنة والتخدير فوق الجافية للولادة الطبيعية والقيصرية. لديه تخصص فرعي في تخدير الأطفال وحديثي الولادة وذوي الاحتياجات الخاصة.",
       "في إدارة الألم المزمن، يركز على آلام العمود الفقري بالحقن العلاجية وقد كان رائداً في الحقن العلاجية الموجهة بالأشعة المقطعية للعمود الفقري، مؤسساً أول مركز مؤهل في الكويت والشرق الأوسط. تشمل خبرته إدارة الألم المزمن لحالات مثل الصداع والهربس النطاقي والألم العضلي الليفي وألم السرطان.",
     ],
-    image: "/images/doctors/Dr. Hamid.jpg",
+    image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/Dr.+Hamid.jpg",
   },
+  {
+    initials: "MA",
+    nameEn: "Marta Abril Garcia",
+    nameAr: "مارتا أبريل غارسيا",
+    roleEn: "Director of Hospitality",
+    roleAr: "مديرة الضيافة",
+    credentialsEn: "",
+    credentialsAr: "",
+    bioEn: [
+      "Marta Abril Garcia brings almost two decades of international hospitality expertise to her role as Director of Hospitality at Royale Hayat Hospital, where she has been instrumental in shaping a patient and guest experience that consistently sets the standard for luxury healthcare in Kuwait.",
+
+      "With a Master's in Tourism Companies Management and Strategic Communication from ESERP Business School in Madrid, Marta built her career across some of the world's most demanding hospitality environments — from the front lines of luxury hotels in London to boutique wellness resorts in Bali — before channeling that depth of experience into the healthcare sector.",
+
+      "At Royale Hayat, Marta oversees an exceptionally broad portfolio of departments spanning both guest-facing and back-of-house operations — including Guest Relations, Admissions, Outpatient Department, Patient Experience, the Spa, Food & Beverage, Events, the Call Center, Housekeeping, Maintenance, Security, and Kitchen — ensuring that every touchpoint, seen and unseen, reflects the Hospital's hallmark standard of care and elegance.",
+
+      "Her leadership has contributed directly to Royale Hayat's recognition as the Best Private Hospital in Kuwait for 16 consecutive years, as well as its distinction as one of Kuwait's Top 3 Brands in 2022 and Top 10 Brands in 2025.",
+
+      "Having lived and worked across Europe, Asia, the Middle East, and with extended personal travel experience across all five continents, Marta brings a truly global perspective to her work, one grounded in the belief that exceptional hospitality, whether in a five-star resort or a world-class hospital, is always, at its heart, about people."
+    ],
+    bioAr: [
+      "تتمتع مارتا أبريل غارسيا بخبرة دولية تمتد لما يقارب عقدين في مجال الضيافة، وتشغل منصب مديرة الضيافة في مستشفى رويال حياة، حيث لعبت دورًا محوريًا في تطوير تجربة المرضى والضيوف بما يرسّخ معايير الرعاية الصحية الفاخرة في الكويت.",
+
+      "تحمل مارتا درجة الماجستير في إدارة شركات السياحة والاتصال الاستراتيجي من كلية ESERP للأعمال في مدريد، وقد بنت مسيرتها المهنية عبر بعض أكثر بيئات الضيافة تطلبًا في العالم — بدءًا من الفنادق الفاخرة في لندن وصولًا إلى المنتجعات الصحية البوتيكية في بالي — قبل أن توظف هذه الخبرات الواسعة في قطاع الرعاية الصحية.",
+
+      "في رويال حياة، تشرف مارتا على مجموعة واسعة من الأقسام التي تشمل العمليات المرتبطة بالضيوف والعمليات التشغيلية الداخلية، بما في ذلك: علاقات الضيوف، القبول، العيادات الخارجية، تجربة المرضى، السبا، الأغذية والمشروبات، الفعاليات، مركز الاتصال، التدبير المنزلي، الصيانة، الأمن، والمطبخ، مع الحرص على أن تعكس كل نقطة تواصل، سواء كانت ظاهرة أو خلف الكواليس، مستوى الرعاية والأناقة الذي يتميز به المستشفى.",
+
+      "وقد ساهمت قيادتها بشكل مباشر في حصول رويال حياة على لقب أفضل مستشفى خاص في الكويت لمدة 16 عامًا متتالية، بالإضافة إلى تصنيفه ضمن أفضل 3 علامات تجارية في الكويت لعام 2022، وأفضل 10 علامات تجارية لعام 2025.",
+
+      "وبفضل إقامتها وعملها في أوروبا وآسيا والشرق الأوسط، إلى جانب خبراتها الواسعة في السفر عبر القارات الخمس، تمتلك مارتا رؤية عالمية حقيقية تنعكس في عملها، وترتكز على إيمانها بأن الضيافة الاستثنائية — سواء في منتجع فاخر من فئة الخمس نجوم أو في مستشفى عالمي المستوى — تتمحور دائمًا حول الإنسان."
+    ],
+    image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/leadership/marta+(2).png",
+  }
 ];
 
 const LeaderCard = ({ leader, lang }: { leader: typeof leaders[0] & { image?: string }; lang: string }) => {
@@ -128,6 +161,18 @@ const LeaderCard = ({ leader, lang }: { leader: typeof leaders[0] & { image?: st
   const credentials = lang === "ar" ? leader.credentialsAr : leader.credentialsEn;
   const bio = lang === "ar" ? leader.bioAr : leader.bioEn;
   const roles = role.split("\n");
+  const mobileImageOverride: Record<string, string> = {
+    "Dr. Abubakr Elmardi": "https://royal-hayat.s3.eu-central-1.amazonaws.com/leadership/abubkar.jpeg",
+    "Dr. Sulaiman Al Mazeedi": "https://royal-hayat.s3.eu-central-1.amazonaws.com/leadership/sulaiman-mobile123.png",
+  };
+  const desktopImageOverride: Record<string, string> = {
+    // "Dr. Sulaiman Al Mazeedi": "https://royal-hayat.s3.eu-central-1.amazonaws.com/leadership/sulaiman-web.png",
+    "Prof. Dr. Omar El Khateeb": "https://royal-hayat.s3.eu-central-1.amazonaws.com/leadership/omar-web.png",
+    "Dr. Hamid Ghaderi": "https://royal-hayat.s3.eu-central-1.amazonaws.com/leadership/hamid-web.png",
+    "Shibu Thomas Mathew": "https://royal-hayat.s3.eu-central-1.amazonaws.com/leadership/shibu-web2+(1).png",
+  };
+  const mobileOverrideSrc = mobileImageOverride[leader.nameEn];
+  const desktopOverrideSrc = desktopImageOverride[leader.nameEn];
 
   return (
     <motion.div
@@ -141,11 +186,23 @@ const LeaderCard = ({ leader, lang }: { leader: typeof leaders[0] & { image?: st
         <div className="md:w-64 flex-shrink-0 bg-primary/5 flex items-center justify-center p-8 md:p-10">
           <div className={`w-44 h-44 md:w-60 md:h-60 rounded-2xl flex items-center justify-center border-4 border-primary/20 overflow-hidden ${leader.nameEn === "Shibu Thomas Mathew" ? "bg-white" : "bg-primary/10"}`}>
             {leader.image ? (
-              <img
-                src={leader.image}
-                alt={name}
-                className="w-full h-full object-contain md:object-cover md:object-top bg-white"
-              />
+              mobileOverrideSrc || desktopOverrideSrc ? (
+                <picture>
+                  {mobileOverrideSrc ? <source media="(max-width: 767px)" srcSet={mobileOverrideSrc} /> : null}
+                  {desktopOverrideSrc ? <source media="(min-width: 768px)" srcSet={desktopOverrideSrc} /> : null}
+                  <img
+                    src={leader.image}
+                    alt={name}
+                    className="w-full h-full object-contain md:object-cover md:object-top bg-white"
+                  />
+                </picture>
+              ) : (
+                <img
+                  src={leader.image}
+                  alt={name}
+                  className="w-full h-full object-contain md:object-cover md:object-top bg-white"
+                />
+              )
             ) : (
               <span className="text-4xl md:text-5xl font-serif text-primary">{leader.initials}</span>
             )}
@@ -164,7 +221,14 @@ const LeaderCard = ({ leader, lang }: { leader: typeof leaders[0] & { image?: st
           </div>
           <div className={`space-y-3 overflow-hidden transition-all duration-500 ${expanded ? "max-h-[2000px]" : "max-h-[100px]"}`}>
             {bio.map((p, i) => (
-              <p key={i} className="font-body text-sm text-muted-foreground leading-relaxed text-justify">{p}</p>
+              <p
+                key={i}
+                lang={lang === "ar" ? "ar" : "en"}
+                dir={lang === "ar" ? "rtl" : "ltr"}
+                className="font-body text-sm text-muted-foreground leading-relaxed text-justify [text-align-last:start]"
+              >
+                {p}
+              </p>
             ))}
           </div>
           {bio.length > 1 && (
@@ -189,7 +253,11 @@ const AboutUs = () => {
   const [searchParams] = useSearchParams();
   const section = searchParams.get("section");
   const showAll = !section;
-  const show = (s: string) => showAll || section === s; 
+  const show = (s: string) => showAll || section === s;
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [section]);
 
   const values = [
     { icon: Heart, titleKey: "patientCenteredCare", descKey: "patientCenteredCareDesc" },
@@ -204,22 +272,26 @@ const AboutUs = () => {
       <Header />
 
       {/* Hero */}
-      <section className="pt-12 pb-6 md:pt-16 md:pb-8 bg-primary/5">
-        <div className="container mx-auto px-6 text-center">
-          <ScrollAnimationWrapper>
-            <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">{lang === "ar" ? "تعرف علينا" : "Get To Know Us"}</p>
-            <h1 className="text-4xl md:text-5xl font-serif text-foreground mb-4">
-              {section === "history" ? (lang === "ar" ? "قصتنا" : "Our Story")
-                : section === "mission" ? (lang === "ar" ? "الرسالة والقيم" : "Mission & Values")
-                  : section === "csr" ? "Celebrating Life"
-                    : section === "chairman" ? (lang === "ar" ? "رسالة رئيس مجلس الإدارة" : "Chairman's Message")
-                      : section === "leadership" ? (lang === "ar" ? "فريق القيادة" : "Leadership Team")
-                        : t("aboutUs")}
-            </h1>
-            {showAll && <p className="text-muted-foreground font-body text-sm max-w-xl mx-auto">{t("storyP1")}</p>}
-          </ScrollAnimationWrapper>
-        </div>
-      </section>
+      {section !== "chairman" && (
+        <section className="pt-12 pb-6 md:pt-16 md:pb-8 bg-primary/5">
+          <div className="container mx-auto px-6 text-center">
+            <ScrollAnimationWrapper>
+              {section !== "chairman" && (
+                <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">{lang === "ar" ? "تعرف علينا" : "Get To Know Us"}</p>
+              )}
+              <h1 className="text-4xl md:text-5xl font-serif text-foreground mb-4">
+                {section === "history" ? (lang === "ar" ? "قصتنا" : "Our Story")
+                  : section === "mission" ? (lang === "ar" ? "الرسالة والقيم" : "Mission & Values")
+                    : section === "csr" ? "Celebrating Life"
+                      : section === "chairman" ? (lang === "ar" ? "رسالة رئيس مجلس الإدارة" : "Chairman's Message")
+                        : section === "leadership" ? (lang === "ar" ? "فريق القيادة" : "Leadership Team")
+                          : t("aboutUs")}
+              </h1>
+              {showAll && <p className="text-muted-foreground font-body text-sm max-w-xl mx-auto text-justify">{t("storyP1")}</p>}
+            </ScrollAnimationWrapper>
+          </div>
+        </section>
+      )}
 
       {/* Our History - FULL content from doc */}
       {show("history") && <section className="pb-16 pt-2 bg-background" id="history">
@@ -262,30 +334,8 @@ const AboutUs = () => {
         </div>
       </section>}
 
-      {/* Chairman's Message */}
-      {show("chairman") && <ChairmanMessage />}
 
-      {/* Leadership Team */}
-      {show("leadership") && <section className="pb-16 pt-2 bg-background" id="leadership">
-        <div className="container mx-auto px-6">
-          <ScrollAnimationWrapper>
-            <div className="text-center mb-10">
-              <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">
-                <Users className="w-4 h-4 inline mr-1" />
-                {t("leadership")}
-              </p>
-              <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-4">{t("leadershipSubtitle")}</h2>
-              <p className="text-muted-foreground font-body text-sm max-w-3xl mx-auto">{t("leadershipDesc")}</p>
-            </div>
-          </ScrollAnimationWrapper>
 
-          <div className="max-w-5xl mx-auto space-y-6">
-            {leaders.map((leader) => (
-              <LeaderCard key={leader.nameEn} leader={leader} lang={lang} />
-            ))}
-          </div>
-        </div>
-      </section>}
 
       {/* Mission & Values */}
       {show("mission") && <section className="pb-16 pt-2 bg-secondary/10" id="mission">
@@ -324,6 +374,48 @@ const AboutUs = () => {
         </div>
       </section>}
 
+
+      {/* Chairman's Message */}
+      {show("chairman") && (
+        <>
+          <section className="pt-12 pb-0 bg-background">
+            <div className="container mx-auto px-4 md:px-6">
+              <ScrollAnimationWrapper>
+                <div className="max-w-5xl lg:max-w-7xl 2xl:max-w-[88rem] mx-auto">
+                  <h1 className="text-4xl md:text-5xl font-serif text-foreground mb-4 text-left lg:pl-[42%] xl:pl-[40%]">
+                    {lang === "ar" ? "رسالة رئيس مجلس الإدارة" : "Chairman's Message"}
+                  </h1>
+                </div>
+              </ScrollAnimationWrapper>
+            </div>
+          </section>
+          <ChairmanMessage />
+        </>
+      )}
+
+      {/* Leadership Team */}
+      {show("leadership") && <section className="pb-16 pt-16 bg-muted/20" id="leadership">
+        <div className="container mx-auto px-6">
+          <ScrollAnimationWrapper>
+            <div className="text-center mb-10">
+              <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">
+                <Users className="w-4 h-4 inline mr-1" />
+                {t("leadership")}
+              </p>
+              <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-4">{t("leadershipSubtitle")}</h2>
+              <p className="text-muted-foreground font-body text-sm max-w-3xl mx-auto">{t("leadershipDesc")}</p>
+            </div>
+          </ScrollAnimationWrapper>
+
+          <div className="max-w-5xl mx-auto space-y-6">
+            {leaders.map((leader) => (
+              <LeaderCard key={leader.nameEn} leader={leader} lang={lang} />
+            ))}
+          </div>
+        </div>
+      </section>}
+
+
       {/* CSR */}
       {show("csr") && (
         <Link to="/csr" className="block">
@@ -351,6 +443,14 @@ const AboutUs = () => {
           </section>
         </Link>
       )}
+
+
+      <style>{`
+        #leadership [dir="rtl"].text-justify {
+          -webkit-hyphens: none;
+          hyphens: none;
+        }
+      `}</style>
 
       <Footer />
       <ChatButton />

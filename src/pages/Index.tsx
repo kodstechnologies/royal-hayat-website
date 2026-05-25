@@ -7,6 +7,8 @@ import SpecializedCare from "@/components/SpecializedCare";
 
 import DoctorsSection from "@/components/DoctorsSection";
 import WhyRoyaleHayat from "@/components/WhyRoyaleHayat";
+import ChairmanMessage from "@/components/ChairmanMessage";
+import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
 
 import AwardsSection from "@/components/AwardsSection";
 import InsurancePartners from "@/components/InsurancePartners";
@@ -17,8 +19,23 @@ import PatientsQuickLinks from "@/components/PatientsQuickLinks";
 import Footer from "@/components/Footer";
 import ChatButton from "@/components/ChatButton";
 import ScrollToTop from "@/components/ScrollToTop";
+import { getFeaturedDoctors } from "@/data/doctors";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Index = () => {
+  const featuredDoctors = getFeaturedDoctors();
+  const { lang } = useLanguage();
+
+  // Preload doctor images for instant loading in DoctorsSection
+  useEffect(() => {
+    featuredDoctors.forEach((doc) => {
+      if (doc.image) {
+        const img = new Image();
+        img.src = doc.image;  
+      }
+    });
+  }, []);
+
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107]">
       <Header />
@@ -30,6 +47,19 @@ const Index = () => {
       <InsurancePartners />
       <DoctorsSection />
       <WhyRoyaleHayat />
+      
+      {/* Chairman's Message Section with Heading */}
+      {/* <section className="pt-12 pb-0 bg-background">
+        <div className="container mx-auto px-6 text-center">
+          <ScrollAnimationWrapper>
+            <h1 className="text-4xl md:text-5xl font-serif text-foreground mb-4">
+              {lang === "ar" ? "رسالة رئيس مجلس الإدارة" : "Chairman's Message"}
+            </h1>
+          </ScrollAnimationWrapper>
+        </div>
+      </section>
+      <ChairmanMessage /> */}
+      
       <HospitalityBanner />
       <AlSafwaSpotlight />
       <AwardsSection />

@@ -8,12 +8,12 @@ const PatientsQuickLinks = () => {
   const { t, lang } = useLanguage();
 
   const links = [
-    { icon: Heart, label: t("nursing"), href: "/patients-visitors" },
-    { icon: ClipboardList, label: t("admissionInfo"), href: "/patients-visitors" },
-    { icon: ShieldCheck, label: t("healthInsurance"), href: "/patients-visitors" },
-    { icon: Bed, label: t("duringYourStay"), href: "/patients-visitors" },
+    { icon: Heart, label: t("nursing"), href: "/patients-visitors?tab=nursing" },
+    { icon: ClipboardList, label: t("admissionInfo"), href: "/patients-visitors?tab=admission" },
+    { icon: ShieldCheck, label: t("healthInsurance"), href: "/patients-visitors?tab=insurance" },
+    { icon: Bed, label: t("duringYourStay"), href: "/patients-visitors?tab=during-stay" },
     { icon: Bed, label: lang === "ar" ? "باقات غرف الولادة" : "Birthing Room Packages", href: "/patients-visitors?tab=rooms-package" },
-    { icon: ScrollText, label: t("patientBillOfRights"), href: "/patients-visitors" },
+    { icon: ScrollText, label: t("patientBillOfRights"), href: "/patients-visitors?tab=bill-of-rights" },
     { icon: MapPin, label: t("internationalPatient"), href: "/international-patient" },
     { icon: Baby, label: lang === "ar" ? "نظام أمان الرضّع" : "Infant Security", href: "/infant-security" },
   ];

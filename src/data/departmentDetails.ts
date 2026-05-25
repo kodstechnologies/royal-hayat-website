@@ -644,9 +644,9 @@ export const departmentDetails: DepartmentDetail[] = [
   },
   {
     slug: "plastic-surgery",
-    name: "Plastic Surgery",
+    name: "Plastic Surgery & Cosmetology",
     nameAr: "الجراحة التجميلية",
-    intro: "At Royale Hayat Hospital, our renowned General and Plastic Surgery Department is led by internationally certified physicians, offering advanced surgical and non-surgical solutions with precision and discretion. Our all-female medical team is available for those who prefer.",
+    intro: "At Royale Hayat Hospital, our renowned General and Plastic Surgery & Cosmetology Department is led by internationally certified physicians, offering advanced surgical and non-surgical solutions with precision and discretion. Our all-female medical team is available for those who prefer.",
     sections: [
       {
         title: "Our Approach",

@@ -64,12 +64,12 @@ const LifePhotoCarousel = ({ title, subtitle, photos, interval = 4500, variant =
           onMouseLeave={() => setIsPaused(false)}
         >
           <div className="relative aspect-[16/10] md:aspect-[16/9] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
-            <AnimatePresence mode="wait">
+            <AnimatePresence mode="sync">
               <motion.div
                 key={index}
-                initial={{ x: 36 }}
-                animate={{ x: 0 }}
-                exit={{ x: -36 }}
+                initial={{ x: 24, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: -24, opacity: 0 }}
                 transition={{ duration: 0.35, ease: "easeInOut" }}
                 className="absolute inset-0"
               >
@@ -102,16 +102,18 @@ const LifePhotoCarousel = ({ title, subtitle, photos, interval = 4500, variant =
           {total > 1 && (
             <>
               <button
+                type="button"
                 onClick={prev}
                 aria-label="Previous"
-                className="absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon"
+                className="absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 active:scale-95 [webkit-tap-highlight-color:transparent]"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
               <button
+                type="button"
                 onClick={next}
                 aria-label="Next"
-                className="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon"
+                className="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 active:scale-95 [webkit-tap-highlight-color:transparent]"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>

@@ -4,7 +4,8 @@ import { Volume2, VolumeX } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const HeroSection = () => {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
+  const isAr = lang === "ar";
   const [isVisible, setIsVisible] = useState(true);
   const [isMuted, setIsMuted] = useState(true);   // start muted so browser allows autoplay
   const [isPlaying, setIsPlaying] = useState(true);
@@ -27,7 +28,7 @@ const HeroSection = () => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          video.play().catch(() => {});
+          video.play().catch(() => { });
           setIsPlaying(true);
         } else {
           video.pause();
@@ -53,7 +54,7 @@ const HeroSection = () => {
     const video = videoRef.current;
     if (!video) return;
     if (video.paused) {
-      video.play().catch(() => {});
+      video.play().catch(() => { });
       setIsPlaying(true);
     } else {
       video.pause();
@@ -83,7 +84,9 @@ const HeroSection = () => {
       <div className="absolute inset-0 z-0 overflow-hidden">
         <video
           ref={videoRef}
-          src="https://royal-hayat.s3.eu-central-1.amazonaws.com/static/RHH+VIDEO+(1).mp4"
+          // src="https://royal-hayat.s3.eu-central-1.amazonaws.com/static/RHH+VIDEO+(1).mp4"
+          // src="https://res.cloudinary.com/dwhc8kzpv/video/upload/v1777986296/RHH_SH_16_Website_1_h7dabt.mp4"
+          src="https://royal-hayat.s3.eu-central-1.amazonaws.com/static/RHH+SH+16+Website+(1).mp4"
           autoPlay
           loop
           muted          /* must start muted for autoplay to work in all browsers */
@@ -107,14 +110,14 @@ const HeroSection = () => {
       </div>
 
       {/* Mute / Unmute button — top right, icon only in gold color */}
-      <button
+      {/* <button
         onClick={() => setIsMuted((m) => !m)}
         className="absolute top-4 right-4 z-20 flex items-center justify-center transition-opacity hover:opacity-70"
         aria-label={isMuted ? "Unmute video" : "Mute video"}
         style={{ color: '#9B804E' }}
       >
         {isMuted ? <VolumeX className="w-7 h-7" /> : <Volume2 className="w-7 h-7" />}
-      </button>
+      </button> */}
 
       {/* Content — revealed on hover */}
       <AnimatePresence>
@@ -148,6 +151,7 @@ const HeroSection = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.2 }}
                 className="text-[#A67C00] font-body text-sm md:text-base leading-relaxed mb-5 max-w-xl text-left"
+                style={isAr ? { fontSize: "calc(0.875rem + 2px)" } : undefined}
               >
                 {t("heroIntro")}
               </motion.p>
@@ -156,6 +160,7 @@ const HeroSection = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.3 }}
                 className="text-muted-foreground font-body text-sm md:text-base leading-relaxed mb-5 max-w-xl text-left whitespace-pre-line"
+                style={isAr ? { fontSize: "calc(0.875rem + 2px)" } : undefined}
               >
                 {t("heroDesc")}
               </motion.p>
@@ -164,6 +169,7 @@ const HeroSection = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.38 }}
                 className="text-gray-400 font-serif text-lg md:text-xl mb-8 max-w-xl"
+                style={isAr ? { fontSize: "calc(1.125rem + 2px)" } : undefined} // Increased from 0.875rem to 1.125rem for text-lg baseline
               >
                 {t("heroTagline")}
               </motion.p>

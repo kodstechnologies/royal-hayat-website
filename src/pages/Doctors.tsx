@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { Search, ChevronLeft, ChevronRight, Stethoscope } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";

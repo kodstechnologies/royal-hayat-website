@@ -170,7 +170,7 @@ const HomeHealthPreview = () => {
           <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
             <Home className="w-8 h-8 text-primary" />
           </div>
-          <div className="flex-1 text-center md:text-left">
+          <div className="flex-1  md:text-left">
             <h3 className="font-serif text-xl text-foreground mb-2">
               {lang === "ar" ? "رويال للرعاية المنزلية" : "Royale Home Health"}
             </h3>

@@ -26,13 +26,15 @@ export interface Doctor {
   departmentId?: string;
   /** Legacy/External doctor ID (provider code) used for appointments. */
   providerCode?: string;
+  /** Scheduling / subspecialty clinic code (when used for availability). */
+  clinicCode?: string;
 }
 
 export const doctors: Doctor[] = [
   {
     id: 'dr-mustafa-alfiki',
-    image: '/images/doctors/dr-mustafa-alfiki.png',
-    name: 'Dr. Mustafa Alfiki', nameAr: 'د. مصطفى الفقى',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/dr-mustafa-alfiki.png',
+    name: 'Mustafa Alfiki', nameAr: 'مصطفى الفقى',
     specialty: 'Clinical Pharmacy', specialtyAr: 'الصيدلة الأكلينيكية',
     department: 'Clinical Pharmacy', departmentAr: 'الصيدلة الأكلينيكية',
     title: 'Head of Clinical Pharmacy',
@@ -95,7 +97,9 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-abdulaziz-ramadhan',
-    image: '/images/doctors/abdulaziz-ramadhan.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/abdulaziz-ramadhan.png',
+    providerCode: 'E3195',
+    clinicCode: 'R060COS',
     name: 'Dr. Abdulaziz Ramadhan', nameAr: 'د. عبدالعزيز علي رمضان',
     specialty: 'Internal Medicine', specialtyAr: 'الطب الباطني',
     department: 'Internal Medicine', departmentAr: 'الطب الباطني',
@@ -146,7 +150,7 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-mohammad-mohammad-hasan-alkandari',
-    image: '/images/doctors/kandari1.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/kandari1.png',
     name: 'Dr. Mohammad Mohammad Hasan Alkandari', nameAr: 'الدكتور محمد محمد حسن الكندري',
     specialty: 'Internal Medicine', specialtyAr: 'الطب الباطني',
     department: 'Internal Medicine', departmentAr: 'الطب الباطني',
@@ -193,10 +197,14 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'MA', color: 'bg-primary/90',
     symptoms: [],
+    providerCode: 'PT076',
+    clinicCode: 'R01ERC',
   },
   {
     id: 'dr-ahmed-al-qallaf',
-    image: '/images/doctors/ahmad34.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/ahmad34.png',
+    providerCode: 'PT043',
+    clinicCode: 'R01NEP',
     name: 'Dr. Ahmed Al Qallaf', nameAr: 'د. أحمد القلاف',
     specialty: 'Internal Medicine', specialtyAr: 'الطب الباطني',
     department: 'Internal Medicine', departmentAr: 'الطب الباطني',
@@ -258,10 +266,12 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-dherar-m-alroudhan',
-    image: '/images/doctors/dherar-alroudhan.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/dherar-alroudhan.png',
     name: 'Dr. Dherar M. Alroudhan', nameAr: 'د. ضرار محمد الروضان',
     specialty: 'Internal Medicine', specialtyAr: 'الطب الباطني',
     department: 'Internal Medicine', departmentAr: 'الطب الباطني',
+    providerCode: 'PT064',
+    clinicCode: 'R01ERC',
     title: 'Consultant of Internal Medicine, Endocrinology, Diabetes & Metabolic Medicine',
     titleAr: 'استشاري الطب الباطني والغدد الصماء والسكري وطب التمثيل الغذائي',
     bio: 'Dr. Dherar M. Alroudhan is a specialist in the Internal Medicine department at Royale Hayat Hospital.',
@@ -309,7 +319,7 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-mohammad-alturki',
-    image: '/images/doctors/tirki1.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/tirki1.png',
     name: 'Dr. Mohammad Alturki', nameAr: 'د. محمد التركي',
     specialty: 'Internal Medicine', specialtyAr: 'الطب الباطني',
     department: 'Internal Medicine', departmentAr: 'الطب الباطني',
@@ -356,10 +366,12 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'MA', color: 'bg-accent/80',
     symptoms: [],
+    clinicCode: 'R01FMC',
+    providerCode: 'PT070',
   },
   {
     id: 'dr-raed-al-swait',
-    image: '/images/doctors/raed-alswait.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/raed-alswait.png',
     name: 'Dr. Raed Al Swait', nameAr: 'د. رائــد السويــط',
     specialty: 'Internal Medicine', specialtyAr: 'الطب الباطني',
     department: 'Internal Medicine', departmentAr: 'الطب الباطني',
@@ -417,7 +429,7 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-wadha-abdulaziz-al-jaser',
-    image: '/images/doctors/dr-wadha.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/dr-wadha.png',
     name: 'Dr. Wadha Abdulaziz Al-jaser', nameAr: 'د. وضحه عبدالعزيز الجاسر',
     specialty: 'Internal Medicine', specialtyAr: 'الطب الباطني',
     department: 'Internal Medicine', departmentAr: 'الطب الباطني',
@@ -466,10 +478,14 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'WA', color: 'bg-accent/70',
     symptoms: [],
+    providerCode: 'PT066',
+    clinicCode: 'R01GIC',
   },
   {
     id: 'dr-alia-ali-ibrahim',
-    image: '/images/doctors/alia-ibrahim.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/alia-ibrahim.png',
+    providerCode: 'PT053',
+    clinicCode: 'R01PUL',
     name: 'Dr. Alia Ali Ibrahim', nameAr: 'د. عالية علي إبراهيم',
     specialty: 'Internal Medicine', specialtyAr: 'الطب الباطني',
     department: 'Internal Medicine', departmentAr: 'الطب الباطني',
@@ -534,7 +550,9 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-yassmin-othman',
-    image: '/images/doctors/yasmin-othman.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/yasmin-othman.png',
+    providerCode: 'PT084',
+    clinicCode: 'R01ALG',
     name: 'Dr. Yassmin Othman', nameAr: 'د. ياسمين عثمان',
     specialty: 'Internal Medicine', specialtyAr: 'الطب الباطني',
     department: 'Internal Medicine', departmentAr: 'الطب الباطني',
@@ -595,7 +613,9 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-ali-ibrahim-aldei',
-    image: '/images/doctors/dr-ali1.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/dr-ali1.png',
+    providerCode: 'PT060',
+    clinicCode: 'R01RHE',
     name: 'Dr. Ali Ibrahim Aldei', nameAr: 'د. علي إبراهيم الدعي',
     specialty: 'Internal Medicine', specialtyAr: 'الطب الباطني',
     department: 'Internal Medicine', departmentAr: 'الطب الباطني',
@@ -639,7 +659,7 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-said-ahmed-ooda',
-    image: '/images/doctors/said-ooda.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/said-ooda.png',
     name: 'Dr. Said Ahmed Ooda', nameAr: 'د. سعيد أحمد عودة',
     specialty: 'Internal Medicine', specialtyAr: 'الطب الباطني',
     department: 'Internal Medicine', departmentAr: 'الطب الباطني',
@@ -686,10 +706,12 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'SO', color: 'bg-accent/90',
     symptoms: [],
+    providerCode: 'E2607',
+    clinicCode: 'R01FMC',
   },
   {
     id: 'dr-ahmed-al-mulla',
-    image: '/images/doctors/Ahmad-Al-Mulla-updated.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/Ahmad-Al-Mulla-updated.png',
     name: 'Dr. Ahmed Al Mulla', nameAr: 'د. حمود صالح الرشيدي',
     specialty: 'General Surgery', specialtyAr: 'الجراحة العامة',
     department: 'General Surgery', departmentAr: 'الجراحة العامة',
@@ -751,13 +773,17 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'AM', color: 'bg-primary/80',
     symptoms: [],
+    providerCode: 'E2196',
+    clinicCode: 'GI 1',
   },
   {
     id: 'dr-humoud-alrasheedi',
-    image: '/images/doctors/Hamoud.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/Hamoud.png',
     name: 'Dr. Humoud Alrasheedi', nameAr: 'د. حمود صالح الرشيدي',
     specialty: 'General Surgery', specialtyAr: 'الجراحة العامة',
     department: 'General Surgery', departmentAr: 'الجراحة العامة',
+    providerCode: 'PT061',
+    clinicCode: 'GI 1',
     title: 'Senior Specialist General Surgery',
     titleAr: 'أخصائي أول جراحة عامة',
     bio: 'Dr. Humoud Alrasheedi is a specialist in the General Surgery department at Royale Hayat Hospital.',
@@ -823,7 +849,7 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-hussein-faour',
-    image: '/images/doctors/Hussein-Faour-updated.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/Hussein-Faour-updated.png',
     name: 'Dr. Hussein Faour', nameAr: 'د. حسين فاعور',
     specialty: 'General Surgery', specialtyAr: 'الجراحة العامة',
     department: 'General Surgery', departmentAr: 'الجراحة العامة',
@@ -891,10 +917,12 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'HF', color: 'bg-primary/70',
     symptoms: [],
+    providerCode: 'E1224',
+    clinicCode: 'GI 1',
   },
   {
     id: 'dr-sulaiman-almazeedi',
-    image: '/images/doctors/sulaiman34.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/sulaiman34.png',
     name: 'Dr. Sulaiman Almazeedi', nameAr: 'د. سليمان المزيدي',
     specialty: 'General Surgery', specialtyAr: 'الجراحة العامة',
     department: 'General Surgery', departmentAr: 'الجراحة العامة',
@@ -947,10 +975,12 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'SA', color: 'bg-accent/70',
     symptoms: [],
+    providerCode: "PT054",
+    clinicCode: "GI 1"
   },
   {
     id: 'dr-noha-alsaleh',
-    image: '/images/doctors/noha-alsaleh.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/noha-alsaleh.png',
     name: 'Dr. Noha Alsaleh', nameAr: 'الدكتورة نهى الصالح',
     specialty: 'General Surgery', specialtyAr: 'الجراحة العامة',
     department: 'General Surgery', departmentAr: 'الجراحة العامة',
@@ -999,10 +1029,14 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'NA', color: 'bg-primary',
     symptoms: [],
+    providerCode: "E2237",
+    clinicCode: "R002GSC"
   },
   {
     id: 'dr-anny-qaisser',
-    image: '/images/doctors/anny.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/anny.png',
+    providerCode: 'E2562',
+    clinicCode: 'R01FMC',
     name: 'Dr. Anny Qaisser', nameAr: 'د. آنـى قيصـر',
     specialty: 'Family Medicine', specialtyAr: 'طب الأسرة',
     department: 'Family Medicine', departmentAr: 'طب الأسرة',
@@ -1063,10 +1097,12 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-rabee-harb',
-    image: '/images/doctors/rabee-harb1.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/rabee-harb1.png',
     name: 'Dr. Rabee Harb', nameAr: 'د. ربيــع حــرب',
     specialty: 'Family Medicine', specialtyAr: 'طب الأسرة',
     department: 'Family Medicine', departmentAr: 'طب الأسرة',
+    providerCode: 'E2561',
+    clinicCode: 'R01FMC',
     title: 'Consultant Family Medicine',
     titleAr: 'استشاري طب الأسرة',
     bio: 'Dr. Rabee Harb is a specialist in the Family Medicine department at Royale Hayat Hospital.',
@@ -1130,10 +1166,12 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-musheera-m-ali',
-    image: '/images/doctors/dr-musheera-ali.png', ///////////////////
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/dr-musheera-ali.png', ///////////////////
     name: 'Dr. Musheera M. Ali', nameAr: 'د. مشيرة محمد علي',
     specialty: 'Dermatology', specialtyAr: 'الأمراض الجلدية',
     department: 'Dermatology', departmentAr: 'الأمراض الجلدية',
+    providerCode: 'CE121',
+    clinicCode: 'R01DER',
     title: 'Dermatologist Registrar',
     titleAr: 'طبيب مسجل أمراض جلدية',
     bio: 'Dr. Musheera M. Ali is a specialist in the Dermatology department at Royale Hayat Hospital.',
@@ -1185,10 +1223,12 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-suraj-v-davis',
-    image: '/images/doctors/Suraj34.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/Suraj34.png',
     name: 'Dr. Suraj V. Davis', nameAr: 'د. سوراج دايفس',
     specialty: 'Dermatology', specialtyAr: 'الأمراض الجلدية',
     department: 'Dermatology', departmentAr: 'الأمراض الجلدية',
+    providerCode: 'CE118',
+    clinicCode: 'R01DER',
     title: 'Head of Dermatology Clinic, Consultant Dermatologist & Venereologist',
     titleAr: 'رئيس عيادة الأمراض الجلدية، استشاري أمراض جلدية وتناسلية',
     bio: 'Dr. Suraj V. Davis is a specialist in the Dermatology department at Royale Hayat Hospital.',
@@ -1235,12 +1275,14 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-brook-assefa-ayele',
-    image: '/images/doctors/brook.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/brook.png',
     name: 'Dr. Brook Assefa Ayele', nameAr: 'د. بروك أسيفا أيلي',
     specialty: 'La Cosmetique', specialtyAr: 'التجميل',
     department: 'La Cosmetique', departmentAr: 'التجميل',
     title: 'Consultant ENT (Plastic Surgery Department)',
     titleAr: 'إستشاري أنف وأذن وحنجرة (قسـم جراحـة التجميـل)',
+    providerCode: 'E3195',
+    clinicCode: 'R060COS',
     bio: 'Dr. Brook Assefa Ayele is a specialist in the La Cosmetique department at Royale Hayat Hospital.',
     bioAr: 'د. بروك أسيفا أيلي متخصص في قسم التجميل في مستشفى رويال حياة.',
     qualifications: [
@@ -1301,12 +1343,14 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-fatemah-faras',
-    image: '/images/doctors/fatemah-faras.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/fatemah-faras.png',
     name: 'Dr. Fatemah Faras', nameAr: 'د. فاطمة فرس',
     specialty: 'La Cosmetique', specialtyAr: 'التجميل',
     department: 'La Cosmetique', departmentAr: 'التجميل',
     title: 'Specialist Facial Plastic and Reconstructive Surgery, Specialist ORL Maxillofacial Surgery (Plastic Surgery Department)',
     titleAr: 'اختصاصي جراحة أنف واذن وحنجره وجراحة تجميل وترميم الوجه والرقبة وجراحة الوجه والفكين (قسـم جراحـة التجميـل)',
+    providerCode: 'PT085',
+    clinicCode: 'R060COS',
     bio: 'Dr. Fatemah Faras is a specialist in the La Cosmetique department at Royale Hayat Hospital.',
     bioAr: 'د. فاطمة فرس متخصص في قسم التجميل في مستشفى رويال حياة.',
     qualifications: [
@@ -1373,11 +1417,13 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-gie-vandehult',
-    image: '/images/doctors/Gie34.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/Gie34.png',
     name: 'Dr. Gie Vandehult', nameAr: 'د. جي فاندهولت',
     specialty: 'La Cosmetique', specialtyAr: 'التجميل',
     department: 'La Cosmetique', departmentAr: 'التجميل',
     title: 'Consultant Plastic Surgeon',
+    providerCode: 'CE050',
+    clinicCode: 'R060COS',
     titleAr: 'استشاري جراحة التجميل',
     bio: 'Dr. Gie Vandehult is a specialist in the La Cosmetique department at Royale Hayat Hospital.',
     bioAr: 'د. جي فاندهولت متخصص في قسم التجميل في مستشفى رويال حياة.',
@@ -1418,10 +1464,12 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-helen-kamil-alkaabi',
-    image: '/images/doctors/helen.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/helen.png',
     name: 'Dr. Helen Kamil Alkaabi', nameAr: 'د.هـيليــن الكـعبــي',
     specialty: 'La Cosmetique', specialtyAr: 'التجميل',
     department: 'La Cosmetique', departmentAr: 'التجميل',
+    providerCode: 'E2936',
+    clinicCode: 'R060COS',
     title: 'Plastic Surgery Registrar',
     titleAr: 'طبيب مسجل جراحة تجميل',
     bio: 'Dr. Helen Kamil Alkaabi is a specialist in the La Cosmetique department at Royale Hayat Hospital.',
@@ -1476,11 +1524,13 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-husain-alqattan',
-    image: '/images/doctors/hussain-alqattan.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/hussain-alqattan.png',
 
     name: 'Dr. Husain Alqattan', nameAr: 'د.هـيليــن الكـعبــي د. حسيــن القطــان',
     specialty: 'La Cosmetique', specialtyAr: 'التجميل',
     department: 'La Cosmetique', departmentAr: 'التجميل',
+    providerCode: 'PT079',
+    clinicCode: 'R060COS',
     title: 'Specialist Plastic Surgeon',
     titleAr: 'أخصائي جراحة التجميل',
     bio: 'Dr. Husain Alqattan is a specialist in the La Cosmetique department at Royale Hayat Hospital.',
@@ -1542,13 +1592,15 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-mohammad-razzak',
-    image: '/images/doctors/razzak34.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/razzak34.png',
 
     name: 'Dr. Mohammad Razzak', nameAr: 'د. محمد عبدالرزاق',
     specialty: 'La Cosmetique', specialtyAr: 'التجميل',
     department: 'La Cosmetique', departmentAr: 'التجميل',
     title: 'Plastic Surgery Doctor',
     titleAr: 'طبيب مسجل جراحة تجميل',
+    providerCode: 'CE055',
+    clinicCode: 'R060COS',
     bio: 'Dr. Mohammad Razzak is a specialist in the La Cosmetique department at Royale Hayat Hospital.',
     bioAr: 'د. محمد عبدالرزاق متخصص في قسم التجميل في مستشفى رويال حياة.',
     qualifications: [
@@ -1592,13 +1644,15 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-sarah-al-youha',
-    image: '/images/doctors/sarah-al-youha.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/sarah-al-youha.png',
 
     name: 'Dr. Sarah Al Youha', nameAr: 'د. ســارة اليوحـــة',
     specialty: 'La Cosmetique', specialtyAr: 'التجميل',
     department: 'La Cosmetique', departmentAr: 'التجميل',
     title: 'Senior Specialist Plastic Surgeon',
     titleAr: 'إختصاصي أول جراحة التجميل',
+    providerCode: 'PT062',
+    clinicCode: 'R060COS',
     bio: 'Dr. Sarah Al Youha is a specialist in the La Cosmetique department at Royale Hayat Hospital.',
     bioAr: 'د. ســارة اليوحـــة متخصص في قسم التجميل في مستشفى رويال حياة.',
     qualifications: [
@@ -1653,11 +1707,13 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'prof-omar-el-khateeb',
-    image: '/images/doctors/omar1.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/omar1.png',
 
     name: 'Prof. Omar El Khateeb', nameAr: 'البروفيسور د. عمر الخطيب',
     specialty: 'Anesthesia', specialtyAr: 'التخدير والعناية المركزة',
     department: 'Anesthesia', departmentAr: 'التخدير والعناية المركزة',
+    providerCode: 'E0366',
+    clinicCode: 'R002ANA',
     title: 'Medical Director & Consultant of Anesthesia & Intensive Care',
     titleAr: 'المدير الطبي واستشاري التخدير والعناية المركزة',
     bio: 'Prof. Omar El Khateeb is a specialist in the Anesthesia department at Royale Hayat Hospital.',
@@ -1700,7 +1756,7 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-hamid-ghaderi',
-    image: '/images/doctors/hamid-ghaderi.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/hamid-ghaderi.png',
 
     name: 'Dr. Hamid Ghaderi', nameAr: 'د. حميد القادري',
     specialty: 'Anesthesia', specialtyAr: 'التخدير والعناية المركزة',
@@ -1753,10 +1809,12 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'HG', color: 'bg-accent/80',
     symptoms: [],
+    clinicCode: "R002PAI",
+    providerCode: "E1076"
   },
   {
     id: 'dr-yasser-haggag',
-    image: '/images/doctors/yasser1.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/yasser1.png',
 
     name: 'Dr. Yasser Haggag', nameAr: 'د. ياسر حجاج',
     specialty: 'Anesthesia', specialtyAr: 'التخدير والعناية المركزة',
@@ -1802,10 +1860,12 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'YH', color: 'bg-primary/70',
     symptoms: [],
+    providerCode: "E1461",
+    clinicCode: "R002ANA"
   },
   {
     id: 'dr-ahmad-abdulrahman-al-mulla',//////// same name issue
-    image: '/images/doctors/ahmed-al-mulla.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/ahmed-al-mulla.png',
 
     name: 'Dr. Ahmad Abdulrahman Al Mulla', nameAr: 'د. أحمد عبدالرحمن المُلا',
     specialty: 'Pediatric', specialtyAr: 'طب الأطفال',
@@ -1837,10 +1897,12 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'AM', color: 'bg-accent/70',
     symptoms: [],
+    clinicCode: "R002PED",
+    providerCode: "PT036"
   },
   {
     id: 'dr-ahmad-al-mosawi',
-    image: '/images/doctors/mosawi1.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/mosawi1.png',
 
     name: 'Dr. Ahmad Al Mosawi', nameAr: 'د. أحمــد الموســوي',
     specialty: 'Pediatric', specialtyAr: 'طب الأطفال',
@@ -1881,10 +1943,12 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'AM', color: 'bg-primary',
     symptoms: [],
+    clinicCode: "R002PED",
+    providerCode: "PT042"
   },
   {
     id: 'dr-mohammad-ebrahim',
-    image: '/images/doctors/mohamed-ebrahim.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/mohamed-ebrahim.png',
 
     name: 'Dr. Mohammad Ebrahim', nameAr: 'د.محمد ابراهيم',
     specialty: 'Pediatric', specialtyAr: 'طب الأطفال',
@@ -1932,10 +1996,12 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'ME', color: 'bg-accent',
     symptoms: [],
+    clinicCode: "R002PED",
+    providerCode: "PT071"
   },
   {
     id: 'dr-rajendra-c-mishra',
-    image: '/images/doctors/rajendra-mishra.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/rajendra-mishra.png',
 
     name: 'Dr. Rajendra C. Mishra', nameAr: 'د. راجنــدرا ميســرا',
     specialty: 'Pediatric', specialtyAr: 'طب الأطفال',
@@ -1982,10 +2048,12 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'RM', color: 'bg-primary/90',
     symptoms: [],
+    clinicCode: "R002PED",
+    providerCode: "E1890"
   },
   {
     id: 'dr-wasmi-al-fadhli',
-    image: '/images/doctors/wasmi-alfadhli.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/wasmi-alfadhli.png',
 
     name: 'Dr. Wasmi Al Fadhli', nameAr: 'د. وسمــي الفضلــي',
     specialty: 'Pediatric', specialtyAr: 'طب الأطفال',
@@ -2035,10 +2103,12 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'WF', color: 'bg-accent/90',
     symptoms: [],
+    clinicCode: "R002PED",
+    providerCode: "PT038"
   },
   {
     id: 'dr-ehab-atteya',
-    image: '/images/doctors/ehab2.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/ehab2.png',
 
     name: 'Dr. Ehab Atteya', nameAr: 'د. إيهــاب عطيــة',
     specialty: 'Pediatric', specialtyAr: 'طب الأطفال',
@@ -2079,16 +2149,20 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'EA', color: 'bg-primary/80',
     symptoms: [],
+    clinicCode: "R002PED",
+    providerCode: "E0723"
   },
   {
     id: 'dr-fahed-abdulaziz-aljaser',
-    image: '/images/doctors/fahed-aljaser.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/fahed-aljaser.png',
 
     name: 'Dr. Fahed Abdulaziz Aljaser', nameAr: 'د. فهد عبدالعزيز الجاسر',
     specialty: 'Pediatric', specialtyAr: 'طب الأطفال',
     department: 'Pediatric', departmentAr: 'طب الأطفال',
     title: 'Consultant Pediatrician & Pediatric Endocrinologist',
     titleAr: 'إستشاري طب الاطفال وغدد صماء للأطفال و داء السكري',
+    providerCode: "PT069",
+    clinicCode: "R002PED",
     bio: 'Dr. Fahed Abdulaziz Aljaser is a specialist in the Pediatric department at Royale Hayat Hospital.',
     bioAr: 'د. فهد عبدالعزيز الجاسر متخصص في قسم طب الأطفال في مستشفى رويال حياة.',
     qualifications: [
@@ -2129,10 +2203,12 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'FA', color: 'bg-accent/80',
     symptoms: [],
+
+
   },
   {
     id: 'dr-omar-alkandari',
-    image: '/images/doctors/omar-alkandari.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/omar-alkandari.png',
 
     name: 'Dr. Omar Alkandari', nameAr: 'د. عمر الكندري',
     specialty: 'Pediatric', specialtyAr: 'طب الأطفال',
@@ -2167,10 +2243,12 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'OA', color: 'bg-primary/70',
     symptoms: [],
+    clinicCode: "R002PED",
+    providerCode: "PT047"
   },
   {
     id: 'dr-roland-waked',
-    image: '/images/doctors/roland.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/roland.png',
 
     name: 'Dr. Roland Waked', nameAr: 'د. رولانــد واكــد',
     specialty: 'Pediatric', specialtyAr: 'طب الأطفال',
@@ -2216,14 +2294,18 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'RW', color: 'bg-accent/70',
     symptoms: [],
+    clinicCode: "R002PED",
+    providerCode: "E1095"
   },
   {
     id: 'dr-adel-al-ali',
-    image: '/images/doctors/adel-al-ali.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/adel-al-ali.png',
 
     name: 'Dr. Adel Al-ali', nameAr: 'الدكتور عادل العلي',
     specialty: 'Radiology', specialtyAr: 'الأشعة التشخيصية',
     department: 'Radiology', departmentAr: 'الأشعة التشخيصية',
+    providerCode: 'PT033',
+    clinicCode: 'R010DIE',
     title: 'Consultant Diagnostic and Interventional Radiology',
     titleAr: 'استشاري أشعة تشخيصية وأشعة تداخلية',
     bio: 'Dr. Adel Al-ali is a specialist in the Radiology department at Royale Hayat Hospital.',
@@ -2275,11 +2357,13 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-osama-al-saeed',
-    image: '/images/doctors/ossama1.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/ossama1.png',
 
     name: 'Dr. Osama Al Saeed', nameAr: 'د. أسامه السعيد',
     specialty: 'Radiology', specialtyAr: 'الأشعة التشخيصية',
     department: 'Radiology', departmentAr: 'الأشعة التشخيصية',
+    providerCode: 'PT011',
+    clinicCode: 'R010DIE',
     title: 'Diagnostic Radiology Consultant',
     titleAr: 'استشاري الأشعة التشخيصية',
     bio: 'Dr. Osama Al Saeed is a specialist in the Radiology department at Royale Hayat Hospital.',
@@ -2322,11 +2406,13 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-yomna-abdelaal-husseiny',
-    image: '/images/doctors/yomna3.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/yomna3.png',
 
     name: 'Dr. Yomna Abdelaal Husseiny', nameAr: 'د. يمنى عبدالعال حسينى',
     specialty: 'Radiology', specialtyAr: 'الأشعة التشخيصية',
     department: 'Radiology', departmentAr: 'الأشعة التشخيصية',
+    providerCode: 'E2616',
+    clinicCode: 'R010DIE',
     title: 'Radiology Registrar',
     titleAr: 'مسجل الأشعة',
     bio: 'Dr. Yomna Abdelaal Husseiny is a specialist in the Radiology department at Royale Hayat Hospital.',
@@ -2373,11 +2459,13 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'farah-hachem',
-    image: '/images/doctors/farah2.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/farah2.png',
 
     name: 'Farah Hachem', nameAr: 'Farah Hachem',
     specialty: 'Nutricare', specialtyAr: 'التغذية السريرية',
     department: 'Nutricare', departmentAr: 'التغذية السريرية',
+    providerCode: 'E2395',
+    clinicCode: 'R011DIT',
     title: 'Clinical Dietitian',
     titleAr: '',
     bio: 'Farah Hachem is a specialist in the Nutricare department at Royale Hayat Hospital.',
@@ -2412,11 +2500,13 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'fatme-khreis',
-    image: '/images/doctors/fatme-khreis.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/fatme-khreis.png',
 
     name: 'Fatme Khreis', nameAr: 'Fatme Khreis',
     specialty: 'Nutricare', specialtyAr: 'التغذية السريرية',
     department: 'Nutricare', departmentAr: 'التغذية السريرية',
+    providerCode: '6015',
+    clinicCode: 'R011DIT',
     title: 'Clinical Dietitian',
     titleAr: '',
     bio: 'Fatme Khreis is a specialist in the Nutricare department at Royale Hayat Hospital.',
@@ -2449,11 +2539,13 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'heba-ben-salamah',
-    image: '/images/doctors/heba1.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/heba1.png',
 
     name: 'Heba Ben Salamah', nameAr: 'Heba Ben Salamah',
     specialty: 'Nutricare', specialtyAr: 'التغذية السريرية',
     department: 'Nutricare', departmentAr: 'التغذية السريرية',
+    providerCode: 'E2728',
+    clinicCode: 'R011DIT',
     title: 'Registered Dietitian',
     titleAr: '',
     bio: 'Heba Ben Salamah is a specialist in the Nutricare department at Royale Hayat Hospital.',
@@ -2510,7 +2602,7 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-mazen-alessa',
-    image: '/images/doctors/Mazen34.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/Mazen34.png',
 
     name: 'Dr. Mazen Alessa', nameAr: 'د. مــازن العيســى',
     specialty: 'Neonatal', specialtyAr: 'حديثي الولادة',
@@ -2562,10 +2654,12 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'MA', color: 'bg-primary/70',
     symptoms: [],
+    clinicCode: "R01NEO",
+    providerCode: "PT080"
   },
   {
     id: 'dr-mohamad-hassoun',
-    image: '/images/doctors/mohamad-hassoun.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/mohamad-hassoun.png',
 
     name: 'Dr. Mohamad Hassoun', nameAr: 'Dr. Mohamad Hassoun',
     specialty: 'Neonatal', specialtyAr: 'حديثي الولادة',
@@ -2616,14 +2710,18 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'MH', color: 'bg-accent/70',
     symptoms: [],
+    clinicCode: "R01NEO",
+    providerCode: "E2768"
   },
   {
     id: 'dr-deepak-vasudev',
-    image: '/images/doctors/deepak.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/deepak.png',
 
     name: 'Dr. Deepak Vasudev', nameAr: 'د. ديبـاك ڤاسوديـڤ',
     specialty: 'Neonatal', specialtyAr: 'حديثي الولادة',
     department: 'Neonatal', departmentAr: 'حديثي الولادة',
+    providerCode: 'E3208',
+    clinicCode: 'R01NEO',
     title: 'Consultant Neonatology & Pediatrics',
     titleAr: 'استشاري طب الأطفال وحديثي الولادة',
     bio: 'Dr. Deepak Vasudev is a specialist in the Neonatal department at Royale Hayat Hospital.',
@@ -2670,7 +2768,7 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-eyhab-bader',
-    image: '/images/doctors/eyhab-bader.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/eyhab-bader.png',
 
     name: 'Dr. Eyhab Bader', nameAr: 'د. إيهـاب بـدر',
     specialty: 'Neonatal', specialtyAr: 'حديثي الولادة',
@@ -2716,10 +2814,12 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'EB', color: 'bg-accent',
     symptoms: [],
+    clinicCode: "R01NEO",
+    providerCode: "E3267"
   },
   {
     id: 'dr-mirvat-sameer-ghanem',
-    image: '/images/doctors/dr-mirvat-sameer-ghanem.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/dr-mirvat-sameer-ghanem.png',
 
     name: 'Dr. Mirvat Sameer Ghanem', nameAr: 'د. مـيــرفــت غــانـــم',
     specialty: 'Pharmacy', specialtyAr: 'الصيدلية',
@@ -2775,14 +2875,18 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'MG', color: 'bg-primary/90',
     symptoms: [],
+    clinicCode: "R002PED",
+    providerCode: "PT036"
   },
   {
     id: 'dr-anood-yousef-aljasser-alrajahi',
-    image: '/images/doctors/dr-anood.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/dr-anood.png',
 
     name: 'Dr. Anood Yousef Aljasser Alrajahi', nameAr: 'د. عنود يوسف الجاسر الراجحي',
     specialty: 'Dental', specialtyAr: 'طب الأسنان',
     department: 'Dental', departmentAr: 'طب الأسنان',
+    providerCode: 'PT059',
+    clinicCode: 'R01DEP',
     title: 'Specialist in Pediatric Dentistry and Special Needs',
     titleAr: 'أخصائي طب أسنان الأطفال والاحتياجات الخاصة',
     bio: 'Dr. Anood Yousef Aljasser Alrajahi is a specialist in the Dental department at Royale Hayat Hospital.',
@@ -2825,11 +2929,13 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-khaled-n-al-awadhi', //////
-    image: '/images/doctors/dr-khalid.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/dr-khalid.png',
 
     name: 'Dr. Khaled N. Al Awadhi', nameAr: 'د. خالد نعمة العوضي',
     specialty: 'Dental', specialtyAr: 'طب الأسنان',
     department: 'Dental', departmentAr: 'طب الأسنان',
+    providerCode: 'E1602',
+    clinicCode: 'R002DEN',
     title: 'Head of Dental Department Consultant in Prosthodontics and Cosmetic Dentistry',
     titleAr: 'رئيس قسم طب الأسنان إستشاري في تركيبات وتجميل الأسنان',
     bio: 'Dr. Khaled N. Al Awadhi is a specialist in the Dental department at Royale Hayat Hospital.',
@@ -2872,11 +2978,13 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-salman-ben-nakhi',////////
-    image: '/images/doctors/salman.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/salman.png',
 
     name: 'Dr. Salman Ben Nakhi', nameAr: 'د. سلمان بن نخي',
     specialty: 'Dental', specialtyAr: 'طب الأسنان',
     department: 'Dental', departmentAr: 'طب الأسنان',
+    providerCode: 'PT083',
+    clinicCode: 'R002DEN',
     title: 'Specialist Dentist',
     titleAr: 'طبيب أسنان متخصص',
     bio: 'Dr. Salman Ben Nakhi is a specialist in the Dental department at Royale Hayat Hospital.',
@@ -2919,11 +3027,13 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-sanketa-patil',
-    image: '/images/doctors/Sanketa1.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/Sanketa1.png',
 
     name: 'Dr. Sanketa Patil', nameAr: 'د. سانكيتـة باتيـل',
     specialty: 'Dental', specialtyAr: 'طب الأسنان',
     department: 'Dental', departmentAr: 'طب الأسنان',
+    providerCode: 'E2645',
+    clinicCode: 'R002DEN',
     title: 'Periodontist',
     titleAr: 'أخصائي أمراض اللثة',
     bio: 'Dr. Sanketa Patil is a specialist in the Dental department at Royale Hayat Hospital.',
@@ -2960,11 +3070,13 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-nourah-adnan-saad-alrubaian',
-    image: '/images/doctors/noorah1.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/noorah1.png',
 
     name: 'Dr. Nourah Adnan Saad Alrubaian', nameAr: 'د.نوره عدنان سعد الربيعان',
     specialty: 'Dental', specialtyAr: 'طب الأسنان',
     department: 'Dental', departmentAr: 'طب الأسنان',
+    providerCode: 'PT074',
+    clinicCode: 'R002DEN',
     title: 'Specialist in Paediatric Dentistry',
     titleAr: 'اختصاصي طب أسنان أطفال',
     bio: 'Dr. Nourah Adnan Saad Alrubaian is a specialist in the Dental department at Royale Hayat Hospital.',
@@ -3007,13 +3119,15 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-rajesh-r-patil',
-    image: '/images/doctors/rajesh.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/rajesh.png',
 
     name: 'Dr. Rajesh R. Patil', nameAr: 'د. راجيش ر. باتيل',
     specialty: 'Dental', specialtyAr: 'طب الأسنان',
     department: 'Dental', departmentAr: 'طب الأسنان',
     title: 'Endodontist and Restorative Dentist',
     titleAr: 'أخصائي علاج لب الأسنان وتقويم الأسنان',
+    providerCode: 'E2254',
+    clinicCode: 'R002DEN',
     bio: 'Dr. Rajesh R. Patil is a specialist in the Dental department at Royale Hayat Hospital.',
     bioAr: 'د. راجيش ر. باتيل متخصص في قسم طب الأسنان في مستشفى رويال حياة.',
     qualifications: [
@@ -3050,8 +3164,9 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-eman-alsayegh',
-    image: '/images/doctors/eman2.png',
-
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/eman2.png',
+    providerCode: 'E2961',
+    clinicCode: 'R002OBG',
     name: 'Dr. Eman Alsayegh', nameAr: 'د. إيمــان الصـائـغ',
     specialty: 'Obstetrics & Gynecology', specialtyAr: 'أمراض النساء والولادة',
     department: 'Obstetrics & Gynecology', departmentAr: 'أمراض النساء والولادة',
@@ -3105,8 +3220,9 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-fariba-vadoudi',
-    image: '/images/doctors/fariba1.png',
-
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/fariba1.png',
+    providerCode: 'E2736',
+    clinicCode: 'R002OBG',
     name: 'Dr. Fariba Vadoudi', nameAr: 'د. فاريبا فادودي',
     specialty: 'Obstetrics & Gynecology', specialtyAr: 'أمراض النساء والولادة',
     department: 'Obstetrics & Gynecology', departmentAr: 'أمراض النساء والولادة',
@@ -3176,8 +3292,9 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-mona-abou-taam',
-    image: '/images/doctors/mona1.png',
-
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/mona1.png',
+    providerCode: 'E1223',
+    clinicCode: 'R002OBG',
     name: 'Dr. Mona Abou Taam', nameAr: 'د. منـى ابو طعـام',
     specialty: 'Obstetrics & Gynecology', specialtyAr: 'أمراض النساء والولادة',
     department: 'Obstetrics & Gynecology', departmentAr: 'أمراض النساء والولادة',
@@ -3241,8 +3358,10 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-zeinab-sholkany-m-saad',
-    image: '/images/doctors/zainab-sholkany.png',
-
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/zainab-sholkany.png',
+    providerCode: 'E1535',
+    clinicCode: 'R002OBG',
+    hideBooking: true,
     name: 'Dr. Zeinab Sholkany M.saad', nameAr: 'د. زينب شلقاني محمد سعد',
     specialty: 'Obstetrics & Gynecology', specialtyAr: 'أمراض النساء والولادة',
     department: 'Obstetrics & Gynecology', departmentAr: 'أمراض النساء والولادة',
@@ -3296,8 +3415,9 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-abubakr-elmardi',
-    image: '/images/doctors/abubakr-elmardi.png',
-
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/abubakr-elmardi.png',
+    providerCode: 'E1759',
+    clinicCode: 'R002OBG',
     name: 'Dr. Abubakr Elmardi', nameAr: 'د. أبو بكــر المرضــي',
     specialty: 'Obstetrics & Gynecology', specialtyAr: 'أمراض النساء والولادة',
     department: 'Obstetrics & Gynecology', departmentAr: 'أمراض النساء والولادة',
@@ -3351,8 +3471,9 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-hafsah-hussain',
-    image: '/images/doctors/hafsah1.png',
-
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/hafsah1.png',
+    providerCode: 'E3329',
+    clinicCode: 'R002OBG',
     name: 'Dr. Hafsah Hussain', nameAr: 'د. حفصه حسين',
     specialty: 'Obstetrics & Gynecology', specialtyAr: 'أمراض النساء والولادة',
     department: 'Obstetrics & Gynecology', departmentAr: 'أمراض النساء والولادة',
@@ -3410,8 +3531,9 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-essam-sakr',
-    image: '/images/doctors/issam-sakr.png',
-
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/issam-sakr.png',
+    providerCode: 'E1859',
+    clinicCode: 'R002OBG',
     name: 'Dr. Essam Sakr', nameAr: 'د. عصـام صقـر',
     specialty: 'Obstetrics & Gynecology', specialtyAr: 'أمراض النساء والولادة',
     department: 'Obstetrics & Gynecology', departmentAr: 'أمراض النساء والولادة',
@@ -3451,8 +3573,9 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-fatima-sultan',
-    image: '/images/doctors/fatima-sultan34.png',
-
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/fatima-sultan34.png',
+    providerCode: 'E1897',
+    clinicCode: 'R002OBG',
     name: 'Dr. Fatima Sultan', nameAr: 'د. فاطمـة سلطـان',
     specialty: 'Obstetrics & Gynecology', specialtyAr: 'أمراض النساء والولادة',
     department: 'Obstetrics & Gynecology', departmentAr: 'أمراض النساء والولادة',
@@ -3521,8 +3644,10 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-nada-al-ibrahim',
-    image: '/images/doctors/nada-ibrahim.png',
-
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/nada-ibrahim.png',
+    providerCode: 'PT081',
+    clinicCode: 'R002OBG',
+    hideBooking: false,
     name: 'Dr. Nada Al Ibrahim', nameAr: 'د. نـدى الإبراهيـم',
     specialty: 'Obstetrics & Gynecology', specialtyAr: 'أمراض النساء والولادة',
     department: 'Obstetrics & Gynecology', departmentAr: 'أمراض النساء والولادة',
@@ -3531,14 +3656,15 @@ export const doctors: Doctor[] = [
     bio: 'Dr. Nada Al Ibrahim is a specialist in the Obstetrics & Gynecology department at Royale Hayat Hospital.',
     bioAr: 'د. نـدى الإبراهيـم متخصص في قسم أمراض النساء والولادة في مستشفى رويال حياة.',
     qualifications: [
-      'Specialist In Obstetrics & Gynecology – Urogynecology & Female Pelvic Medicine & Reconstructive Surgery',
-      'د. نـدى الإبراهيـم',
-      'إختصاصي أمراض نساء وولادة ومسالك بولية نسائية وترميم وتجميل الحوض',
-      'المؤهلات:',
-      'الخبرات :',
-      'إختصاصي أمراض نساء وولادة ومسالك بولية نسائية وترميم وتجميل الحوض',
+      'Specialist in Obstetrics & Gynecology',
+      'Urogynecology & Female Pelvic Medicine',
+      'Reconstructive Pelvic Surgery',
     ],
-    qualificationsAr: [],
+    qualificationsAr: [
+      'إختصاصي أمراض نساء وولادة',
+      'مسالك بولية نسائية وطب قاع الحوض',
+      'ترميم وتجميل الحوض',
+    ],
     expertise: ['Specialist In Obstetrics & Gynecology – Urogynecology & Female Pelvic Medicine & Reconstructive Surgery'],
     expertiseAr: ['إختصاصي أمراض نساء وولادة ومسالك بولية نسائية وترميم وتجميل الحوض'],
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
@@ -3548,34 +3674,84 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-nourah-al-ibrahim', //////////////
-    image: '/images/doctors/noura34.png',
-
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/noura34.png',
+    providerCode: 'PT082',
+    clinicCode: 'R002OBG',
     name: 'Dr. Nourah Al Ibrahim', nameAr: 'د. نـوره الإبراهيـم',
     specialty: 'Obstetrics & Gynecology', specialtyAr: 'أمراض النساء والولادة',
     department: 'Obstetrics & Gynecology', departmentAr: 'أمراض النساء والولادة',
-    title: 'Specialist In Obstetrics And Gynecology - Gynecologic Oncology',
-    titleAr: 'إختصاصي أمراض نساء و ولادة وأورام نسـائية',
+    title: 'Specialist in Obstetrics & Gynecology - Gynecologic Oncology',
+    titleAr: 'اختصاصي أمراض النساء والولادة والأورام النسائية',
     bio: 'Dr. Nourah Al Ibrahim is a specialist in the Obstetrics & Gynecology department at Royale Hayat Hospital.',
     bioAr: 'د. نـوره الإبراهيـم متخصص في قسم أمراض النساء والولادة في مستشفى رويال حياة.',
     qualifications: [
-      'Specialist In Obstetrics And Gynecology – Gynecologic Oncology',
-      'د. نـوره الإبراهيـم',
-      'إختصاصي أمراض نساء و ولادة وأورام نسـائية',
-      'المؤهلات:',
-      'الخبرات :',
-      'إختصاصي أمراض نساء و ولادة وأورام نسـائية',
+      '• Bachelor of Medicine and Surgery, Kuwait University',
+      '• Canadian Board of Obstetrics & Gynecology, McMaster University, Canada',
+      '• Fellowship in Gynecology Oncology, University of Manitoba, Canada',
+      '• Program of Clinical Effectiveness, Harvard University, USA',
     ],
-    qualificationsAr: [],
-    expertise: ['Specialist In Obstetrics And Gynecology – Gynecologic Oncology'],
-    expertiseAr: ['إختصاصي أمراض نساء و ولادة وأورام نسـائية'],
+    qualificationsAr: [
+      '• بكالوريوس الطب والجراحة – جامعة الكويت',
+      '• البورد الكندي في أمراض النساء والتوليد – جامعة ماكماستر، كندا',
+      '• زمالة في طب الأورام النسائية – جامعة مانيتوبا، كندا',
+      '• برنامج الكفاءة الإكلينيكية – جامعة هارفارد، الولايات المتحدة الأمريكية',
+    ],
+    expertise: [
+      'Gynecological Surgical Procedures:',
+      '• All advanced abdominal & pelvic gynecology surgery',
+      '• Advanced laparoscopic gynecology surgery, including:',
+      '• Fibroids, ovarian cysts, endometriosis, ectopic pregnancy, hysterectomy, opherectomy, tubal ligation, removal of fallopian tubes, and release of adhesions',
+      '• Minimally invasive techniques, including advanced laparoscopy and (da Vinci®) Robotic surgery',
+      '• Management of abnormal uterine and postmenopausal bleeding',
+      '• Management of fibroids and ovarian cysts & adnexal masses',
+      '• Hysteroscopic surgery – removal of uterine polyp, fibroids, and septum, and endometrial ablation',
+      'Specialized Evaluations and Screenings:',
+      '• HPV-Related Disease: Colposcopy for cervical, vulvar, and vaginal Assessment',
+      '• Diagnostic evaluations for suspected gynecologic cancers',
+      '• Gynecological cancer screening for high-risk patients',
+      'Cancer Management and Surgical Treatment of:',
+      '• Ovarian, fallopian tube, and primary peritoneal cancers',
+      '• Uterine and endometrial cancers',
+      '• Cervical, vulvar, and vaginal cancers',
+      '• Sarcoma',
+      '• Gestational trophoblast disease',
+      'Genetic Services:',
+      '• Risk-reducing surgeries and surveillance for patients with genetic mutations',
+      '• Cancer genetics screening',
+      '• Genetic counseling co-ordination for testing women with a family history of gynecologic cancer',
+      '• Quality of life enhancement and well-being during cancer therapy',
+      '• Management of cancer and pregnancy',
+      '• Management of cancer and fertility preservation',
+    ],
+    expertiseAr: [
+      'خبرة في إجراء أدق وأحدث الجراحات النسائية، بما في ذلك جراحات الأورام النسائية المتقدمة في البطن والحوض:',
+      '• جراحات المنظار والعمليات باستخدام أحدث التقنيات مثل الجراحة الروبوتية (da Vinci®)',
+      '• جراحات المنظار الرحمي لإزالة الأورام الليفية واللحميات ومعالجة بطانة الرحم',
+      'رعاية متكاملة وشاملة للمرأة في مختلف المراحل، وتشمل:',
+      '• معالجة النزيف الرحمي غير الطبيعي وأعراض ما بعد سن اليأس',
+      '• علاج الأورام الليفية والأكياس المبيضية',
+      '• تشخيص ومتابعة الأورام النسائية مبكرًا خاصة لدى النساء الأكثر عرضة',
+      '• الفحوصات الدورية لفيروس HPV المرتبطة به وعلاج الحالات',
+      'علاج الأورام النسائية، مختلف سرطانات النساء مثل:',
+      '• سرطان المبيض وقنوات فالوب',
+      '• سرطانات الرحم وبطانة الرحم',
+      '• سرطان عنق الرحم والمهبل والفرج',
+      '• الساركوما وأمراض الأرومة الغاذية الحملية',
+      'دعم شامل للمرأة خلال رحلتها العلاجية وبرامج مخصصة لتحسين جودة الحياة تشمل:',
+      '• برامج متابعة الناجيات من السرطان',
+      '• الاستشارات الخاصة بالصحة الجنسية أثناء وبعد العلاج',
+      '• دعم المريضات الحوامل المصابات بالسرطان مع الحفاظ على الخصوبة وخيارات الإنجاب المستقبلية',
+      '• الرعاية التلطيفية والداعمة للمرضى وعائلاتهم',
+    ],
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'NI', color: 'bg-primary/90',
     symptoms: [],
   },
   {
     id: 'dr-salma-ibrahim',
-    image: '/images/doctors/salma-ibrahim34.png',
-
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/salma-ibrahim34.png',
+    providerCode: 'E3193',
+    clinicCode: 'R002OBG',
     name: 'Dr. Salma Ibrahim', nameAr: 'د. سلمى ابراهيم',
     specialty: 'Obstetrics & Gynecology', specialtyAr: 'أمراض النساء والولادة',
     department: 'Obstetrics & Gynecology', departmentAr: 'أمراض النساء والولادة',
@@ -3637,8 +3813,9 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-samar-nagaty',
-    image: '/images/doctors/samar-nagaty.png',
-
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/samar-nagaty.png',
+    providerCode: 'E2084',
+    clinicCode: 'R002OBG',
     name: 'Dr. Samar Nagaty', nameAr: 'د. سمـر نجاتـي',
     specialty: 'Obstetrics & Gynecology', specialtyAr: 'أمراض النساء والولادة',
     department: 'Obstetrics & Gynecology', departmentAr: 'أمراض النساء والولادة',
@@ -3676,8 +3853,10 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-khalida-al-mujaibel',
-    image: '/images/doctors/khalida.png',
-
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/khalida.png',
+    providerCode: 'E0404',
+    clinicCode: 'R002OBG',
+    hideBooking: false,
     name: 'Dr. Khalida Al Mujaibel', nameAr: 'د. خالده المجيبل',
     specialty: 'Obstetrics & Gynecology', specialtyAr: 'أمراض النساء والولادة',
     department: 'Obstetrics & Gynecology', departmentAr: 'أمراض النساء والولادة',
@@ -3712,8 +3891,9 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-lobna-ibrahim-bassiouni',
-    image: '/images/doctors/Lubna.png',
-
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/Lubna.png',
+    providerCode: 'E1796',
+    clinicCode: 'R002OBG',
     name: 'Dr. Lobna Ibrahim Bassiouni', nameAr: 'د. لبنى إبراهيم بسيوني',
     specialty: 'Obstetrics & Gynecology', specialtyAr: 'أمراض النساء والولادة',
     department: 'Obstetrics & Gynecology', departmentAr: 'أمراض النساء والولادة',
@@ -3768,11 +3948,13 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-elisavet-angelaki',
-    image: '/images/doctors/Elisavet1.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/Elisavet1.png',
 
     name: 'Dr. Elisavet Angelaki', nameAr: 'الدكتورة إليزافيت أنجيلاكي',
     specialty: 'IVF', specialtyAr: 'أطفال الأنابيب',
-    department: 'IVF', departmentAr: 'أطفال الأنابيب',
+    department: 'Reproductive Medicine & IVF', departmentAr: 'الطب التناسلي وأطفال الأنابيب',
+    providerCode: 'PT023',
+    clinicCode: 'R002IVF',
     title: 'Consultant infertility and IVF, University of Brussels Belgium',
     titleAr: 'استشاري العقم وأطفال الأنابيب، جامعة بروكسل، بلجيكا',
     bio: 'Dr. Elisavet Angelaki is a specialist in the IVF department at Royale Hayat Hospital.',
@@ -3826,11 +4008,12 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-naser-al-azemi',
-    image: '/images/doctors/naser1.png',
-
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/naser1.png',
+    providerCode: 'PT022',
+    clinicCode: 'R002IVF',
     name: 'Dr. Naser Al-azemi', nameAr: 'الدكتور ناصر العازمي',
     specialty: 'IVF', specialtyAr: 'أطفال الأنابيب',
-    department: 'IVF', departmentAr: 'أطفال الأنابيب',
+    department: 'Reproductive Medicine & IVF', departmentAr: 'الطب التناسلي وأطفال الأنابيب',
     title: 'Head of Reproductive Medicine Unit , Consultant infertility and IVF, University of Brussels Belgium',
     titleAr: 'رئيس وحدة المساعدة على الانجاب، إستشاري العقم البشري وأطفال الأنابيب والطب التناسلي، التخصص الدقيق في الطب التناسلي والعقم البشري، جامعة بروكسل بلجيكا',
     bio: 'Dr. Naser Al-azemi is a specialist in the IVF department at Royale Hayat Hospital.',
@@ -3921,7 +4104,7 @@ export const doctors: Doctor[] = [
   // },
   {
     id: 'dr-salah-al-wuhaib',
-    image: '/images/doctors/salah-al-wuhaib.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/salah-al-wuhaib.png',
 
     name: 'Dr. Salah Al-wuhaib', nameAr: 'د. صلاح الوهيب',
     specialty: 'Laboratory', specialtyAr: 'المختبر',
@@ -3971,10 +4154,12 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'SA', color: 'bg-primary/90',
     symptoms: [],
+    //   clinicCode:"R002PED",
+    // providerCode:"PT036"
   },
   {
     id: 'dr-alaa-abdullah',
-    image: '/images/doctors/dr-alaa.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/dr-alaa.png',
 
     name: 'Dr. Alaa Abdullah', nameAr: 'د. آلاء عبـدالله',
     specialty: 'Laboratory', specialtyAr: 'المختبر',
@@ -4016,11 +4201,13 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-najat-rouhaldeen',
-    image: '/images/doctors/najat-rouhaldeen.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/najat-rouhaldeen.png',
 
     name: 'Dr. Najat Rouhaldeen', nameAr: 'د نجاة روح الدين',
     specialty: 'Laboratory', specialtyAr: 'المختبر',
     department: 'Laboratory', departmentAr: 'المختبر',
+    providerCode: 'PT044',
+    clinicCode: 'R07LABH',
     title: 'Hematology Consultant',
     titleAr: 'استشاري أمراض الدم',
     bio: 'Dr. Najat Rouhaldeen is a specialist in the Laboratory department at Royale Hayat Hospital.',
@@ -4077,11 +4264,13 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-abdullah-albader',
-    image: '/images/doctors/abdullah-al-bader.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/abdullah-al-bader.png',
 
     name: 'Dr. Abdullah Albader', nameAr: 'د.عبدالله خالد البدر',
     specialty: 'ENT (Ear, Nose & Throat)', specialtyAr: 'الأنف والأذن والحنجرة',
     department: 'ENT (Ear, Nose & Throat)', departmentAr: 'الأنف والأذن والحنجرة',
+    providerCode: 'PT072',
+    clinicCode: 'R01ENT',
     title: 'Consultant in ENT Surgery, Head and Neck Surgery, Pediatric ENT, and Endoscopic Sinus and Skull Base Surgery',
     titleAr: 'استشاري جراحة الانف والاذن والحنجرة وجراحة الرأس والرقبة وجراحة الانف والاذن والحنجرة للأطفال وجراحة مناظير الجيوب الأنفية وقاع الجمجمة.',
     bio: 'Dr. Abdullah Albader is a specialist in the ENT (Ear, Nose & Throat) department at Royale Hayat Hospital.',
@@ -4144,11 +4333,13 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-hamoud-abdullah-alarouj',
-    image: '/images/doctors/hamod2.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/hamod2.png',
 
     name: 'Dr. Hamoud Abdullah Alarouj', nameAr: 'د. حمـود عبـد اللـه العـروج',
     specialty: 'ENT (Ear, Nose & Throat)', specialtyAr: 'الأنف والأذن والحنجرة',
     department: 'ENT (Ear, Nose & Throat)', departmentAr: 'الأنف والأذن والحنجرة',
+    providerCode: 'PT050',
+    clinicCode: 'R01ENT',
     title: 'ENT Consultant, Laryngologist',
     titleAr: 'استشاري الأنف والأذن والحنجرة',
     bio: 'Dr. Hamoud Abdullah Alarouj is a specialist in the ENT (Ear, Nose & Throat) department at Royale Hayat Hospital.',
@@ -4205,13 +4396,15 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-hanafi-abdelsalam',
-    image: '/images/doctors/Hanafi34.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/Hanafi34.png',
 
     name: 'Dr. Hanafi Abdelsalam', nameAr: 'د. حنفي عبدالسلام',
     specialty: 'ENT (Ear, Nose & Throat)', specialtyAr: 'الأنف والأذن والحنجرة',
     department: 'ENT (Ear, Nose & Throat)', departmentAr: 'الأنف والأذن والحنجرة',
     title: 'Head of Department & Consultant ENT (Ear, Nose & Throat)',
     titleAr: 'رئيس القسم واستشاري أمراض الأنف والأذن والحنجرة',
+    providerCode: 'E1949',
+    clinicCode: 'R01ENT',
     bio: 'Dr. Hanafi Abdelsalam is a specialist in the ENT (Ear, Nose & Throat) department at Royale Hayat Hospital.',
     bioAr: 'د. حنفي عبدالسلام متخصص في قسم الأنف والأذن والحنجرة في مستشفى رويال حياة.',
     qualifications: [
@@ -4252,13 +4445,15 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-maha-al-gilani',
-    image: '/images/doctors/maha.png',
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/WhatsApp+Image+2026-05-12+at+5.04.41+PM.jpeg',
 
     name: 'Dr. Maha Al-gilani', nameAr: 'د. مـهــا الـجـيـلانــي',
     specialty: 'ENT (Ear, Nose & Throat)', specialtyAr: 'الأنف والأذن والحنجرة',
     department: 'ENT (Ear, Nose & Throat)', departmentAr: 'الأنف والأذن والحنجرة',
     title: 'Senior Specialist ENT',
     titleAr: 'MBBS، FRCSC، MSCI، FACS كبير أخصائي الأنف والأذن والحنجرة',
+    providerCode: 'PT078',
+    clinicCode: 'R01ENT',
     bio: 'Dr. Maha Al-gilani is a specialist in the ENT (Ear, Nose & Throat) department at Royale Hayat Hospital.',
     bioAr: 'د. مـهــا الـجـيـلانــي متخصص في قسم الأنف والأذن والحنجرة في مستشفى رويال حياة.',
     qualifications: [
@@ -4388,4 +4583,15 @@ export function searchDoctorsBySymptom(query: string): Doctor[] {
     ];
     return searchFields.some((field) => field.toLowerCase().includes(q));
   });
+}
+
+/** Featured carousel list (homepage + medical services). */
+export function getFeaturedDoctors(limit = 12): Doctor[] {
+  return doctors
+    .filter(
+      (doc) =>
+        doc.id !== "dr-mustafa-alfiki" &&
+        doc.specialty?.toLowerCase() !== "clinical pharmacy"
+    )
+    .slice(0, limit);
 }

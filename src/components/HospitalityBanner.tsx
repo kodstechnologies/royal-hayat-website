@@ -1,4 +1,4 @@
-import { Crown, Sparkles, Bed, Coffee, Droplets } from "lucide-react";
+import { Crown, Sparkles, Bed, Coffee, Droplets, Baby } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
@@ -8,11 +8,13 @@ const HospitalityBanner = () => {
   const { t } = useLanguage();
 
   const features = [
-    { icon: Crown, label: t("luxuryHalls") },
-    { icon: Bed, label: t("vipSuites") },
+    { icon: Crown, label: t("Birth Celebration Halls") },
+    { icon: Bed, label: t("Exclusive Suites") },
     { icon: Sparkles, label: t("inRoomEvents") },
-    { icon: Droplets, label: t("elementsSpa") },
+    { icon: Droplets, label: t("Elements Spa (by Banyan Tree)") },
     { icon: Coffee, label: t("alLiwanCafe") },
+    { icon: Coffee, label: t("The 5th Floor Café") },
+    { icon: Baby, label: t("Newborn Photography services ") },
   ];
 
   return (

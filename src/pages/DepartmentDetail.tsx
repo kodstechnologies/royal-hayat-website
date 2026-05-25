@@ -210,12 +210,82 @@ const DepartmentDetail = () => {
   };
 
   const matchingDepts = deptNameToDoctorDept[displayDept.name] || deptNameToDoctorDept[dept.name] || [];
-  const deptDoctors = matchingDepts.length > 0
+  const baseDeptDoctors = matchingDepts.length > 0
     ? allDoctors.filter((doc) => matchingDepts.includes(doc.department))
     : allDoctors.filter((doc) =>
       doc.department.toLowerCase().includes(dept.name.toLowerCase().split(" ")[0]) ||
       dept.name.toLowerCase().includes(doc.department.toLowerCase().split(" ")[0])
     );
+
+  const deptDoctors = (() => {
+    if (!subSlug) {
+      return baseDeptDoctors.sort((a, b) =>
+        (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en")
+      );
+    }
+
+    const subSpecialtyDoctorMap: Record<string, string[]> = {
+      // Internal Medicine subs
+      "cardiology": ["alturki", "turki"],
+      "nephrology": ["qallaf"],
+      "gastroenterology": ["swait", "jaser"],
+      "endocrinology-and-metabolism": ["ramadhan", "alroudhan", "roudhan"],
+      "rheumatology": ["aldei", "dei"],
+      "clinical-nutrition-and-dietetics": ["hachem", "khreis", "salamah"],
+      "respiratory-clinic-pulmonology": ["alia", "ibrahim"],
+      "allergy-and-immunology": ["othman", "yassmin"],
+      // OB/GYN subs
+      "cosmetic-gynecology": ["abubakr", "elmardi", "nada", "samar", "nagaty"],
+      "gynecologic-oncology": ["nourah-al-ibrahim"],
+      "urogynecology": ["abubakr", "elmardi", "nada"],
+      "women-s-health": [], // All OBGYN doctors
+      "physiotherapy": [],
+      "parent-and-childbirth-education": [],
+      // General & Laparoscopic Surgery subs
+      "obesity-bariatric-surgery": ["ahmed-al-mulla", "mulla", "humoud", "alrasheedi", "hussein", "faour", "sulaiman", "almazeedi"],
+      "breast-surgical-oncology": ["noha", "alsaleh"],
+      "abdominal-wall-reconstruction": ["humoud", "alrasheedi", "sarah", "youha"],
+      "nutrition-and-diet-surgery": ["hachem", "khreis", "salamah"],
+    };
+
+    // Try explicit map first
+    const mapKey = Object.keys(subSpecialtyDoctorMap).find(
+      (k) => subSlug.includes(k) || k.includes(subSlug)
+    );
+
+    if (mapKey && subSpecialtyDoctorMap[mapKey].length > 0) {
+      const keywords = subSpecialtyDoctorMap[mapKey];
+      const filtered = baseDeptDoctors.filter((doc) =>
+        keywords.some((kw) => doc.id.toLowerCase().includes(kw) || doc.name.toLowerCase().includes(kw))
+      );
+      if (filtered.length > 0) {
+        return [...filtered].sort((a, b) =>
+          (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en")
+        );
+      }
+    }
+
+    // Fallback: keyword match on title/specialty
+    if (activeSub) {
+      const subKeywords = activeSub.name
+        .toLowerCase()
+        .split(/[\s&,/()+]+/)
+        .filter((w) => w.length > 3);
+      const filtered = baseDeptDoctors.filter((doc) => {
+        const haystack = `${doc.title} ${doc.specialty} ${doc.titleAr} ${doc.id}`.toLowerCase();
+        return subKeywords.some((kw) => haystack.includes(kw));
+      });
+      if (filtered.length > 0) {
+        return [...filtered].sort((a, b) =>
+          (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en")
+        );
+      }
+    }
+
+    return baseDeptDoctors.sort((a, b) =>
+      (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en")
+    );
+  })();
 
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
@@ -404,7 +474,7 @@ const DepartmentDetail = () => {
                         </p>
                         {sub.sections.map((section, j) => (
                           <div key={j} className="mb-4">
-                            <h4 className="font-serif text-sm text-foreground mb-2">{section.title}</h4>
+                            <h4 className="font-serif font-bold text-foreground mb-2">{section.title}</h4>
                             {section.content && (
                               <p className="font-body text-sm text-muted-foreground leading-relaxed mb-2 whitespace-pre-line">
                                 {section.content}
@@ -422,12 +492,12 @@ const DepartmentDetail = () => {
                             )}
                           </div>
                         ))}
-                        <Link
+                        {/* <Link
                           to={`/medical-services/${dept.slug}/${sub.slug}`}
                           className="inline-flex items-center gap-2 text-accent font-body text-xs tracking-wide hover:underline mt-2"
                         >
                           View Full Details <ChevronRight className="w-3.5 h-3.5" />
-                        </Link>
+                        </Link> */}
                       </motion.div>
                     )}
                   </div>

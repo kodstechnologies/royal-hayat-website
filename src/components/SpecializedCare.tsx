@@ -24,7 +24,7 @@ const services: ServiceItem[] = [
     num: "01", name: "Obstetrics & Gynecology", nameAr: "التوليد وأمراض النساء",
     desc: "Complete maternity care from prenatal through postpartum recovery, supported by healthcare professionals.",
     descAr: "رعاية أمومة شاملة من ما قبل الولادة حتى التعافي بعدها، بدعم من أكثر من 600 متخصص.",
-    img: "https://res.cloudinary.com/dwhc8kzpv/image/upload/q_auto/f_auto/v1776418841/2_kdo31l.jpg",
+    img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Obstetrics+%26+Gynecology/2.JPG",
     department: "Obstetrics & Gynecology",
     subspecialties: [
       { name: "Women's Health", nameAr: "صحة المرأة" },
@@ -39,7 +39,7 @@ const services: ServiceItem[] = [
     num: "02", name: "Family Medicine", nameAr: "طب الأسرة",
     desc: "Continuous, personalized care for individuals and families of all ages with coordinated health management.",
     descAr: "رعاية مستمرة ومخصصة للأفراد والعائلات من جميع الأعمار مع إدارة صحية منسقة.",
-    img: "https://res.cloudinary.com/dwhc8kzpv/image/upload/q_auto/f_auto/v1776410298/1_vcivez.jpg",
+    img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Family+Medicine/1.jpg",
     department: "Family Medicine",
     subspecialties: [],
   },
@@ -47,7 +47,7 @@ const services: ServiceItem[] = [
     num: "03", name: "Al Safwa Healthcare Program", nameAr: "برنامج الصفوة للرعاية الصحية",
     desc: "Personalized executive health program with premium screening, dedicated coordinators, and elegant private suites.",
     descAr: "برنامج صحي تنفيذي مخصص مع فحوصات متميزة ومنسقين مخصصين وأجنحة خاصة أنيقة.",
-    img: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&h=250&fit=crop",
+    img: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=250&fit=cropp",
     department: "Al Safwa Healthcare Program",
     subspecialties: [],
   },
@@ -55,7 +55,7 @@ const services: ServiceItem[] = [
     num: "04", name: "Dental Clinic", nameAr: "عيادة الأسنان",
     desc: "Exceptional dental care in a luxurious setting with specialized dentists using advanced technology for all ages.",
     descAr: "رعاية أسنان استثنائية في بيئة فاخرة مع أطباء متخصصين يستخدمون تقنيات متقدمة لجميع الأعمار.",
-    img: "https://res.cloudinary.com/dwhc8kzpv/image/upload/q_auto/f_auto/v1776341941/3_hjykck.jpg",
+    img: "/images/Department/Dental.jpg",
     department: "Dental Clinic",
     subspecialties: [],
   },
@@ -63,7 +63,7 @@ const services: ServiceItem[] = [
     num: "05", name: "Reproductive Medicine & IVF", nameAr: "الطب التناسلي وأطفال الأنابيب",
     desc: "Advanced fertility treatments blending expertise with cutting-edge technology, including IVF, ICSI, and genetic diagnosis.",
     descAr: "علاجات خصوبة متقدمة تجمع بين الخبرة والتكنولوجيا المتطورة، بما في ذلك أطفال الأنابيب والحقن المجهري.",
-    img: "https://res.cloudinary.com/dwhc8kzpv/image/upload/q_auto/f_auto/v1776421052/2_f1yt2d.jpg",
+    img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Reproductive+Medicine+%26+IVF/2.jpg",
     department: "IVF & Reproductive Medicine",
     subspecialties: [
       { name: "IVF Treatment", nameAr: "أطفال الأنابيب" },
@@ -76,7 +76,7 @@ const services: ServiceItem[] = [
     num: "06", name: "Pain Management", nameAr: "إدارة الألم",
     desc: "Comprehensive program offering advanced, compassionate care for acute and chronic pain to restore comfort and functionality.",
     descAr: "برنامج شامل يقدم رعاية متقدمة ورحيمة للألم الحاد والمزمن لاستعادة الراحة والوظائف.",
-    img: "https://res.cloudinary.com/dwhc8kzpv/image/upload/q_auto/f_auto/v1776341973/1_euvkse.jpg",
+    img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Pain+Management/1.jpg",
     department: "Pain Management",
     subspecialties: [],
   },
@@ -84,7 +84,7 @@ const services: ServiceItem[] = [
     num: "07", name: "Pediatrics", nameAr: "طب الأطفال",
     desc: "World-class pediatric care with warmth and a child-centered approach, from infancy through adolescence.",
     descAr: "رعاية أطفال عالمية المستوى بدفء ونهج محوره الطفل، من الرضاعة حتى المراهقة.",
-    img: "https://res.cloudinary.com/dwhc8kzpv/image/upload/q_auto/f_auto/v1776341215/2_zdqayn.jpg",
+    img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Pediatrics/2.JPG",
     department: "Pediatrics",
     subspecialties: [
       { name: "Pediatric Intensive Care Unit (PICU)", nameAr: "وحدة العناية المركزة للأطفال" },
@@ -94,7 +94,7 @@ const services: ServiceItem[] = [
     num: "08", name: "Anesthesia", nameAr: "التخدير",
     desc: "Top-tier anesthesia services ensuring patient safety and comfort for all surgical and childbirth procedures.",
     descAr: "خدمات تخدير عالية المستوى تضمن سلامة المريض وراحته لجميع الإجراءات الجراحية والولادة.",
-    img: "https://res.cloudinary.com/dwhc8kzpv/image/upload/q_auto/f_auto/v1776342086/1_ucnzxm.jpg",
+    img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Anesthesia/1.JPG",
     department: "Anesthesia",
     subspecialties: [],
   },
@@ -102,7 +102,7 @@ const services: ServiceItem[] = [
     num: "09", name: "Neonatal", nameAr: "حديثي الولادة",
     desc: "Level III Neonatal Unit — the highest in Kuwait's private sector — offering specialized care for premature and critically ill infants.",
     descAr: "وحدة حديثي الولادة من المستوى الثالث — الأعلى في القطاع الخاص بالكويت.",
-    img: "https://res.cloudinary.com/dwhc8kzpv/image/upload/q_auto/f_auto/v1776341286/1_cig453.jpg",
+    img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Neonatal/1.jpg",
     department: "Neonatal",
     subspecialties: [
       { name: "Special Care Baby Unit (SCBU)", nameAr: "وحدة العناية الخاصة بالمواليد" },
@@ -112,7 +112,7 @@ const services: ServiceItem[] = [
     num: "10", name: "Intensive Care", nameAr: "العناية المركزة",
     desc: "Round-the-clock monitoring and care for severe, life-threatening conditions with cutting-edge technology.",
     descAr: "مراقبة ورعاية على مدار الساعة للحالات الحرجة المهددة للحياة بأحدث التقنيات.",
-    img: "https://res.cloudinary.com/dwhc8kzpv/image/upload/q_auto/f_auto/v1776342130/1_lc2cxx.jpg",
+    img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Intensive+Care/1.jpg",
     department: "Intensive Care",
     subspecialties: [],
   },
@@ -120,7 +120,7 @@ const services: ServiceItem[] = [
     num: "11", name: "Internal Medicine", nameAr: "الطب الباطني",
     desc: "Comprehensive diagnosis and treatment of complex adult diseases with personalized health check programs.",
     descAr: "تشخيص وعلاج شامل لأمراض البالغين المعقدة مع برامج فحص صحي مخصصة.",
-    img: "https://res.cloudinary.com/dwhc8kzpv/image/upload/q_auto/f_auto/v1776410489/1_eb6qdw.jpg",
+    img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Internal+Medicine/1.jpg",
     department: "Internal Medicine",
     subspecialties: [
       { name: "Cardiology", nameAr: "أمراض القلب" },
@@ -135,7 +135,7 @@ const services: ServiceItem[] = [
     num: "12", name: "Center for Diagnostic Imaging", nameAr: "مركز التصوير التشخيصي",
     desc: "Advanced diagnostic and image-guided therapeutic services combining expert professionals with state-of-the-art technology.",
     descAr: "خدمات تشخيصية وعلاجية موجهة بالتصوير تجمع بين متخصصين وتقنيات حديثة.",
-    img: "https://images.unsplash.com/photo-1530497610245-94d3c16cda28?w=400&h=250&fit=crop",
+    img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Center+for+Diagnostic+Imaging/1.JPG",
     department: "Center for Diagnostic Imaging",
     subspecialties: [
       { name: "The Abdominal & Women's Imaging", nameAr: "تصوير البطن والمرأة" },
@@ -151,7 +151,7 @@ const services: ServiceItem[] = [
     num: "13", name: "General & Laparoscopic Surgery", nameAr: "الجراحة العامة والمنظار",
     desc: "Exceptional surgical care blending expert skills with advanced technology for precision, safety, and quick recovery.",
     descAr: "رعاية جراحية استثنائية تجمع بين المهارات والتكنولوجيا المتقدمة.",
-    img: "https://res.cloudinary.com/dwhc8kzpv/image/upload/q_auto/f_auto/v1776341611/1_jbry60.jpg",
+    img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/General+%26+Laparoscopic+Surgery/1.JPG",
     department: "General & Laparoscopic Surgery",
     subspecialties: [
       { name: "Obesity Bariatric Surgery", nameAr: "جراحة السمنة" },
@@ -164,7 +164,7 @@ const services: ServiceItem[] = [
     num: "14", name: "Laboratory Services", nameAr: "خدمات المختبر",
     desc: "CAP-accredited laboratory providing gold-standard diagnostic testing and pathology services.",
     descAr: "مختبر معتمد من CAP يقدم فحوصات تشخيصية وخدمات علم الأمراض بأعلى المعايير.",
-    img: "https://res.cloudinary.com/dwhc8kzpv/image/upload/q_auto/f_auto/v1776342209/1_z8wzox.jpg",
+    img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Laboratory+Services/1.jpg",
     department: "Laboratory Services",
     subspecialties: [],
   },
@@ -172,7 +172,7 @@ const services: ServiceItem[] = [
     num: "15", name: "Plastic Surgery & Cosmetology", nameAr: "الجراحة التجميلية",
     desc: "Internationally certified physicians offering advanced surgical and non-surgical cosmetic and reconstructive solutions.",
     descAr: "أطباء معتمدون دولياً يقدمون حلولاً تجميلية وترميمية جراحية وغير جراحية متقدمة.",
-    img: "https://res.cloudinary.com/dwhc8kzpv/image/upload/q_auto/f_auto/v1776341728/3_b7dnxl.jpg",
+    img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Plastic+Surgery/3.JPG",
     department: "Plastic Surgery & Cosmetology",
     subspecialties: [],
   },
@@ -180,7 +180,7 @@ const services: ServiceItem[] = [
     num: "16", name: "Royale Hayat Pharmacy", nameAr: "صيدلية رويال حياة",
     desc: "Comprehensive pharmacy services ensuring safe and effective medication management for all patients.",
     descAr: "خدمات صيدلية شاملة تضمن إدارة آمنة وفعالة للأدوية لجميع المرضى.",
-    img: "https://images.unsplash.com/photo-1585435557343-3b092031a831?w=400&h=250&fit=crop",
+    img: "/images/Department/Pharmacy.jpg",
     department: "Royale Hayat Pharmacy",
     subspecialties: [],
   },
@@ -188,7 +188,7 @@ const services: ServiceItem[] = [
     num: "17", name: "Dermatology", nameAr: "الأمراض الجلدية",
     desc: "Expert care for all dermatological needs combining clinical excellence with the latest advances for adults and children.",
     descAr: "رعاية متخصصة لجميع احتياجات الأمراض الجلدية مع أحدث التطورات.",
-    img: "https://res.cloudinary.com/dwhc8kzpv/image/upload/q_auto/f_auto/v1776341783/1_h3erol.jpg",
+    img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Dermatology/1.JPG",
     department: "Dermatology",
     subspecialties: [],
   },
@@ -196,7 +196,7 @@ const services: ServiceItem[] = [
     num: "18", name: "Clinical Pharmacy", nameAr: "الصيدلة السريرية",
     desc: "Expert pharmaceutical care integrated with clinical teams for optimal medication therapy outcomes.",
     descAr: "رعاية صيدلانية متخصصة مدمجة مع الفرق السريرية لتحقيق أفضل نتائج العلاج الدوائي.",
-    img: "https://res.cloudinary.com/dwhc8kzpv/image/upload/q_auto/f_auto/v1776342251/1_ygmlze.jpg",
+    img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Clinical+Pharmacy/1.jpg",
     department: "Clinical Pharmacy",
     subspecialties: [],
   },
@@ -204,7 +204,7 @@ const services: ServiceItem[] = [
     num: "19", name: "ENT (Ear, Nose & Throat)", nameAr: "الأنف والأذن والحنجرة",
     desc: "Expert care for conditions affecting the ear, nose, throat, head, and neck with both medical and surgical expertise.",
     descAr: "رعاية متخصصة لأمراض الأنف والأذن والحنجرة والرأس والرقبة بخبرات طبية وجراحية.",
-    img: "https://res.cloudinary.com/dwhc8kzpv/image/upload/q_auto/f_auto/v1776341874/1_muikcx.jpg",
+    img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/ENT+(Ear%2C+Nose+%26+Throat)/1.jpg",
     department: "ENT (Ear, Nose & Throat)",
     subspecialties: [],
   },
@@ -212,7 +212,7 @@ const services: ServiceItem[] = [
     num: "20", name: "Royale Home Health", nameAr: "رويال للرعاية المنزلية",
     desc: "Premium medical care delivered in the comfort and privacy of your home by certified professionals.",
     descAr: "رعاية طبية متميزة تُقدم في راحة وخصوصية منزلك من قبل متخصصين معتمدين.",
-    img: "https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?w=400&h=250&fit=crop",
+    img: "/images/Department/home-health.jpg",
     department: "Royale Home Health",
     subspecialties: [],
   },
@@ -339,9 +339,86 @@ const SpecializedCare = () => {
           {reorderedServices.map((s) => {
             const origIdx = getOriginalIndex(s);
             const isExpanded = expandedIndex === origIdx;
-            const deptDoctors = getDeptDoctors(s.department);
-            const showImageCard = isInFirstSix(origIdx);
             const selectedSubSlug = selectedSubByService[s.num];
+            const deptDoctors = (() => {
+              const aliases = deptDoctorAliases[s.department] || [s.department];
+              const extraTerms: string[] = [];
+              if (s.name === "Internal Medicine") {
+                extraTerms.push("Nutricare");
+              } else if (s.name === "General & Laparoscopic Surgery") {
+                extraTerms.push("Nutricare", "La Cosmetique");
+              }
+              const allTerms = [...aliases, ...extraTerms];
+              const allDeptDoctors = doctors.filter((d) =>
+                allTerms.some(a => d.department.includes(a) || d.specialty.includes(a))
+              );
+
+              if (selectedSubSlug && s.subspecialties && s.subspecialties.length > 0) {
+                const subSpecialtyDoctorMap: Record<string, string[]> = {
+                  // Internal Medicine subs
+                  "cardiology": ["alturki", "turki"],
+                  "nephrology": ["qallaf"],
+                  "gastroenterology": ["swait", "jaser"],
+                  "endocrinology-and-metabolism": ["ramadhan", "alroudhan", "roudhan"],
+                  "rheumatology": ["aldei", "dei"],
+                  "clinical-nutrition-and-dietetics": ["hachem", "khreis", "salamah"],
+                  "respiratory-clinic-pulmonology": ["alia", "ibrahim"],
+                  "allergy-and-immunology": ["othman", "yassmin"],
+                  // OB/GYN subs
+                  "cosmetic-gynecology": ["abubakr", "elmardi", "nada", "samar", "nagaty"],
+                  "gynecologic-oncology": ["nourah-al-ibrahim"],
+                  "urogynecology": ["abubakr", "elmardi", "nada"],
+                  "women-s-health": [], // All OBGYN doctors
+                  "physiotherapy": [],
+                  "parent-and-childbirth-education": [],
+                  // General & Laparoscopic Surgery subs
+                  "obesity-bariatric-surgery": ["ahmed-al-mulla", "mulla", "humoud", "alrasheedi", "hussein", "faour", "sulaiman", "almazeedi"],
+                  "breast-surgical-oncology": ["noha", "alsaleh"],
+                  "abdominal-wall-reconstruction": ["humoud", "alrasheedi", "sarah", "youha"],
+                  "nutrition-and-diet-surgery": ["hachem", "khreis", "salamah"],
+                };
+
+                // Try explicit map first
+                const mapKey = Object.keys(subSpecialtyDoctorMap).find(
+                  (k) => selectedSubSlug.includes(k) || k.includes(selectedSubSlug)
+                );
+
+                if (mapKey && subSpecialtyDoctorMap[mapKey].length > 0) {
+                  const keywords = subSpecialtyDoctorMap[mapKey];
+                  const filtered = allDeptDoctors.filter((doc) =>
+                    keywords.some((kw) => doc.id.toLowerCase().includes(kw) || doc.name.toLowerCase().includes(kw))
+                  );
+                  if (filtered.length > 0) {
+                    return [...filtered].sort((a, b) =>
+                      (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en")
+                    );
+                  }
+                }
+
+                // Fallback: keyword match on title/specialty
+                const selectedSub = s.subspecialties.find(
+                  (sub) => getSubSlug(s, sub.name) === selectedSubSlug
+                );
+                if (selectedSub) {
+                  const subKeywords = selectedSub.name.toLowerCase().split(/[\s&,/()+]+/).filter(w => w.length > 3);
+                  const filtered = allDeptDoctors.filter((doc) => {
+                    const haystack = `${doc.title} ${doc.specialty} ${doc.titleAr} ${doc.id}`.toLowerCase();
+                    return subKeywords.some((kw) => haystack.includes(kw));
+                  });
+                  if (filtered.length > 0) {
+                    return [...filtered].sort((a, b) =>
+                      (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en")
+                    );
+                  }
+                }
+              }
+
+              return [...allDeptDoctors]
+                .sort((a, b) => (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en"))
+                .slice(0, 3);
+            })();
+
+            const showImageCard = isInFirstSix(origIdx);
             const departmentSlug = getDepartmentSlug(s);
 
             return (

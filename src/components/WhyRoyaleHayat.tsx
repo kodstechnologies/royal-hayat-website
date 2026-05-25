@@ -24,9 +24,9 @@ const WhyRoyaleHayat = () => {
               {/* <img src="https://res.cloudinary.com/dwhc8kzpv/image/upload/v1777546445/DSC08672_zc7pu9.jpg" alt="Luxury hospital suite at Royale Hayat" className="w-full h-auto" loading="lazy" width={1280} height={960} /> */}
 
               <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.5, duration: 0.6 }}
-                className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 bg-primary rounded-xl px-6 py-4 sm:px-8 sm:py-5 text-center shadow-2xl">
-                <p className="text-2xl sm:text-3xl font-serif text-primary-foreground">86%</p>
-                <p className="text-[10px] sm:text-xs tracking-[0.2em] uppercase font-body text-primary-foreground/80">{t("patientSatisfaction")}</p>
+                className="absolute bottom-2 right-2 sm:bottom-3 sm:right-3 bg-primary/90 backdrop-blur-sm rounded-md px-2 py-1 sm:px-2.5 sm:py-1.5 text-center shadow-md">
+                <p className="text-sm sm:text-base font-serif text-primary-foreground leading-tight mb-0">86%</p>
+                <p className="text-[7px] sm:text-[8px] tracking-[0.12em] uppercase font-body text-primary-foreground/90 leading-tight">{t("patientSatisfaction")}</p>
               </motion.div>
             </div>
           </ScrollAnimationWrapper>

@@ -23,38 +23,56 @@ const Header = () => {
   const lastScrollY = useRef(0);
   const headerRef = useRef<HTMLElement>(null);
   const logoRowRef = useRef<HTMLDivElement>(null);
-  const logoRowHeight = useRef(88);
-  const [logoHeight, setLogoHeight] = useState(88);
-
+  const navRowRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const handleScroll = () => {
       const currentY = window.scrollY;
+      const isMobile = window.matchMedia("(max-width: 1023px)").matches;
+
+      // Mobile: keep logo nav + action bar fixed; only close menu on scroll
+      if (isMobile) {
+        if (currentY > lastScrollY.current && currentY > 80) {
+          setMenuOpen(false);
+        }
+        lastScrollY.current = currentY;
+        return;
+      }
+
       if (currentY > lastScrollY.current && currentY > 80) {
-        setHeaderVisible(false); // scrolling down → hide
+        setHeaderVisible(false); // desktop: scrolling down → hide logo row
+        setMenuOpen(false);
       } else {
-        setHeaderVisible(true);  // scrolling up → show
+        setHeaderVisible(true);
       }
       lastScrollY.current = currentY;
     };
+    const handleResize = () => {
+      if (window.matchMedia("(max-width: 1023px)").matches) {
+        setHeaderVisible(true);
+      }
+    };
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
   useEffect(() => {
     const updateHeaderHeight = () => {
       if (headerRef.current) {
         const fullHeight = headerRef.current.offsetHeight;
-        if (logoRowRef.current) {
-          logoRowHeight.current = logoRowRef.current.offsetHeight;
-          setLogoHeight(logoRowRef.current.offsetHeight);
-        }
-        // Use the total height for the layout padding to ensure stability
         document.documentElement.style.setProperty('--header-height', `${fullHeight}px`);
       }
     };
     updateHeaderHeight();
     const observer = new ResizeObserver(updateHeaderHeight);
     if (headerRef.current) observer.observe(headerRef.current);
-    return () => observer.disconnect();
+    window.addEventListener("resize", updateHeaderHeight);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", updateHeaderHeight);
+    };
   }, [headerVisible]);
 
 
@@ -291,9 +309,9 @@ const Header = () => {
     <>
       <header
         ref={headerRef}
-        className="bg-popover border-b border-border fixed top-0 left-0 right-0 z-50 transition-transform duration-300 ease-in-out"
-        style={{ transform: headerVisible ? "translateY(0)" : `translateY(-${logoHeight}px)` }}
+        className="bg-popover border-b border-border fixed top-0 left-0 right-0 z-50"
       >
+        <div className="lg:overflow-visible">
         {/* Search Popup */}
         <AnimatePresence>
           {searchOpen && (
@@ -356,8 +374,15 @@ const Header = () => {
           )}
         </AnimatePresence>
 
-        {/* Row 1: Logo */}
-        <div ref={logoRowRef} className="hidden md:block border-b border-border/50">
+        {/* Row 1: Logo — collapses on scroll (desktop) so no empty gap remains */}
+        <div
+          ref={logoRowRef}
+          className={`hidden md:block border-b border-border/50 transition-all duration-300 ease-in-out overflow-hidden ${
+            headerVisible
+              ? "md:max-h-[240px] md:opacity-100"
+              : "md:max-h-0 md:opacity-0 md:border-b-0 md:pointer-events-none"
+          }`}
+        >
           <div className="container mx-auto flex items-center justify-between py-2.5 md:py-3 px-4 md:px-6 gap-3">
             <div className="flex-1 flex items-center justify-start">
               {/* Language capsule toggle EN | العربية */}
@@ -401,7 +426,7 @@ const Header = () => {
         </div>
 
         {/* Row 2: Navigation bar */}
-        <div className="container mx-auto flex items-center justify-between py-1.5 px-3 md:py-2 md:px-6 gap-2 md:gap-4">
+        <div ref={navRowRef} className="container mx-auto flex items-center justify-between py-1.5 px-3 md:py-2 md:px-6 gap-2 md:gap-4">
           {/* Mobile logo — always visible, left-aligned, smaller */}
           <Link to="/" className="md:hidden flex-shrink-0">
             <img src={logoFull} alt="Royale Hayat Hospital" className="h-7 w-auto" />
@@ -444,7 +469,7 @@ const Header = () => {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 8 }}
                       transition={{ duration: 0.2 }}
-                      className={`absolute top-full mt-2 bg-popover border border-border rounded-2xl shadow-2xl z-50 p-6 ${
+                      className={`absolute top-full mt-2 bg-popover border border-border rounded-2xl shadow-2xl z-[100] p-6 ${
                         lang === "ar"
                           ? "right-0"
                           : item.hasDropdown === "patients"
@@ -668,25 +693,34 @@ const Header = () => {
                       )}
                     </AnimatePresence>
                   </div>
-                  );
-                })}
-                <Link
-                  to="/book-appointment"
-                  className="text-primary font-body text-sm tracking-wide py-3 border-b border-border/50 hover:text-accent transition-colors"
-                  onClick={(e) => { setMenuOpen(false); handleBookAppointmentClick(e); }}
-                >
-                  {t("bookAppointment")}
-                </Link>
-                <button
-                  className="text-left text-foreground font-body text-sm tracking-wide py-3 border-b border-border/50 hover:text-accent transition-colors"
-                  onClick={() => { setMenuOpen(false); setShowMedRecordsModal(true); }}
-                >
-                  {t("login")}
-                </button>
+                );
+              })}
               </nav>
             </motion.div>
           )}
         </AnimatePresence>
+        </div>
+
+        {/* Row 3 (Action Bar): fixed with logo nav on mobile */}
+        <div className="lg:hidden border-t border-border bg-popover shadow-sm">
+          <div className="flex w-full divide-x divide-border rtl:divide-x-reverse">
+            <Link
+              to="/book-appointment"
+              onClick={handleBookAppointmentClick}
+              className="flex-1 py-3 flex items-center justify-center gap-2 font-body text-xs font-bold text-[#816107] hover:bg-muted/20 transition-colors tracking-wide"
+            >
+              <Stethoscope className="w-4 h-4 text-[#816107]" />
+              <span>{t("bookAppointment")}</span>
+            </Link>
+            <button
+              onClick={() => setShowMedRecordsModal(true)}
+              className="flex-1 py-3 flex items-center justify-center gap-2 font-body text-xs font-bold text-foreground hover:bg-muted/20 transition-colors tracking-wide"
+            >
+              <ClipboardList className="w-4 h-4 text-primary" />
+              <span>{t("login")}</span>
+            </button>
+          </div>
+        </div>
 
       </header>
 

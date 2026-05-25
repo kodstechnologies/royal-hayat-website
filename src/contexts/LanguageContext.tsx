@@ -79,7 +79,7 @@ const translations: Translations = {
   // Hospitality
   premiumExperience: { en: "Premium Experience", ar: "تجربة متميزة" },
   hospitalityServicesTitle: { en: "Hospitality Services", ar: "خدمات الضيافة" },
-  hospitalityDesc: { en: "Experience luxury healthcare like never before. Our hospitality services ensure every patient and family member feels welcomed, comfortable, and cared for throughout their stay.", ar: "اختبر الرعاية الصحية الفاخرة كما لم تختبرها من قبل. تضمن خدمات الضيافة لدينا أن يشعر كل مريض وأفراد عائلته بالترحيب والراحة والرعاية طوال إقامتهم." },
+  hospitalityDesc: { en: "Experience exclusive healthcare like never before. Our hospitality services ensure every patient and family member feels welcomed, comfortable, and cared for throughout their stay.", ar: "اختبر الرعاية الصحية الفاخرة كما لم تختبرها من قبل. تضمن خدمات الضيافة لدينا أن يشعر كل مريض وأفراد عائلته بالترحيب والراحة والرعاية طوال إقامتهم." },
   exploreHospitality: { en: "Explore Hospitality", ar: "استكشف الضيافة" },
   vipSuites: { en: "Luxury Suites", ar: "أجنحة فاخرة" },
   vipSuitesDesc: { en: "Luxuriously appointed private suites with premium amenities and dedicated staff.", ar: "أجنحة خاصة فاخرة مع وسائل راحة متميزة وطاقم مخصص." },

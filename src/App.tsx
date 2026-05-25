@@ -66,15 +66,15 @@ const alJouriHallImages = [
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/al-jouri-halls/DSC08998_tgjegx.jpg.jpeg",
 ];
 const orchidSuiteImages = [
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776942128/DSC08664_nlaap5.jpg",
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776942138/DSC08673_vojwry.jpg",
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776942143/DSC08672_ubs2ca.jpg",
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776942182/DSC08687_z3gvtd.jpg",
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776942278/DSC08688_upvgue.jpg",
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776942280/DSC08691_z9yijg.jpg",
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776942287/DSC08695_s9cbl3.jpg",
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776942313/DSC08698_raphu7.jpg",
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776942314/DSC08710_yomu0q.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/suites-orchid/DSC08664.jpg.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/suites-orchid/DSC08673.jpg.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/suites-orchid/DSC08672.jpg.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/suites-orchid/DSC08687.jpg.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/suites-orchid/DSC08688.jpg.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/suites-orchid/DSC08691.jpg.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/suites-orchid/DSC08695.jpg.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/suites-orchid/DSC08698.jpg.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/suites-orchid/DSC08710.jpg.jpeg",
 ];
 const spaImages = [
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/royal-spa/DSC09782.JPG",
@@ -225,18 +225,18 @@ const workWithUsHospitalityWeekImages: string[] = [
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/hospitality/7_cgiufp.jpg"
 ];
 const workWithUsRhhQuizImages: string[] = [
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776936376/DSC07156_qsfg84.jpg",
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776936381/DSC07159_d7zezu.jpg",
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776936399/DSC07164_zzzwsl.jpg",
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776936401/DSC07198_o4iaj1.jpg",
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776936465/DSC07223_my0qra.jpg",
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776936488/DSC07237_qepj8e.jpg",
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776937025/DSC07245_lekpdn.jpg",
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776937031/DSC07253_l8amlp.jpg",
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776937033/DSC07310_jl3tfo.jpg",
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776937037/DSC07357_wdp2ax.jpg",
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776937047/DSC07379_tqgj4d.jpg",
-  "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776937052/DSC07389_bt9tzt.jpg"
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/rhh-quiz/DSC07156.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/rhh-quiz/DSC07159.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/rhh-quiz/DSC07164.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/rhh-quiz/DSC07198.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/rhh-quiz/DSC07223.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/rhh-quiz/DSC07237.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/rhh-quiz/DSC07245.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/rhh-quiz/DSC07253.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/rhh-quiz/DSC07310.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/rhh-quiz/DSC07357.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/rhh-quiz/DSC07379.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/rhh-quiz/DSC07389.JPG"
 ];
 
 const App = () => (

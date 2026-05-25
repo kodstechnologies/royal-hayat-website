@@ -20,14 +20,11 @@ import PatientsQuickLinks from "@/components/PatientsQuickLinks";
 import Footer from "@/components/Footer";
 import ChatButton from "@/components/ChatButton";
 import ScrollToTop from "@/components/ScrollToTop";
-import { doctors } from "@/data/doctors";
+import { getFeaturedDoctors } from "@/data/doctors";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const Index = () => {
-  // Exclude Clinical Pharmacy and specific administrative/support doctors from the featured homepage list
-  const featuredDoctors = doctors
-    .filter(doc => doc.id !== "dr-mustafa-alfiki" && doc.specialty?.toLowerCase() !== "clinical pharmacy")
-    .slice(0, 12);
+  const featuredDoctors = getFeaturedDoctors();
   const { lang } = useLanguage();
 
   // Preload doctor images for instant loading in DoctorsSection

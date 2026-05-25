@@ -32,6 +32,10 @@ import {
   type IdentityStatusResponse,
 } from "@/api/identity";
 import { subscribeToIdentityVerification } from "@/api/identitySocket";
+import {
+  extractPatientId,
+  getPatientLookupUserMessage,
+} from "@/utils/patientLookupErrors";
 import { doctorsWithClinicCodes as staticDoctors } from "@/data/doctorsWithClinicCodes";
 import { departments as staticDepts, deptDoctorAliases, MAIN_CATEGORIES } from "@/data/departments";
 import { Calendar as DatePickerCalendar } from "@/components/ui/calendar";
@@ -421,6 +425,8 @@ const BookAppointment = () => {
   const [verifiedPersonName, setVerifiedPersonName] = useState<{ english: string; arabic: string } | null>(null);
   const [verifyOperationId, setVerifyOperationId] = useState<string | null>(null);
   const [isWaitingForApproval, setIsWaitingForApproval] = useState(false);
+  const [isConfirmingPatientRecord, setIsConfirmingPatientRecord] = useState(false);
+  const [patientLookupOfferFirstTime, setPatientLookupOfferFirstTime] = useState(false);
   const verifySocketCleanupRef = useRef<(() => void) | null>(null);
   const verificationDoneRef = useRef(false);
   const [verifiedIdentityDetails, setVerifiedIdentityDetails] = useState<VerifiedIdentityDetails | null>(null);
@@ -757,6 +763,182 @@ const BookAppointment = () => {
     };
   };
 
+  const closeReturningPatientModal = () => {
+    verifySocketCleanupRef.current?.();
+    verifySocketCleanupRef.current = null;
+    setIsWaitingForApproval(false);
+    setIsConfirmingPatientRecord(false);
+    setPatientLookupOfferFirstTime(false);
+    setVerifyOperationId(null);
+    setShowReturningPatientModal(false);
+  };
+
+  const openReturningPatientModal = () => {
+    setNationalId("");
+    setNationalIdError("");
+    setVerifiedPersonName(null);
+    setVerifyOperationId(null);
+    setIsWaitingForApproval(false);
+    setIsConfirmingPatientRecord(false);
+    setPatientLookupOfferFirstTime(false);
+    verifySocketCleanupRef.current?.();
+    verifySocketCleanupRef.current = null;
+    setVerifiedIdentityDetails(null);
+    setShowReturningPatientModal(true);
+  };
+
+  const loadVerifiedIdentityDetails = useCallback(
+    async (civilIdForData: string, pickedName: string) => {
+      try {
+        const identityDataResponse = await getIdentityData(civilIdForData);
+        const rawData = (identityDataResponse?.raw || identityDataResponse?.identityData || {}) as Record<
+          string,
+          unknown
+        >;
+        const rawName = (rawData?.name || {}) as Record<string, unknown>;
+        const nameFromRaw = rawData?.name
+          ? (isAr
+              ? String(rawName.arabic || rawName.ar || rawName.english || rawName.en || "")
+              : String(rawName.english || rawName.en || rawName.arabic || rawName.ar || ""))
+          : pickedName;
+        const nationalityObj = (rawData?.nationality || {}) as Record<string, unknown>;
+        const nationalityNameObj = (nationalityObj?.name || {}) as Record<string, unknown>;
+        const nationalityName = nationalityObj?.name
+          ? (isAr
+              ? String(nationalityNameObj.arabic || nationalityNameObj.english || "")
+              : String(nationalityNameObj.english || nationalityNameObj.arabic || ""))
+          : "";
+        const registration = (rawData?.registration || {}) as Record<string, unknown>;
+
+        setVerifiedIdentityDetails({
+          name: nameFromRaw || pickedName || "—",
+          dateOfBirth: rawData?.dateOfBirth
+            ? new Date(String(rawData.dateOfBirth)).toLocaleDateString(isAr ? "ar-KW" : "en-GB")
+            : "—",
+          civilIdNumber: String(rawData?.civilId || civilIdForData || "—"),
+          nationality: nationalityName || String(nationalityObj?.iso3Letter || "—"),
+          gender: String(rawData?.sex || "—"),
+          passportNumber: String(registration?.passport || "—"),
+        });
+      } catch (err) {
+        console.error("Failed to load identity details for display:", err);
+      }
+    },
+    [isAr]
+  );
+
+  const resetPatientLookupFailure = useCallback(() => {
+    verificationDoneRef.current = false;
+    setIsWaitingForApproval(false);
+    setVerifyOperationId(null);
+    setPatientName("");
+    setPatientType(null);
+    setPatientId(null);
+    setVerifiedPersonName(null);
+    setVerifiedIdentityDetails(null);
+  }, []);
+
+  const finalizeRegisteredPatientAfterPaci = useCallback(
+    async (params: {
+      civilId: string;
+      pickedName: string;
+      names: { english: string; arabic: string };
+    }): Promise<boolean> => {
+      setIsConfirmingPatientRecord(true);
+      setPatientLookupOfferFirstTime(false);
+      setNationalIdError("");
+
+      try {
+        const pRes = await getPatient({ nationalid: params.civilId });
+        const patientId = extractPatientId(pRes?.data?.patient);
+        if (!pRes.success || !patientId) {
+          throw { response: { data: { meta: { code: "PATIENT_NOT_FOUND" }, message: "Error: Patient not found" } } };
+        }
+
+        await loadVerifiedIdentityDetails(params.civilId, params.pickedName);
+
+        setPatientId(patientId);
+        setPatientName(params.pickedName);
+        setPatientType("returning");
+        setVerifiedPersonName(params.names);
+
+        setIsWaitingForApproval(false);
+        setVerifyOperationId(null);
+        verifySocketCleanupRef.current?.();
+        verifySocketCleanupRef.current = null;
+        setShowReturningPatientModal(false);
+        return true;
+      } catch (err) {
+        console.error("Hospital patient lookup failed:", err);
+        const { text, offerFirstTime } = getPatientLookupUserMessage(err, t);
+        setNationalIdError(text);
+        setPatientLookupOfferFirstTime(offerFirstTime);
+        resetPatientLookupFailure();
+        return false;
+      } finally {
+        setIsConfirmingPatientRecord(false);
+      }
+    },
+    [loadVerifiedIdentityDetails, resetPatientLookupFailure, t]
+  );
+
+  /** Close Civil ID modal and return to returning / first-time choice (step before national ID). */
+  const goBackFromPatientLookupModal = () => {
+    verificationDoneRef.current = false;
+    setPatientLookupOfferFirstTime(false);
+    setNationalIdError("");
+    setNationalId("");
+    setIsWaitingForApproval(false);
+    setIsConfirmingPatientRecord(false);
+    setVerifyOperationId(null);
+    verifySocketCleanupRef.current?.();
+    verifySocketCleanupRef.current = null;
+    setPatientType(null);
+    setPatientName("");
+    setPatientId(null);
+    setVerifiedPersonName(null);
+    setVerifiedIdentityDetails(null);
+    setShowReturningPatientModal(false);
+  };
+
+  const completeVerificationFromStatus = useCallback(
+    async (statusData: IdentityStatusResponse) => {
+      if (statusData?.status === "pending") return;
+
+      if (statusData?.verified === false) {
+        setNationalIdError(
+          isAr ? "لم يتم التحقق. يرجى المحاولة مرة أخرى." : "Verification was not approved. Please try again."
+        );
+        setIsWaitingForApproval(false);
+        setVerifyOperationId(null);
+        return;
+      }
+
+      const names = extractVerifiedName(statusData);
+      const hasName = Boolean(names.english || names.arabic);
+      if (!hasName) {
+        setNationalIdError(
+          isAr ? "تمت الموافقة ولكن لا يوجد اسم متاح حالياً." : "Approved but no name is available yet."
+        );
+        setIsWaitingForApproval(false);
+        return;
+      }
+
+      const pickedName = isAr ? (names.arabic || names.english) : (names.english || names.arabic);
+      const civilId = (statusData?.civilId || nationalId.trim()).trim();
+      if (!civilId) {
+        setNationalIdError(
+          isAr ? "لم يتم استلام الرقم المدني." : "Civil ID was not received from verification."
+        );
+        setIsWaitingForApproval(false);
+        return;
+      }
+
+      await finalizeRegisteredPatientAfterPaci({ civilId, pickedName, names });
+    },
+    [finalizeRegisteredPatientAfterPaci, isAr, nationalId]
+  );
+
   const handleNationalIdVerify = async () => {
     const civilId = nationalId.trim();
     if (!/^\d{12}$/.test(civilId)) {
@@ -765,6 +947,7 @@ const BookAppointment = () => {
     }
     setIsVerifyingNationalId(true);
     setNationalIdError("");
+    setPatientLookupOfferFirstTime(false);
     setVerifiedPersonName(null);
     setVerifyOperationId(null);
     setIsWaitingForApproval(false);
@@ -775,13 +958,9 @@ const BookAppointment = () => {
       const response = await startIdentityVerification({
         civilId,
         serviceName: { ar: "تجربة", en: "Service Test" },
-        reason: { ar: "تجربة", en: "test" }
+        reason: { ar: "تجربة", en: "test" },
       });
 
-      // USER REQUEST: Always call push notification api/flow. 
-      // Even if already verified, we want to show the 'Check Approval' button for demonstration/testing.
-
-      // Handle error responses that resolve without throwing (success: false)
       if (response?.success === false) {
         const metaType: string = response?.meta?.type ?? "";
         if (metaType.includes("too-many-requests")) {
@@ -792,7 +971,6 @@ const BookAppointment = () => {
           );
           return;
         }
-        // Generic failure (validation errors, etc.)
         setNationalIdError(
           isAr
             ? "بيانات غير صحيحة، يرجى المحاولة مرة أخرى."
@@ -807,27 +985,16 @@ const BookAppointment = () => {
         return;
       }
 
-      // If no operationId but already verified (backend returned data)
-      // we still treat it as successful but the user specifically asked to always call push notification api.
-      // For the mock ID, our API now returns an operationId anyway.
       const names = extractVerifiedName(response);
       const hasName = Boolean(names.english || names.arabic);
       if (response?.verified === true && hasName) {
         const pickedName = isAr ? (names.arabic || names.english) : (names.english || names.arabic);
-        setPatientName(pickedName);
-        setPatientType("returning");
-
-        try {
-          const pRes = await getPatient({ nationalid: civilId });
-          if (pRes.success && pRes.data?.patient?.patient_id) {
-            setPatientId(pRes.data.patient.patient_id);
-          }
-        } catch (err) {
-          console.error("Failed to fetch patient data:", err);
-        }
-
-        setShowReturningPatientModal(false);
-        return;
+        const registered = await finalizeRegisteredPatientAfterPaci({
+          civilId,
+          pickedName,
+          names,
+        });
+        if (registered) return;
       }
 
       setNationalIdError(
@@ -836,17 +1003,11 @@ const BookAppointment = () => {
           : "Could not verify right now. Complete Hawyti authentication and try again."
       );
     } catch (error: unknown) {
-      const statusCode = (error as any)?.response?.status;
-      const apiMessage = (error as any)?.response?.data?.message;
-     const apiType =
-  (error as any)?.response?.data?.meta?.type ?? "";
+      const statusCode = (error as { response?: { status?: number; data?: { message?: string; meta?: { type?: string } } } })
+        ?.response?.status;
+      const apiType = (error as { response?: { data?: { meta?: { type?: string } } } })?.response?.data?.meta?.type ?? "";
 
-      // Too-many-requests from PACI
-     const isTooMany =
-  statusCode === 400 &&
-  typeof apiType === "string" &&
-  apiType.includes("too-many-requests");
-
+      const isTooMany = statusCode === 400 && typeof apiType === "string" && apiType.includes("too-many-requests");
       if (isTooMany) {
         setNationalIdError(
           isAr
@@ -856,11 +1017,7 @@ const BookAppointment = () => {
         return;
       }
 
-      // Validation error (empty errors object or failed to start)
-    const isValidation400 =
-  statusCode === 400 &&
-  !apiType.includes("too-many-requests");
-
+      const isValidation400 = statusCode === 400 && !apiType.includes("too-many-requests");
       if (isValidation400) {
         setNationalIdError(
           isAr
@@ -1026,17 +1183,18 @@ const BookAppointment = () => {
     verifySocketCleanupRef.current?.();
     verifySocketCleanupRef.current = null;
     setIsWaitingForApproval(false);
+    setIsConfirmingPatientRecord(false);
+    setPatientLookupOfferFirstTime(false);
     setVerifyOperationId(null);
     setShowReturningPatientModal(false);
-    setBookingPath("primary"); // Go to department selection
+    setBookingPath("primary");
     setStep(0);
     setPatientType(null);
     setPatientName("");
+    setPatientId(null);
     setNationalId("");
     setNationalIdError("");
     setVerifiedPersonName(null);
-    setVerifyOperationId(null);
-    setIsWaitingForApproval(false);
     setVerifiedIdentityDetails(null);
   };
 
@@ -1846,10 +2004,11 @@ Clinic Code:`;
                   type="text"
                   inputMode="numeric"
                   value={nationalId}
-                  disabled={isWaitingForApproval}
+                  disabled={isWaitingForApproval || isConfirmingPatientRecord}
                   onChange={(e) => {
                     setNationalId(e.target.value.replace(/\D/g, "").slice(0, 12));
                     setNationalIdError("");
+                    setPatientLookupOfferFirstTime(false);
                     setVerifiedPersonName(null);
                     setVerifiedIdentityDetails(null);
                   }}
@@ -1857,14 +2016,34 @@ Clinic Code:`;
                   className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 disabled:opacity-60 ${nationalIdError ? "border-destructive" : "border-border"}`}
                 />
                 {nationalIdError && <p className="font-body text-xs text-destructive mt-2">{nationalIdError}</p>}
+                {patientLookupOfferFirstTime && !isWaitingForApproval && !isConfirmingPatientRecord && (
+                  <button
+                    type="button"
+                    onClick={goBackFromPatientLookupModal}
+                    className="mt-3 w-full bg-secondary/40 text-foreground px-4 py-3 rounded-xl font-body text-xs tracking-widest uppercase hover:bg-secondary/60 transition-colors inline-flex items-center justify-center gap-2"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    {t("patientLookupGoBack")}
+                  </button>
+                )}
               </div>
 
-              {isWaitingForApproval ? (
-                <div className="mt-6 flex flex-col items-center justify-center py-8">
+              {isVerifyingNationalId ? (
+                <div className="mt-6 flex flex-col items-center justify-center py-6 rounded-2xl border border-border/70 bg-muted/20 px-4">
                   <Loader2 className="w-10 h-10 animate-spin text-accent" />
-                  <p className="font-body text-xs text-muted-foreground mt-4">
-                    {isAr ? "جارِ انتظار الموافقة..." : "Waiting for approval..."}
+                  <p className="font-body text-sm text-foreground mt-4 text-center">{t("identitySendingRequest")}</p>
+                </div>
+              ) : isWaitingForApproval || isConfirmingPatientRecord ? (
+                <div className="mt-6 flex flex-col items-center justify-center py-8 rounded-2xl border border-accent/20 bg-accent/5 px-4">
+                  <Loader2 className="w-10 h-10 animate-spin text-accent" />
+                  <p className="font-body text-sm font-medium text-foreground mt-4 text-center">
+                    {isConfirmingPatientRecord ? t("identityConfirmingHospitalRecord") : t("identityWaitingTitle")}
                   </p>
+                  {!isConfirmingPatientRecord && (
+                    <p className="font-body text-xs text-muted-foreground mt-2 text-center max-w-md leading-relaxed">
+                      {t("identityWaitingBody")}
+                    </p>
+                  )}
                 </div>
               ) : (
                 <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -1891,7 +2070,7 @@ Clinic Code:`;
                 </div>
               )}
 
-              {isWaitingForApproval && (
+              {(isWaitingForApproval || isConfirmingPatientRecord) && (
                 <div className="mt-3">
                   <button
                     onClick={goToInitialBookingScreen}

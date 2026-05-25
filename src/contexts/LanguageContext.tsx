@@ -344,6 +344,42 @@ const translations: Translations = {
     en: "Open the Kuwait Mobile ID (Hawyti) app on your phone and approve the authentication request. This page will update automatically when you finish.",
     ar: "افتح تطبيق الهوية الرقمية (هويتي) على هاتفك ووافق على طلب المصادقة. سيتم تحديث هذه الصفحة تلقائياً بعد إتمام الموافقة.",
   },
+  identityConfirmingHospitalRecord: {
+    en: "Checking your hospital registration…",
+    ar: "جارِ التحقق من تسجيلك في المستشفى…",
+  },
+  patientNotFoundAfterPaci: {
+    en: "You were verified in Kuwait Mobile ID, but you are not registered as a patient at Royale Hayat. Please book as a first-time patient or contact reception.",
+    ar: "تم التحقق من هويتك عبر هويتي، لكنك غير مسجل كمريض في رويال حياة. يرجى الحجز كمريض لأول مرة أو التواصل مع الاستقبال.",
+  },
+  patientDuplicateNationalId: {
+    en: "Multiple patient records were found for this Civil ID. Please contact reception to resolve this before booking.",
+    ar: "تم العثور على أكثر من سجل مريض لهذا الرقم المدني. يرجى التواصل مع الاستقبال قبل الحجز.",
+  },
+  patientMergedUrn: {
+    en: "This patient record has been merged. Please contact reception for assistance.",
+    ar: "تم دمج سجل المريض. يرجى التواصل مع الاستقبال للمساعدة.",
+  },
+  patientInactiveOrMerged: {
+    en: "This patient record is inactive or merged and cannot be used for online booking. Please contact reception.",
+    ar: "سجل المريض غير نشط أو تم دمجه ولا يمكن استخدامه للحجز عبر الإنترنت. يرجى التواصل مع الاستقبال.",
+  },
+  patientInputTooLong: {
+    en: "The Civil ID entered is too long. Please enter a valid 12-digit Civil ID.",
+    ar: "الرقم المدني المدخل طويل جداً. يرجى إدخال رقم مدني صحيح مكون من 12 رقمًا.",
+  },
+  patientLookupUnavailable: {
+    en: "The hospital registration system is temporarily unavailable. Please try again in a few minutes.",
+    ar: "نظام تسجيل المرضى غير متاح مؤقتاً. يرجى المحاولة مرة أخرى بعد قليل.",
+  },
+  patientLookupFailed: {
+    en: "Could not confirm your hospital registration. Please try again or contact reception.",
+    ar: "تعذر التحقق من تسجيلك في المستشفى. يرجى المحاولة مرة أخرى أو التواصل مع الاستقبال.",
+  },
+  bookAsFirstTimePatient: {
+    en: "Book as first-time patient",
+    ar: "الحجز كمريض لأول مرة",
+  },
   dontSeeInsurance: { en: "Don't see your insurance provider?", ar: "لا ترى شركة التأمين الخاصة بك؟" },
   contactUs: { en: "Contact us", ar: "اتصل بنا" },
   toVerifyCoverage: { en: "to verify your coverage.", ar: "للتحقق من تغطيتك." },

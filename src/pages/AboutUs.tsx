@@ -159,7 +159,7 @@ const LeaderCard = ({ leader, lang }: { leader: typeof leaders[0] & { image?: st
   const name = lang === "ar" ? leader.nameAr : leader.nameEn;
   const role = lang === "ar" ? leader.roleAr : leader.roleEn;
   const credentials = lang === "ar" ? leader.credentialsAr : leader.credentialsEn;
-  const bio = lang === "ar" ? leader.bioAr : leader.bioEn; .3
+  const bio = lang === "ar" ? leader.bioAr : leader.bioEn;
   const roles = role.split("\n");
   const mobileImageOverride: Record<string, string> = {
     "Dr. Abubakr Elmardi": "https://royal-hayat.s3.eu-central-1.amazonaws.com/leadership/abubkar.jpeg",
@@ -221,7 +221,12 @@ const LeaderCard = ({ leader, lang }: { leader: typeof leaders[0] & { image?: st
           </div>
           <div className={`space-y-3 overflow-hidden transition-all duration-500 ${expanded ? "max-h-[2000px]" : "max-h-[100px]"}`}>
             {bio.map((p, i) => (
-              <p key={i} className="font-body text-sm text-muted-foreground leading-relaxed text-justify">{p}</p>
+              <p
+                key={i}
+                className="font-body text-sm text-muted-foreground leading-relaxed text-start md:text-justify break-words"
+              >
+                {p}
+              </p>
             ))}
           </div>
           {bio.length > 1 && (

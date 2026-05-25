@@ -1316,18 +1316,26 @@ Clinic Code:`;
               )}
             </AnimatePresence>
 
-            <div className="flex items-center justify-between">
-              <button onClick={() => { setBookingPath(null); setSymptomChips([]); setSymptomText(""); }}
-                className="flex items-center gap-2 text-muted-foreground font-body text-sm hover:text-foreground transition-colors">
-                <ArrowLeft className="w-4 h-4" /> {t("previous")}
+            <div className="flex flex-nowrap items-center justify-between gap-3 sm:gap-4">
+              <button
+                onClick={() => { setBookingPath(null); setSymptomChips([]); setSymptomText(""); }}
+                className="flex shrink-0 items-center gap-1.5 text-muted-foreground font-body text-xs sm:text-sm hover:text-foreground transition-colors"
+              >
+                <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                <span className="whitespace-nowrap">{t("previous")}</span>
               </button>
-              <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={handleSymptomAnalyze}
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={handleSymptomAnalyze}
                 disabled={symptomChips.length === 0 && !symptomText.trim() || symptomAnalyzing}
-                className={`flex items-center gap-2 px-6 py-2.5 rounded-lg font-body text-xs tracking-widest uppercase transition-all ${(symptomChips.length > 0 || symptomText.trim()) && !symptomAnalyzing
+                className={`flex shrink-0 items-center gap-1.5 px-3 py-2 sm:px-5 sm:py-2.5 rounded-lg font-body text-[10px] sm:text-xs tracking-wide sm:tracking-widest uppercase whitespace-nowrap transition-all ${(symptomChips.length > 0 || symptomText.trim()) && !symptomAnalyzing
                   ? "bg-primary text-primary-foreground hover:bg-primary/90"
                   : "bg-muted text-muted-foreground cursor-not-allowed"
-                  }`}>
-                <Sparkles className="w-3.5 h-3.5" /> {t("analyzeSymptoms")}
+                  }`}
+              >
+                <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
+                {t("analyzeSymptoms")}
               </motion.button>
             </div>
           </div>

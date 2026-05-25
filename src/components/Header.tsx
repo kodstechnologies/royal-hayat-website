@@ -27,16 +27,36 @@ const Header = () => {
   useEffect(() => {
     const handleScroll = () => {
       const currentY = window.scrollY;
+      const isMobile = window.matchMedia("(max-width: 1023px)").matches;
+
+      // Mobile: keep logo nav + action bar fixed; only close menu on scroll
+      if (isMobile) {
+        if (currentY > lastScrollY.current && currentY > 80) {
+          setMenuOpen(false);
+        }
+        lastScrollY.current = currentY;
+        return;
+      }
+
       if (currentY > lastScrollY.current && currentY > 80) {
-        setHeaderVisible(false); // scrolling down → hide
+        setHeaderVisible(false); // desktop: scrolling down → hide logo row
         setMenuOpen(false);
       } else {
-        setHeaderVisible(true);  // scrolling up → show
+        setHeaderVisible(true);
       }
       lastScrollY.current = currentY;
     };
+    const handleResize = () => {
+      if (window.matchMedia("(max-width: 1023px)").matches) {
+        setHeaderVisible(true);
+      }
+    };
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
   useEffect(() => {
     const updateHeaderHeight = () => {
@@ -291,13 +311,7 @@ const Header = () => {
         ref={headerRef}
         className="bg-popover border-b border-border fixed top-0 left-0 right-0 z-50"
       >
-        <div
-          className={`transition-all duration-300 ease-in-out max-lg:overflow-hidden lg:overflow-visible ${
-            headerVisible
-              ? "max-lg:max-h-[min(80vh,600px)] max-lg:opacity-100"
-              : "max-lg:max-h-0 max-lg:opacity-0 max-lg:pointer-events-none"
-          }`}
-        >
+        <div className="lg:overflow-visible">
         {/* Search Popup */}
         <AnimatePresence>
           {searchOpen && (
@@ -687,8 +701,8 @@ const Header = () => {
         </AnimatePresence>
         </div>
 
-        {/* Row 3 (Action Bar): slides up into nav place when scrolled (mobile) */}
-        <div className={`lg:hidden bg-popover shadow-sm border-border ${headerVisible ? "border-t" : "border-b"}`}>
+        {/* Row 3 (Action Bar): fixed with logo nav on mobile */}
+        <div className="lg:hidden border-t border-border bg-popover shadow-sm">
           <div className="flex w-full divide-x divide-border rtl:divide-x-reverse">
             <Link
               to="/book-appointment"

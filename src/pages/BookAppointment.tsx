@@ -763,29 +763,29 @@ const BookAppointment = () => {
     };
   };
 
-  const closeReturningPatientModal = () => {
-    verifySocketCleanupRef.current?.();
-    verifySocketCleanupRef.current = null;
-    setIsWaitingForApproval(false);
-    setIsConfirmingPatientRecord(false);
-    setPatientLookupOfferFirstTime(false);
-    setVerifyOperationId(null);
-    setShowReturningPatientModal(false);
-  };
+  // const closeReturningPatientModal = () => {
+  //   verifySocketCleanupRef.current?.();
+  //   verifySocketCleanupRef.current = null;
+  //   setIsWaitingForApproval(false);
+  //   setIsConfirmingPatientRecord(false);
+  //   setPatientLookupOfferFirstTime(false);
+  //   setVerifyOperationId(null);
+  //   setShowReturningPatientModal(false);
+  // };
 
-  const openReturningPatientModal = () => {
-    setNationalId("");
-    setNationalIdError("");
-    setVerifiedPersonName(null);
-    setVerifyOperationId(null);
-    setIsWaitingForApproval(false);
-    setIsConfirmingPatientRecord(false);
-    setPatientLookupOfferFirstTime(false);
-    verifySocketCleanupRef.current?.();
-    verifySocketCleanupRef.current = null;
-    setVerifiedIdentityDetails(null);
-    setShowReturningPatientModal(true);
-  };
+  // const openReturningPatientModal = () => {
+  //   setNationalId("");
+  //   setNationalIdError("");
+  //   setVerifiedPersonName(null);
+  //   setVerifyOperationId(null);
+  //   setIsWaitingForApproval(false);
+  //   setIsConfirmingPatientRecord(false);
+  //   setPatientLookupOfferFirstTime(false);
+  //   verifySocketCleanupRef.current?.();
+  //   verifySocketCleanupRef.current = null;
+  //   setVerifiedIdentityDetails(null);
+  //   setShowReturningPatientModal(true);
+  // };
 
   const loadVerifiedIdentityDetails = useCallback(
     async (civilIdForData: string, pickedName: string) => {
@@ -901,43 +901,43 @@ const BookAppointment = () => {
     setShowReturningPatientModal(false);
   };
 
-  const completeVerificationFromStatus = useCallback(
-    async (statusData: IdentityStatusResponse) => {
-      if (statusData?.status === "pending") return;
+  // const completeVerificationFromStatus = useCallback(
+  //   async (statusData: IdentityStatusResponse) => {
+  //     if (statusData?.status === "pending") return;
 
-      if (statusData?.verified === false) {
-        setNationalIdError(
-          isAr ? "لم يتم التحقق. يرجى المحاولة مرة أخرى." : "Verification was not approved. Please try again."
-        );
-        setIsWaitingForApproval(false);
-        setVerifyOperationId(null);
-        return;
-      }
+  //     if (statusData?.verified === false) {
+  //       setNationalIdError(
+  //         isAr ? "لم يتم التحقق. يرجى المحاولة مرة أخرى." : "Verification was not approved. Please try again."
+  //       );
+  //       setIsWaitingForApproval(false);
+  //       setVerifyOperationId(null);
+  //       return;
+  //     }
 
-      const names = extractVerifiedName(statusData);
-      const hasName = Boolean(names.english || names.arabic);
-      if (!hasName) {
-        setNationalIdError(
-          isAr ? "تمت الموافقة ولكن لا يوجد اسم متاح حالياً." : "Approved but no name is available yet."
-        );
-        setIsWaitingForApproval(false);
-        return;
-      }
+  //     const names = extractVerifiedName(statusData);
+  //     const hasName = Boolean(names.english || names.arabic);
+  //     if (!hasName) {
+  //       setNationalIdError(
+  //         isAr ? "تمت الموافقة ولكن لا يوجد اسم متاح حالياً." : "Approved but no name is available yet."
+  //       );
+  //       setIsWaitingForApproval(false);
+  //       return;
+  //     }
 
-      const pickedName = isAr ? (names.arabic || names.english) : (names.english || names.arabic);
-      const civilId = (statusData?.civilId || nationalId.trim()).trim();
-      if (!civilId) {
-        setNationalIdError(
-          isAr ? "لم يتم استلام الرقم المدني." : "Civil ID was not received from verification."
-        );
-        setIsWaitingForApproval(false);
-        return;
-      }
+  //     const pickedName = isAr ? (names.arabic || names.english) : (names.english || names.arabic);
+  //     const civilId = (statusData?.civilId || nationalId.trim()).trim();
+  //     if (!civilId) {
+  //       setNationalIdError(
+  //         isAr ? "لم يتم استلام الرقم المدني." : "Civil ID was not received from verification."
+  //       );
+  //       setIsWaitingForApproval(false);
+  //       return;
+  //     }
 
-      await finalizeRegisteredPatientAfterPaci({ civilId, pickedName, names });
-    },
-    [finalizeRegisteredPatientAfterPaci, isAr, nationalId]
-  );
+  //     await finalizeRegisteredPatientAfterPaci({ civilId, pickedName, names });
+  //   },
+  //   [finalizeRegisteredPatientAfterPaci, isAr, nationalId]
+  // );
 
   const handleNationalIdVerify = async () => {
     const civilId = nationalId.trim();
@@ -1137,8 +1137,9 @@ const BookAppointment = () => {
 
       try {
         const pRes = await getPatient({ nationalid: nationalId });
-        if (pRes.success && pRes.data?.patient?.patient_id) {
-          setPatientId(pRes.data.patient.patient_id);
+        const patientId = extractPatientId(pRes?.data?.patient);
+        if (pRes.success && patientId) {
+          setPatientId(patientId);
         }
       } catch (err) {
         console.error("Failed to fetch patient data:", err);

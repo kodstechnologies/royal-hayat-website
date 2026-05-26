@@ -21,6 +21,7 @@ import ChatButton from "@/components/ChatButton";
 import ScrollToTop from "@/components/ScrollToTop";
 import { getFeaturedDoctors } from "@/data/doctors";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useEffect } from "react";
 
 const Index = () => {
   const featuredDoctors = getFeaturedDoctors();

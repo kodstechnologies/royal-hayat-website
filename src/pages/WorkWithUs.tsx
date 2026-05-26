@@ -9,6 +9,13 @@ import VoicesFromOurPeople from "@/components/VoicesFromOurPeople.tsx";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getAllJobs, type JobPosting } from "@/api/job";
+import { getAllWorkCulture, type WorkCultureItem } from "@/api/workCulture";
+import { getAllCSR, type CSRItem } from "@/api/csr";
+import {
+  getAllEmployeeRecognitions,
+  achievementsTextToLines,
+  type EmployeeRecognition,
+} from "@/api/employeeRecognition";
 import {
   Heart,
   Sparkles,
@@ -22,7 +29,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -37,10 +44,33 @@ type Position = {
 };
 
 type WorkWithUsProps = {
-  staffActivitiesImages: string[];
-  galaDinnerImages: string[];
-  hospitalityWeekImages: string[];
-  rhhQuizImages: string[];
+  staffActivitiesImages?: string[];
+  galaDinnerImages?: string[];
+  hospitalityWeekImages?: string[];
+  rhhQuizImages?: string[];
+};
+
+type Employee = {
+  id: string;
+  name: string;
+  nameAr: string;
+  dept: string;
+  deptAr: string;
+  role: string;
+  roleAr: string;
+  image: string;
+  achievements: string[];
+  achievementsAr: string[];
+};
+
+type GalleryCarousel = {
+  id: string;
+  titleEn: string;
+  titleAr: string;
+  subtitleEn: string;
+  subtitleAr: string;
+  images: string[];
+  variant?: "muted";
 };
 
 const toCarouselPhotos = (label: string, images: string[]): LifePhoto[] => {
@@ -53,8 +83,9 @@ const toCarouselPhotos = (label: string, images: string[]): LifePhoto[] => {
   }));
 };
 
-const employees = [
+const EXISTING_EMPLOYEES: Employee[] = [
   {
+    id: "ranga-tara-mahawan",
     name: "Rangaa Tara Mahawan",
     nameAr: "رانغا تارا مهاوان",
     dept: "Guest Relation Department",
@@ -73,6 +104,7 @@ const employees = [
     ],
   },
   {
+    id: "mohammad-niyaz-salam",
     name: "Mohammad Niyaz Salam",
     nameAr: "محمد نياز سلام",
     dept: "Call Center Department",
@@ -92,11 +124,134 @@ const employees = [
   },
 ];
 
+const normalizeName = (name: string) => name.trim().toLowerCase();
+
+const mapRecognitionToEmployee = (item: EmployeeRecognition): Employee => {
+  const lines = achievementsTextToLines(item.achievements ?? "");
+  const achievements = lines.length > 0 ? lines : [item.achievements].filter(Boolean);
+  return {
+    id: item._id ?? item.employeeId ?? item.employeeName,
+    name: item.employeeName,
+    nameAr: item.employeeName,
+    dept: item.department ?? "",
+    deptAr: item.department ?? "",
+    role: item.title,
+    roleAr: item.title,
+    image: item.image ?? "",
+    achievements,
+    achievementsAr: achievements,
+  };
+};
+
+const mergeApiEmployees = (
+  apiItems: EmployeeRecognition[],
+  existing: Employee[],
+): Employee[] => {
+  const existingNames = new Set(
+    existing.flatMap((employee) => [
+      normalizeName(employee.name),
+      normalizeName(employee.nameAr),
+    ]),
+  );
+
+  return apiItems
+    .filter((item) => item.visibilityStatus !== "hide")
+    .map(mapRecognitionToEmployee)
+    .filter(
+      (employee) =>
+        !existingNames.has(normalizeName(employee.name)) &&
+        !existingNames.has(normalizeName(employee.nameAr)),
+    );
+};
+
+const mapContentToCarousel = (
+  item: WorkCultureItem | CSRItem,
+  variant?: "muted",
+): GalleryCarousel => ({
+  id: item._id ?? item.heading,
+  titleEn: item.heading,
+  titleAr: item.headingArabic,
+  subtitleEn: item.description,
+  subtitleAr: item.descriptionArabic,
+  images: item.images ?? [],
+  variant,
+});
+
+const normalizeHeading = (heading: string) => heading.trim().toLowerCase();
+
+const buildExistingWorkCultureCarousels = (
+  staffActivitiesImages: string[],
+  galaDinnerImages: string[],
+  hospitalityWeekImages: string[],
+  rhhQuizImages: string[],
+): GalleryCarousel[] => [
+  {
+    id: "staff-activities",
+    titleEn: "Staff Activities — Volley Ball Tournament",
+    titleAr: "أنشطة الموظفين — بطولة الكرة الطائرة",
+    subtitleEn:
+      "Achievements are acknowledged—because effort, excellence, and ethical conduct matter.",
+    subtitleAr:
+      "يُعترف بالإنجازات — لأن الجهد والتميّز والسلوك الأخلاقي أمور تهم.",
+    images: staffActivitiesImages,
+  },
+  {
+    id: "gala-dinner",
+    titleEn: "Gala Dinner",
+    titleAr: "حفل العشاء السنوي",
+    subtitleEn: "A night of elegance, gratitude and celebration.",
+    subtitleAr: "ليلة من الأناقة، الامتنان والاحتفال.",
+    images: galaDinnerImages,
+    variant: "muted",
+  },
+  {
+    id: "hospitality-week",
+    titleEn: "Hospitality Week",
+    titleAr: "أسبوع الضيافة",
+    subtitleEn:
+      "A week devoted to the hospitality spirit that defines Royale Hayat.",
+    subtitleAr: "أسبوع مكرّس لروح الضيافة التي تميّز رويال حياة.",
+    images: hospitalityWeekImages,
+  },
+  {
+    id: "rhh-quiz",
+    titleEn: "RHH Quiz",
+    titleAr: "مسابقة RHH",
+    subtitleEn: "Fun, friendly competition across teams.",
+    subtitleAr: "مرح ومنافسة ودي بين الفرق.",
+    images: rhhQuizImages,
+    variant: "muted",
+  },
+];
+
+const mergeApiWorkCulture = (
+  apiItems: WorkCultureItem[],
+  existing: GalleryCarousel[],
+): GalleryCarousel[] => {
+  const existingHeadings = new Set(
+    existing.flatMap((carousel) => [
+      normalizeHeading(carousel.titleEn),
+      normalizeHeading(carousel.titleAr),
+    ]),
+  );
+
+  return apiItems
+    .map((item, index) =>
+      mapContentToCarousel(item, index % 2 === 1 ? "muted" : undefined),
+    )
+    .filter(
+      (carousel) =>
+        !existingHeadings.has(normalizeHeading(carousel.titleEn)) &&
+        !existingHeadings.has(normalizeHeading(carousel.titleAr)),
+    )
+    .map((carousel) => ({ ...carousel, id: `api-${carousel.id}` }));
+};
+
 const WorkWithUs = ({
-  staffActivitiesImages,
-  galaDinnerImages,
-  hospitalityWeekImages,
-  rhhQuizImages,
+  staffActivitiesImages = [],
+  galaDinnerImages = [],
+  hospitalityWeekImages = [],
+  rhhQuizImages = [],
 }: WorkWithUsProps) => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
@@ -104,16 +259,98 @@ const WorkWithUs = ({
   const [positions, setPositions] = useState<Position[]>([]);
   const [jobsLoading, setJobsLoading] = useState(true);
   const [jobsError, setJobsError] = useState(false);
+  const [apiEmployees, setApiEmployees] = useState<Employee[]>([]);
+  const [employeesApiLoading, setEmployeesApiLoading] = useState(true);
+
+  const displayEmployees = useMemo(
+    () => [...EXISTING_EMPLOYEES, ...apiEmployees],
+    [apiEmployees],
+  );
+  const [apiWorkCultureCarousels, setApiWorkCultureCarousels] = useState<
+    GalleryCarousel[]
+  >([]);
+  const [workCultureApiLoading, setWorkCultureApiLoading] = useState(true);
+  const [csrCarousels, setCsrCarousels] = useState<GalleryCarousel[]>([]);
+  const [csrLoading, setCsrLoading] = useState(true);
+
+  const existingWorkCultureCarousels = useMemo(
+    () =>
+      buildExistingWorkCultureCarousels(
+        staffActivitiesImages,
+        galaDinnerImages,
+        hospitalityWeekImages,
+        rhhQuizImages,
+      ),
+    [
+      staffActivitiesImages,
+      galaDinnerImages,
+      hospitalityWeekImages,
+      rhhQuizImages,
+    ],
+  );
   const [empIndex, setEmpIndex] = useState(0);
   const [isEmpPaused, setIsEmpPaused] = useState(false);
 
   useEffect(() => {
-    if (isEmpPaused || employees.length <= 1) return;
+    if (isEmpPaused || displayEmployees.length <= 1) return;
     const timer = setInterval(() => {
-      setEmpIndex((prev) => (prev + 1) % employees.length);
+      setEmpIndex((prev) => (prev + 1) % displayEmployees.length);
     }, 5000);
     return () => clearInterval(timer);
-  }, [isEmpPaused]);
+  }, [isEmpPaused, displayEmployees.length]);
+
+  useEffect(() => {
+    if (empIndex >= displayEmployees.length) {
+      setEmpIndex(0);
+    }
+  }, [displayEmployees.length, empIndex]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadCultureContent = async () => {
+      setWorkCultureApiLoading(true);
+      setCsrLoading(true);
+      setEmployeesApiLoading(true);
+      try {
+        const [workCulture, csrItems, recognitions] = await Promise.all([
+          getAllWorkCulture(),
+          getAllCSR(),
+          getAllEmployeeRecognitions(),
+        ]);
+        if (cancelled) return;
+
+        setApiWorkCultureCarousels(
+          mergeApiWorkCulture(workCulture, existingWorkCultureCarousels),
+        );
+
+        setCsrCarousels(
+          csrItems.map((item, index) =>
+            mapContentToCarousel(item, index % 2 === 1 ? "muted" : undefined),
+          ),
+        );
+
+        setApiEmployees(mergeApiEmployees(recognitions, EXISTING_EMPLOYEES));
+      } catch {
+        if (!cancelled) {
+          setApiWorkCultureCarousels([]);
+          setCsrCarousels([]);
+          setApiEmployees([]);
+        }
+      } finally {
+        if (!cancelled) {
+          setWorkCultureApiLoading(false);
+          setCsrLoading(false);
+          setEmployeesApiLoading(false);
+        }
+      }
+    };
+
+    void loadCultureContent();
+    return () => {
+      cancelled = true;
+    };
+  }, [existingWorkCultureCarousels]);
   const categoriesScrollRef = useRef<HTMLDivElement | null>(null);
   const [searchParams] = useSearchParams();
   const section = searchParams.get("section");
@@ -372,9 +609,10 @@ const WorkWithUs = ({
               onMouseEnter={() => setIsEmpPaused(true)}
               onMouseLeave={() => setIsEmpPaused(false)}
             >
+              {displayEmployees.length > 0 && (
               <AnimatePresence mode="wait">
                 <motion.div
-                  key={empIndex}
+                  key={displayEmployees[empIndex]?.id ?? empIndex}
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
@@ -383,30 +621,36 @@ const WorkWithUs = ({
                 >
                   <div className="flex flex-col md:flex-row">
                     <div className="md:w-96 flex-shrink-0 bg-primary/5 p-6 flex items-center justify-center">
-                      <img
-                        src={employees[empIndex].image}
-                        alt={employees[empIndex].name}
-                        className="w-full h-[400px] object-cover rounded-2xl"
-                      />
+                      {displayEmployees[empIndex]?.image ? (
+                        <img
+                          src={displayEmployees[empIndex].image}
+                          alt={displayEmployees[empIndex].name}
+                          className="w-full h-[400px] object-cover rounded-2xl"
+                        />
+                      ) : (
+                        <div className="w-full h-[400px] rounded-2xl bg-muted flex items-center justify-center">
+                          <Award className="w-16 h-16 text-muted-foreground/40" />
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex-1 p-6 md:p-8">
                       <h3 className="font-serif text-2xl text-foreground mb-1">
                         {isAr
-                          ? employees[empIndex].nameAr
-                          : employees[empIndex].name}
+                          ? displayEmployees[empIndex].nameAr
+                          : displayEmployees[empIndex].name}
                       </h3>
 
                       <p className="font-body text-xs text-accent uppercase tracking-wide mb-2">
                         {isAr
-                          ? employees[empIndex].deptAr
-                          : employees[empIndex].dept}
+                          ? displayEmployees[empIndex].deptAr
+                          : displayEmployees[empIndex].dept}
                       </p>
 
                       <p className="font-body text-sm text-accent mb-5">
                         {isAr
-                          ? employees[empIndex].roleAr
-                          : employees[empIndex].role}
+                          ? displayEmployees[empIndex].roleAr
+                          : displayEmployees[empIndex].role}
                       </p>
 
                       <div>
@@ -416,8 +660,8 @@ const WorkWithUs = ({
 
                         <div className="space-y-4 text-sm text-muted-foreground leading-relaxed font-body">
                           {(isAr
-                            ? employees[empIndex].achievementsAr
-                            : employees[empIndex].achievements
+                            ? displayEmployees[empIndex].achievementsAr
+                            : displayEmployees[empIndex].achievements
                           ).map((ach, idx) => (
                             <p key={idx}>{ach}</p>
                           ))}
@@ -427,16 +671,24 @@ const WorkWithUs = ({
                   </div>
                 </motion.div>
               </AnimatePresence>
+              )}
+
+              {employeesApiLoading && (
+                <p className="text-center font-body text-xs text-muted-foreground mt-4">
+                  {isAr ? "جاري تحميل المزيد..." : "Loading more recognitions..."}
+                </p>
+              )}
 
               {/* Navigation Arrows */}
-              {employees.length > 1 && (
+              {displayEmployees.length > 1 && (
                 <>
                   <button
                     type="button"
                     onClick={() =>
                       setEmpIndex(
                         (prev) =>
-                          (prev - 1 + employees.length) % employees.length,
+                          (prev - 1 + displayEmployees.length) %
+                          displayEmployees.length,
                       )
                     }
                     aria-label={isAr ? "السابق" : "Previous"}
@@ -447,7 +699,9 @@ const WorkWithUs = ({
                   <button
                     type="button"
                     onClick={() =>
-                      setEmpIndex((prev) => (prev + 1) % employees.length)
+                      setEmpIndex(
+                        (prev) => (prev + 1) % displayEmployees.length,
+                      )
                     }
                     aria-label={isAr ? "التالي" : "Next"}
                     className="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 active:scale-95 [webkit-tap-highlight-color:transparent]"
@@ -458,71 +712,82 @@ const WorkWithUs = ({
               )}
 
               {/* counter */}
-              <div className="flex items-center justify-center gap-3 mt-5">
-                <span className="font-body text-xs text-muted-foreground tracking-widest">
-                  {String(empIndex + 1).padStart(2, "0")} /{" "}
-                  {String(employees.length).padStart(2, "0")}
-                </span>
-              </div>
+              {displayEmployees.length > 0 && (
+                <div className="flex items-center justify-center gap-3 mt-5">
+                  <span className="font-body text-xs text-muted-foreground tracking-widest">
+                    {String(empIndex + 1).padStart(2, "0")} /{" "}
+                    {String(displayEmployees.length).padStart(2, "0")}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </section>
       )}
 
-      {/* Staff Activities (includes Volley Ball Tournament photos) */}
-      {showSection("culture") && (
-        <LifePhotoCarousel
-          title={
-            isAr
-              ? "أنشطة الموظفين — بطولة الكرة الطائرة"
-              : "Staff Activities — Volley Ball Tournament"
-          }
-          subtitle={
-            isAr
-              ? "يُعترف بالإنجازات — لأن الجهد والتميّز والسلوك الأخلاقي أمور تهم."
-              : "Achievements are acknowledged—because effort, excellence, and ethical conduct matter."
-          }
-          photos={toCarouselPhotos(
-            "Staff Activities — Volley Ball Tournament",
-            staffActivitiesImages,
-          )}
-        />
+      {/* Work culture galleries — existing images + API additions */}
+      {showSection("culture") &&
+        existingWorkCultureCarousels.map((carousel) => (
+          <LifePhotoCarousel
+            key={carousel.id}
+            variant={carousel.variant}
+            title={isAr ? carousel.titleAr : carousel.titleEn}
+            subtitle={isAr ? carousel.subtitleAr : carousel.subtitleEn}
+            photos={toCarouselPhotos(
+              isAr ? carousel.titleAr : carousel.titleEn,
+              carousel.images,
+            )}
+          />
+        ))}
+
+      {showSection("culture") && workCultureApiLoading && (
+        <section className="py-16 bg-secondary/10">
+          <div className="container mx-auto px-6 max-w-5xl space-y-6">
+            <Skeleton className="h-8 w-64 mx-auto" />
+            <Skeleton className="h-64 w-full rounded-2xl" />
+          </div>
+        </section>
       )}
 
-      {/* Event Galleries */}
-      {showSection("culture") && (
-        <>
+      {showSection("culture") &&
+        !workCultureApiLoading &&
+        apiWorkCultureCarousels.map((carousel) => (
           <LifePhotoCarousel
-            variant="muted"
-            title={isAr ? "حفل العشاء السنوي" : "Gala Dinner"}
-            subtitle={
-              isAr
-                ? "ليلة من الأناقة، الامتنان والاحتفال."
-                : "A night of elegance, gratitude and celebration."
-            }
-            photos={toCarouselPhotos("Gala Dinner", galaDinnerImages)}
+            key={carousel.id}
+            variant={carousel.variant}
+            title={isAr ? carousel.titleAr : carousel.titleEn}
+            subtitle={isAr ? carousel.subtitleAr : carousel.subtitleEn}
+            photos={toCarouselPhotos(
+              isAr ? carousel.titleAr : carousel.titleEn,
+              carousel.images,
+            )}
           />
-          <LifePhotoCarousel
-            title={isAr ? "أسبوع الضيافة" : "Hospitality Week"}
-            subtitle={
-              isAr
-                ? "أسبوع مكرّس لروح الضيافة التي تميّز رويال حياة."
-                : "A week devoted to the hospitality spirit that defines Royale Hayat."
-            }
-            photos={toCarouselPhotos("Hospitality Week", hospitalityWeekImages)}
-          />
-          <LifePhotoCarousel
-            variant="muted"
-            title={isAr ? "مسابقة RHH" : "RHH Quiz"}
-            subtitle={
-              isAr
-                ? "مرح ومنافسة ودي بين الفرق."
-                : "Fun, friendly competition across teams."
-            }
-            photos={toCarouselPhotos("RHH Quiz", rhhQuizImages)}
-          />
-        </>
+        ))}
+
+      {/* CSR galleries from API */}
+      {showSection("culture") && csrLoading && (
+        <section className="py-16 bg-secondary/10">
+          <div className="container mx-auto px-6 max-w-5xl space-y-6">
+            <Skeleton className="h-8 w-64 mx-auto" />
+            <Skeleton className="h-64 w-full rounded-2xl" />
+          </div>
+        </section>
       )}
+
+      {showSection("culture") &&
+        !csrLoading &&
+        csrCarousels.map((carousel) => (
+          <LifePhotoCarousel
+            key={`csr-${carousel.id}`}
+            variant={carousel.variant}
+            title={isAr ? carousel.titleAr : carousel.titleEn}
+            subtitle={isAr ? carousel.subtitleAr : carousel.subtitleEn}
+            photos={toCarouselPhotos(
+              isAr ? carousel.titleAr : carousel.titleEn,
+              carousel.images,
+            )}
+          />
+        ))}
 
       {/* Voices from Our People (Testimonials) */}
       {showSection("culture") && <VoicesFromOurPeople />}

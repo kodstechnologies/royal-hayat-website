@@ -4,15 +4,69 @@ import ChatButton from "@/components/ChatButton";
 import ScrollToTop from "@/components/ScrollToTop";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
 import ChairmanMessage from "@/components/ChairmanMessage";
+import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Heart, Star, Sparkles, Shield, Target, BookOpen, Users, ChevronDown, ChevronUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Link } from "react-router-dom";
+import {
+  getAllLeadership,
+  descriptionToParagraphs,
+  type LeadershipItem,
+} from "@/api/leadership";
 
-const leaders = [
+type Leader = {
+  id: string;
+  initials: string;
+  nameEn: string;
+  nameAr: string;
+  roleEn: string;
+  roleAr: string;
+  credentialsEn: string;
+  credentialsAr: string;
+  bioEn: string[];
+  bioAr: string[];
+  image?: string;
+};
+
+const mapApiToLeader = (item: LeadershipItem): Leader => ({
+  id: item._id ?? item.name,
+  initials: item.initials,
+  nameEn: item.name,
+  nameAr: item.nameArabic,
+  roleEn: item.title,
+  roleAr: item.titleArabic,
+  credentialsEn: "",
+  credentialsAr: "",
+  bioEn: descriptionToParagraphs(item.description ?? ""),
+  bioAr: descriptionToParagraphs(item.descriptionArabic ?? ""),
+  image: item.image,
+});
+
+const normalizeName = (name: string) => name.trim().toLowerCase();
+
+const mergeApiLeaders = (apiItems: LeadershipItem[]): Leader[] => {
+  const existingNames = new Set(
+    EXISTING_LEADERS.flatMap((leader) => [
+      normalizeName(leader.nameEn),
+      normalizeName(leader.nameAr),
+    ]),
+  );
+
+  return apiItems
+    .map(mapApiToLeader)
+    .filter(
+      (leader) =>
+        !existingNames.has(normalizeName(leader.nameEn)) &&
+        !existingNames.has(normalizeName(leader.nameAr)),
+    );
+};
+
+const EXISTING_LEADERS: Leader[] = [
   {
+    id: "sulaiman-al-mazeedi",
     initials: "SA",
     nameEn: "Dr. Sulaiman Al Mazeedi",
     nameAr: "د. سليمان المزيدي",
@@ -33,6 +87,7 @@ const leaders = [
     image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/leadership/sulaiman-web.png",
   },
   {
+    id: "abubakr-elmardi",
     initials: "AE",
     nameEn: "Dr. Abubakr Elmardi",
     nameAr: "د. أبوبكر المرضي",
@@ -57,6 +112,7 @@ const leaders = [
     image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/abubakr-elmardi.png",
   },
   {
+    id: "omar-el-khateeb",
     initials: "OE",
     nameEn: "Prof. Dr. Omar El Khateeb",
     nameAr: "أ.د. عمر الخطيب",
@@ -77,6 +133,7 @@ const leaders = [
     image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/Dr.+Omar.jpg",
   },
   {
+    id: "shibu-thomas-mathew",
     initials: "SM",
     nameEn: "Shibu Thomas Mathew",
     nameAr: "شيبو توماس ماثيو",
@@ -99,6 +156,7 @@ const leaders = [
     image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/Mr.+Shibu.jpg",
   },
   {
+    id: "hamid-ghaderi",
     initials: "HG",
     nameEn: "Dr. Hamid Ghaderi",
     nameAr: "د. حامد غديري",
@@ -121,6 +179,7 @@ const leaders = [
     image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/Dr.+Hamid.jpg",
   },
   {
+    id: "marta-abril-garcia",
     initials: "MA",
     nameEn: "Marta Abril Garcia",
     nameAr: "مارتا أبريل غارسيا",
@@ -154,7 +213,7 @@ const leaders = [
   }
 ];
 
-const LeaderCard = ({ leader, lang }: { leader: typeof leaders[0] & { image?: string }; lang: string }) => {
+const LeaderCard = ({ leader, lang }: { leader: Leader; lang: string }) => {
   const [expanded, setExpanded] = useState(false);
   const name = lang === "ar" ? leader.nameAr : leader.nameEn;
   const role = lang === "ar" ? leader.roleAr : leader.roleEn;
@@ -254,10 +313,34 @@ const AboutUs = () => {
   const section = searchParams.get("section");
   const showAll = !section;
   const show = (s: string) => showAll || section === s;
+  const [apiLeaders, setApiLeaders] = useState<Leader[]>([]);
+  const [leadersLoading, setLeadersLoading] = useState(true);
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, [section]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadLeaders = async () => {
+      setLeadersLoading(true);
+      try {
+        const items = await getAllLeadership();
+        if (cancelled) return;
+        setApiLeaders(mergeApiLeaders(items));
+      } catch {
+        if (!cancelled) setApiLeaders([]);
+      } finally {
+        if (!cancelled) setLeadersLoading(false);
+      }
+    };
+
+    void loadLeaders();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const values = [
     { icon: Heart, titleKey: "patientCenteredCare", descKey: "patientCenteredCareDesc" },
@@ -408,9 +491,21 @@ const AboutUs = () => {
           </ScrollAnimationWrapper>
 
           <div className="max-w-5xl mx-auto space-y-6">
-            {leaders.map((leader) => (
-              <LeaderCard key={leader.nameEn} leader={leader} lang={lang} />
+            {EXISTING_LEADERS.map((leader) => (
+              <LeaderCard key={leader.id} leader={leader} lang={lang} />
             ))}
+
+            {leadersLoading && (
+              <>
+                <Skeleton className="h-48 w-full rounded-2xl" />
+                <Skeleton className="h-48 w-full rounded-2xl" />
+              </>
+            )}
+
+            {!leadersLoading &&
+              apiLeaders.map((leader) => (
+                <LeaderCard key={leader.id} leader={leader} lang={lang} />
+              ))}
           </div>
         </div>
       </section>}

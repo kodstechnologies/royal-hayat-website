@@ -1,6 +1,5 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import ChatButton from "@/components/ChatButton";
 import ScrollToTop from "@/components/ScrollToTop";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useSearchParams, Link } from "react-router-dom";
@@ -189,7 +188,6 @@ const JobApplication = () => {
       </section>
 
       <Footer />
-      <ChatButton />
       <ScrollToTop />
     </div>
   );

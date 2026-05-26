@@ -1,7 +1,6 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
-import ChatButton from "@/components/ChatButton";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
 import { Sparkles, Phone, CheckCircle2, Gift, UtensilsCrossed, UserCheck, ChevronLeft, ChevronRight, ImageIcon, X } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -305,7 +304,6 @@ const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) =
       </AnimatePresence>
 
       <Footer />
-      <ChatButton />
       <ScrollToTop />
     </div>
   );

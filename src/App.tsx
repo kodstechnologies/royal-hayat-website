@@ -4,6 +4,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { ChatProvider } from "@/contexts/ChatContext";
+import ChatButton from "@/components/ChatButton";
 import Index from "./pages/Index.tsx";
 import BookAppointment from "./pages/BookAppointment.tsx";
 import HospitalityServices from "./pages/HospitalityServices.tsx";
@@ -164,24 +166,24 @@ const suiteCarouselImagesByIndex: Record<number, string[]> = {
 };
 // Paste your final gallery links here
 const workWithUsStaffActivitiesImages: string[] = [
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/1.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/2.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/3.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/4.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/5.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/6.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/7.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/8.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/9.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/10.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/11.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/12.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/13.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/14.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/15.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/16.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/17.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities/18.jpg.jpeg"
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/Staff-Activities/1.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/Staff-Activities/2.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/Staff-Activities/3.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/Staff-Activities/4.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/Staff-Activities/5.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/Staff-Activities/6.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/Staff-Activities/7.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/Staff-Activities/8.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/Staff-Activities/9.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/Staff-Activities/10.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/Staff-Activities/11.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/Staff-Activities/12.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/Staff-Activities/13.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/Staff-Activities/14.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/Staff-Activities/15.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/Staff-Activities/16.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/Staff-Activities/17.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/Staff-Activities/18.jpg.jpeg"
 
 ];
 const workWithUsGalaDinnerImages: string[] = [
@@ -243,11 +245,12 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <LanguageProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <ScrollToTopOnNav />
-          <Routes>
+        <ChatProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <ScrollToTopOnNav />
+            <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/book-appointment" element={<BookAppointment />} />
             <Route
@@ -309,8 +312,10 @@ const App = () => (
             <Route path="/verify-national-id" element={<VerifyNationalId />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+            </Routes>
+            <ChatButton />
+          </BrowserRouter>
+        </ChatProvider>
       </LanguageProvider>
     </TooltipProvider>
   </QueryClientProvider>

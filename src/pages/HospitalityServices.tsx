@@ -1,7 +1,6 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
-import ChatButton from "@/components/ChatButton";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
 import { Crown, Utensils, Sparkles, Flower2, Coffee, Phone, CheckCircle2, Baby, Image, Video, Bed, Star, ChevronLeft, ChevronRight, X, Gift, UtensilsCrossed, UserCheck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -1402,7 +1401,6 @@ const HospitalityServices = ({
       </AnimatePresence>
 
       <Footer />
-      <ChatButton />
       <ScrollToTop />
     </div>
   );

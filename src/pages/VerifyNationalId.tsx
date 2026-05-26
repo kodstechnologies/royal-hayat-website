@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import ChatButton from "@/components/ChatButton";
 import ScrollToTop from "@/components/ScrollToTop";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
@@ -351,7 +350,6 @@ const VerifyNationalId = () => {
 
       <Footer />
       <ScrollToTop />
-      <ChatButton />
     </div>
   );
 };

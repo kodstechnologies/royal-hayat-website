@@ -7,7 +7,6 @@ import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
 import { Crown, Star, Target, Stethoscope, ClipboardList, Briefcase, UserPlus, CheckCircle2, X, ChevronDown, ArrowLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
-import ChatButton from "@/components/ChatButton";
 
 const EnrollmentModal = ({ isOpen, onClose, t, isAr, onSuccess }: { isOpen: boolean; onClose: () => void; t: any; isAr: boolean; onSuccess: () => void }) => {
   const [formData, setFormData] = useState({
@@ -310,7 +309,6 @@ const AlSafwaProgram = () => {
         </div>
         <Footer />
         <ScrollToTop />
-        <ChatButton />
       </div>
     );
   }
@@ -494,7 +492,6 @@ const AlSafwaProgram = () => {
 
       <Footer />
       <ScrollToTop />
-      <ChatButton />
     </div>
   );
 };

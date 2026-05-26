@@ -20,23 +20,34 @@ const MESSAGE_KEYS: Record<PatientLookupErrorCode, string> = {
   PATIENT_LOOKUP_FAILED: "patientLookupFailed",
 };
 
-/** Mirrors TrakCare `status` strings from WebAppointment GET /WEBAPP/patient. */
+/**
+ * Maps TrakCare GET /WEBAPP/patient `status` strings to alert copy keys.
+ * @see LanguageContext patientNotFoundAfterPaci, patientMergedUrn, etc.
+ */
 const classifyFromTrakCareStatus = (message: string): PatientLookupErrorCode => {
   const text = message.toLowerCase();
 
-  if (text.includes("not found") || text.includes("patient_exist")) {
+  // "Error: Patient not found"
+  if (text.includes("patient not found") || text.includes("patient_exist")) {
     return "PATIENT_NOT_FOUND";
+  }
+  // "Error: URN belongs to a merged patient record" (before generic "has been merged")
+  if (text.includes("urn belongs to a merged") || text.includes("belongs to a merged patient record")) {
+    return "PATIENT_MERGED_URN";
+  }
+  // "Error: Multiple Patient with the Same National ID Found"
+  if (text.includes("multiple patient") && text.includes("national id")) {
+    return "PATIENT_DUPLICATE_NATIONAL_ID";
   }
   if (text.includes("multiple patient")) {
     return "PATIENT_DUPLICATE_NATIONAL_ID";
   }
-  if (text.includes("urn belongs to a merged") || text.includes("merged patient record")) {
-    return "PATIENT_MERGED_URN";
-  }
+  // "Error: Patient is inactive or has been merged"
   if (text.includes("inactive") || text.includes("has been merged")) {
     return "PATIENT_INACTIVE_OR_MERGED";
   }
-  if (text.includes("input too long")) {
+  // "Error: Input too long, max 50 characters per identifier"
+  if (text.includes("input too long") || text.includes("max 50 characters")) {
     return "PATIENT_INPUT_TOO_LONG";
   }
 

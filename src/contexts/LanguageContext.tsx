@@ -348,25 +348,26 @@ const translations: Translations = {
     en: "Checking your hospital registration…",
     ar: "جارِ التحقق من تسجيلك في المستشفى…",
   },
+  /** TrakCare — RHH integration spec (without "Error:" prefix) */
   patientNotFoundAfterPaci: {
-    en: "No patient record was found for this Civil ID at Royale Hayat (no match on National ID). Please register at the hospital or go back to choose another option.",
-    ar: "لم يتم العثور على سجل مريض لهذا الرقم المدني في رويال حياة. يرجى التسجيل في المستشفى أو الرجوع لاختيار خيار آخر.",
-  },
-  patientDuplicateNationalId: {
-    en: "Multiple patient records exist for this Civil ID. This is a data issue in our hospital system and must be corrected before you can book online. Please contact reception.",
-    ar: "يوجد أكثر من سجل مريض لهذا الرقم المدني. يجب تصحيح البيانات في نظام المستشفى قبل إتمام الحجز عبر الإنترنت. يرجى التواصل مع الاستقبال.",
+    en: "Patient not found — no match on URN or National ID",
+    ar: "لم يتم العثور على المريض — لا يوجد تطابق لرقم الملف أو الرقم المدني",
   },
   patientMergedUrn: {
-    en: "This hospital file is linked to a merged patient record. Please search using your Civil ID (National ID) instead, or contact reception for help.",
-    ar: "ملف المستشفى مرتبط بسجل مريض تم دمجه. يرجى البحث باستخدام الرقم المدني، أو التواصل مع الاستقبال.",
+    en: "URN belongs to a merged patient record — URN resolves only to inactive (merged) rows; the portal should prompt the user to search by National ID instead",
+    ar: "رقم الملف يخص سجل مريض تم دمجه — يعود الرقم إلى سجلات غير نشطة (مدمجة) فقط؛ يرجى البحث باستخدام الرقم المدني بدلاً من ذلك",
   },
-  patientInactiveOrMerged: {
-    en: "This patient record is inactive or has been merged and cannot be used for online booking. Please contact reception.",
-    ar: "سجل المريض غير نشط أو تم دمجه ولا يمكن استخدامه للحجز عبر الإنترنت. يرجى التواصل مع الاستقبال.",
+  patientDuplicateNationalId: {
+    en: "Multiple Patient with the Same National ID Found — data-quality issue; needs merge/cleanup in TrakCare before booking can proceed",
+    ar: "تم العثور على أكثر من مريض بنفس الرقم المدني — مشكلة في جودة البيانات؛ يلزم دمج السجلات وتصحيحها في نظام المستشفى قبل إتمام الحجز",
   },
   patientInputTooLong: {
-    en: "The Civil ID entered is too long (maximum 50 characters). Please enter a valid identifier and try again.",
-    ar: "الرقم المدني المدخل طويل جداً (الحد الأقصى 50 حرفاً). يرجى إدخال رقم صحيح والمحاولة مرة أخرى.",
+    en: "Input too long, max 50 characters per identifier — URN or National ID exceeds 50 characters",
+    ar: "المدخل طويل جداً، الحد الأقصى 50 حرفاً لكل معرّف — الرقم المدني أو رقم الملف يتجاوز 50 حرفاً",
+  },
+  patientInactiveOrMerged: {
+    en: "Patient is inactive or has been merged",
+    ar: "سجل المريض غير نشط أو تم دمجه",
   },
   patientLookupUnavailable: {
     en: "The hospital registration system is temporarily unavailable. Please try again in a few minutes.",

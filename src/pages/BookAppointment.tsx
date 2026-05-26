@@ -1887,7 +1887,9 @@ Clinic Code:`;
                   value={nationalId}
                   disabled={isWaitingForApproval || isConfirmingPatientRecord}
                   onChange={(e) => {
-                    setNationalId(e.target.value.replace(/\D/g, "").slice(0, 12));
+                    const digits = e.target.value.replace(/\D/g, "").slice(0, 12);
+                    if (digits.length > 0 && digits[0] !== "2" && digits[0] !== "3") return;
+                    setNationalId(digits);
                     setNationalIdError("");
                     setPatientLookupShowGoBack(false);
                     setVerifiedPersonName(null);
@@ -1938,7 +1940,7 @@ Clinic Code:`;
                 <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <button
                     onClick={handleNationalIdVerify}
-                    disabled={isVerifyingNationalId}
+                    disabled={isVerifyingNationalId || !/^[23]\d{11}$/.test(nationalId)}
                     className="w-full bg-primary text-primary-foreground px-4 py-3 rounded-xl font-body text-xs tracking-widest uppercase hover:bg-primary/90 transition-colors disabled:opacity-70 inline-flex items-center justify-center text-center"
                   >
                     {isVerifyingNationalId

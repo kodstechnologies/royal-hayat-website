@@ -349,24 +349,24 @@ const translations: Translations = {
     ar: "جارِ التحقق من تسجيلك في المستشفى…",
   },
   patientNotFoundAfterPaci: {
-    en: "You were verified in Kuwait Mobile ID, but you are not registered as a patient at Royale Hayat. Go back to choose how you would like to continue, or contact reception.",
-    ar: "تم التحقق من هويتك عبر هويتي، لكنك غير مسجل كمريض في رويال حياة. ارجع للخلف لاختيار طريقة المتابعة، أو تواصل مع الاستقبال.",
+    en: "No patient record was found for this Civil ID at Royale Hayat (no match on National ID). Please register at the hospital or go back to choose another option.",
+    ar: "لم يتم العثور على سجل مريض لهذا الرقم المدني في رويال حياة. يرجى التسجيل في المستشفى أو الرجوع لاختيار خيار آخر.",
   },
   patientDuplicateNationalId: {
-    en: "Multiple patient records were found for this Civil ID. Please contact reception to resolve this before booking.",
-    ar: "تم العثور على أكثر من سجل مريض لهذا الرقم المدني. يرجى التواصل مع الاستقبال قبل الحجز.",
+    en: "Multiple patient records exist for this Civil ID. This is a data issue in our hospital system and must be corrected before you can book online. Please contact reception.",
+    ar: "يوجد أكثر من سجل مريض لهذا الرقم المدني. يجب تصحيح البيانات في نظام المستشفى قبل إتمام الحجز عبر الإنترنت. يرجى التواصل مع الاستقبال.",
   },
   patientMergedUrn: {
-    en: "This patient record has been merged. Please contact reception for assistance.",
-    ar: "تم دمج سجل المريض. يرجى التواصل مع الاستقبال للمساعدة.",
+    en: "This hospital file is linked to a merged patient record. Please search using your Civil ID (National ID) instead, or contact reception for help.",
+    ar: "ملف المستشفى مرتبط بسجل مريض تم دمجه. يرجى البحث باستخدام الرقم المدني، أو التواصل مع الاستقبال.",
   },
   patientInactiveOrMerged: {
-    en: "This patient record is inactive or merged and cannot be used for online booking. Please contact reception.",
+    en: "This patient record is inactive or has been merged and cannot be used for online booking. Please contact reception.",
     ar: "سجل المريض غير نشط أو تم دمجه ولا يمكن استخدامه للحجز عبر الإنترنت. يرجى التواصل مع الاستقبال.",
   },
   patientInputTooLong: {
-    en: "The Civil ID entered is too long. Please enter a valid 12-digit Civil ID.",
-    ar: "الرقم المدني المدخل طويل جداً. يرجى إدخال رقم مدني صحيح مكون من 12 رقمًا.",
+    en: "The Civil ID entered is too long (maximum 50 characters). Please enter a valid identifier and try again.",
+    ar: "الرقم المدني المدخل طويل جداً (الحد الأقصى 50 حرفاً). يرجى إدخال رقم صحيح والمحاولة مرة أخرى.",
   },
   patientLookupUnavailable: {
     en: "The hospital registration system is temporarily unavailable. Please try again in a few minutes.",

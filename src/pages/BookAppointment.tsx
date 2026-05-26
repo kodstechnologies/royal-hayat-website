@@ -413,7 +413,7 @@ const BookAppointment = () => {
   const [verifyOperationId, setVerifyOperationId] = useState<string | null>(null);
   const [isWaitingForApproval, setIsWaitingForApproval] = useState(false);
   const [isConfirmingPatientRecord, setIsConfirmingPatientRecord] = useState(false);
-  const [patientLookupOfferFirstTime, setPatientLookupOfferFirstTime] = useState(false);
+  const [patientLookupShowGoBack, setPatientLookupShowGoBack] = useState(false);
   const verifySocketCleanupRef = useRef<(() => void) | null>(null);
   const verificationDoneRef = useRef(false);
   const [verifiedIdentityDetails, setVerifiedIdentityDetails] = useState<VerifiedIdentityDetails | null>(null);
@@ -655,7 +655,7 @@ const BookAppointment = () => {
       case 0: return selectedDept !== null;
       case 1: return selectedDoctor !== null;
       case 2:
-        if (patientType === "returning") return true;
+        if (patientType === "returning") return Boolean(patientId);
         return patientType === "new" && patientName.trim() !== "" && /^\d{8}$/.test(patientPhone.trim()) && patientDob !== "" && patientGender !== "";
       case 3: return selectedDate !== "" && selectedSlot !== null;
       default: return true;
@@ -751,8 +751,14 @@ const BookAppointment = () => {
     verifySocketCleanupRef.current = null;
     setIsWaitingForApproval(false);
     setIsConfirmingPatientRecord(false);
-    setPatientLookupOfferFirstTime(false);
+    setPatientLookupShowGoBack(false);
     setVerifyOperationId(null);
+    if (!patientId) {
+      setPatientType(null);
+      setPatientName("");
+      setVerifiedPersonName(null);
+      setVerifiedIdentityDetails(null);
+    }
     setShowReturningPatientModal(false);
   };
 
@@ -763,7 +769,7 @@ const BookAppointment = () => {
     setVerifyOperationId(null);
     setIsWaitingForApproval(false);
     setIsConfirmingPatientRecord(false);
-    setPatientLookupOfferFirstTime(false);
+    setPatientLookupShowGoBack(false);
     verifySocketCleanupRef.current?.();
     verifySocketCleanupRef.current = null;
     setVerifiedIdentityDetails(null);
@@ -828,7 +834,7 @@ const BookAppointment = () => {
       names: { english: string; arabic: string };
     }): Promise<boolean> => {
       setIsConfirmingPatientRecord(true);
-      setPatientLookupOfferFirstTime(false);
+      setPatientLookupShowGoBack(false);
       setNationalIdError("");
 
       try {
@@ -853,9 +859,9 @@ const BookAppointment = () => {
         return true;
       } catch (err) {
         console.error("Hospital patient lookup failed:", err);
-        const { text, offerFirstTime } = getPatientLookupUserMessage(err, t);
+        const { text, showGoBack } = getPatientLookupUserMessage(err, t);
         setNationalIdError(text);
-        setPatientLookupOfferFirstTime(offerFirstTime);
+        setPatientLookupShowGoBack(showGoBack);
         resetPatientLookupFailure();
         return false;
       } finally {
@@ -868,7 +874,7 @@ const BookAppointment = () => {
   /** Close Civil ID modal and return to returning / first-time choice (step before national ID). */
   const goBackFromPatientLookupModal = () => {
     verificationDoneRef.current = false;
-    setPatientLookupOfferFirstTime(false);
+    setPatientLookupShowGoBack(false);
     setNationalIdError("");
     setNationalId("");
     setIsWaitingForApproval(false);
@@ -930,7 +936,7 @@ const BookAppointment = () => {
     }
     setIsVerifyingNationalId(true);
     setNationalIdError("");
-    setPatientLookupOfferFirstTime(false);
+    setPatientLookupShowGoBack(false);
     setVerifiedPersonName(null);
     setVerifyOperationId(null);
     setIsWaitingForApproval(false);
@@ -1020,6 +1026,15 @@ const BookAppointment = () => {
   };
 
   useEffect(() => {
+    if (patientType === "returning" && !patientId) {
+      setPatientType(null);
+      setPatientName("");
+      setVerifiedIdentityDetails(null);
+      setVerifiedPersonName(null);
+    }
+  }, [patientType, patientId]);
+
+  useEffect(() => {
     if (!verifyOperationId || !showReturningPatientModal || !isWaitingForApproval) {
       verificationDoneRef.current = false;
       return;
@@ -1033,7 +1048,9 @@ const BookAppointment = () => {
       verificationDoneRef.current = true;
       verifySocketCleanupRef.current?.();
       verifySocketCleanupRef.current = null;
-      void completeVerificationFromStatus(statusData);
+      void (async () => {
+        await completeVerificationFromStatus(statusData);
+      })();
     };
 
     const { unsubscribe } = subscribeToIdentityVerification(verifyOperationId, finishIfReady);
@@ -1050,7 +1067,7 @@ const BookAppointment = () => {
     verifySocketCleanupRef.current = null;
     setIsWaitingForApproval(false);
     setIsConfirmingPatientRecord(false);
-    setPatientLookupOfferFirstTime(false);
+    setPatientLookupShowGoBack(false);
     setVerifyOperationId(null);
     setShowReturningPatientModal(false);
     setBookingPath("primary");
@@ -1614,7 +1631,7 @@ Clinic Code:`;
               <div className="max-w-3xl mx-auto">
                 {!patientType && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                    <motion.button whileHover={{ y: -4 }} whileTap={{ scale: 0.98 }} onClick={() => { setNationalId(""); setNationalIdError(""); setVerifiedPersonName(null); setVerifyOperationId(null); setIsWaitingForApproval(false); setPatientErrors({}); setPatientName(""); setPatientType("returning"); openReturningPatientModal(); }} className="bg-popover rounded-2xl p-8 border border-border text-center transition-all hover:border-primary/40">
+                    <motion.button whileHover={{ y: -4 }} whileTap={{ scale: 0.98 }} onClick={() => { setNationalId(""); setNationalIdError(""); setVerifiedPersonName(null); setVerifyOperationId(null); setIsWaitingForApproval(false); setPatientLookupShowGoBack(false); setPatientErrors({}); setPatientName(""); setPatientId(null); setVerifiedIdentityDetails(null); openReturningPatientModal(); }} className="bg-popover rounded-2xl p-8 border border-border text-center transition-all hover:border-primary/40">
                       <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4"><LogIn className="w-7 h-7 text-primary" /></div>
                       <h3 className="font-serif text-lg text-foreground mb-2">{t("registeredPatient")}</h3>
                       <p className="font-body text-xs text-muted-foreground">{isAr ? "اختر موعدك في الخطوة التالية" : "Choose your appointment time next"}</p>
@@ -1650,7 +1667,7 @@ Clinic Code:`;
                     </div>
                   </div>
                 )}
-                {patientType === "returning" && patientName && (
+                {patientType === "returning" && patientId && patientName && verifiedIdentityDetails && (
                   <div className="bg-popover rounded-2xl p-5 sm:p-8 border border-border shadow-sm">
                     {/* <h2 className="text-xl font-serif text-foreground mb-2">{isAr ? "تأكيد بيانات المريض" : "Confirm Patient Details"}</h2>
                     <p className="font-body text-xs text-muted-foreground mb-4">{isAr ? "أدخل اسمك الكامل كما هو مسجل في المستشفى." : "Enter your full name as registered with the hospital."}</p> */}
@@ -1689,7 +1706,7 @@ Clinic Code:`;
                       </div>
                     )}
                     <div className="mt-5 flex gap-3">
-                      <button type="button" onClick={() => { if (!patientName.trim()) { setPatientErrors((prev) => ({ ...prev, name: isAr ? "الاسم الكامل مطلوب" : "Full name is required" })); return; } setPatientErrors((prev) => ({ ...prev, name: "" })); setStep(3); }} className="flex-1 bg-primary text-primary-foreground px-3 py-2.5 rounded-lg font-body text-xs tracking-widest uppercase hover:bg-primary/90 transition-colors inline-flex items-center justify-center text-center">{isAr ? "متابعة" : "Proceed"}</button>
+                      <button type="button" disabled={!patientId} onClick={() => { if (!patientId) return; if (!patientName.trim()) { setPatientErrors((prev) => ({ ...prev, name: isAr ? "الاسم الكامل مطلوب" : "Full name is required" })); return; } setPatientErrors((prev) => ({ ...prev, name: "" })); setStep(3); }} className="flex-1 bg-primary text-primary-foreground px-3 py-2.5 rounded-lg font-body text-xs tracking-widest uppercase hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center text-center">{isAr ? "متابعة" : "Proceed"}</button>
                       <button type="button" onClick={goToInitialBookingScreen} className="flex-1 bg-secondary/40 text-foreground px-3 py-2.5 rounded-lg font-body text-xs tracking-widest uppercase hover:bg-secondary/60 transition-colors inline-flex items-center justify-center text-center">{isAr ? "إلغاء" : "Cancel"}</button>
                     </div>
                   </div>
@@ -1808,15 +1825,23 @@ Clinic Code:`;
                   onChange={(e) => {
                     setNationalId(e.target.value.replace(/\D/g, "").slice(0, 12));
                     setNationalIdError("");
-                    setPatientLookupOfferFirstTime(false);
+                    setPatientLookupShowGoBack(false);
                     setVerifiedPersonName(null);
                     setVerifiedIdentityDetails(null);
                   }}
                   placeholder={isAr ? "ادخل 12 رقم" : "Enter 12 digits"}
                   className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 disabled:opacity-60 ${nationalIdError ? "border-destructive" : "border-border"}`}
                 />
-                {nationalIdError && <p className="font-body text-xs text-destructive mt-2">{nationalIdError}</p>}
-                {patientLookupOfferFirstTime && !isWaitingForApproval && !isConfirmingPatientRecord && (
+                {nationalIdError && (
+                  <div
+                    role="alert"
+                    className="mt-3 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 flex gap-3 text-start"
+                  >
+                    <AlertCircle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
+                    <p className="font-body text-sm text-destructive leading-relaxed">{nationalIdError}</p>
+                  </div>
+                )}
+                {patientLookupShowGoBack && !isWaitingForApproval && !isConfirmingPatientRecord && (
                   <button
                     type="button"
                     onClick={goBackFromPatientLookupModal}

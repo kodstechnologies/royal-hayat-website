@@ -9,6 +9,7 @@ export type PatientLookupErrorCode =
 
 type TranslateFn = (key: string) => string;
 
+/** Maps backend `meta.code` to LanguageContext keys (patient-facing alerts). */
 const MESSAGE_KEYS: Record<PatientLookupErrorCode, string> = {
   PATIENT_NOT_FOUND: "patientNotFoundAfterPaci",
   PATIENT_DUPLICATE_NATIONAL_ID: "patientDuplicateNationalId",
@@ -19,15 +20,17 @@ const MESSAGE_KEYS: Record<PatientLookupErrorCode, string> = {
   PATIENT_LOOKUP_FAILED: "patientLookupFailed",
 };
 
-const classifyFromMessage = (message: string): PatientLookupErrorCode => {
+/** Mirrors TrakCare `status` strings from WebAppointment GET /WEBAPP/patient. */
+const classifyFromTrakCareStatus = (message: string): PatientLookupErrorCode => {
   const text = message.toLowerCase();
-  if (text.includes("not found")) {
+
+  if (text.includes("not found") || text.includes("patient_exist")) {
     return "PATIENT_NOT_FOUND";
   }
   if (text.includes("multiple patient")) {
     return "PATIENT_DUPLICATE_NATIONAL_ID";
   }
-  if (text.includes("merged patient record") || text.includes("urn belongs to a merged")) {
+  if (text.includes("urn belongs to a merged") || text.includes("merged patient record")) {
     return "PATIENT_MERGED_URN";
   }
   if (text.includes("inactive") || text.includes("has been merged")) {
@@ -36,27 +39,41 @@ const classifyFromMessage = (message: string): PatientLookupErrorCode => {
   if (text.includes("input too long")) {
     return "PATIENT_INPUT_TOO_LONG";
   }
-  if (text.includes("network") || text.includes("failed to fetch") || text.includes("unavailable")) {
-    return "PATIENT_LOOKUP_UNAVAILABLE";
-  }
+
   return "PATIENT_LOOKUP_FAILED";
 };
 
+const isPatientLookupErrorCode = (value: string): value is PatientLookupErrorCode =>
+  value in MESSAGE_KEYS;
+
 export const extractPatientLookupError = (
   error: unknown
-): { code: PatientLookupErrorCode; message: string } => {
+): { code: PatientLookupErrorCode; trakcareStatus: string } => {
   const axiosErr = error as {
-    response?: { status?: number; data?: { message?: string; meta?: { code?: string } } };
+    response?: {
+      status?: number;
+      data?: {
+        message?: string;
+        meta?: { code?: string; trakcare?: { status?: string; patient_exist?: boolean } };
+      };
+    };
     message?: string;
   };
-  const apiCode = axiosErr?.response?.data?.meta?.code;
-  const apiMessage = axiosErr?.response?.data?.message || axiosErr?.message || "";
+
+  const data = axiosErr?.response?.data;
+  const apiCode = data?.meta?.code;
+  const trakcareStatus =
+    data?.meta?.trakcare?.status || data?.message || axiosErr?.message || "";
   const httpStatus = axiosErr?.response?.status;
 
   let code: PatientLookupErrorCode =
-    typeof apiCode === "string" && apiCode in MESSAGE_KEYS
-      ? (apiCode as PatientLookupErrorCode)
-      : classifyFromMessage(String(apiMessage));
+    typeof apiCode === "string" && isPatientLookupErrorCode(apiCode)
+      ? apiCode
+      : classifyFromTrakCareStatus(String(trakcareStatus));
+
+  if (data?.meta?.trakcare?.patient_exist === false && code === "PATIENT_LOOKUP_FAILED") {
+    code = "PATIENT_NOT_FOUND";
+  }
 
   if (!axiosErr?.response && axiosErr?.message) {
     code = "PATIENT_LOOKUP_UNAVAILABLE";
@@ -65,19 +82,19 @@ export const extractPatientLookupError = (
     code = "PATIENT_LOOKUP_UNAVAILABLE";
   }
 
-  return { code, message: String(apiMessage) };
+  return { code, trakcareStatus: String(trakcareStatus) };
 };
 
 export const getPatientLookupUserMessage = (
   error: unknown,
   t: TranslateFn
-): { code: PatientLookupErrorCode; text: string; offerFirstTime: boolean } => {
+): { code: PatientLookupErrorCode; text: string; showGoBack: boolean } => {
   const { code } = extractPatientLookupError(error);
   const key = MESSAGE_KEYS[code] || MESSAGE_KEYS.PATIENT_LOOKUP_FAILED;
   return {
     code,
     text: t(key),
-    offerFirstTime: code === "PATIENT_NOT_FOUND",
+    showGoBack: true,
   };
 };
 

@@ -70,5 +70,11 @@ export const getPatient = async (params: {
   urn?: string;
 }): Promise<PatientLookupResponse> => {
   const response = await api.get("/api/v1/royal-hayat/patients", { params });
-  return response.data;
+  const data = response.data as PatientLookupResponse;
+  if (!data?.success) {
+    throw Object.assign(new Error(data?.message || "Patient lookup failed"), {
+      response: { data },
+    });
+  }
+  return data;
 };

@@ -10,6 +10,9 @@ import { motion } from "framer-motion";
 import { ChevronRight, ChevronLeft, ArrowLeft, CheckCircle2, ChevronDown, Stethoscope, MessageCircle, Phone } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import type { DepartmentDetailSection } from "@/data/departmentDetails";
+
+const pickDeptText = (lang: string, en: string, ar?: string) => (lang === "ar" && ar ? ar : en);
 
 const DepartmentDoctors = ({ doctors, lang }: { doctors: typeof allDoctors; lang: string }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -158,7 +161,8 @@ const DepartmentDetail = () => {
   const fromBookAppointment = Boolean(
     (location.state as { fromBookAppointment?: boolean } | null)?.fromBookAppointment
   );
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
+  const isAr = lang === "ar";
   const [expandedSub, setExpandedSub] = useState<string | null>(subSlug || null);
 
   const dept = departmentDetails.find((d) => d.slug === slug);
@@ -296,18 +300,22 @@ const DepartmentDetail = () => {
           <nav className="flex items-center gap-2 font-body text-xs text-muted-foreground">
             <Link to="/" className="hover:text-accent transition-colors">Home</Link>
             <ChevronRight className="w-3 h-3" />
-            <Link to="/medical-services" className="hover:text-accent transition-colors">Medical Services</Link>
+            <Link to="/medical-services" className="hover:text-accent transition-colors">
+              {t("medicalServices")}
+            </Link>
             <ChevronRight className="w-3 h-3" />
             {activeSub ? (
               <>
                 <Link to={`/medical-services/${dept.slug}`} className="hover:text-accent transition-colors">
-                  {dept.name}
+                  {pickDeptText(lang, dept.name, dept.nameAr)}
                 </Link>
                 <ChevronRight className="w-3 h-3" />
-                <span className="text-foreground font-bold">{activeSub.name}</span>
+                <span className="text-foreground font-bold">
+                  {pickDeptText(lang, activeSub.name, activeSub.nameAr)}
+                </span>
               </>
             ) : (
-              <span className="text-foreground font-bold">{dept.name}</span>
+              <span className="text-foreground font-bold">{pickDeptText(lang, dept.name, dept.nameAr)}</span>
             )}
           </nav>
         </div>
@@ -337,13 +345,21 @@ const DepartmentDetail = () => {
                 </button>
               )}
               <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">
-                {activeSub ? dept.name : "Medical Services"}
+                {activeSub ? pickDeptText(lang, dept.name, dept.nameAr) : t("medicalServices")}
               </p>
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-foreground mb-4">
-                {displayDept.name}
+              <h1
+                className={`text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-foreground mb-4 ${
+                  isAr ? "dept-detail-rtl" : ""
+                }`}
+              >
+                {pickDeptText(lang, displayDept.name, displayDept.nameAr)}
               </h1>
-              <p className="font-body text-sm md:text-base text-muted-foreground leading-relaxed max-w-3xl whitespace-pre-line">
-                {displayDept.intro}
+              <p
+                className={`font-body text-sm md:text-base text-muted-foreground leading-relaxed max-w-3xl whitespace-pre-line text-justify ${
+                  isAr ? "dept-detail-rtl" : ""
+                }`}
+              >
+                {pickDeptText(lang, displayDept.intro, displayDept.introAr)}
               </p>
             </div>
           </ScrollAnimationWrapper>
@@ -374,51 +390,76 @@ const DepartmentDetail = () => {
       <section className="py-8 md:py-12">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto space-y-8">
-            {displayDept.sections.map((section, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 15 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.05 }}
-                className="bg-popover border border-border/50 rounded-2xl p-6 md:p-8"
-              >
-                <h3 className="font-serif text-lg md:text-xl text-foreground mb-4">{section.title}</h3>
-                {section.content && (
-                  <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4 whitespace-pre-line">
-                    {section.content}
-                  </p>
-                )}
-                {section.items && (
-                  <div className="space-y-2.5">
-                    {section.items.map((item, j) => (
-                      <div key={j} className="flex items-start gap-3">
-                        <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
-                        <span className="font-body text-sm text-foreground leading-relaxed">{item}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {section.subsections?.map((sub, k) => (
-                  <div key={k} className="mt-6 pl-4 border-l-2 border-accent/20">
-                    <h4 className="font-serif text-base text-foreground mb-3">{sub.title}</h4>
-                    {sub.content && (
-                      <p className="font-body text-sm text-muted-foreground leading-relaxed mb-3">{sub.content}</p>
-                    )}
-                    {sub.items && (
-                      <div className="space-y-2">
-                        {sub.items.map((item, l) => (
-                          <div key={l} className="flex items-start gap-3">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-primary flex-shrink-0 mt-0.5" />
-                            <span className="font-body text-sm text-foreground">{item}</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </motion.div>
-            ))}
+            {displayDept.sections.map((section: DepartmentDetailSection, i) => {
+              const sectionTitle = pickDeptText(lang, section.title, section.titleAr);
+              const sectionContent = section.content
+                ? pickDeptText(lang, section.content, section.contentAr)
+                : undefined;
+              const sectionItems =
+                lang === "ar" && section.itemsAr?.length ? section.itemsAr : section.items;
+
+              return (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 15 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.05 }}
+                  className="bg-popover border border-border/50 rounded-2xl p-6 md:p-8"
+                >
+                  <h3
+                    className={`font-serif text-lg md:text-xl text-foreground mb-4 ${
+                      isAr ? "dept-detail-rtl" : ""
+                    }`}
+                  >
+                    {sectionTitle}
+                  </h3>
+                  {sectionContent && (
+                    <p
+                      className={`font-body text-sm text-muted-foreground leading-relaxed mb-4 whitespace-pre-line text-justify ${
+                        isAr ? "dept-detail-rtl" : ""
+                      }`}
+                    >
+                      {sectionContent}
+                    </p>
+                  )}
+                  {sectionItems && (
+                    <div className="space-y-2.5">
+                      {sectionItems.map((item, j) => (
+                        <div key={j} className={`flex items-start gap-3 ${isAr ? "dept-detail-rtl" : ""}`}>
+                          <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
+                          <span className="font-body text-sm text-foreground leading-relaxed text-justify">
+                            {item}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {section.subsections?.map((sub, k) => (
+                    <div key={k} className={`mt-6 pl-4 border-l-2 border-accent/20 ${isAr ? "dept-detail-rtl" : ""}`}>
+                      <h4 className="font-serif text-base text-foreground mb-3">
+                        {pickDeptText(lang, sub.title, sub.titleAr)}
+                      </h4>
+                      {sub.content && (
+                        <p className="font-body text-sm text-muted-foreground leading-relaxed mb-3 text-justify">
+                          {pickDeptText(lang, sub.content, sub.contentAr)}
+                        </p>
+                      )}
+                      {(lang === "ar" && sub.itemsAr?.length ? sub.itemsAr : sub.items) && (
+                        <div className="space-y-2">
+                          {(lang === "ar" && sub.itemsAr?.length ? sub.itemsAr : sub.items)!.map((item, l) => (
+                            <div key={l} className="flex items-start gap-3">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-primary flex-shrink-0 mt-0.5" />
+                              <span className="font-body text-sm text-foreground text-justify">{item}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -438,8 +479,10 @@ const DepartmentDetail = () => {
           <div className="container mx-auto px-6">
             <ScrollAnimationWrapper>
               <div className="text-center mb-8">
-                <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">Explore</p>
-                <h2 className="text-2xl md:text-3xl font-serif text-foreground">Sub-Specialties</h2>
+                <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">{t("exploreSubSpecialties")}</p>
+                <h2 className={`text-2xl md:text-3xl font-serif text-foreground ${isAr ? "dept-detail-rtl" : ""}`}>
+                  {t("subSpecialties")}
+                </h2>
               </div>
             </ScrollAnimationWrapper>
             <div className="max-w-4xl mx-auto space-y-3">
@@ -456,7 +499,9 @@ const DepartmentDetail = () => {
                       onClick={() => setExpandedSub(expandedSub === sub.slug ? null : sub.slug)}
                       className="w-full flex items-center justify-between px-6 py-4 hover:bg-muted/30 transition-colors"
                     >
-                      <span className="font-serif font-bold text-base text-foreground">{sub.name}</span>
+                      <span className={`font-serif font-bold text-base text-foreground ${isAr ? "dept-detail-rtl" : ""}`}>
+                        {pickDeptText(lang, sub.name, sub.nameAr)}
+                      </span>
                       <ChevronDown
                         className={`w-5 h-5 text-muted-foreground transition-transform ${expandedSub === sub.slug ? "rotate-180" : ""
                           }`}
@@ -468,25 +513,33 @@ const DepartmentDetail = () => {
                         animate={{ opacity: 1, height: "auto" }}
                         className="px-6 pb-5 border-t border-border/30"
                       >
-                        <p className="font-body text-sm text-muted-foreground leading-relaxed mt-4 mb-4 whitespace-pre-line">
-                          {sub.intro}
+                        <p
+                          className={`font-body text-sm text-muted-foreground leading-relaxed mt-4 mb-4 whitespace-pre-line text-justify ${
+                            isAr ? "dept-detail-rtl" : ""
+                          }`}
+                        >
+                          {pickDeptText(lang, sub.intro, sub.introAr)}
                         </p>
                         {sub.sections.map((section, j) => (
-                          <div key={j} className="mb-4">
-                            <h4 className="font-serif font-bold text-foreground mb-2">{section.title}</h4>
+                          <div key={j} className={`mb-4 ${isAr ? "dept-detail-rtl" : ""}`}>
+                            <h4 className="font-serif font-bold text-foreground mb-2">
+                              {pickDeptText(lang, section.title, section.titleAr)}
+                            </h4>
                             {section.content && (
-                              <p className="font-body text-sm text-muted-foreground leading-relaxed mb-2 whitespace-pre-line">
-                                {section.content}
+                              <p className="font-body text-sm text-muted-foreground leading-relaxed mb-2 whitespace-pre-line text-justify">
+                                {pickDeptText(lang, section.content, section.contentAr)}
                               </p>
                             )}
-                            {section.items && (
+                            {(lang === "ar" && section.itemsAr?.length ? section.itemsAr : section.items) && (
                               <div className="space-y-1.5">
-                                {section.items.map((item, k) => (
-                                  <div key={k} className="flex items-start gap-2">
-                                    <CheckCircle2 className="w-3.5 h-3.5 text-accent flex-shrink-0 mt-0.5" />
-                                    <span className="font-body text-xs text-foreground">{item}</span>
-                                  </div>
-                                ))}
+                                {(lang === "ar" && section.itemsAr?.length ? section.itemsAr : section.items)!.map(
+                                  (item, k) => (
+                                    <div key={k} className="flex items-start gap-2">
+                                      <CheckCircle2 className="w-3.5 h-3.5 text-accent flex-shrink-0 mt-0.5" />
+                                      <span className="font-body text-xs text-foreground text-justify">{item}</span>
+                                    </div>
+                                  )
+                                )}
                               </div>
                             )}
                           </div>
@@ -519,7 +572,7 @@ const DepartmentDetail = () => {
             <div className="max-w-2xl mx-auto">
               <div className="bg-popover border border-border/50 rounded-2xl p-6 md:p-8 text-center">
                 <h3 className="font-serif text-xl text-foreground mb-6">
-                  {lang === "ar" ? "استفسر الآن" : "Enquire Now"}
+                  {lang === "ar" ? "للاستفسار" : "Enquire Now"}
                 </h3>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                   <a
@@ -534,7 +587,7 @@ const DepartmentDetail = () => {
                     className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-full font-body text-xs tracking-[0.15em] uppercase hover:bg-primary/90 transition-colors"
                   >
                     <Phone className="w-4 h-4" />
-                    {lang === "ar" ? "اتصال: 25360500 965+" : "Call: +965 25360500"}
+                    {lang === "ar" ? "الهاتف: 25360500 965+" : "Call: +965 25360500"}
                   </a>
                 </div>
               </div>
@@ -542,6 +595,13 @@ const DepartmentDetail = () => {
           </div>
         </section>
       )}
+
+      <style>{`
+        .dept-detail-rtl {
+          direction: rtl;
+          text-align: right;
+        }
+      `}</style>
 
       <Footer />
       <ScrollToTop />

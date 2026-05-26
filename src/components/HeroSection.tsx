@@ -141,25 +141,35 @@ const HeroSection = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-serif leading-[1.15] tracking-tight mb-4 md:mb-6"
+                className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-serif leading-[1.15] tracking-tight mb-4 md:mb-6 ${
+                  isAr ? "hero-rtl" : ""
+                }`}
               >
                 <span className="text-foreground block">{t("exceptionalCare")}</span>
-                <span className="text-primary block mt-2">{t("everyStage")} {t("everyAge")}</span>
+                <span className="text-primary block mt-2">
+                  {t("everyStage")} {t("everyAge")}
+                </span>
               </motion.h1>
-              <motion.p
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.2 }}
-                className="text-[#A67C00] font-body text-sm md:text-base leading-relaxed mb-5 max-w-xl text-left"
-                style={isAr ? { fontSize: "calc(0.875rem + 2px)" } : undefined}
-              >
-                {t("heroIntro")}
-              </motion.p>
+              {t("heroIntro") ? (
+                <motion.p
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.2 }}
+                  className={`text-[#A67C00] font-body text-sm md:text-base leading-relaxed mb-5 max-w-xl ${
+                    isAr ? "hero-rtl text-right" : "text-left"
+                  }`}
+                  style={isAr ? { fontSize: "calc(0.875rem + 2px)" } : undefined}
+                >
+                  {t("heroIntro")}
+                </motion.p>
+              ) : null}
               <motion.p
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.3 }}
-                className="text-muted-foreground font-body text-sm md:text-base leading-relaxed mb-5 max-w-xl text-left whitespace-pre-line"
+                className={`text-muted-foreground font-body text-sm md:text-base leading-relaxed mb-5 max-w-xl whitespace-pre-line ${
+                  isAr ? "hero-rtl text-right" : "text-left"
+                }`}
                 style={isAr ? { fontSize: "calc(0.875rem + 2px)" } : undefined}
               >
                 {t("heroDesc")}
@@ -168,8 +178,10 @@ const HeroSection = () => {
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.38 }}
-                className="text-gray-400 font-serif text-lg md:text-xl mb-8 max-w-xl"
-                style={isAr ? { fontSize: "calc(1.125rem + 2px)" } : undefined} // Increased from 0.875rem to 1.125rem for text-lg baseline
+                className={`text-gray-400 font-serif text-lg md:text-xl mb-8 max-w-xl ${
+                  isAr ? "hero-rtl text-right" : ""
+                }`}
+                style={isAr ? { fontSize: "calc(1.125rem + 2px)" } : undefined}
               >
                 {t("heroTagline")}
               </motion.p>
@@ -213,6 +225,12 @@ const HeroSection = () => {
           </motion.div>
         </div>
       </motion.button>
+
+      <style>{`
+        .hero-rtl {
+          direction: rtl;
+        }
+      `}</style>
     </section>
   );
 };

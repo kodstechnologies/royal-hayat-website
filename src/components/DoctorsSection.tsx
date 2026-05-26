@@ -119,7 +119,8 @@ const DoctorsSection = ({ featuredDoctors }: { featuredDoctors: Doctor[] }) => {
           <ScrollAnimationWrapper>
             <div>
               <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-4">{t("ourTeam")}</p>
-              <h2 className="text-3xl md:text-4xl font-serif text-foreground">{t("meetOurDoctors")}</h2>
+              <h2 className="text-3xl md:text-4xl font-serif text-foreground mb-3">{t("meetOurDoctors")}</h2>
+              <p className="text-muted-foreground font-body text-sm md:text-base max-w-xl">{t("meetOurDoctorsSubtitle")}</p>
             </div>
           </ScrollAnimationWrapper>
           <ScrollAnimationWrapper delay={0.1}>

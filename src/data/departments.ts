@@ -32,8 +32,8 @@ export interface Department {
 }
 
 export const MAIN_CATEGORIES: { key: MainCategory; label: string; labelAr: string }[] = [
-  { key: "Clinical Speciality", label: "Clinical Speciality", labelAr: "التخصصات السريرية" },
-  { key: "Clinical Support Service", label: "Clinical Support Service", labelAr: "خدمات الدعم السريري" },
+  { key: "Clinical Speciality", label: "Clinical Speciality", labelAr: "التخصصات الطبية" },
+  { key: "Clinical Support Service", label: "Clinical Support Service", labelAr: "الخدمات الطبية الداعمة" },
   { key: "Home Care Service", label: "Home Care Service", labelAr: "خدمات الرعاية المنزلية" },
 ];
 
@@ -41,7 +41,7 @@ export const departments: Department[] = [
   // ── CLINICAL SPECIALITY ──────────────────────────────────────────────
   {
     id: 1, icon: Heart, category: "Women's Health", mainCategory: "Clinical Speciality",
-    name: "Obstetrics & Gynecology", nameAr: "التوليد وأمراض النساء", slug: "obstetrics-gynecology",
+    name: "Obstetrics & Gynecology", nameAr: "قسم أمراض النساء والولادة", slug: "obstetrics-gynecology",
     desc: "Complete maternity care from prenatal through postpartum recovery, supported by healthcare professionals.",
     descAr: "رعاية أمومة شاملة من ما قبل الولادة حتى التعافي بعدها، بدعم من أكثر من 600 متخصص.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Obstetrics+%26+Gynecology/2.JPG",
@@ -57,7 +57,7 @@ export const departments: Department[] = [
   },
   {
     id: 4, icon: Baby, category: "Children", mainCategory: "Clinical Speciality",
-    name: "Neonatal", nameAr: "حديثي الولادة", slug: "neonatal",
+    name: "Neonatal", nameAr: "قسم حديثي الولادة", slug: "neonatal",
     desc: "Level III Neonatal Unit — the highest in Kuwait's private sector — offering specialized care for premature and critically ill infants.",
     descAr: "وحدة حديثي الولادة من المستوى الثالث — الأعلى في القطاع الخاص بالكويت.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Neonatal/1.jpg",
@@ -65,7 +65,7 @@ export const departments: Department[] = [
   },
   {
     id: 3, icon: Baby, category: "Children", mainCategory: "Clinical Speciality",
-    name: "Pediatrics", nameAr: "طب الأطفال", slug: "pediatrics",
+    name: "Pediatrics", nameAr: "قسم طب الأطفال", slug: "pediatrics",
     desc: "World-class pediatric care with warmth and a child-centered approach, from infancy through adolescence.",
     descAr: "رعاية أطفال عالمية المستوى بدفء ونهج محوره الطفل.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Pediatrics/2.JPG",
@@ -73,21 +73,21 @@ export const departments: Department[] = [
   },
   {
     id: 6, icon: Scissors, category: "Surgery", mainCategory: "Clinical Speciality",
-    name: "General & Laparoscopic Surgery", nameAr: "الجراحة العامة والمنظار", slug: "general-laparoscopic-surgery",
+    name: "General & Laparoscopic Surgery", nameAr: "قسم الجراحة العامة والمنظار", slug: "general-laparoscopic-surgery",
     desc: "Exceptional surgical care blending expert skills with advanced technology for precision, safety, and quick recovery.",
     descAr: "رعاية جراحية استثنائية تجمع بين المهارات والتكنولوجيا المتقدمة.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/General+%26+Laparoscopic+Surgery/1.JPG",
     clinicCode: "GI 1",
     subs: [
-      { name: "Obesity Bariatric Surgery", nameAr: "جراحة السمنة" },
-      { name: "Breast Surgical Oncology", nameAr: "أورام الثدي الجراحية" },
-      { name: "Abdominal Wall Reconstruction", nameAr: "إعادة بناء جدار البطن" },
-      { name: "Clinical Nutrition & Dietetics", nameAr: "التغذية السريرية" },
+      { name: "Obesity Bariatric Surgery", nameAr: "جراحات السمنة المفرطة" },
+      { name: "Breast Surgical Oncology", nameAr: "جراحة أورام الثدي" },
+      { name: "Abdominal Wall Reconstruction", nameAr: "إعادة ترميم جدار البطن" },
+      { name: "Clinical Nutrition & Dietetics", nameAr: "التغذية العلاجية والحمية" },
     ],
   },
   {
     id: 13, icon: Stethoscope, category: "Surgery", mainCategory: "Clinical Speciality",
-    name: "Anesthesia", nameAr: "التخدير", slug: "anesthesia",
+    name: "Anesthesia", nameAr: "قسم التخدير", slug: "anesthesia",
     desc: "Top-tier anesthesia services ensuring patient safety and comfort for all surgical and childbirth procedures.",
     descAr: "خدمات تخدير عالية المستوى تضمن سلامة المريض وراحته.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Anesthesia/1.JPG",
@@ -95,7 +95,7 @@ export const departments: Department[] = [
   },
   {
     id: 5, icon: Activity, category: "General", mainCategory: "Clinical Speciality",
-    name: "Internal Medicine", nameAr: "الطب الباطني", slug: "internal-medicine",
+    name: "Internal Medicine", nameAr: "قسم الباطنية", slug: "internal-medicine",
     desc: "Comprehensive diagnosis and treatment of complex adult diseases with personalized health check programs.",
     descAr: "تشخيص وعلاج شامل لأمراض البالغين المعقدة مع برامج فحص صحي مخصصة.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Internal+Medicine/1.jpg",
@@ -106,12 +106,12 @@ export const departments: Department[] = [
       { name: "Gastroenterology", nameAr: "أمراض الجهاز الهضمي" },
       { name: "Endocrinology & Metabolism", nameAr: "الغدد الصماء والتمثيل الغذائي" },
       { name: "Rheumatology", nameAr: "أمراض الروماتيزم" },
-      { name: "Clinical Nutrition & Dietetics", nameAr: "التغذية السريرية" },
+      { name: "Clinical Nutrition & Dietetics", nameAr: "التغذية العلاجية والحمية" },
     ],
   },
   {
     id: 10, icon: Activity, category: "General", mainCategory: "Clinical Speciality",
-    name: "Family Medicine", nameAr: "طب الأسرة", slug: "family-medicine",
+    name: "Family Medicine", nameAr: "طب العائلة", slug: "family-medicine",
     desc: "Continuous, personalized care for individuals and families of all ages with coordinated health management.",
     descAr: "رعاية مستمرة ومخصصة للأفراد والعائلات من جميع الأعمار.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Family+Medicine/1.jpg",
@@ -119,7 +119,7 @@ export const departments: Department[] = [
   },
   {
     id: 9, icon: Stethoscope, category: "Head & Neck", mainCategory: "Clinical Speciality",
-    name: "ENT (Ear, Nose & Throat)", nameAr: "الأنف والأذن والحنجرة", slug: "ent",
+    name: "ENT (Ear, Nose & Throat)", nameAr: "قسم الأنف والأذن والحنجرة", slug: "ent",
     desc: "Expert care for conditions affecting the ear, nose, throat, head, and neck with both medical and surgical expertise.",
     descAr: "رعاية متخصصة لأمراض الأنف والأذن والحنجرة والرأس والرقبة.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/ENT+(Ear%2C+Nose+%26+Throat)/1.jpg",
@@ -127,7 +127,7 @@ export const departments: Department[] = [
   },
   {
     id: 7, icon: Scissors, category: "Cosmetic", mainCategory: "Clinical Speciality",
-    name: "Plastic Surgery & Cosmetology", nameAr: "الجراحة التجميلية", slug: "plastic-surgery",
+    name: "Plastic Surgery & Cosmetology", nameAr: "قسم الجراحة التجميلية والتجميل", slug: "plastic-surgery",
     desc: "Internationally certified physicians offering advanced surgical and non-surgical cosmetic and reconstructive solutions.",
     descAr: "أطباء معتمدون دولياً يقدمون حلولاً تجميلية وترميمية متقدمة.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Plastic+Surgery/3.JPG",
@@ -135,7 +135,7 @@ export const departments: Department[] = [
   },
   {
     id: 2, icon: Heart, category: "Women's Health", mainCategory: "Clinical Speciality",
-    name: "Reproductive Medicine & IVF", nameAr: "الطب التناسلي وأطفال الأنابيب", slug: "reproductive-medicine-ivf",
+    name: "Reproductive Medicine & IVF", nameAr: "طب الإنجاب وأطفال الأنابيب", slug: "reproductive-medicine-ivf",
     desc: "Advanced fertility treatments blending expertise with cutting-edge technology, including IVF, ICSI, and genetic diagnosis.",
     descAr: "علاجات خصوبة متقدمة تجمع بين الخبرة والتكنولوجيا المتطورة.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Reproductive+Medicine+%26+IVF/2.jpg",
@@ -143,7 +143,7 @@ export const departments: Department[] = [
   },
   {
     id: 8, icon: Smile, category: "Skin", mainCategory: "Clinical Speciality",
-    name: "Dermatology", nameAr: "الأمراض الجلدية", slug: "dermatology",
+    name: "Dermatology", nameAr: "قسم الجلدية", slug: "dermatology",
     desc: "Expert care for all dermatological needs combining clinical excellence with the latest advances for adults and children.",
     descAr: "رعاية متخصصة لجميع احتياجات الأمراض الجلدية مع أحدث التطورات.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Dermatology/1.JPG",
@@ -151,7 +151,7 @@ export const departments: Department[] = [
   },
   {
     id: 11, icon: Smile, category: "Dental", mainCategory: "Clinical Speciality",
-    name: "Dental Clinic", nameAr: "عيادة الأسنان", slug: "dental-clinic",
+    name: "Dental Clinic", nameAr: "قسم طب الأسنان", slug: "dental-clinic",
     desc: "Exceptional dental care in a luxurious setting with specialized dentists using advanced technology for all ages.",
     descAr: "رعاية أسنان استثنائية في بيئة فاخرة مع أطباء متخصصين.",
     img: "/images/Department/Dental.jpg",
@@ -159,7 +159,7 @@ export const departments: Department[] = [
   },
   {
     id: 12, icon: Pill, category: "Wellness", mainCategory: "Clinical Speciality",
-    name: "Pain Management", nameAr: "إدارة الألم", slug: "pain-management",
+    name: "Pain Management", nameAr: "وحدة علاج الألم", slug: "pain-management",
     desc: "Comprehensive program offering advanced, compassionate care for acute and chronic pain to restore comfort and functionality.",
     descAr: "برنامج شامل يقدم رعاية متقدمة ورحيمة للألم الحاد والمزمن.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Pain+Management/1.jpg",
@@ -169,7 +169,7 @@ export const departments: Department[] = [
   // ── CLINICAL SUPPORT SERVICE ─────────────────────────────────────────
   {
     id: 16, icon: Microscope, category: "Diagnostics", mainCategory: "Clinical Support Service",
-    name: "Laboratory Services", nameAr: "خدمات المختبر", slug: "laboratory-services",
+    name: "Laboratory Services", nameAr: "قسم الخدمات المخبرية", slug: "laboratory-services",
     desc: "CAP-accredited laboratory providing gold-standard diagnostic testing and pathology services.",
     descAr: "مختبر معتمد من CAP يقدم فحوصات تشخيصية وخدمات علم الأمراض بأعلى المعايير.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Laboratory+Services/1.jpg",
@@ -177,7 +177,7 @@ export const departments: Department[] = [
   },
   {
     id: 15, icon: Microscope, category: "Diagnostics", mainCategory: "Clinical Support Service",
-    name: "Center for Diagnostic Imaging", nameAr: "مركز التصوير التشخيصي", slug: "center-for-diagnostic-imaging",
+    name: "Center for Diagnostic Imaging", nameAr: "مركز الأشعة التشخيصية", slug: "center-for-diagnostic-imaging",
     desc: "Advanced diagnostic and image-guided therapeutic services combining expert professionals with state-of-the-art technology.",
     descAr: "خدمات تشخيصية وعلاجية موجهة بالتصوير تجمع بين متخصصين وتقنيات حديثة.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Center+for+Diagnostic+Imaging/1.JPG",
@@ -193,7 +193,7 @@ export const departments: Department[] = [
   },
   {
     id: 17, icon: Pill, category: "Pharmacy", mainCategory: "Clinical Support Service",
-    name: "Clinical Pharmacy", nameAr: "الصيدلة السريرية", slug: "clinical-pharmacy",
+    name: "Clinical Pharmacy", nameAr: "الصيدلة الإكلينيكية", slug: "clinical-pharmacy",
     desc: "Expert pharmaceutical care integrated with clinical teams for optimal medication therapy outcomes.",
     descAr: "رعاية صيدلانية متخصصة مدمجة مع الفرق السريرية.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Clinical+Pharmacy/1.jpg",
@@ -207,7 +207,7 @@ export const departments: Department[] = [
   },
   {
     id: 19, icon: Shield, category: "Premium", mainCategory: "Clinical Support Service",
-    name: "Al Safwa HealthCare", nameAr: "الصفوة للرعاية الصحية", slug: "al-safwa-healthcare",
+    name: "Al Safwa HealthCare", nameAr: "برنامج الصفوة للرعاية الصحية", slug: "al-safwa-healthcare",
     desc: "Take control of your health effortlessly with our personalized program. Enroll by completing a quick registration form, providing a snapshot of your medical history and lifestyle.",
     descAr: "تحكم في صحتك بسهولة من خلال برنامجنا المخصص. سجل عن طريق إكمال نموذج تسجيل سريع، وتقديم لمحة عن تاريخك الطبي ونمط حياتك.",
     img: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=250&fit=crop",
@@ -216,7 +216,7 @@ export const departments: Department[] = [
   // ── HOME CARE SERVICE ────────────────────────────────────────────────
   {
     id: 18, icon: Home, category: "Wellness", mainCategory: "Home Care Service",
-    name: "Royale Home Health", nameAr: "رويال للرعاية المنزلية", slug: "home-health",
+    name: "Royale Home Health", nameAr: "رويال هوم هيلث للرعاية المنزلية", slug: "home-health",
     desc: "Royale Home Health is an exclusive extension of Royale Hayat Hospital, offering exceptional health and wellness support delivered directly to your home.",
     descAr: "رويال للرعاية المنزلية هي امتداد حصري لمستشفى رويال حياة، تقدم دعماً استثنائياً للصحة والعافية مباشرة في منزلك.",
     img: "/images/Department/home-health.jpg",

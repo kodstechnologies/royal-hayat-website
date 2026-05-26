@@ -80,7 +80,7 @@ const Header = () => {
   const aboutSubLinks = [
     { label: t("ourStory"), href: "/about-us?section=history", icon: BookOpen, desc: lang === "ar" ? "قصة مستشفى رويال حياة" : "The story of Royale Hayat Hospital" },
     { label: lang === "ar" ? "الرسالة والقيم" : "Mission & Values", href: "/about-us?section=mission", icon: Heart, desc: lang === "ar" ? "رسالتنا وقيمنا الأساسية" : "Our mission and core values" },
-    { label: t("chairmanMessage"), href: "/about-us?section=chairman", icon: Users, desc: lang === "ar" ? "رسالة رئيس مجلس الإدارة" : "A message from the Chairman" },
+    { label: t("chairmanMessage"), href: "/about-us?section=chairman", icon: Users, desc: lang === "ar" ? "كلمة رئيس مجلس الإدارة" : "A message from the Chairman" },
     { label: lang === "ar" ? "فريق القيادة" : "Leadership Team", href: "/about-us?section=leadership", icon: UserCheck, desc: lang === "ar" ? "تعرف على فريق القيادة" : "Meet our visionary leaders" },
     { label: lang === "ar" ? "المسؤولية الاجتماعية" : "CSR", href: "/csr", icon: Heart, desc: lang === "ar" ? "المسؤولية الاجتماعية للمؤسسة" : "Corporate Social Responsibility" },
   ];

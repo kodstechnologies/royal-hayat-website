@@ -301,9 +301,7 @@ const Doctors = () => {
           <div className="text-center mb-12">
             <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-4">{t("ourTeam")}</p>
             <h1 className="text-3xl md:text-5xl font-serif text-foreground mb-4">{t("meetOurDoctors")}</h1>
-            <p className="text-muted-foreground font-body max-w-lg mx-auto text-sm md:text-base">
-              {lang === "ar" ? "ابحث عن الطبيب المناسب حسب الأعراض أو التخصص" : "Find the right doctor by symptom or specialty"}
-            </p>
+            <p className="text-muted-foreground font-body max-w-lg mx-auto text-sm md:text-base">{t("findDoctor")}</p>
           </div>
 
           {/* Search */}

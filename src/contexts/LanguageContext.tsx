@@ -22,42 +22,172 @@ const translations: Translations = {
   login: { en: "My Medical Reports", ar: "تقاريري الطبية" },
   searchPlaceholder: { en: "Search symptoms, doctors, departments, services...", ar: "ابحث عن الأعراض، الأطباء، الأقسام، الخدمات..." },
 
+  
   // Story Block
+  getToKnowUs: { en: "Get To Know Us", ar: "تعرف علينا" },
   ourStory: { en: "Our Story", ar: "قصتنا" },
-  storyTitle: { en: "Celebrating Life. Every Stage. Every Age.", ar: "نحتفي بالحياة. كل مرحلة. كل عمر." },
-  storyP1: { en: "At life's most meaningful moments, healthcare should feel deeply human. Since 2006, Royale Hayat Hospital has been celebrating life, beginning as a dedicated women's and children's hospital and growing into Kuwait's leading multi-disciplinary healthcare destination. From birth to lifelong wellness, we deliver world-class medical expertise with compassion, privacy, and comfort at the core.", ar: "في أكثر لحظات الحياة أهمية، يجب أن تكون الرعاية الصحية إنسانية بعمق. منذ عام 2006، يحتفي مستشفى رويال حياة بالحياة، بدءاً كمستشفى مخصص للنساء والأطفال ونمواً ليصبح الوجهة الرائدة للرعاية الصحية متعددة التخصصات في الكويت." },
-  storyP2: { en: "Every patient receives personalized, exceptional care in an environment where luxury meets medicine and care goes beyond healing.", ar: "يتلقى كل مريض رعاية شخصية واستثنائية في بيئة يلتقي فيها الفخامة بالطب وتتجاوز الرعاية حدود الشفاء." },
+  storyTitle: {
+    en: "Celebrating Life. Every Stage. Every Age.",
+    ar: "لنحتفل معاً بالحياة. في كل مرحلة. في كل عمر.",
+  },
+  storyP1: {
+    en: "At life's most meaningful moments, healthcare should feel deeply human. Since 2006, Royale Hayat Hospital has been celebrating life, beginning as a dedicated women's and children's hospital and growing into Kuwait's leading multi-disciplinary healthcare destination. From birth to lifelong wellness, we deliver world-class medical expertise with compassion, privacy, and comfort at the core.",
+    ar: "في أعمق لحظات الحياة وأكثرها معنى، ينبغي للرعاية الصحية أن تلامس الإنسان في أعماقه. منذ عام 2006، يحتفي مستشفى رويال حياة بالحياة في كل مراحلها؛ إذ انطلق في مسيرته مستشفىً متخصصاً في رعاية المرأة والطفل، ليتطور اليوم إلى الوجهة الصحية الشاملة الأولى في الكويت. من اللحظة الأولى للميلاد وحتى مسيرة صحة تدوم العمر، نقدّم خبرات طبية عالمية المستوى تتمحور حول الرحمة والخصوصية والراحة.",
+  },
+  storyP2: {
+    en: "Every patient receives personalized, exceptional care in an environment where luxury meets medicine and care goes beyond healing.",
+    ar: "لكل مريض رعاية شخصية استثنائية، في بيئة يلتقي فيها الفخامة بالطب، وتتجاوز فيها العناية حدود الشفاء.",
+  },
 
   // Our History
   historyTitle: { en: "The Journey of Royale Hayat Hospital", ar: "رحلة مستشفى رويال حياة" },
-  historyP1: { en: "Healthcare in Kuwait has long been known for its medical excellence. Yet, for many families, the experience of care often felt rushed, impersonal, and emotionally distant. Healing addressed the body but comfort, privacy, and hospitality were not always part of the journey", ar: "كانت الرعاية الصحية في الكويت تتطور، لكن العائلات — وخاصة النساء والأطفال — كانت تواجه واقعاً مألوفاً: الطب الممتاز غالباً ما يأتي بدون دفء أو خصوصية أو راحة. الرعاية كانت تشفي الجسد، لكنها في كثير من الأحيان تتجاهل تجربة المريض." },
-  historyP2: { en: "In 2006, a different vision took shape.We set out to create a healthcare destination where patients would feel cared for in every sense from the very first step inside to the moment they returned home. A space where healing would be serene, and every interaction would be attentive and respectful.", ar: "في عام 2006، دُعيت مجموعتنا لتخيل شيء مختلف. مؤسسة رعاية صحية للنساء والأطفال تجمع بين الجودة الطبية بلا هوادة ورقي وانتباه الضيافة الفاخرة. مكان يمكن أن يكون فيه الشفاء كريماً وشخصياً وإنسانياً. وُلد مستشفى رويال حياة، مسجلاً فصلاً جديداً ولحظة حاسمة للرعاية الصحية والعافية في الكويت." },
-  historyP3: { en: "This vision became <strong style='font-weight:700;'>Royale Hayat Hospital</strong>.<br /><br />From the beginning, our purpose was clear: to deliver world class healthcare within an environment defined by grace, calm, and meticulous attention to detail. Every space was designed to feel welcoming. Every touchpoint is carefully considered. Every patient is cared for individually.", ar: "منذ البداية، كان الطريق واضحاً ولكنه متطلب: النمو دون فقدان الغرض، والتوسع دون التنازل عن القيم. ومع تعمق الثقة وارتفاع التوقعات، اخترنا التطور — بعناية وتأنٍ ودائماً في خدمة مرضانا." },
-  historyP4: { en: "As trust grew, so did our responsibility. We evolved steadily, ensuring that growth would only deepen the quality of care and comfort we offered. Expansion was guided not by scale, but by intention: to elevate the patient experience while preserving luxury, warmth, privacy, and dignity.", ar: "بحلول عام 2009، استجابةً للتقدم السريع في الخبرة الطبية ورعاية المرضى، تجاوزنا عتبة جديدة. توسع مستشفى رويال حياة ليصبح مستشفى متعدد التخصصات، مقدماً تخصصات مصممة لتلبية احتياجات الرعاية الصحية الناشئة في الكويت، بما في ذلك مركز جراحة السمنة." },
-  historyP5: { en: "Over time, Royale Hayat Hospital matured into a complete healthcare destination one that supports patients physically, emotionally, and personally. From tranquil interiors to attentive service, from advanced capabilities to compassionate presence, every element works together to create a seamless, reassuring experience.", ar: "جلب النمو التعقيد — والفرصة. توسعنا بشكل ديناميكي، وبنينا برامج متكاملة مثل خدمات الأنف والأذن والحنجرة التي أكملت رعاية السمنة من خلال علاج انقطاع التنفس أثناء النوم. عزز التزامنا بالطب طفيف التوغل الجراحة بالمنظار والطب التناسلي وإدارة الألم." },
-  historyP6: { en: "Today, Royale Hayat Hospital stands as a reflection of that original promise. A place where advanced medical care is delivered with sensitivity and elegance. Where patients and families feel safe, heard, and respected. Where every detail from arrival to discharge is shaped around comfort, clarity, and peace of mind.", ar: "في عام 2011، حوّل شركاؤنا في طب الأسنان والجراحة التجميلية خدماتهم، مقدمين مرافق أكبر وأكثر تميزاً ومرحبين بخبراء زائرين مشهورين دولياً. كل إضافة عززت رسالتنا: رعاية الإنسان بالكامل، وليس الحالة فقط." },
-  historyP7: { en: "<strong>We are Royale Hayat Hospital recognized as the “Best Hospital in Kuwait” for the past 16 consecutive years.</strong>", ar: "مع كل خطوة للأمام، نضج مستشفى رويال حياة ليصبح وجهة رعاية صحية شاملة — تعكس الطيف الكامل لاحتياجات مرضانا الجسدية والعاطفية ونمط الحياة. نواصل التوسع بعناية، مدفوعين بالتميز وموجهين برؤية رعاية متميزة وشاملة." },
-  historyP8: { en: "<strong>And our story has only just begun.</strong>", ar: "اليوم، يقف مستشفى رويال حياة كتعبير حي عن تلك الدعوة الأصلية. مكان يلتقي فيه التكنولوجيا الطبية المتقدمة بالرحمة والراحة والاهتمام الشخصي. حيث يعمل فريق عالمي من الأطباء والممرضين وموظفي الدعم معاً في بيئة تتمحور حول المريض ومضيافة. نحن نفهم أنه لا شيء أهم من صحة وسلامة عائلتك. هذا الفهم يشكل كل قرار نتخذه. برز مستشفى رويال حياة كمعيار — ليس فقط في الكويت، بل عبر المنطقة — للمزج بسلاسة بين الرعاية الصحية المتخصصة والضيافة الراقية. هذه رحلتنا. وكل يوم، تستمر — نحتفي بالحياة في كل مرحلة." },
+  historyP1: {
+    en: "Healthcare in Kuwait has long been known for its medical excellence. Yet, for many families, the experience of care often felt rushed, impersonal, and emotionally distant. Healing addressed the body, but comfort, privacy, and hospitality were not always part of the journey.",
+    ar: "لطالما عُرفت الرعاية الصحية في دولة الكويت بتميّزها الطبي، إلا أن تجربة الرعاية بالنسبة للعديد من العائلات كانت في كثير من الأحيان سريعة، تفتقر إلى الخصوصية والجانب الإنساني الدافئ. فقد كان التركيز ينصب على علاج البدني، بينما لم تكن الراحة، الضيافة، والاهتمام بالتفاصيل الاخرى جزءًا أساسيًا من رحلة العلاج.",
+  },
+  historyP2: {
+    en: "In 2006, a different vision took shape. We set out to create a healthcare destination where patients would feel cared for in every sense, from the very first step inside to the moment they returned home. A space where healing would be serene, and every interaction would be attentive and respectful.",
+    ar: "في عام 2006، وُلدت رؤية مختلفة. رؤية جديدة تهدف إلى إنشاء وجهة صحية يشعر فيها المرضى بالرعاية الحقيقية بكل تفاصيلها، منذ اللحظة الأولى لدخولهم وحتى عودتهم إلى منازلهم. مكان يجمع بين العلاج والسكينة، حيث تُقدَّم كل تجربة بعناية واحترام واهتمام صادق.",
+  },
+  historyP3: {
+    en: "This vision became Royale Hayat Hospital.",
+    ar: "ومن هنا، انطلقت قصة مستشفى رويال حياة",
+  },
+  historyP4: {
+    en: "From the beginning, our purpose was clear: to deliver world-class healthcare within an environment defined by grace, calm, and meticulous attention to detail. Every space was designed to feel welcoming. Every touchpoint is carefully considered. Every patient is cared for individually.",
+    ar: "منذ البداية، كان هدفنا واضحًا: تقديم رعاية صحية على كل من المستوى العالي والعالمي، ضمن بيئة تنبض بالأناقة والهدوء والاهتمام بأدق التفاصيل. حيثُ صُممت كل مساحة لتمنح شعورًا بالترحيب، مع دراسة كل نقطة تواصل بعناية، ليحظى كل مريض برعاية شخصية متكاملة.",
+  },
+  historyP5: {
+    en: "As trust grew, so did our responsibility. We evolved steadily, ensuring that growth would only deepen the quality of care and comfort we offered. Expansion was guided not by scale, but by intention: to elevate the patient experience while preserving luxury, warmth, privacy, and dignity.",
+    ar: "ومع تنامي ثقة المرضى بنا، ازدادت مسؤوليتنا تجاههم. فتطوّرنا بخطوات مدروسة، واضعين الجودة والراحة في مقدمة أولوياتنا. لم يكن التوسع بالنسبة لنا هدفًا بحد ذاته، بل وسيلة للارتقاء بتجربة المريض مع الحفاظ على الفخامة، والدفء، والخصوصية، والكرامة الإنسانية.",
+  },
+  historyP6: {
+    en: "Over time, Royale Hayat Hospital matured into a complete healthcare destination, one that supports patients physically, emotionally, and personally. From tranquil interiors to attentive service, from advanced capabilities to compassionate presence, every element works together to create a seamless, reassuring experience.",
+    ar: "ومع مرور الوقت، أصبح مستشفى رويال حياة وجهة صحية متكاملة، تهتم بالمريض جسديًا ونفسيًا وإنسانيًا. فمن التصاميم الهادئة إلى الخدمة الراقية، ومن الإمكانيات الطبية المتقدمة إلى الحضور الإنساني الرحيم، تعمل جميع العناصر بتناغم لتقديم تجربة صحية مطمئنة ومتكاملة.",
+  },
+  historyP7: {
+    en: "Today, Royale Hayat Hospital stands as a reflection of that original promise. A place where advanced medical care is delivered with sensitivity and elegance. Where patients and families feel safe, heard, and respected. Where every detail from arrival to discharge is shaped around comfort, clarity, and peace of mind.",
+    ar: "واليوم، يقدم مستشفى رويال حياة انعكاسًا لذلك الوعد الأول، مكان تُقدَّم فيه الرعاية الطبية المتقدمة بحس إنساني راقٍ وأناقة استثنائية. مكان يشعر فيه المرضى وعائلاتهم بالأمان، والاهتمام، والاحترام. حيث توفر كل تفصيل من لحظة الوصول وحتى الخروج، الراحة والوضوح وطمأنينة البال.",
+  },
+  historyP8: {
+    en: "<strong>We are Royale Hayat Hospital, recognized as the “Best Hospital in Kuwait” for the past 16 consecutive years.</strong><br /><br />And our story has only just begun.",
+    ar: "نحنُ مستشفى رويال حياة \"أفضل مستشفى في الكويت\" لمدة 16 عاماً على التوالي",
+  },
 
   // Mission & Values
   missionValues: { en: "Mission & Values", ar: "الرسالة والقيم" },
+  ourMission: { en: "Our Mission", ar: "رسالتنا" },
+  ourValues: { en: "Our Values", ar: "قيمنا" },
   missionStatement: { en: "Mission Statement", ar: "بيان الرسالة" },
-  missionText: { en: "Royale Hayat promises to deliver safe, modern, and quality medical care and services to society in an environment of compassion, comfort, and care. We will achieve this by redefining and setting global benchmarks in hospitality and through providing a culture of continuous learning, innovation, and excellence in healthcare.", ar: "يعد مستشفى رويال حياة بتقديم رعاية طبية آمنة وحديثة وعالية الجودة للمجتمع في بيئة من الرحمة والراحة والعناية." },
-  patientCenteredCare: { en: "Patient-Centered Care", ar: "رعاية محورها المريض" },
-  patientCenteredCareDesc: { en: "We put the needs of our patients at the core of what we do through outstanding clinical outcomes and a unique patient experience.", ar: "نضع احتياجات مرضانا في صميم ما نقوم به من خلال نتائج سريرية متميزة وتجربة فريدة للمريض." },
-  compassion: { en: "Compassion", ar: "الرحمة" },
-  compassionDesc: { en: "We care for your family like our own. We truly embody \"caring patients, inspiring recovery.\"", ar: "نرعى عائلتك كعائلتنا. نجسد حقاً \"رعاية المرضى، إلهام التعافي.\"" },
-  passionForExcellence: { en: "Passion for Excellence", ar: "شغف بالتميز" },
-  passionForExcellenceDesc: { en: "We strive consistently to exceed the highest standards of quality in everything that we do.", ar: "نسعى باستمرار لتجاوز أعلى معايير الجودة في كل ما نقوم به." },
+  missionText: {
+    en: "Royale Hayat promises to deliver safe, modern, and quality medical care and services to society in an environment of compassion, comfort, and care. We will achieve this by redefining and setting global benchmarks in hospitality and through providing a culture of continuous learning, innovation, and excellence in healthcare.",
+    ar: "يعد مستشفى رويال حياة بتقديم رعاية وخدمات طبية آمنة، حديثة، وعالية الجودة للمجتمع، وذلك ضمن بيئة قائمة على الرحمة، الراحة، والاهتمام. ونسعى إلى تحقيق ذلك من خلال إعادة تعريف معايير الضيافة ووضع مقاييس عالمية جديدة، إلى جانب ترسيخ ثقافة التعلم المستمر، الابتكار، والتميّز في الرعاية الصحية.",
+  },
+  patientCenteredCare: { en: "Patient-Centered Care", ar: "الرعاية المتمحورة حول المريض" },
+  patientCenteredCareDesc: {
+    en: "We put the needs of our patients at the core of what we do through outstanding clinical outcomes and a unique patient experience.",
+    ar: "نضع احتياجات مرضانا في صميم كل ما نقوم به، وذلك من خلال تحقيق أفضل النتائج الطبية وتقديم تجربة استثنائية وفريدة للمريض",
+  },
+  compassion: { en: "Compassion", ar: "الرحمة والاهتمام" },
+  compassionDesc: {
+    en: "We care for your family like our own. We truly embody \"caring patients, inspiring recovery.\"",
+    ar: "نعتني بعائلاتكم كما نعتني بعائلاتنا، لنجسد فعليًا مفهوم \"رعاية تهتم بالمريض، وتُلهم التعافي\"",
+  },
+  passionForExcellence: { en: "Passion for Excellence", ar: "الشغف بالتميّز" },
+  passionForExcellenceDesc: {
+    en: "We strive consistently to exceed the highest standards of quality in everything that we do.",
+    ar: "نسعى دائمًا إلى تجاوز أعلى معايير الجودة في جميع خدماتنا وممارساتنا",
+  },
   innovation: { en: "Innovation", ar: "الابتكار" },
-  innovationDesc: { en: "We always seek opportunities to continuously improve our work to maintain the highest standards of patient care and service delivery.", ar: "نبحث دائماً عن فرص لتحسين عملنا باستمرار للحفاظ على أعلى معايير رعاية المرضى." },
+  innovationDesc: {
+    en: "We always seek opportunities to continuously improve our work to maintain the highest standards of patient care and service delivery.",
+    ar: "نحرص باستمرار على تطوير خدماتنا وأعمالنا، للحفاظ على أعلى مستويات الرعاية الصحية وجودة الخدمة",
+  },
   integrityProfessionalism: { en: "Integrity and Professionalism", ar: "النزاهة والاحترافية" },
-  integrityProfessionalismDesc: { en: "We always do what is professional, ethical, and right.", ar: "نفعل دائماً ما هو مهني وأخلاقي وصحيح." },
+  integrityProfessionalismDesc: {
+    en: "We always do what is professional, ethical, and right.",
+    ar: "نلتزم دائمًا بما هو مهني وأخلاقي وصحيح في جميع تعاملاتنا",
+  },
+
+  // CSR (About Us section)
+  csrEyebrow: { en: "Our Commitment", ar: "التزامنا" },
+  csrCelebratingLife: { en: "Celebrating Life", ar: "معلم لنحتفل معاً بالحياة" },
+  csrAboutP1: {
+    en: "A signature landmark by Royale Hayat Hospital, created to symbolize renewal, unity, and the beauty of life.",
+    ar: "يُعد معلم \"لنحتفل معاً بالحياة\" أحد المعالم المميزة التي أطلقها مستشفى رويال حياة، ليجسد معاني التجدد، الترابط، وجمال الحياة.",
+  },
+  csrAboutP2: {
+    en: "Inspired by a vision of healing that extends beyond hospital walls, the monument blends art, nature, and contemporary design into a meaningful urban statement.",
+    ar: "استُلهم هذا المعلم من رؤية تؤمن بأن مفهوم الشفاء يمتد إلى ما هو أبعد من جدران المستشفى، حيث يجمع بين الفن، الطبيعة، والتصميم المعاصر ليشكّل رسالة حضرية ذات معنى إنساني عميق.",
+  },
+  csrAboutP3: {
+    en: "With its circular form representing continuity and its blooming flower reflecting growth and vitality, the landmark stands as a tribute to hope, wellness, and community connection. More than a structure, it is a gift to Kuwait - beautifying the cityscape while embodying a lasting commitment to compassion, care, and optimism for generations to come.",
+    ar: "ويمثل التصميم الدائري الاستمرارية والتواصل، بينما ترمز الزهرة المتفتحة إلى النمو والحيوية والأمل. وأكثر من كونه مجرد معلم جمالي، فهو هدية إلى دولة الكويت، تضيف لمسة جمالية للمشهد الحضري وتعكس التزامًا دائمًا بالرحمة، الرعاية، والتفاؤل للأجيال القادمة.",
+  },
+  csrAboutTagline: {
+    en: "Royale Hayat Hospital ... More than care, A partner for life",
+    ar: "مستشفى رويال حياة ... أكثر من مجرد رعاية، شريك للحياة",
+  },
+  csrInit1Title: {
+    en: "Breast Cancer Awareness Lecture – Royale Hayat Hospital",
+    ar: "محاضرة التوعية بسرطان الثدي – مستشفى رويال حياة",
+  },
+  csrInit1Date: { en: "held on 7 October 2025", ar: "أُقيمت بتاريخ 7 أكتوبر 2025" },
+  csrInit1P1: {
+    en: "Within its walls, Royale Hayat Hospital hosted an exclusive Breast Cancer Awareness lecture led by our team of expert consultants. The session emphasized early detection, advanced treatment options, and holistic patient care, including emotional well-being.",
+    ar: "استضاف مستشفى رويال حياة محاضرة توعوية حصرية حول سرطان الثدي، قدّمها نخبة من استشاريين المستشفى، حيث ركزت الجلسة على أهمية الكشف المبكر، وأحدث الخيارات العلاجية، والرعاية الشاملة التي تراعي الجوانب النفسية والعاطفية للمريضات.",
+  },
+  csrInit1P2: {
+    en: "This luxurious and informative initiative reflects our dedication to empowering women with knowledge, compassion, and exceptional healthcare standards.",
+    ar: "وتعكس هذه المبادرة الراقية والتثقيفية التزامنا المستمر بتمكين المرأة بالمعرفة، والرعاية الإنسانية، وتقديم أعلى معايير الرعاية الصحية.",
+  },
+  csrInit2Title: {
+    en: "Breast Cancer Awareness Lecture - Burgan Bank",
+    ar: "محاضرة التوعية بسرطان الثدي – بنك برقان",
+  },
+  csrInit2Date: { en: "held on 16 October 2025", ar: "أُقيمت بتاريخ 16 أكتوبر 2025" },
+  csrInit2P1: {
+    en: "As part of its signature community initiatives, Royale Hayat Hospital hosted a distinguished Breast Cancer Awareness lecture at Burgan Bank. Our elite consultants guided attendees through the importance of early detection, self-examination, and proactive health practices, empowering women with knowledge and confidence.",
+    ar: "ضمن مبادراته المجتمعية المتميزة، نظم مستشفى رويال حياة محاضرة توعوية خاصة بسرطان الثدي في بنك برقان، حيث قدّم استشاريو المستشفى للحضور معلومات مهمة حول الكشف المبكر، الفحص الذاتي، وأهمية اتباع الممارسات الصحية الوقائية، بما يسهم في تعزيز الوعي والثقة لدى النساء.",
+  },
+  csrInit2P2: {
+    en: "This initiative epitomizes Royale Hayat’s dedication to preventive healthcare and elevating public health awareness.",
+    ar: "تجسد هذه المبادرة التزام رويال حياة بدعم الرعاية الوقائية والارتقاء بمستوى الوعي الصحي في المجتمع.",
+  },
+  csrInit3Title: {
+    en: "Royale Hayat Hospital participated in the 3rd Special Olympics Kuwait Health Screening Event",
+    ar: "مشاركة مستشفى رويال حياة في فعالية الفحص الصحي للأولمبياد الخاص – الكويت",
+  },
+  csrInit3Date: { en: "held on 22 October 2025", ar: "أُقيمت بتاريخ 22 أكتوبر 2025" },
+  csrInit3P1: {
+    en: "Royale Hayat Hospital proudly participated in the 3rd Special Olympics Kuwait Health Screening Event through its dedicated medical team led by Dr. Alia Ali Ibrahim, Consultant in Internal and Respiratory Medicine. The initiative provided essential health screenings for 150 athletes with special needs across the State of Kuwait.",
+    ar: "يفخر مستشفى رويال حياة بمشاركته في النسخة الثالثة من فعالية الفحص الصحي للأولمبياد الخاص – الكويت، من خلال فريقه الطبي المتخصص بقيادة د. عالية علي إبراهيم، استشارية الأمراض الباطنية والجهاز التنفسي. وقدمت المبادرة فحوصات صحية شاملة لـ 150 رياضيًا من ذوي الاحتياجات الخاصة في مختلف أنحاء دولة الكويت،",
+  },
+  csrInit3P2: {
+    en: "This reflects the hospital’s continued commitment to community engagement, inclusivity, and promoting access to comprehensive, compassionate healthcare for all, especially athletes of determination.",
+    ar: "في خطوة تعكس التزام المستشفى المستمر بخدمة المجتمع، تعزيز الشمولية، وتوفير رعاية صحية متكاملة وإنسانية للجميع، وخاصة لأصحاب الهمم.",
+  },
+  csrInit4Title: {
+    en: "Royale Hayat Hospital's International Conference on Updates in Women's Health",
+    ar: "المؤتمر الدولي لصحة المرأة – مستشفى رويال حياة",
+  },
+  csrInit4Date: { en: "held on 29 November 2025", ar: "أُقيم بتاريخ 29 نوفمبر 2025" },
+  csrInit4P1: {
+    en: "Royale Hayat Hospital had the honor of hosting an exclusive, high-level scientific conference on the latest advancements in women's health. Esteemed doctors and consultants from across the globe gathered to exchange insights, showcase best practices, and explore innovative approaches in women's healthcare.",
+    ar: "تشرف مستشفى رويال حياة باستضافة مؤتمر علمي دولي رفيع المستوى حول أحدث المستجدات والتطورات في مجال صحة المرأة، بمشاركة نخبة من الأطباء والاستشاريين من مختلف أنحاء العالم. وشكّل المؤتمر منصة علمية متميزة لتبادل الخبرات، واستعراض أفضل الممارسات الطبية، ومناقشة أحدث الابتكارات في الرعاية الصحية للمرأة.",
+  },
+  csrInit4P2: {
+    en: "This prestigious event reflects our unwavering commitment to delivering world-class, evidence-based care for women in Kuwait and the region.",
+    ar: "ويعكس هذا الحدث المرموق التزامنا الراسخ بتقديم رعاية صحية عالمية المستوى قائمة على الأدلة العلمية، للمرأة في الكويت والمنطقة.",
+  },
 
   // Leadership
   leadership: { en: "Leadership Team", ar: "فريق القيادة" },
-  leadershipSubtitle: { en: "Leading the Journey to Excellence", ar: "قيادة رحلة التميز" },
-  leadershipDesc: { en: "Learn more about our visionary leadership team responsible for fulfilling the vision of our Group, managing RHH activities as the leading luxurious healthcare provider in Kuwait, and steering the organization towards a bright future.", ar: "تعرف على فريق القيادة صاحب الرؤية المسؤول عن تحقيق رؤية مجموعتنا وإدارة أنشطة المستشفى كمزود رائد للرعاية الصحية الفاخرة في الكويت." },
+  leadershipSubtitle: { en: "Leading the Journey to Excellence", ar: "قيادة مسيرة التميّز" },
+  leadershipDesc: {
+    en: "Learn more about our visionary leadership team responsible for fulfilling the vision of our Group, managing RHH activities as the leading luxurious healthcare provider in Kuwait, and steering the organization towards a bright future.",
+    ar: "تعرّفوا على فريقنا القيادي صاحب الرؤية، والمسؤول عن تحقيق تطلعات مجموعة رويال حياة، وإدارة عمليات المستشفى باعتباره أحد أبرز مقدمي الرعاية الصحية الفاخرة في الكويت، وقيادة المؤسسة نحو مستقبل أكثر إشراقًا وتميزًا",
+  },
 
   // Home Health
   careAtHome: { en: "Care at Home", ar: "الرعاية في المنزل" },
@@ -151,14 +281,20 @@ const translations: Translations = {
 
   // Hero
   luxuriousHospital: { en: "Welcome to Royale Hayat Hospital", ar: "مرحباً بكم في مستشفى رويال حياة" },
-  exceptionalCare: { en: "Celebrating Life.", ar: "نحتفي بالحياة." },
-  everyStage: { en: "Every Stage.", ar: "كل مرحلة." },
-  everyAge: { en: "Every Age.", ar: "كل عمر." },
-  heroIntro: { en: "At life's most meaningful moments, healthcare should feel deeply human.", ar: "في أكثر لحظات الحياة أهمية، يجب أن تكون الرعاية الصحية إنسانية بعمق." },
-  heroDesc: { en: "In 2006, a different vision took shape. We set out to create a healthcare destination where patients would feel cared for in every sense, from the very first step inside to the moment they returned home. A space where healing would be serene, and every interaction would be attentive and respectful.\n\nThis vision became Royale Hayat Hospital.", ar: "في عام 2006، تشكّلت رؤية مختلفة. انطلقنا لنبني وجهة رعاية صحية يشعر فيها المريض بالاهتمام في كل جانب، من أول خطوة داخل المستشفى حتى لحظة عودته إلى المنزل. مكان يكون فيه الشفاء هادئاً، وكل تفاعل منتبهاً ومحترماً.\n\nهذه الرؤية أصبحت مستشفى رويال حياة." },
+  exceptionalCare: { en: "Celebrating Life.", ar: "لنحتفل معاً بالحياة." },
+  everyStage: { en: "Every Stage,", ar: "في كل مرحلة." },
+  everyAge: { en: "Every Age.", ar: "في كل عمر." },
+  heroIntro: {
+    en: "",
+    ar: "في أكثر لحظات الحياة عمقاً ومعنى، ينبغي للرعاية الصحية أن تكون إنسانية حقاً.",
+  },
+  heroDesc: {
+    en: "In 2006, a different vision took shape. We set out to create a healthcare destination where patients would feel cared for in every sense, from the very first step inside to the moment they returned home. A space where healing would be serene, and every interaction would be attentive and respectful.\n\nThis vision became Royale Hayat Hospital.",
+    ar: "في عام 2006، وُلدت رؤية مختلفة. رؤية جديدة تهدف إلى إنشاء وجهة صحية يشعر فيها المرضى بالرعاية الحقيقية بكل تفاصيلها، منذ اللحظة الأولى لدخولهم وحتى عودتهم إلى منازلهم. مكان يجمع بين العلاج والسكينة، حيث تُقدَّم كل تجربة بعناية واحترام واهتمام صادق.\n\nومن هنا، انطلقت قصة مستشفى رويال حياة",
+  },
   heroTagline: { en: "A hospital experience unlike any other.", ar: "تجربة مستشفى لا مثيل لها." },
   bookAnAppointment: { en: "Book an Appointment", ar: "احجز موعداً" },
-  exploreServices: { en: "Explore Services", ar: "استكشف الخدمات" },
+  exploreServices: { en: "Explore Services", ar: "للمزيد من الخدمات" },
   discover: { en: "Discover", ar: "اكتشف" },
   // Symptom checker
   aiPowered: { en: "AI-Powered Symptom Checker", ar: "فحص الأعراض بالذكاء الاصطناعي" },
@@ -180,7 +316,12 @@ const translations: Translations = {
   // Departments
   ourSpecialties: { en: "Our Specialties", ar: "تخصصاتنا" },
   medicalDepartments: { en: "Medical Departments", ar: "الأقسام الطبية" },
-  deptCount: { en: "Comprehensive medical departments led by internationally renowned physicians.", ar: "أقسام طبية شاملة يقودها أطباء مشهورون عالمياً." },
+  deptCount: {
+    en: "Comprehensive medical departments led by internationally renowned physicians.",
+    ar: "أقسام طبية متكاملة يقودها نخبة من الأطباء العالميين",
+  },
+  exploreSubSpecialties: { en: "Explore", ar: "تعرف على" },
+  subSpecialties: { en: "Sub-Specialties", ar: "التخصصات الدقيقة" },
   viewAllDepts: { en: "VIEW ALL DEPARTMENTS", ar: "عرض جميع الأقسام" },
   showLess: { en: "SHOW LESS", ar: "عرض أقل" },
   // Booking flow
@@ -260,7 +401,34 @@ const translations: Translations = {
   // step5: { en: "Wear comfortable clothing for examination", ar: "ارتداء ملابس مريحة للفحص" },
   aiHealthInsights: { en: "AI Health Insights", ar: "رؤى صحية ذكية" },
   // Chairman
-  chairmanMessage: { en: "Chairman's Message", ar: "رسالة رئيس مجلس الإدارة" },
+  chairmanMessage: { en: "Chairman's Message", ar: "كلمة رئيس مجلس الإدارة" },
+  chairmanGreeting: { en: "Dear Patient / Visitor,", ar: "أعزّاءنا المرضى والزوار،" },
+  chairmanP1: {
+    en: "At Royale Hayat Hospital, our journey began in 2006 with a clear vision to create a healthcare institution where world-class medical expertise is guided by the principles of genuine hospitality. What began as a specialized center for women's and children's health has evolved into a leading multi-specialty hospital and a trusted destination for advanced care and hospitality.",
+    ar: "انطلقت رحلتنا في مستشفى رويال حياة عام 2006 برؤية واضحة تتمثل في إنشاء مؤسسة صحية تجمع بين التميّز الطبي العالمي ومبادئ الضيافة الحقيقية. وما بدأ كمركز متخصص لصحة المرأة والطفل، تطوّر اليوم ليصبح مستشفى متعدد التخصصات ووجهة موثوقة للرعاية الصحية المتقدمة والضيافة الراقية.",
+  },
+  chairmanP2: {
+    en: "We have thoughtfully shaped an environment where every detail is considered, and every interaction is carefully curated. We believe that at its core, the very idea of a hospital is rooted in hospitality, the act of caring for people with warmth, dignity, and respect. This philosophy defines The Royale Hayat Experience, where advanced healthcare is delivered with attentiveness, discretion, and a deeply personalized touch.",
+    ar: "لقد حرصنا بعناية على تصميم بيئة تُؤخذ فيها كل التفاصيل بعين الاعتبار، وتُصاغ فيها كل تجربة بأسلوب مدروس بعناية. فنحن نؤمن بأن جوهر المستشفى يرتكز على مفهوم الضيافة، أي رعاية الإنسان بدفء، احترام، وكرامة. ومن هنا وُلدت تجربة رويال حياة، حيث تُقدَّم الرعاية الصحية المتقدمة بروح من الاهتمام، الخصوصية، واللمسة الإنسانية الراقية.",
+  },
+  chairmanP3: {
+    en: "At the heart of our philosophy lies a commitment to patient care that goes beyond expectation. Every experience is thoughtfully designed to reflect a level of attention and refinement that ensures each individual feels valued, respected, and exceptionally cared for at every stage of their journey.",
+    ar: "وفي صميم فلسفتنا يكمن التزامنا بتقديم رعاية تتجاوز التوقعات، حيث يتم تصميم كل تجربة بعناية لتعكس أعلى مستويات الاهتمام والرقي، بما يضمن أن يشعر كل فرد بالتقدير والاحترام والرعاية الاستثنائية في كل مرحلة من رحلته العلاجية.",
+  },
+  chairmanP4: {
+    en: "Our distinction is built upon the strength of our team, our physicians, nurses, and clinical professionals, whose expertise, dedication, and quiet commitment to excellence define who we are. Being recognized as the Best Hospital in Kuwait for 16 years reflects their contribution and the enduring trust of our patients and community.",
+    ar: "ويستند تميزنا إلى قوة فريقنا من الأطباء، والممرضين، والكوادر الطبية المتخصصة، الذين يشكّل تفانيهم وخبراتهم والتزامهم الهادئ بالتميّز جوهر هويتنا. كما أن حصولنا على لقب “أفضل مستشفى في الكويت” لمدة 16 عامًا متتالية، يعكس مساهماتهم القيّمة والثقة المستمرة التي منحنا إياها مرضانا ومجتمعنا.",
+  },
+  chairmanP5: {
+    en: "As we look ahead, our focus remains clear: to continue advancing healthcare through innovation and a deeply personalized approach, while preserving the warmth, attentiveness, and human connection that define us. On behalf of our entire team, we look forward to welcoming you not just as a patient but as part of our extended family and ensuring your journey is defined by comfort, confidence, and exceptional care.",
+    ar: "ومع تطلعنا إلى المستقبل، يبقى هدفنا ثابتًا على مواصلة تطوير الرعاية الصحية من خلال الابتكار ونهج الرعاية الشخصية، مع الحفاظ على الدفء، الاهتمام، والبعد الإنساني الذي لطالما تميزنا به. وبالنيابة عن جميع أفراد فريقنا، نتطلع إلى الترحيب بكم ليس فقط كمرضى، بل كجزء من عائلة رويال حياة، وأن نجعل رحلتكم معنا مليئة بالراحة، الثقة، والرعاية الاستثنائية.",
+  },
+  chairmanRegards: { en: "Kindest regards,", ar: "مع خالص التحيات والتقدير،" },
+  chairmanClosing: {
+    en: "Royale Hayat Hospital …your destination for better health and to celebrate life!",
+    ar: "مستشفى رويال حياة … وجهتكم نحو صحة أفضل والاحتفاء بالحياة",
+  },
+  chairmanBestWishes: { en: "With best wishes,", ar: "" },
   // International
   internationalPatients: { en: "International Patients", ar: "المرضى الدوليون" },
   // Footer / misc
@@ -310,13 +478,17 @@ const translations: Translations = {
     ar: "في عام 2006، تصورت ما اعتقد الكثيرون أنه مستحيل — رؤية قليلون يمكنهم تخيلها، إبداع بُني بالإيمان والعزيمة والحب.حلمت بجمع الخبرة الطبية العالمية مع الرحمة والخصوصية والراحة، وتقديم رعاية شخصية حقيقية في بيئة يلتقي فيها الفخامة بالطب المتقدم.اليوم، بعد ما يقرب من عقدين، يقف ذلك الحلم أمامكم كمؤسسة عظيمة نفخر بتسميتها مستشفى رويال حياة."
   },
   chairmanName: { en: "Pradeep K Handa", ar: "براديب ك. هاندا" },
-  chairmanTitle: { en: "Chairman, Royale Hayat Executive Board", ar: "رئيس المجلس التنفيذي، مستشفى رويال حياة" },
+  chairmanTitle: { en: "Chairman, Royale Hayat Executive Board", ar: "رئيس مجلس رويال حياة التنفيذي" },
   chairmanFullMessage: { en: "We have thoughtfully shaped an environment where every detail is considered, and every interaction is carefully curated. We believe that at its core, the very idea of a hospital is rooted in hospitality the act of caring for people with warmth, dignity, and respect. This philosophy defines The Royale Hayat Experience, where advanced healthcare is delivered with attentiveness, discretion, and a deeply personalized touch.\n\nAt the heart of our philosophy lies a commitment to patient care that goes beyond expectation. Every experience is thoughtfully designed to reflect ·a level of attention and refinement that ensures each individual feels valued, respected, and exceptionally cared for at every stage of their journey.\n\nOur distinction is built upon the strength of our team our physicians, nurses, and clinical professionals whose expertise, dedication, and quiet commitment to excellence define who we are.Being recognized as the Best Hospital in Kuwait for 16 years reflects their contribution and the enduring trust of our patients and community.\n\nAs we look ahead, our focus remains clear to continue advancing healthcare through innovation and adeeply personalized approach, while preserving the warmth, attentiveness, and human connection that define us. On behalf of our entire team, we look forward to welcoming you not just as a patient, but as part of our extended family and ensuring your journey is defined by comfort, confidence, and exceptional care.", ar: "وراء هذا الجو الفندقي الفاخر تكمن تقنيات متقدمة وبنية تحتية عالمية وفريق من الأطباء والممرضين والمهنيين السريريين المتميزين المكرسين لتقديم رعاية استثنائية. كل تفصيل مصمم ليس فقط لإراحة الحواس بل لدعم أعلى معايير التميز الطبي وسلامة المرضى.\n\nللعائلات التي تبدأ رحلتها أو تنميها، نحن نفهم مدى ثمينة كل لحظة. من الحمل والرعاية قبل الولادة إلى الولادة ودعم ما بعد الولادة، تسير فرقنا المتمرسة بجانبك بالرحمة والمهارة والاهتمام الثابت.\n\nتم الاعتراف بمستشفى رويال حياة كأفضل مستشفى في الكويت على مدار الـ 15 عامًا الماضية، حيث يمزج الضيافة مع التميز السريري بطريقة فريدة حقاً. هذا ما نفخر بتسميته \"تجربة رويال حياة\" — حيث يلتقي الدفء بالخبرة وتتعايش الفخامة بسلاسة مع الرعاية الصحية المتقدمة.\n\nنيابة عن فريقنا بأكمله، نتطلع إلى الترحيب بكم — ليس فقط كمريض، بل كجزء من عائلتنا الممتدة — وضمان أن إقامتكم تتميز بالراحة والثقة والرعاية الاستثنائية." },
   chairmanClosingEn: { en: "Royale Hayat Hospital ...your destination for better health and to celebrate life!", ar: "مستشفى رويال حياة ...وجهتك لصحة أفضل والاحتفاء بالحياة!" },
 
   // Doctors
-  ourTeam: { en: "Our Team", ar: "فريقنا" },
+  ourTeam: { en: "Our Medical Team", ar: "فريقنا الطبي" },
   meetOurDoctors: { en: "Meet Our Doctors", ar: "تعرف على أطبائنا" },
+  meetOurDoctorsSubtitle: {
+    en: "A team of specialized physicians delivering world-class healthcare",
+    ar: "فريق من الأطباء المتخصصين يقدّم رعاية صحية على مستوى عالمي",
+  },
   viewAllDoctors: { en: "View All Doctors", ar: "عرض جميع الأطباء" },
   viewProfile: { en: "View Profile", ar: "عرض الملف الشخصي ←" },
 
@@ -404,7 +576,7 @@ const translations: Translations = {
 
   // Footer
   quickLinks: { en: "Quick Links", ar: "روابط سريعة" },
-  aboutUs: { en: "About Us", ar: "عن المستشفى" },
+  aboutUs: { en: "About Us", ar: "من نحن" },
   ourServices: { en: "Our Services", ar: "خدماتنا" },
   findADoctor: { en: "Find a Doctor", ar: "ابحث عن طبيب" },
   contactUsFooter: { en: "Contact Us", ar: "اتصل بنا" },
@@ -458,7 +630,10 @@ const translations: Translations = {
   searchSymptoms: { en: "Search symptoms, doctor, department...", ar: "ابحث عن الأعراض، الطبيب، القسم..." },
   searchResults: { en: "Search Results", ar: "نتائج البحث" },
   noResults: { en: "No results found. Try different keywords.", ar: "لم يتم العثور على نتائج. حاول بكلمات مختلفة." },
-  findDoctor: { en: "Find the right doctor by symptom or specialty", ar: "ابحث عن الطبيب المناسب حسب الأعراض أو التخصص" },
+  findDoctor: {
+    en: "Find the right doctor by symptom or specialty",
+    ar: "ابحث عن الطبيب المناسب حسب الأعراض أو التخصص الطبي الذي تحتاجه",
+  },
   backToDoctors: { en: "Back to Doctors", ar: "العودة للأطباء" },
   aboutDoctor: { en: "About", ar: "نبذة" },
   areasOfExpertise: { en: "Areas of Expertise", ar: "مجالات الخبرة" },

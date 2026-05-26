@@ -37,7 +37,7 @@ const JobApplication = () => {
   const [jobError, setJobError] = useState(false);
 
   const [showForm, setShowForm] = useState(false);
-  const [cvFile, setCvFile] = useState<File | null>(null);
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const formRef = useRef<HTMLDivElement | null>(null);
 
@@ -126,8 +126,8 @@ const JobApplication = () => {
     const phone = phoneRef.current?.value.trim() ?? "";
     const coverLetter = coverLetterRef.current?.value.trim() ?? "";
 
-    if (!cvFile) {
-      toast({ title: isAr ? "يرجى رفع السيرة الذاتية" : "Please upload your CV" });
+    if (!resumeFile) {
+      toast({ title: isAr ? "يرجى رفع السيرة الذاتية" : "Please upload your resume" });
       return;
     }
 
@@ -144,7 +144,7 @@ const JobApplication = () => {
           email,
           phone,
           coverLetter,
-          cv: cvFile,
+          resume: resumeFile,
         });
         toast({
           title: isAr ? "تم إرسال الطلب" : "Application Submitted",
@@ -397,16 +397,16 @@ const JobApplication = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="cv">
-                        {isAr ? "السيرة الذاتية" : "Upload CV"}{" "}
+                      <Label htmlFor="resume">
+                        {isAr ? "السيرة الذاتية" : "Upload Resume"}{" "}
                         <span className="text-destructive">*</span>
                       </Label>
                       <Input
-                        id="cv"
+                        id="resume"
                         type="file"
                         required
                         accept=".pdf,.doc,.docx"
-                        onChange={(e) => setCvFile(e.target.files?.[0] ?? null)}
+                        onChange={(e) => setResumeFile(e.target.files?.[0] ?? null)}
                         className="text-sm"
                       />
                       <p className="text-xs text-muted-foreground">

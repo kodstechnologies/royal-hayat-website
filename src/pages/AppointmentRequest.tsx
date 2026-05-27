@@ -46,21 +46,6 @@ const AppointmentRequest = () => {
   };
 
   const handleSubmit = async () => {
-  const calculateAge = (dob: string): number | undefined => {
-    if (!dob) return undefined;
-    const birthDate = new Date(dob);
-    if (Number.isNaN(birthDate.getTime())) return undefined;
-
-    const today = new Date();
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-      age -= 1;
-    }
-    return age >= 0 ? age : undefined;
-  };
-
-  const handleSubmit = async () => {
     if (!validate()) return;
     setSubmitting(true);
     try {
@@ -303,7 +288,6 @@ const AppointmentRequest = () => {
       <ScrollToTop />
     </div>
   );
-}
 }
 
 export default AppointmentRequest;

@@ -29,14 +29,14 @@ const PatientsVisitors = () => {
   const sectionClass = "scroll-mt-[calc(var(--header-height,76px)+2rem)]";
 
   return (
-    <div className="min-h-screen bg-background pt-[var(--header-height,56px)] overflow-x-hidden flex flex-col [&_.text-accent]:text-[#816107] [&_p]:text-justify [&_li]:text-justify">
+    <div className="min-h-screen bg-background pt-[var(--header-height,56px)] overflow-x-hidden flex flex-col [&_.text-accent]:text-[#816107] [&_p:not(.no-mobile-justify)]:text-justify [&_li]:text-justify max-md:[&_p:not(.no-mobile-justify)]:hyphens-auto max-md:[&_p:not(.no-mobile-justify)]:break-words max-md:[&_p:not(.no-mobile-justify)]:[text-justify:inter-word] max-md:[&_p:not(.no-mobile-justify)]:[text-align-last:left] max-md:[&_li]:hyphens-auto max-md:[&_li]:break-words max-md:[&_li]:[text-justify:inter-word]">
       <Header />
 
       {/* Hero */}
       <section className={`bg-primary/5 ${tab === "rooms-package" ? "py-6 md:py-8" : "py-16 md:py-20"}`}>
         <div className="container mx-auto px-6 text-center">
           <ScrollAnimationWrapper>
-            <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">
+            <p className="no-mobile-justify text-accent text-xs tracking-[0.3em] uppercase font-body mb-3 !text-center">
               {lang === "ar" ? (tab === "admission" ? "للمرضى" : "لمرضانا") : "For Our Patients"}
             </p>
             <h1 className={`font-serif text-foreground mb-4 ${tab === "rooms-package" ? "text-2xl md:text-3xl" : "text-4xl md:text-5xl"}`}>
@@ -365,7 +365,10 @@ const PatientsVisitors = () => {
 
                 <div className="bg-popover border border-border/50 rounded-2xl p-6 mb-6">
                   <h3 className="font-serif text-lg text-foreground mb-3">{lang === "ar" ? "كيفية الدخول إلى المستشفى" : "How to Get Admitted"}</h3>
-                  <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
+                  <p
+                    lang={lang === "ar" ? "ar" : "en"}
+                    className="font-body text-sm text-muted-foreground leading-relaxed mb-4 max-md:hyphens-auto max-md:break-words max-md:[text-justify:inter-word] max-md:[text-align-last:left]"
+                  >
                     {lang === "ar"
                       ? "يتم ترتيب الدخول مسبقًا بالتنسيق مع فريق المستشفى، وذلك بناءً على:"
                       : "Admission is arranged in advance through coordination with our hospital team. Patients are admitted based on:"}

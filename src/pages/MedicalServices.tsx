@@ -42,7 +42,7 @@ const MedicalServices = () => {
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107]">
       <Header />
-      <DepartmentsSection showPageTitle />
+      <DepartmentsSection showPageTitle={false} />
       <DoctorsSection featuredDoctors={featuredDoctors} />
       <HomeHealthPreview />
       <Footer />

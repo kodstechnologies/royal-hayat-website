@@ -30,7 +30,7 @@ const InsurancePartners = () => {
       <div className="container mx-auto px-6">
         <ScrollAnimationWrapper>
           <div className="text-center mb-10">
-            <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">{t("trustedBy")}</p>
+            <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3 !text-center">{t("trustedBy")}</p>
             <h2 className="text-3xl md:text-4xl font-serif text-foreground">{t("insurancePartners")}</h2>
           </div>
         </ScrollAnimationWrapper>
@@ -93,7 +93,7 @@ const InsurancePartners = () => {
       </div>
 
       <div className="container mx-auto px-6">
-        <p className="text-center text-muted-foreground font-body text-sm">
+        <p className="text-center !text-center text-muted-foreground font-body text-sm">
           {t("dontSeeInsurance")}{" "}
           <a href="#contact" className="text-primary underline hover:text-accent transition-colors">{t("contactUs")}</a>{" "}
           {t("toVerifyCoverage")}

@@ -508,8 +508,8 @@ const Header = () => {
                                 <sub.icon className="w-4 h-4 text-primary" />
                               </div>
                               <div>
-                                <p className="font-body text-sm font-medium text-foreground group-hover:text-primary transition-colors">{sub.label}</p>
-                                <p className="font-body text-xs text-muted-foreground mt-0.5">{sub.desc}</p>
+                                <p className="font-body text-sm font-medium text-foreground group-hover:text-primary transition-colors !text-left [text-align-last:auto]">{sub.label}</p>
+                                <p className="font-body text-xs text-muted-foreground mt-0.5 !text-left [text-align-last:auto]">{sub.desc}</p>
                               </div>
                             </Link>
                           ) : (
@@ -522,8 +522,8 @@ const Header = () => {
                                 <sub.icon className="w-4 h-4 text-primary" />
                               </div>
                               <div>
-                                <p className="font-body text-sm font-medium text-foreground group-hover:text-primary transition-colors">{sub.label}</p>
-                                <p className="font-body text-xs text-muted-foreground mt-0.5">{sub.desc}</p>
+                                <p className="font-body text-sm font-medium text-foreground group-hover:text-primary transition-colors !text-left [text-align-last:auto]">{sub.label}</p>
+                                <p className="font-body text-xs text-muted-foreground mt-0.5 !text-left [text-align-last:auto]">{sub.desc}</p>
                               </div>
                             </a>
                           )

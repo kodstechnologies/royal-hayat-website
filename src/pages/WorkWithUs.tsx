@@ -339,6 +339,7 @@ const WorkWithUs = ({
               className="work-culture-hero-wrap relative w-full overflow-hidden bg-primary/5 lg:min-h-[480px] lg:h-full 2xl:min-h-[620px]"
             >
               <WorkCultureHeroImage
+                key={lang}
                 alt={
                   isAr
                     ? "الحياة في رويال حياة"
@@ -385,7 +386,7 @@ const WorkWithUs = ({
               <h2 className="text-2xl md:text-3xl font-serif text-foreground text-center mb-3">
                 {isAr ? "وعدنا لموظفينا" : "‘Our People Promise’"}
               </h2>
-              <p className="text-center text-accent font-body text-sm mb-8 italic">
+              <p className="text-center !text-center text-accent font-body text-sm mb-8 italic">
                 {isAr
                   ? "إن وعدنا لمرضانا يبدأ أولًا من وعدنا لموظفينا."
                   : "Our promise to patients begins with our promise to our people"}
@@ -447,7 +448,7 @@ const WorkWithUs = ({
         <section className="py-16 bg-secondary/10">
           <div className="container mx-auto px-6">
             <div className="text-center mb-8">
-              <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">
+              <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3 !text-center">
                 {isAr ? "التكريم والتقدير" : "Life at Royale Hayat"}
               </p>
               {/* <h2 className="text-xl md:text-2xl font-serif text-foreground">
@@ -651,7 +652,7 @@ const WorkWithUs = ({
           <div className="container mx-auto px-6">
             <ScrollAnimationWrapper>
               <div className="text-center mb-8">
-                <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">
+                <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3 !text-center">
                   {isAr ? "انضم إلى فريقنا" : "Join Our Network!"}
                 </p>
                 <h2 className="text-2xl md:text-3xl font-serif text-foreground">
@@ -757,7 +758,7 @@ const WorkWithUs = ({
             </div>
 
             <div className="text-center mt-10">
-              <p className="font-body text-sm text-muted-foreground">
+              <p className="font-body text-sm text-muted-foreground !text-center">
                 {isAr
                   ? "لا ترى الوظيفة المناسبة؟ أرسل سيرتك الذاتية إلى"
                   : "Don't see the right fit? Send your CV to"}{" "}

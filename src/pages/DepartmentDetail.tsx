@@ -71,7 +71,9 @@ const DepartmentDoctors = ({ doctors, lang }: { doctors: typeof allDoctors; lang
             </h2>
           </div>
         </ScrollAnimationWrapper>
-        <div className="relative max-w-[1188px] mx-auto group/carousel"
+        <div
+          className="relative max-w-[1188px] mx-auto group/carousel"
+          dir="ltr"
           onMouseEnter={() => { isPausedRef.current = true; }}
           onMouseLeave={() => { isPausedRef.current = false; }}
         >
@@ -89,6 +91,7 @@ const DepartmentDoctors = ({ doctors, lang }: { doctors: typeof allDoctors; lang
           )}
           <div
             ref={scrollRef}
+            dir="ltr"
             className={`flex gap-20 md:gap-6 overflow-x-auto pb-8 scroll-smooth snap-x snap-mandatory px-[20px] md:px-0 detail-doctor-carousel ${doctors.length <= 2 ? 'md:justify-center' : 'md:justify-start'}`}
             style={{
               scrollbarWidth: "none",

@@ -66,6 +66,7 @@ const Header = () => {
       }
     };
     updateHeaderHeight();
+    requestAnimationFrame(updateHeaderHeight);
     const observer = new ResizeObserver(updateHeaderHeight);
     if (headerRef.current) observer.observe(headerRef.current);
     window.addEventListener("resize", updateHeaderHeight);
@@ -73,7 +74,7 @@ const Header = () => {
       observer.disconnect();
       window.removeEventListener("resize", updateHeaderHeight);
     };
-  }, [headerVisible]);
+  }, [headerVisible, lang, menuOpen, searchOpen]);
 
 
 

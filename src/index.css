@@ -77,6 +77,13 @@
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
+
+  @media (max-width: 1023px) {
+    :root {
+      /* Mobile: nav row + Book Appointment / Medical Reports bar (JS overwrites after measure) */
+      --header-height: 7.5rem;
+    }
+  }
 }
 
 @layer base {

@@ -12,6 +12,7 @@ const DoctorCard = ({ doc }: { doc: Doctor }) => {
   return (
     <Link to={`/doctors/${doc.id}`} className="block w-[280px] min-h-[430px] flex-shrink-0 relative z-0 hover:z-10 snap-center md:snap-start">
       <motion.div
+        dir={lang === "ar" ? "rtl" : "ltr"}
         whileHover={{ y: -6, boxShadow: "0 20px 40px -12px hsl(var(--primary) / 0.12)" }}
         className="bg-popover rounded-2xl border border-border/50 group cursor-pointer w-full h-full flex flex-col transition-all duration-300 "
       >
@@ -66,29 +67,33 @@ const DoctorsSection = ({ featuredDoctors }: { featuredDoctors: Doctor[] }) => {
   const isMobile = useIsMobile();
 
   const checkScroll = useCallback(() => {
-    if (scrollRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-      // Allow slight margin for rounding errors
-      setCanScrollLeft(scrollLeft > 10);
-      setCanScrollRight(Math.ceil(scrollLeft) + clientWidth < scrollWidth - 10);
-    }
+    const el = scrollRef.current;
+    if (!el) return;
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+    const maxScroll = Math.max(0, scrollWidth - clientWidth);
+    setCanScrollLeft(scrollLeft > 10);
+    setCanScrollRight(scrollLeft < maxScroll - 10);
   }, []);
 
   useEffect(() => {
     checkScroll();
     window.addEventListener("resize", checkScroll);
-    return () => window.removeEventListener("resize", checkScroll);
+    const el = scrollRef.current;
+    el?.addEventListener("scroll", checkScroll, { passive: true });
+    return () => {
+      window.removeEventListener("resize", checkScroll);
+      el?.removeEventListener("scroll", checkScroll);
+    };
   }, [checkScroll, featuredDoctors]);
 
   const scroll = useCallback((dir: "left" | "right") => {
-    if (scrollRef.current) {
-      // On mobile, scroll by card width (280) + large gap (80)
-      // On desktop, scroll card width (280) + gap (24)
-      const amount = isMobile ? (280 + 80) : (280 + 24) * 2;
-      let newLeft = scrollRef.current.scrollLeft + (dir === "left" ? -amount : amount);
-      scrollRef.current.scrollTo({ left: newLeft, behavior: "smooth" });
-      setTimeout(checkScroll, 400); // Re-check after animation
-    }
+    if (!scrollRef.current) return;
+    const amount = isMobile ? 280 + 80 : (280 + 24) * 2;
+    scrollRef.current.scrollBy({
+      left: dir === "left" ? -amount : amount,
+      behavior: "smooth",
+    });
+    setTimeout(checkScroll, 400);
   }, [isMobile, checkScroll]);
 
   const handleManualInteraction = (dir: "left" | "right") => {
@@ -97,20 +102,20 @@ const DoctorsSection = ({ featuredDoctors }: { featuredDoctors: Doctor[] }) => {
   };
 
   useEffect(() => {
-    if (isPaused || !scrollRef.current) return;
+    if (isPaused || featuredDoctors.length <= 1) return;
     const timer = setInterval(() => {
-      if (canScrollRight) {
+      const el = scrollRef.current;
+      if (!el) return;
+      const maxScroll = Math.max(0, el.scrollWidth - el.clientWidth);
+      if (el.scrollLeft < maxScroll - 10) {
         scroll("right");
       } else {
-        // Automatically scroll back to the beginning to loop
-        if (scrollRef.current) {
-          scrollRef.current.scrollTo({ left: 0, behavior: "smooth" });
-          setTimeout(checkScroll, 400);
-        }
+        el.scrollTo({ left: 0, behavior: "smooth" });
+        setTimeout(checkScroll, 400);
       }
     }, 5000);
     return () => clearInterval(timer);
-  }, [isPaused, canScrollRight, scroll, checkScroll]);
+  }, [isPaused, scroll, checkScroll, featuredDoctors.length]);
 
   return (
     <section className="py-20 bg-background" id="our-doctors">
@@ -130,19 +135,28 @@ const DoctorsSection = ({ featuredDoctors }: { featuredDoctors: Doctor[] }) => {
           </ScrollAnimationWrapper>
         </div>
 
-        <div className="relative group" onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)}>
+        <div
+          className="relative group"
+          dir="ltr"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+        >
           <button
+            type="button"
             onClick={() => handleManualInteraction("left")}
             disabled={!canScrollLeft}
-            className={`absolute left-0 sm:-left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground transition-all shadow-md ltr-icon ${!canScrollLeft ? "opacity-0 pointer-events-none" : "opacity-100 hover:bg-primary hover:text-primary-foreground hover:border-primary"}`}
+            aria-label={lang === "ar" ? "السابق" : "Previous"}
+            className={`absolute left-0 sm:-left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground transition-all shadow-md ltr-icon pointer-events-auto ${!canScrollLeft ? "opacity-0 pointer-events-none" : "opacity-100 hover:bg-primary hover:text-primary-foreground hover:border-primary"}`}
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
 
           <button
+            type="button"
             onClick={() => handleManualInteraction("right")}
             disabled={!canScrollRight}
-            className={`absolute right-0 sm:-right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground transition-all shadow-md ltr-icon ${!canScrollRight ? "opacity-0 pointer-events-none" : "opacity-100 hover:bg-primary hover:text-primary-foreground hover:border-primary"}`}
+            aria-label={lang === "ar" ? "التالي" : "Next"}
+            className={`absolute right-0 sm:-right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground transition-all shadow-md ltr-icon pointer-events-auto ${!canScrollRight ? "opacity-0 pointer-events-none" : "opacity-100 hover:bg-primary hover:text-primary-foreground hover:border-primary"}`}
           >
             <ChevronRight className="w-5 h-5" />
           </button>
@@ -150,8 +164,9 @@ const DoctorsSection = ({ featuredDoctors }: { featuredDoctors: Doctor[] }) => {
           <div className="max-w-[1192px] mx-auto overflow-hidden">
             <div
               ref={scrollRef}
+              dir="ltr"
               onScroll={checkScroll}
-              className="flex items-stretch gap-20 md:gap-6 overflow-x-auto pb-8 scroll-smooth snap-x snap-mandatory px-[20px] md:px-0"
+              className="doctors-carousel-track flex items-stretch gap-20 md:gap-6 overflow-x-auto pb-8 scroll-smooth snap-x snap-mandatory px-[20px] md:px-0"
               style={{
                 scrollbarWidth: "none",
                 msOverflowStyle: "none",
@@ -164,7 +179,7 @@ const DoctorsSection = ({ featuredDoctors }: { featuredDoctors: Doctor[] }) => {
               <style dangerouslySetInnerHTML={{
                 __html: `
                 @media (min-width: 768px) {
-                  .snap-x { padding-left: 0 !important; padding-right: 0 !important; }
+                  .doctors-carousel-track { padding-left: 0 !important; padding-right: 0 !important; }
                 }
               `}} />
               {featuredDoctors.map((doc) => (

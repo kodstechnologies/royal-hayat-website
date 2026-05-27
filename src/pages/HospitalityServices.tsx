@@ -851,7 +851,7 @@ const HospitalityServices = ({
                   )}
 
                   {currentSuite.highlights && (
-                    <div className="space-y-2 mb-6 text-left">
+                    <div className="space-y-2 mb-6 text-justify">
                       {isAr && <h4 className="font-serif text-base text-foreground mb-2">مميزات الجناح</h4>}
                       {currentSuite.highlights.map((h, i) => (
                         <div key={i} className="flex items-center gap-3">
@@ -863,7 +863,7 @@ const HospitalityServices = ({
                   )}
 
                   {currentSuite.dimensions && (
-                    <div className="mb-6 text-left">
+                    <div className="mb-6 text-justify">
                       <h4 className="font-serif text-base text-foreground mb-2">{isAr ? "مساحات الجناح" : "Suite Dimensions:"}</h4>
                       <div className="space-y-1">
                         {currentSuite.dimensions.map((d, i) => (
@@ -876,7 +876,7 @@ const HospitalityServices = ({
                     </div>
                   )}
 
-                  <div className="mb-6 text-left">
+                  <div className="mb-6 text-justify">
                     <h4 className="font-serif text-base text-foreground mb-3">
                       {"amenitiesTitle" in currentSuite && currentSuite.amenitiesTitle
                         ? currentSuite.amenitiesTitle
@@ -1461,7 +1461,7 @@ const HospitalityServices = ({
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="w-full">
             <ScrollAnimationWrapper>
-              <div className="text-left">
+              <div className="text-justify">
                 <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-2 text-center">
                   {isAr ? "مقهى الطابق الخامس" : "The 5th Floor Café"}
                 </h2>
@@ -1483,7 +1483,7 @@ const HospitalityServices = ({
                 <h3 className="font-serif text-base text-foreground mb-3 text-left">
                   {isAr ? "ما نقدمه" : "What We Offer:"}
                 </h3>
-                <div className="space-y-2 mb-6 w-full text-left">
+                <div className="space-y-2 mb-6 w-full text-justify">
                   {(isAr
                     ? ["قهوة مختصة طازجة التحضير", "تشكيلة متنوعة من السندويشات", "سلطات طازجة", "حلويات فاخرة"]
                     : ["Freshly brewed specialty coffee", "A selection of sandwiches", "Fresh salads", "Indulgent desserts"]

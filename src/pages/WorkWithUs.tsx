@@ -326,7 +326,7 @@ const WorkWithUs = ({
   ];
 
   return (
-    <div className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107]">
+    <div className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107] [&_p]:text-justify [&_li]:text-justify">
       <Header />
 
       {/* Hero */}

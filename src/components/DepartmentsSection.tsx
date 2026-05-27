@@ -8,7 +8,11 @@ import { departments as staticDepartments, type Department, MAIN_CATEGORIES } fr
 import { doctors, type Doctor } from "@/data/doctors";
 import { deptDoctorAliases } from "@/data/departments";
 import { departmentDetails } from "@/data/departmentDetails";
-const DepartmentsSection = () => {
+type DepartmentsSectionProps = {
+  showPageTitle?: boolean;
+};
+
+const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [selectedSubByDept, setSelectedSubByDept] = useState<Record<number, string>>({});
   const [departments] = useState<Department[]>(
@@ -173,6 +177,15 @@ const DepartmentsSection = () => {
           transition={{ duration: 0.7 }}
           className="text-center mb-10 md:mb-14"
         >
+          {showPageTitle && (
+            <h1
+              className={`text-4xl md:text-5xl lg:text-6xl font-serif text-foreground mb-4 ${
+                lang === "ar" ? "dept-rtl-center" : ""
+              }`}
+            >
+              {t("medicalServices")}
+            </h1>
+          )}
           <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-4">{t("ourSpecialties")}</p>
           <h2
             className={`text-3xl md:text-4xl lg:text-5xl font-serif text-foreground mb-4 ${

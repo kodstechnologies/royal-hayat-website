@@ -95,7 +95,7 @@ export const departments: Department[] = [
   },
   {
     id: 5, icon: Activity, category: "General", mainCategory: "Clinical Speciality",
-    name: "Internal Medicine", nameAr: "قسم الباطنية", slug: "internal-medicine",
+    name: "Internal Medicine", nameAr: "قسم الأمراض الباطنية", slug: "internal-medicine",
     desc: "Comprehensive diagnosis and treatment of complex adult diseases with personalized health check programs.",
     descAr: "تشخيص وعلاج شامل لأمراض البالغين المعقدة مع برامج فحص صحي مخصصة.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Internal+Medicine/1.jpg",
@@ -111,7 +111,7 @@ export const departments: Department[] = [
   },
   {
     id: 10, icon: Activity, category: "General", mainCategory: "Clinical Speciality",
-    name: "Family Medicine", nameAr: "طب العائلة", slug: "family-medicine",
+    name: "Family Medicine", nameAr: "قسم طب العائلة", slug: "family-medicine",
     desc: "Continuous, personalized care for individuals and families of all ages with coordinated health management.",
     descAr: "رعاية مستمرة ومخصصة للأفراد والعائلات من جميع الأعمار.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Family+Medicine/1.jpg",
@@ -135,7 +135,7 @@ export const departments: Department[] = [
   },
   {
     id: 2, icon: Heart, category: "Women's Health", mainCategory: "Clinical Speciality",
-    name: "Reproductive Medicine & IVF", nameAr: "طب الإنجاب وأطفال الأنابيب", slug: "reproductive-medicine-ivf",
+    name: "Reproductive Medicine & IVF", nameAr: "قسم طب الإنجاب وأطفال الأنابيب", slug: "reproductive-medicine-ivf",
     desc: "Advanced fertility treatments blending expertise with cutting-edge technology, including IVF, ICSI, and genetic diagnosis.",
     descAr: "علاجات خصوبة متقدمة تجمع بين الخبرة والتكنولوجيا المتطورة.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Reproductive+Medicine+%26+IVF/2.jpg",
@@ -143,7 +143,7 @@ export const departments: Department[] = [
   },
   {
     id: 8, icon: Smile, category: "Skin", mainCategory: "Clinical Speciality",
-    name: "Dermatology", nameAr: "قسم الجلدية", slug: "dermatology",
+    name: "Dermatology", nameAr: "قسم الأمراض الجلدية", slug: "dermatology",
     desc: "Expert care for all dermatological needs combining clinical excellence with the latest advances for adults and children.",
     descAr: "رعاية متخصصة لجميع احتياجات الأمراض الجلدية مع أحدث التطورات.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Dermatology/1.JPG",
@@ -185,7 +185,7 @@ export const departments: Department[] = [
   },
   {
     id: 14, icon: AlertCircle, category: "Emergency", mainCategory: "Clinical Support Service",
-    name: "Intensive Care", nameAr: "العناية المركزة", slug: "intensive-care",
+    name: "Intensive Care", nameAr: "وحدة العناية المركزة", slug: "intensive-care",
     desc: "Round-the-clock monitoring and care for severe, life-threatening conditions with cutting-edge technology.",
     descAr: "مراقبة ورعاية على مدار الساعة للحالات الحرجة المهددة للحياة.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Intensive+Care/1.jpg",

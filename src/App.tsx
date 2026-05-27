@@ -166,24 +166,24 @@ const suiteCarouselImagesByIndex: Record<number, string[]> = {
 };
 // Paste your final gallery links here
 const workWithUsStaffActivitiesImages: string[] = [
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/Staff-Activities/1.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/Staff-Activities/2.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/Staff-Activities/3.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/Staff-Activities/4.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/Staff-Activities/5.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/Staff-Activities/6.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/Staff-Activities/7.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/Staff-Activities/8.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/Staff-Activities/9.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/Staff-Activities/10.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/Staff-Activities/11.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/Staff-Activities/12.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/Staff-Activities/13.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/Staff-Activities/14.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/Staff-Activities/15.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/Staff-Activities/16.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/Staff-Activities/17.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/Staff-Activities/18.jpg.jpeg"
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/newly-compressed/1.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/newly-compressed/2.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/newly-compressed/3.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/newly-compressed/4.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/newly-compressed/5.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/newly-compressed/6.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/newly-compressed/7.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/newly-compressed/8.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/newly-compressed/9.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/newly-compressed/10.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/newly-compressed/11.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/newly-compressed/12.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/newly-compressed/13.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/newly-compressed/14.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/newly-compressed/15.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/newly-compressed/16.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/newly-compressed/17.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/newly-compressed/18.jpeg"
 
 ];
 const workWithUsGalaDinnerImages: string[] = [

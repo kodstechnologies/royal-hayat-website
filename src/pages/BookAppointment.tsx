@@ -649,8 +649,8 @@ const BookAppointment = () => {
   const steps = [
     { label: isAr ? "القسم" : "Department", icon: Building2 },
     { label: isAr ? "الطبيب" : "Doctor", icon: User },
-    { label: isAr ? "بيانات المريض" : "Patient Info", icon: ClipboardList },
-    { label: isAr ? "المواعيد" : "Time Slots", icon: Clock },
+    { label: isAr ? "معلومات المريض" : "Patient Info", icon: ClipboardList },
+    { label: isAr ? "الوقت" : "Time Slots", icon: Clock },
     { label: isAr ? "تأكيد" : "Confirm", icon: CheckCircle2 },
   ];
 
@@ -1236,7 +1236,7 @@ Clinic Code:`;
                 <div className="flex items-start gap-3">
                   <Clock className="w-5 h-5 text-accent mt-0.5" />
                   <div>
-                    <p className="text-muted-foreground text-xs uppercase tracking-wider">{isAr ? "الموعد" : "Time Slot"}</p>
+                    <p className="text-muted-foreground text-xs uppercase tracking-wider">{isAr ? "الوقت" : "Time Slot"}</p>
                     <p className="text-foreground font-medium">
                       {selectedDate && selectedSlot ? (
                         `${formattedSelectedDate} • ${formatTimeString(selectedSlot)}`
@@ -1289,7 +1289,7 @@ Clinic Code:`;
               {lang === "ar" ? "اختر طريقة الحجز المناسبة لك" : "Choose how you'd like to book"}
             </p>
             <p className="text-muted-foreground/80 font-body text-xs max-w-lg mx-auto">
-              {lang === "ar" ? "حدد الطريقة التي تناسبك لحجز موعدك — حسب القسم، الطبيب، أو وصف الأعراض." : "Select the method that works best for you to schedule your appointment — by department, doctor, or symptom description."}
+              {lang === "ar" ? "اختر الطريقة الأنسب لحجز موعدك حسب القسم الطبي، أو الطبيب، أو من خلال وصف الأعراض" : "Select the method that works best for you to schedule your appointment — by department, doctor, or symptom description."}
             </p>
           </motion.div>
 
@@ -1300,9 +1300,9 @@ Clinic Code:`;
               <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3 md:mb-4">
                 <Building2 className="w-6 h-6 md:w-7 md:h-7 text-primary" />
               </div>
-              <h3 className="font-serif text-base md:text-lg text-foreground mb-1 md:mb-2">{lang === "ar" ? "اختر القسم" : "Select Department"}</h3>
+              <h3 className="font-serif text-base md:text-lg text-foreground mb-1 md:mb-2">{lang === "ar" ? "اختيار القسم" : "Select Department"}</h3>
               <p className="font-body text-xs text-muted-foreground">
-                {lang === "ar" ? "ابدأ باختيار القسم ثم الطبيب" : "Start by choosing a department, then a doctor"}
+                {lang === "ar" ? "ابدأ باختيار القسم، ثم الطبيب" : "Start by choosing a department, then a doctor"}
               </p>
             </motion.button>
 
@@ -1312,9 +1312,9 @@ Clinic Code:`;
               <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-3 md:mb-4">
                 <Stethoscope className="w-6 h-6 md:w-7 md:h-7 text-accent" />
               </div>
-              <h3 className="font-serif text-base md:text-lg text-foreground mb-1 md:mb-2">{lang === "ar" ? "أعرف طبيبي" : "I Know My Doctor"}</h3>
+              <h3 className="font-serif text-base md:text-lg text-foreground mb-1 md:mb-2">{lang === "ar" ? "اعرف طبيبي" : "I Know My Doctor"}</h3>
               <p className="font-body text-xs text-muted-foreground">
-                {lang === "ar" ? "انقر هنا إذا كنت تعرف طبيبك" : "Click here if you know your doctor"}
+                {lang === "ar" ? "اضغط هنا إذا كنت تعرف طبيبك" : "Click here if you know your doctor"}
               </p>
             </motion.button>
 
@@ -1324,9 +1324,9 @@ Clinic Code:`;
               <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-secondary/40 flex items-center justify-center mx-auto mb-3 md:mb-4">
                 <Brain className="w-6 h-6 md:w-7 md:h-7 text-foreground" />
               </div>
-              <h3 className="font-serif text-base md:text-lg text-foreground mb-1 md:mb-2">{lang === "ar" ? "لست متأكداً" : "Not Sure?"}</h3>
+              <h3 className="font-serif text-base md:text-lg text-foreground mb-1 md:mb-2">{lang === "ar" ? "لست متأكدًا؟" : "Not Sure?"}</h3>
               <p className="font-body text-xs text-muted-foreground">
-                {lang === "ar" ? "لست متأكداً من الطبيب أو القسم؟ تحقق من الأعراض" : "Not sure about doctor or department? Check with symptoms"}
+                {lang === "ar" ? "إذا لم تكن متأكدًا من القسم أو الطبيب المناسب، يمكنك الحجز من خلال اختيار الأعراض" : "Not sure about doctor or department? Check with symptoms"}
               </p>
             </motion.button>
           </div>
@@ -1652,7 +1652,7 @@ Clinic Code:`;
                     <motion.button whileHover={{ y: -4 }} whileTap={{ scale: 0.98 }} onClick={() => setPatientType("new")} className="bg-popover rounded-2xl p-8 border border-border text-center transition-all hover:border-primary/40">
                       <div className="w-14 h-14 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-4"><UserPlus className="w-7 h-7 text-accent" /></div>
                       <h3 className="font-serif text-lg text-foreground mb-2">{t("firstTimeVisitor")}</h3>
-                      <p className="font-body text-xs text-muted-foreground">{isAr ? "سيتم توجيهك إلى نموذج طلب الموعد" : "You will be taken to the Appointment Request Form"}</p>
+                      <p className="font-body text-xs text-muted-foreground">{isAr ? "سيتم نقلك إلى نموذج طلب موعد" : "You will be taken to the Appointment Request Form"}</p>
                     </motion.button>
                   </div>
                 )}
@@ -1688,7 +1688,7 @@ Clinic Code:`;
                     {verifiedIdentityDetails && (
                       <div className="mt-5 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 via-background to-accent/5 p-4 sm:p-5">
                         <h4 className="font-body text-[11px] tracking-[0.18em] uppercase text-accent mb-3">
-                          {isAr ? "بيانات الهوية" : "Identity Details"}
+                          {isAr ? "تفاصيل الهوية" : "Identity Details"}
                         </h4>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <div className="rounded-xl border border-border/70 bg-popover/80 px-3 py-2.5">
@@ -1712,7 +1712,7 @@ Clinic Code:`;
                             <p className="font-body text-sm text-foreground font-medium mt-0.5">{verifiedIdentityDetails.gender}</p>
                           </div>
                           <div className="rounded-xl border border-border/70 bg-popover/80 px-3 py-2.5">
-                            <p className="font-body text-[10px] uppercase tracking-wider text-muted-foreground">{isAr ? "رقم الجواز" : "Passport Number"}</p>
+                            <p className="font-body text-[10px] uppercase tracking-wider text-muted-foreground">{isAr ? "رقم جواز السفر" : "Passport Number"}</p>
                             <p className="font-body text-sm text-foreground font-medium mt-0.5">{verifiedIdentityDetails.passportNumber}</p>
                           </div>
                         </div>
@@ -1735,7 +1735,7 @@ Clinic Code:`;
                 <div className="bg-popover rounded-2xl p-6 md:p-8 border border-border shadow-sm">
                   <div className="flex items-center gap-3 mb-6">
                     <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center"><Calendar className="w-5 h-5 text-accent" /></div>
-                    <div><h2 className="text-xl font-serif text-foreground">{isAr ? "اختر الموعد" : "Select Date & Time"}</h2><p className="text-muted-foreground font-body text-xs">{isAr ? "اختر التاريخ والوقت المناسب لك" : "Pick a date and available time slot"}</p></div>
+                    <div><h2 className="text-xl font-serif text-foreground">{isAr ? "اختيار التاريخ والوقت" : "Select Date & Time"}</h2><p className="text-muted-foreground font-body text-xs">{isAr ? "يرجى اختيار التاريخ والوقت المناسبين للموعد." : "Pick a date and available time slot"}</p></div>
                   </div>
                   {specialityCode && providerCode && (
                     <div className="flex flex-wrap gap-x-6 gap-y-2 mb-6 font-body text-xs uppercase tracking-wider">
@@ -1796,10 +1796,12 @@ Clinic Code:`;
 
                   {showSlotSelection && selectedDate && !isLoadingSlots && fetchedSlots.length > 0 && (
                     <div className="space-y-6">
-                      <p className="font-body text-xs text-muted-foreground uppercase tracking-wider">{isAr ? "الأوقات المتاحة" : "Available times"}</p>
+                      <p className="font-body text-xs text-muted-foreground uppercase tracking-wider">{isAr ? "الفترة المتاحة" : "Available times"}</p>
                       {Object.entries(slotsByPeriod).map(([period, slots]) => slots.length > 0 && (
                         <div key={period}>
-                          <h3 className="font-body text-sm font-medium text-foreground mb-3 capitalize">{period}</h3>
+                          <h3 className="font-body text-sm font-medium text-foreground mb-3 capitalize">
+                            {isAr ? (period === "morning" ? "صباحًا" : period === "afternoon" ? "مساءً" : period) : period}
+                          </h3>
                           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                             {slots.map((slot) => (
                               <button
@@ -1864,7 +1866,7 @@ Clinic Code:`;
           <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={handleBack} className="flex items-center gap-1.5 text-muted-foreground font-body text-xs sm:text-sm hover:text-foreground transition-colors"><ArrowLeft className="w-4 h-4" />{step === 0 ? t("backToHome") : t("previous")}</motion.button>
           {step >= 2 && !(step === 2 && !patientType) && !(step === 2 && patientType === "returning") && step !== 3 && step !== 4 && (
             <motion.button whileHover={canProceed() ? { scale: 1.03 } : {}} whileTap={canProceed() ? { scale: 0.97 } : {}} onClick={handleNext} disabled={!canProceed()} className={`flex items-center gap-1.5 px-5 sm:px-8 py-2.5 sm:py-3 rounded-lg font-body text-xs sm:text-sm tracking-widest uppercase transition-all duration-300 ${canProceed() ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md" : "bg-muted text-muted-foreground cursor-not-allowed"}`}>
-              {t("continue")} <ArrowRight className="w-4 h-4" />
+              {isAr ? "المواصلة لحجز موعد" : t("continue")} <ArrowRight className="w-4 h-4" />
             </motion.button>
           )}
         </div>
@@ -1874,13 +1876,13 @@ Clinic Code:`;
           <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-xl rounded-3xl border border-border/70 bg-popover shadow-2xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
             <div className="px-6 pt-5 pb-4 border-b border-border/60 bg-gradient-to-r from-primary/5 to-accent/5">
               <div className="flex items-start justify-between gap-4">
-                <div><p className="font-body text-[10px] tracking-[0.18em] uppercase text-accent mb-1">{isAr ? "مريض مسجل" : "Registered Patient"}</p><h3 className="font-serif text-xl text-foreground">{isAr ? "التحقق من الرقم المدني" : "Kuwait Civil ID Verification"}</h3><p className="font-body text-xs text-muted-foreground mt-1">{isAr ? "أدخل الرقم المدني لإحضار الاسم ومتابعة الحجز." : "Please enter your Kuwait Civil ID to retrieve your details and continue booking."}</p></div>
+                <div><p className="font-body text-[10px] tracking-[0.18em] uppercase text-accent mb-1">{isAr ? "مريض مسجل" : "Registered Patient"}</p><h3 className="font-serif text-xl text-foreground">{isAr ? "التحقق من البطاقة المدنية الكويتية" : "Kuwait Civil ID Verification"}</h3><p className="font-body text-xs text-muted-foreground mt-1">{isAr ? "يرجى إدخال رقم البطاقة المدنية الكويتية لاسترجاع بياناتكم ومتابعة عملية الحجز" : "Please enter your Kuwait Civil ID to retrieve your details and continue booking."}</p></div>
                 <button onClick={closeReturningPatientModal} className="w-8 h-8 rounded-full inline-flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-background/70 transition-colors" aria-label={isAr ? "إغلاق" : "Close"}>×</button>
               </div>
             </div>
             <div className="p-6">
               <div className="rounded-2xl border border-border/70 bg-background/50 p-4">
-                <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "الرقم المدني" : "Kuwait Civil ID"} <span className="text-destructive">*</span></label>
+                <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "رقم البطاقة المدنية الكويتية" : "Kuwait Civil ID"} <span className="text-destructive">*</span></label>
                 <input
                   type="text"
                   inputMode="numeric"
@@ -1895,7 +1897,7 @@ Clinic Code:`;
                     setVerifiedPersonName(null);
                     setVerifiedIdentityDetails(null);
                   }}
-                  placeholder={isAr ? "ادخل 12 رقم" : "Enter 12 digits"}
+                  placeholder={isAr ? "أدخل 12 رقمًا" : "Enter 12 digits"}
                   className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 disabled:opacity-60 ${nationalIdError ? "border-destructive" : "border-border"}`}
                 />
                 {nationalIdError && (
@@ -1948,7 +1950,7 @@ Clinic Code:`;
                         ? "جارِ الفحص..."
                         : "Verifying..."
                       : isAr
-                        ? "مصادقة"
+                        ? "التحقق عبر هويتي"
                         : "Verify with Kuwait Mobile ID"}
                   </button>
 
@@ -1956,7 +1958,7 @@ Clinic Code:`;
                     onClick={goToInitialBookingScreen}
                     className="w-full bg-secondary/40 text-foreground px-4 py-3 rounded-xl font-body text-xs tracking-widest uppercase hover:bg-secondary/60 transition-colors inline-flex items-center justify-center text-center"
                   >
-                    {isAr ? "إلغاء" : "Cancel"}
+                    {isAr ? "الغاء" : "Cancel"}
                   </button>
                 </div>
               )}
@@ -1967,7 +1969,7 @@ Clinic Code:`;
                     onClick={goToInitialBookingScreen}
                     className="w-full bg-secondary/40 text-foreground px-4 py-3 rounded-xl font-body text-xs tracking-widest uppercase hover:bg-secondary/60 transition-colors inline-flex items-center justify-center text-center"
                   >
-                    {isAr ? "إلغاء" : "Cancel"}
+                    {isAr ? "الغاء" : "Cancel"}
                   </button>
                 </div>
               )}
@@ -2002,7 +2004,7 @@ Clinic Code:`;
                 }}
                 className="min-w-28 bg-primary text-primary-foreground px-6 py-2.5 rounded-lg font-body text-xs tracking-widest uppercase hover:bg-primary/90 transition-colors"
               >
-                {isAr ? "حسناً" : "OK"}
+                {isAr ? "موافق" : "OK"}
               </button>
             </div>
           </motion.div>

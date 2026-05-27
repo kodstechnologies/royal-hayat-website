@@ -42,6 +42,14 @@ const LifePhotoCarousel = ({ title, subtitle, photos, interval = 4500, variant =
     return () => clearInterval(t);
   }, [isPaused, next, interval, total]);
 
+  useEffect(() => {
+    if (total <= 1) return;
+    const nextSrc = photos[(index + 1) % total]?.src;
+    if (!nextSrc) return;
+    const img = new Image();
+    img.src = nextSrc;
+  }, [index, photos, total]);
+
   const current = photos[index];
   const isAr = lang === "ar";
 
@@ -79,6 +87,7 @@ const LifePhotoCarousel = ({ title, subtitle, photos, interval = 4500, variant =
                     alt={current.alt}
                     className="w-full h-full object-cover cursor-zoom-in"
                     loading="lazy"
+                    decoding="async"
                     onClick={() => setLightboxImage(current.src!)}
                   />
                 ) : (

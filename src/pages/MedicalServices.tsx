@@ -19,7 +19,7 @@ const HomeHealthPreview = () => {
           </div>
           <div className="flex-1  md:text-left">
             <h3 className="font-serif text-xl text-foreground mb-2">
-              {lang === "ar" ? "رويال للرعاية المنزلية" : "Royale Home Health"}
+              {lang === "ar" ? "رويال هوم هيلث للرعاية المنزلية" : "Royale Home Health"}
             </h3>
             <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify mb-4">
               {lang === "ar"
@@ -42,7 +42,7 @@ const MedicalServices = () => {
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107]">
       <Header />
-      <DepartmentsSection />
+      <DepartmentsSection showPageTitle />
       <DoctorsSection featuredDoctors={featuredDoctors} />
       <HomeHealthPreview />
       <Footer />

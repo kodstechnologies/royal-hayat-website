@@ -18,6 +18,7 @@ export const isTabletHeroViewport = () => {
 const WorkCultureHeroImage = ({ alt, className = "" }: WorkCultureHeroImageProps) => {
   const [displaySrc, setDisplaySrc] = useState(CULTURE_HERO_SRC);
   const [tabletMode, setTabletMode] = useState(false);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     const sync = () => setTabletMode(isTabletHeroViewport());
@@ -25,6 +26,10 @@ const WorkCultureHeroImage = ({ alt, className = "" }: WorkCultureHeroImageProps
     window.addEventListener("resize", sync);
     return () => window.removeEventListener("resize", sync);
   }, []);
+
+  useEffect(() => {
+    setLoaded(false);
+  }, [displaySrc]);
 
   useEffect(() => {
     let cancelled = false;
@@ -90,24 +95,21 @@ const WorkCultureHeroImage = ({ alt, className = "" }: WorkCultureHeroImageProps
     };
   }, []);
 
-  if (tabletMode) {
-    return (
+  const imgClassName = tabletMode
+    ? "work-culture-hero-img work-culture-hero-img--tablet absolute inset-0 h-full w-full object-cover object-left"
+    : className;
+
+  return (
+    <div className="relative w-full h-full min-h-[inherit]">
       <img
         src={displaySrc}
         alt={alt}
-        decoding="async"
-        className="work-culture-hero-img work-culture-hero-img--tablet absolute inset-0 h-full w-full object-cover object-left"
+        loading="eager"
+        decoding="sync"
+        onLoad={() => setLoaded(true)}
+        className={`${imgClassName} transition-opacity duration-300 ${loaded ? "opacity-100" : "opacity-0"}`}
       />
-    );
-  }
-
-  return (
-    <img
-      src={displaySrc}
-      alt={alt}
-      decoding="async"
-      className={className}
-    />
+    </div>
   );
 };
 

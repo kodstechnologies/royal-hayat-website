@@ -165,11 +165,11 @@ const toCarouselPhotos = (label: string, images: string[]): LifePhoto[] => {
 const employees = [
   {
     name: "Rangaa Tara Mahawan",
-    nameAr: "رانغا تارا مهاوان",
+    nameAr: "رانجا تارا مهاوان",
     dept: "Guest Relation Department",
-    deptAr: "قسم علاقات الضيوف",
+    deptAr: "قطاع الضيافة",
     role: "Bell Man - Guest Relations",
-    roleAr: "عامل الجرس - علاقات الضيوف",
+    roleAr: "موظف استقبال الضيوف – قسم علاقات الضيوف",
     image:
       "/images/ranga-tara.png",
     achievements: [
@@ -177,17 +177,17 @@ const employees = [
       "Dependable and dedicated team member who works harmoniously with others. He is reliable, always willing to extend his duty when needed, and completes tasks efficiently without complaint. Attentive in the lobby and consistently respectful, he is a valued part of the team.",
     ],
     achievementsAr: [
-      "حصل رانغا على هذا التقدير من خلال تعاونه الاستثنائي وموقفه الإيجابي المستمر. يُعتبر عضوًا موثوقًا في الفريق ويتمتع بسجل حضور مثالي، مما يضمن أن تكون الانطباعات الأولى لضيوف رويال حياة مليئة بالراحة والضيافة الراقية.",
-      "عضو فريق يعتمد عليه ومخلص في عمله ويتعاون بانسجام مع الجميع. يتميز بالمرونة والاستعداد الدائم لتمديد ساعات عمله عند الحاجة، وينجز مهامه بكفاءة ودون تذمر. كما أنه يقظ في منطقة الاستقبال ويتعامل دائمًا باحترام، مما يجعله جزءًا قيّمًا من الفريق.",
+      "حصل رانجا على هذا التكريم بفضل تعاونه الاستثنائي وروحه الإيجابية الدائمة. ويُعد عضوًا موثوقًا ومتفانيًا في فريق العمل، كما يتمتع بسجل حضور وانضباط مثالي، مما يساهم في منح ضيوف رويال حياة انطباعًا أوليًا يعكس الراحة وأعلى معايير الضيافة.",
+      "يتميز بروح التعاون والعمل الجماعي، ويُعرف باعتماديته واستعداده الدائم لتمديد ساعات العمل عند الحاجة، مع إنجاز المهام بكفاءة عالية ودون تذمر. كما يحرص دائمًا على متابعة احتياجات الضيوف في منطقة الاستقبال بأسلوب مهني ومحترم، مما يجعله عنصرًا قيّمًا ضمن الفريق.",
     ],
   },
   {
     name: "Mohammad Niyaz Salam",
     nameAr: "محمد نياز سلام",
     dept: "Call Center Department",
-    deptAr: "قسم مركز الاتصال",
+    deptAr: "قسم خدمة العملاء",
     role: "Guest Services Operator - Call Center",
-    roleAr: "مشغل خدمات الضيوف - مركز الاتصال",
+    roleAr: "موظف خدمات الضيوف – مركز خدمة العملاء",
     image:
       "/images/mohammad-niyaz.png",
     achievements: [
@@ -195,8 +195,8 @@ const employees = [
       "Highly reliable and flexible team member who always brings positive energy and support to the workplace. He consistently completes tasks on time and never hesitates to step in when needed, even covering shifts at short notice while maintaining excellent performance.",
     ],
     achievementsAr: [
-      "يتميز محمد بالكفاءة والالتزام بالتميز في الخدمة. إن تعامله المهني مع استفسارات الضيوف، إلى جانب حضوره المنتظم وأخلاقيات العمل المنضبطة، كان له دور أساسي في نجاح فريق خدمات الضيوف لدينا.",
-      "عضو فريق موثوق ومرن للغاية، يجلب دائمًا الطاقة الإيجابية والدعم إلى بيئة العمل. ينجز مهامه باستمرار في الوقت المحدد ولا يتردد أبدًا في تقديم المساعدة عند الحاجة، حتى في تغطية المناوبات في وقت قصير مع الحفاظ على أداء ممتاز.",
+      "يتميّز محمد بالكفاءة العالية والالتزام بتقديم أفضل مستويات الخدمة. وقد كان لتعامله المهني مع استفسارات الضيوف، إلى جانب انضباطه وسجله المتميز في الحضور، دور أساسي في نجاح فريق خدمات الضيوف.",
+      "كما يُعرف بمرونته العالية واعتماديته الكبيرة، حيث يحرص دائمًا على نشر الطاقة الإيجابية وتقديم الدعم لزملائه في بيئة العمل. ويتميز بإنجاز المهام في الوقت المحدد، واستعداده الدائم لتغطية المناوبات عند الحاجة حتى في الإشعارات القصيرة، مع الحفاظ على مستوى أداء متميز باستمرار.",
     ],
   },
 ];
@@ -230,6 +230,15 @@ const WorkWithUs = ({
     }, 5000);
     return () => clearInterval(timer);
   }, [isEmpPaused]);
+
+  useEffect(() => {
+    if (employees.length <= 1) return;
+    const next = employees[(empIndex + 1) % employees.length]?.image;
+    if (!next) return;
+    const img = new Image();
+    img.src = next;
+  }, [empIndex]);
+
   const categoriesScrollRef = useRef<HTMLDivElement | null>(null);
   const [searchParams] = useSearchParams();
   const section = searchParams.get("section");
@@ -250,6 +259,18 @@ const WorkWithUs = ({
     "View All",
     ...Array.from(new Set(positions.map((p) => p.category))),
   ];
+
+  const categoryLabelAr: Record<string, string> = {
+    "View All": "عرض الكل",
+    "La Cosmetique Royale": "لا كوزمتيك رويال",
+    "Hospitality / Guest Services": "الضيافة وخدمات الضيوف",
+    "Quality & Patient Safety": "الجودة وسلامة المرضى",
+    "Royale Home Health": "رويال الرعاية الصحية المنزلية",
+    "Nursing Support": "دعم التمريض",
+    "Specialist Doctors": "الأطباء الاستشاريون والأخصائيون",
+    "Marketing & Communications": "التسويق والاتصال المؤسسي",
+    "Surgical Services": "الخدمات الجراحية",
+  };
 
   const filtered =
     activeCategory === "View All"
@@ -342,12 +363,12 @@ const WorkWithUs = ({
                 </p>
                 <p>
                   {isAr
-                    ? "يوجّه هذا الإيمان كيف نرعى، وكيف نعمل، وكيف نعامل بعضنا البعض. كل يوم، تقدّم فرقنا رعاية آمنة وحديثة وعالية الجودة بتعاطف وراحة — لأن الشفاء ليس فقط بالطب، بل بالتجربة."
+                    ? "هذا الإيمان هو ما يوجّه طريقتنا في الرعاية والعمل والتعامل مع الآخرين. ففي كل يوم، يحرص فريقنا على تقديم رعاية آمنة ومتطورة وعالية الجودة، ممزوجة بالرحمة والراحة، لأن الشفاء لا يقتصر على العلاج فقط، بل يشمل التجربة الإنسانية الكاملة."
                     : "That belief guides how we care, how we work, and how we treat one another. Every day, our teams deliver safe, modern, quality care with compassion and comfort—because healing is not only about medicine, but about experience."}
                 </p>
                 <p>
                   {isAr
-                    ? "هنا، تلتقي الاحترافية باللطف. تلتقي المعايير بالتعاطف. ويحمل العمل هدفاً. إذا كان هذا الإيمان يلامسك، فأنت تنتمي إلى هنا بالفعل."
+                    ? "هنا، تلتقي المهنية باللطف، والمعايير العالية بالتعاطف، والعمل بالرسالة الهادفة. وإذا كانت هذه القيم تشبهك، فأنت بالفعل تنتمي إلى هنا."
                     : "Here, professionalism meets kindness. Standards meet empathy. And work carries purpose. If this belief resonates with you, you already belong here."}
                 </p>
               </div>
@@ -362,27 +383,27 @@ const WorkWithUs = ({
           <div className="container mx-auto px-6 max-w-3xl">
             <ScrollAnimationWrapper>
               <h2 className="text-2xl md:text-3xl font-serif text-foreground text-center mb-3">
-                {isAr ? "«وعدنا للناس»" : "‘Our People Promise’"}
+                {isAr ? "وعدنا لموظفينا" : "‘Our People Promise’"}
               </h2>
               <p className="text-center text-accent font-body text-sm mb-8 italic">
                 {isAr
-                  ? "يبدأ وعدنا للمرضى بوعدنا لفريقنا"
+                  ? "إن وعدنا لمرضانا يبدأ أولًا من وعدنا لموظفينا."
                   : "Our promise to patients begins with our promise to our people"}
               </p>
               <div className="space-y-5 font-body text-center text-foreground leading-relaxed">
                 <p>
                   {isAr
-                    ? "نَعِد بمكان عمل يُحترم فيه الموظفون ويُوثَق بهم ويُدعَمون — لا تُحدّدهم الألقاب، بل تُقدَّر احترافيتهم ونزاهتهم وإسهامهم."
+                    ? "نعد بتوفير بيئة عمل يشعر فيها كل موظف بالاحترام، الثقة، والدعم، حيث لا تُقاس قيمة الإنسان بالمسمى الوظيفي، بل بما يقدمه من احترافية، نزاهة، وإسهام حقيقي."
                     : "We promise a workplace where employees are respected, trusted, and supported not defined by titles, but valued for their professionalism, integrity, and contribution."}
                 </p>
                 <p>
                   {isAr
-                    ? "نستثمر بشكل متعمد في التعلّم والتطوير، عبر التدريب المستمر، والاطلاع على المعايير الدولية، والتعاون بين التخصصات، وفرص النمو بثقة."
+                    ? "نستثمر بوعي في التطوير والتعلم المستمر، من خلال البرامج التدريبية، والتعرّف على المعايير العالمية، والتعاون بين التخصصات، وتوفير الفرص التي تساعد موظفينا على النمو بثقة وتميّز."
                     : "We invest deliberately in learning and development, through continuous training, exposure to international standards, collaboration across disciplines, and opportunities to grow with confidence."}
                 </p>
                 <p>
                   {isAr
-                    ? "نؤمن أن التميّز يُبنى من خلال التعلّم — ويُصان من خلال الثقة. وعدنا بسيط: سنساعدك على النمو، وسنُقدّر جهدك، وسنسير معك وأنت تبني مسيرة مهنية تفخر بها."
+                    ? "فنحن نؤمن بأن التميّز يُبنى بالتعلم، ويستمر بالثقة. ووعدنا بسيط: سندعم تطوركم، ونقدّر جهودكم، ونرافقكم في بناء مسيرة مهنية تفتخرون بها."
                     : "We believe excellence is built through learning—and sustained through trust. Our promise is simple: we will help you grow, we will recognize your effort, and we will walk with you as you build a career you can be proud of."}
                 </p>
               </div>
@@ -397,22 +418,22 @@ const WorkWithUs = ({
           <div className="container mx-auto px-6 max-w-3xl">
             <ScrollAnimationWrapper>
               <h2 className="text-2xl md:text-3xl font-serif text-foreground text-center mb-8">
-                {isAr ? "«ننتمي معاً.»" : "‘Where We Belong Together.’"}
+                {isAr ? "معًا… حيث ننتمي" : "‘Where We Belong Together.’"}
               </h2>
               <div className="space-y-5 font-body text-center text-foreground leading-relaxed">
                 <p>
                   {isAr
-                    ? "العمل في رويال حياة يعني أن تكون جزءاً من فريق متنوّع متعدد الثقافات، تجمعه الغاية والرعاية."
+                    ? "العمل في مستشفى رويال حياة يعني أن تكون جزءًا من فريق متنوع الثقافات، يجمعه هدف واحد قائم على الرعاية والإنسانية."
                     : "Working at Royale Hayat means being part of a diverse, multicultural team united by purpose and care."}
                 </p>
                 <p>
                   {isAr
-                    ? "نُدرك المتطلبات العاطفية للرعاية الصحية وندعم الرفاهية والمرونة والتوازن. يأتي فريقنا من ثقافات وخلفيات متعددة، ومع ذلك يجمعهم الاحترام والكرامة والانتماء."
+                    ? "نحن ندرك التحديات النفسية والعاطفية التي ترافق العمل في القطاع الصحي، لذلك نحرص على دعم التوازن، والمرونة، والصحة النفسية لموظفينا. ورغم اختلاف خلفياتنا وثقافاتنا، يجمعنا الاحترام، والكرامة، والشعور الحقيقي بالانتماء."
                     : "We recognize the emotional demands of healthcare and support wellbeing, resilience, and balance. Our people come from many cultures and backgrounds, yet are connected by respect, dignity, and belonging."}
                 </p>
                 <p>
                   {isAr
-                    ? "لا يمر الجهد والتميّز هنا دون أن يُلاحظ — لأن التقدير مهم، والرعاية تستحق أن تُكرَّم. في رويال حياة، الأمر أكثر من مجرد عمل. إنه مكان للانتماء وللشعور بالقيمة."
+                    ? "وفي رويال حياة، لا تمر الجهود والإنجازات دون تقدير، لأن الامتنان جزء أساسي من ثقافتنا، والرعاية تستحق أن تُحتفى بها. هنا، العمل ليس مجرد وظيفة، بل مكان تشعر فيه بالتقدير والانتماء."
                     : "Effort and excellence never go unnoticed here—because appreciation matters, and care deserves to be recognized. At Royale Hayat, it’s more than work. It’s a place to belong and be valued."}
                 </p>
               </div>
@@ -427,7 +448,7 @@ const WorkWithUs = ({
           <div className="container mx-auto px-6">
             <div className="text-center mb-8">
               <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">
-                {isAr ? "حياة في رويال حياة" : "Life at Royale Hayat"}
+                {isAr ? "التكريم والتقدير" : "Life at Royale Hayat"}
               </p>
               {/* <h2 className="text-xl md:text-2xl font-serif text-foreground">
                 {isAr ? "موظفو الشهر" : "Employees of the Month"}
@@ -435,7 +456,7 @@ const WorkWithUs = ({
 
               <div className="mt-4 space-y-2">
                 <h3 className="text-xl md:text-4xl font-serif text-foreground">
-                  {isAr ? "موظفو الشهر" : "Employees of the Month"}{" "}
+                  {isAr ? "أفضل موظفي شهر أبريل" : "Employees of the Month"}{" "}
                 </h3>
               </div>
             </div>
@@ -464,6 +485,8 @@ const WorkWithUs = ({
                             : employees[empIndex].name
                         }
                         className="w-full max-h-[420px] object-contain rounded-2xl"
+                        loading="eager"
+                        decoding="sync"
                       />
                     </div>
 
@@ -556,7 +579,7 @@ const WorkWithUs = ({
           }
           subtitle={
             isAr
-              ? "يُعترف بالإنجازات — لأن الجهد والتميّز والسلوك الأخلاقي أمور تهم."
+              ? "يتم تقدير الإنجازات والاعتراف بها، لأن الجهد والتميّز والسلوك المهني القائم على القيم يشكّلون أساس نجاحنا."
               : "Achievements are acknowledged—because effort, excellence, and ethical conduct matter."
           }
           photos={toCarouselPhotos(
@@ -574,7 +597,7 @@ const WorkWithUs = ({
             title={isAr ? "حفل العشاء السنوي" : "Gala Dinner"}
             subtitle={
               isAr
-                ? "ليلة من الأناقة، الامتنان والاحتفال."
+                ? "أمسية استثنائية تجمع بين الأناقة، والامتنان، والاحتفال بإنجازات فريقنا."
                 : "A night of elegance, gratitude and celebration."
             }
             photos={toCarouselPhotos("Gala Dinner", galaDinnerImages)}
@@ -583,17 +606,17 @@ const WorkWithUs = ({
             title={isAr ? "أسبوع الضيافة" : "Hospitality Week"}
             subtitle={
               isAr
-                ? "أسبوع مكرّس لروح الضيافة التي تميّز رويال حياة."
+                ? "أسبوع مخصص للاحتفاء بروح الضيافة التي تميّز مستشفى رويال حياة وتعكس هويتنا الإنسانية."
                 : "A week devoted to the hospitality spirit that defines Royale Hayat."
             }
             photos={toCarouselPhotos("Hospitality Week", hospitalityWeekImages)}
           />
           <LifePhotoCarousel
             variant="muted"
-            title={isAr ? "مسابقة RHH" : "RHH Quiz"}
+            title={isAr ? "مسابقة رويال حياة" : "RHH Quiz"}
             subtitle={
               isAr
-                ? "مرح ومنافسة ودي بين الفرق."
+                ? "أجواء من التفاعل، والمتعة، والمنافسة الودية التي تجمع فرق العمل بروح واحدة."
                 : "Fun, friendly competition across teams."
             }
             photos={toCarouselPhotos("RHH Quiz", rhhQuizImages)}
@@ -614,7 +637,7 @@ const WorkWithUs = ({
             >
               <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground group-hover:text-primary transition-colors">
                 {isAr
-                  ? "اكتشف الوظائف في مستشفى رويال حياة"
+                  ? "انضم إلى فريقنا"
                   : "Explore Careers at Royale Hayat Hospital"}
               </h2>
             </Link>
@@ -629,14 +652,14 @@ const WorkWithUs = ({
             <ScrollAnimationWrapper>
               <div className="text-center mb-8">
                 <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">
-                  {isAr ? "انضم إلى شبكتنا" : "Join Our Network!"}
+                  {isAr ? "انضم إلى فريقنا" : "Join Our Network!"}
                 </p>
                 <h2 className="text-2xl md:text-3xl font-serif text-foreground">
-                  {isAr ? "الوظائف المتاحة" : "Open Positions"}
+                  {isAr ? "الوظائف الشاغرة" : "Open Positions"}
                 </h2>
                 <p className="text-muted-foreground font-body text-sm max-w-xl mx-auto mt-3">
                   {isAr
-                    ? "اكتشف الفرص الحالية وابدأ مسيرتك المهنية معنا اليوم."
+                    ? "اكتشف الفرص المهنية المتاحة وابدأ رحلتك المهنية معنا اليوم، ضمن بيئة عمل تجمع بين التميّز، التطوير، والرعاية الإنسانية الراقية."
                     : "Explore current opportunities and launch your career with us today."}
                 </p>
               </div>
@@ -666,7 +689,7 @@ const WorkWithUs = ({
                         : "bg-popover text-foreground border-border hover:border-primary/40"
                     }`}
                   >
-                    {cat.toUpperCase()}
+                    {isAr ? (categoryLabelAr[cat] ?? cat) : cat.toUpperCase()}
                   </button>
                 ))}
               </div>

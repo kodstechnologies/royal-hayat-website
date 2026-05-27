@@ -103,7 +103,7 @@ const Header = () => {
 
   const patientsSubLinks = [
     { label: lang === "ar" ? "التمريض" : "Nursing", href: "/patients-visitors?tab=nursing", icon: Heart, desc: lang === "ar" ? "رعاية تمريضية متفانية" : "Dedicated nursing care" },
-    { label: lang === "ar" ? "معلومات القبول" : "Admission Information", href: "/patients-visitors?tab=admission", icon: ClipboardList, desc: lang === "ar" ? "ما يجب معرفته قبل القبول" : "What to know before admission" },
+    { label: lang === "ar" ? "معلومات الدخول إلى المستشفى" : "Admission Information", href: "/patients-visitors?tab=admission", icon: ClipboardList, desc: lang === "ar" ? "ما تحتاجون معرفته قبل الدخول" : "What to know before admission" },
     { label: lang === "ar" ? "التأمين الصحي" : "Health Insurance", href: "/patients-visitors?tab=insurance", icon: ShieldCheck, desc: lang === "ar" ? "المطالبات والموافقات المسبقة" : "Claims and pre-approvals" },
     { label: lang === "ar" ? "أثناء إقامتك" : "During Your Stay", href: "/patients-visitors?tab=during-stay", icon: Bed, desc: lang === "ar" ? "خدمات الغرف والراحة" : "Room services and comfort" },
     { label: lang === "ar" ? "باقات الغرف" : "Birthing Suites Packages", href: "/patients-visitors?tab=rooms-package", icon: Bed, desc: lang === "ar" ? "باقات الغرف الفاخرة" : "Private Suites Packages" },
@@ -733,9 +733,12 @@ const Header = () => {
             className="bg-popover rounded-2xl border border-border shadow-2xl p-8 max-w-md w-full mx-4"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="font-serif text-xl text-foreground mb-4 text-center">
-              {lang === "ar" ? "هل أنت مريض مسجل في رويال حياة؟" : "Are you a registered Royale Hayat patient?"}
+            <h3 className="font-serif text-xl text-foreground mb-2 text-center">
+              {lang === "ar" ? "تقاريري الطبية" : "My Medical Reports"}
             </h3>
+            <p className="font-body text-sm text-muted-foreground mb-4 text-center">
+              {lang === "ar" ? "هل أنت من المسجلون لدى مستشفى رويال حياة؟" : "Are you a registered Royale Hayat patient?"}
+            </p>
             <div className="flex gap-4 mt-6 justify-center">
               <button
                 onClick={() => { setShowMedRecordsModal(false); window.open("https://afyati.royalehayat.com", "_blank"); }}
@@ -753,7 +756,15 @@ const Header = () => {
             <div className="mt-4 p-4 bg-muted/30 rounded-xl">
               <p className="font-body text-xs text-muted-foreground text-center leading-relaxed">
                 {lang === "ar"
-                  ? "إذا لم تكن مسجلاً بعد، يرجى الاتصال بالمستشفى على الرقم +965 2536 0555 لإتمام عملية التسجيل."
+                  ? (
+                    <>
+                      في حال لم يتم تسجيلكم مسبقًا، يرجى التواصل مع المستشفى على الرقم:
+                      <br />
+                      <strong className="text-foreground">+965 2536 0000</strong>
+                      <br />
+                      لاستكمال إجراءات التسجيل.
+                    </>
+                  )
                   : "If you are not yet registered, please call the hospital at +965 2536 0000 to complete your registration."}
               </p>
             </div>

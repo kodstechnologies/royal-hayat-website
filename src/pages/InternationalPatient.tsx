@@ -1,7 +1,7 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
-import { Globe, Phone, Calendar, Languages, Car, Hotel, UtensilsCrossed, Send } from "lucide-react";
+import { Globe, Phone, Calendar, Languages, Car, Hotel, UtensilsCrossed, Send, CheckCircle2, Shield } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useState } from "react";
@@ -12,13 +12,13 @@ const InternationalPatient = () => {
   const isAr = lang === "ar";
 
   const services = [
-    { icon: Calendar, label: isAr ? "جدولة المواعيد مع الأطباء" : "Appointment scheduling with physicians" },
-    { icon: Globe, label: isAr ? "تنسيق عملية القبول" : "Coordination of the admissions process" },
+    { icon: Calendar, label: isAr ? "حجز المواعيد مع الأطباء" : "Appointment scheduling with physicians" },
+    { icon: Globe, label: isAr ? "تنسيق إجراءات الدخول إلى المستشفى" : "Coordination of the admissions process" },
     { icon: Languages, label: isAr ? "خدمات الترجمة بعدة لغات" : "Interpretation services in several languages" },
     { icon: Car, label: isAr ? "ترتيبات النقل بما في ذلك الاستقبال من المطار" : "Transportation arrangements including airport pickup" },
-    { icon: Hotel, label: isAr ? "ترتيبات الإقامة طويلة وقصيرة المدى للمرضى وعائلاتهم" : "Long and short-term lodging arrangements for patients and their families" },
-    { icon: Hotel, label: isAr ? "إقامة فاخرة متوفرة في المستشفى" : "Deluxe accommodations available at the hospital" },
-    { icon: UtensilsCrossed, label: isAr ? "وجبات معدة خصيصاً عند الطلب" : "Specially prepared meals upon request" },
+    { icon: Hotel, label: isAr ? "ترتيبات الإقامة القصيرة والطويلة للمرضى وعائلاتهم" : "Long and short-term lodging arrangements for patients and their families" },
+    { icon: Hotel, label: isAr ? "أجنحة وإقامات فاخرة داخل المستشفى" : "Deluxe accommodations available at the hospital" },
+    { icon: UtensilsCrossed, label: isAr ? "وجبات خاصة حسب الطلب" : "Specially prepared meals upon request" },
     { icon: Globe, label: isAr ? "خدمات الكونسيرج عند الطلب" : "Concierge services upon request" },
   ];
 
@@ -49,11 +49,11 @@ const InternationalPatient = () => {
             <div className="w-16 h-16 rounded-full bg-accent/20 flex items-center justify-center mx-auto mb-5">
               <Globe className="w-8 h-8 text-accent" />
             </div>
-            <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">{isAr ? "مرحباً بالجميع" : "Welcome Worldwide"}</p>
+            <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">{isAr ? "مرحبًا بكم من جميع أنحاء العالم" : "Welcome Worldwide"}</p>
             <h1 className="text-3xl md:text-5xl font-serif text-primary-foreground mb-4">{isAr ? "مركز المرضى الدوليين" : "International Patient Center"}</h1>
             <p className="text-primary-foreground/80 font-body text-sm max-w-2xl mx-auto leading-relaxed">
               {isAr
-                ? "إن تفانينا في الرعاية الصحية الدولية ورعاية المرضى الدوليين يساعد في ترسيخ مكانتنا كأحد أفضل المستشفيات في الكويت."
+                ? "يعكس التزامنا بالرعاية الصحية الدولية وخدمة المرضى الدوليين مكانة مستشفى رويال حياة كأحد أفضل المستشفيات في الكويت."
                 : "Our dedication to international health care and international patient care helps solidify us as one of the best hospitals in Kuwait."}
             </p>
           </motion.div>
@@ -67,19 +67,19 @@ const InternationalPatient = () => {
             <motion.p initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
               className="font-body text-sm text-muted-foreground leading-relaxed">
               {isAr
-                ? "سيساعد مركز المرضى الدوليين المرضى في التفاصيل الإدارية مثل تحديد المواعيد والنقل والترتيبات المالية. يشمل مركزنا أيضاً مترجمين لتقديم خدمات الترجمة اللغوية."
+                ? "يقدّم مركز المرضى الدوليين الدعم الكامل للمرضى من خارج الكويت، من خلال المساعدة في الإجراءات الإدارية، وحجز المواعيد، وترتيبات النقل، والتنسيق المالي، بالإضافة إلى توفير خدمات الترجمة بعدة لغات لضمان تجربة مريحة وسلسة."
                 : "International Patient Center will assist patients with administrative details such as appointment setting, transportation, and financial arrangements. Our International Patient Center also includes interpreters to provide language interpretation services."}
             </motion.p>
             <motion.p initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
               className="font-body text-sm text-muted-foreground leading-relaxed">
               {isAr
-                ? "تبدأ رعاية المرضى الدوليين قبل وصولك إلى المستشفى وتستمر طوال فترة إقامتك. إن تفانينا في الرعاية الصحية الدولية يساعد في ترسيخ مكانتنا كأحد أفضل المستشفيات في الكويت."
+                ? "تبدأ رعاية المرضى الدوليين قبل وصولكم إلى المستشفى، وتستمر طوال فترة إقامتكم، لضمان أعلى مستويات الراحة والرعاية الشخصية."
                 : "International patient care begins before you arrive at the hospital and lasts throughout your stay. Our dedication to international health care and international patient care helps solidify us as one of the best hospitals in Kuwait."}
             </motion.p>
             <motion.p initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}
               className="font-body text-sm text-muted-foreground leading-relaxed">
               {isAr
-                ? "مركز المرضى الدوليين هو مكتب خدمات متكامل يساعد المرضى الدوليين والأطباء المحيلين الذين يبحثون عن استشارة أو رأي ثانٍ أو علاج لمرض معقد."
+                ? "كما يوفّر المركز خدمات متكاملة للمرضى والأطباء المحوِّلين الراغبين في الحصول على استشارة طبية، أو رأي طبي ثانٍ، أو علاج للحالات المعقدة."
                 : "International Patient Center is a full-service office that assists international patients and referring physicians looking for a consultation, a second opinion, or treatment for a complex illness."}
             </motion.p>
           </div>
@@ -92,12 +92,12 @@ const InternationalPatient = () => {
           <div className="max-w-3xl mx-auto">
             <motion.h2 initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
               className="text-2xl md:text-3xl font-serif text-foreground mb-3 text-center">
-              {isAr ? "كيف نساعدك" : "How We Help"}
+              {isAr ? "كيف يمكننا مساعدتكم؟" : "How We Help"}
             </motion.h2>
             <motion.p initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
               className="font-body text-sm text-muted-foreground text-center mb-10 max-w-xl mx-auto">
               {isAr
-                ? "يسهّل فريق مركز المرضى الدوليين تلقي الرعاية من خلال تنسيق الاحتياجات الطبية والشخصية التالية قبل وصولك وأثناء إقامتك:"
+                ? "يقوم فريق مركز المرضى الدوليين بتنسيق جميع الاحتياجات الطبية والشخصية قبل الوصول وأثناء الإقامة، بما يشمل:"
                 : "The International Patient Center staff makes it easy to receive care by coordinating the following medical and personal needs for you before your arrival and during your stay:"}
             </motion.p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -122,10 +122,9 @@ const InternationalPatient = () => {
           <motion.div initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             className="max-w-xl mx-auto">
             <Phone className="w-6 h-6 text-accent mx-auto mb-3" />
-            <p className="font-body text-sm text-foreground mb-1">{isAr ? "للحجز من خارج الكويت، يرجى الاتصال بـ:" : "For appointment from outside Kuwait, please call:"}</p>
+            <p className="font-body text-sm text-foreground mb-1">{isAr ? "للمواعيد من خارج الكويت يرجى الاتصال على:" : "For appointment from outside Kuwait, please call:"}</p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-2">
               <a href="tel:+96525360555" className="font-serif text-lg text-accent hover:underline">+965 2536 0555</a>
-              <span className="text-muted-foreground hidden sm:inline">|</span>
               <a href="tel:+96567668208" className="font-serif text-lg text-accent hover:underline">+965 6766 8208</a>
             </div>
           </motion.div>
@@ -137,8 +136,8 @@ const InternationalPatient = () => {
         <div className="container mx-auto px-6">
           <div className="max-w-2xl mx-auto">
             <motion.div initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-              <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-2 text-center">{isAr ? "استفسار إلكتروني" : "Online Enquiry"}</h2>
-              <p className="font-body text-sm text-muted-foreground text-center mb-8">{isAr ? "للاستفسارات عبر الإنترنت، يرجى ملء النموذج أدناه." : "For online enquiries, please fill in the form below."}</p>
+              <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-2 text-center">{isAr ? "الاستفسار الإلكتروني" : "Online Enquiry"}</h2>
+              <p className="font-body text-sm text-muted-foreground text-center mb-8">{isAr ? "للاستفسارات عبر الإنترنت، يرجى تعبئة النموذج التالي:" : "For online enquiries, please fill in the form below."}</p>
             </motion.div>
 
             <motion.form onSubmit={handleSubmit} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }}
@@ -160,7 +159,7 @@ const InternationalPatient = () => {
 
               <div>
                 <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "الهاتف المحمول" : "Mobile"} *</label>
-                <input type="tel" value={form.mobile} onChange={e => handleChange("mobile", e.target.value)}
+                  <input type="tel" value={form.mobile} onChange={e => handleChange("mobile", e.target.value)}
                   className="w-full rounded-lg border border-border bg-background px-4 py-2.5 font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
               </div>
 
@@ -183,7 +182,7 @@ const InternationalPatient = () => {
               </div>
 
               <div>
-                <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "التعليقات" : "Comments"}</label>
+                <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "الملاحظات" : "Comments"}</label>
                 <textarea rows={4} value={form.comments} onChange={e => handleChange("comments", e.target.value)}
                   className="w-full rounded-lg border border-border bg-background px-4 py-2.5 font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none" />
               </div>
@@ -194,6 +193,115 @@ const InternationalPatient = () => {
                 {isAr ? "إرسال" : "Send"}
               </button>
             </motion.form>
+          </div>
+        </div>
+      </section>
+
+      {/* Newborn Safety */}
+      <section className="py-16 bg-primary/5">
+        <div className="container mx-auto px-6">
+          <div className="max-w-4xl mx-auto">
+            <motion.h2
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-2xl md:text-3xl font-serif text-foreground mb-3 text-center"
+            >
+              {isAr ? "نظام الحماية المتقدم لحديثي الولادة" : "Infant Security System"}
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.05 }}
+              className="font-body text-sm text-muted-foreground leading-relaxed text-center mb-8"
+            >
+              {isAr
+                ? "يتم تزويد كل مولود جديد بسوار إلكتروني خفيف وآمن على البشرة، يرتبط بشكل متكامل مع منظومة الأمن المتطورة في مستشفى رويال حياة لضمان أعلى مستويات الحماية والرعاية."
+                : "At Royale Hayat Hospital, the safety of every newborn is our highest priority. We utilize the RTLS, a sophisticated real-time monitoring system designed to provide comprehensive, 24/7 protection for every infant in our care."}
+            </motion.p>
+
+            <div className="grid md:grid-cols-3 gap-4 mb-8">
+              {[
+                {
+                  titleAr: "حماية محيطية فعّالة",
+                  titleEn: "Active Perimeter Protection",
+                  descAr:
+                    "يقوم النظام بمراقبة جميع المخارج ونقاط التنقل داخل المستشفى، حيث يؤدي أي تحرك غير مصرح به باتجاه المصاعد أو السلالم إلى إغلاق فوري للأبواب وإطلاق تنبيهات أمنية عالية الأولوية.",
+                  descEn:
+                    "The system monitors all exits and transit points. Any unauthorized movement toward elevators or stairwells triggers immediate door locks and high-priority security alerts.",
+                },
+                {
+                  titleAr: "تقنية كشف العبث",
+                  titleEn: "Tamper-Sensing Technology",
+                  descAr:
+                    "توفر الأساور الذكية إشعارات فورية إلى محطة التمريض في حال محاولة فك أو إزالة السوار دون تصريح.",
+                  descEn:
+                    "Our smart tags provide instant notification to the nursing station if a band is loosened or removed without authorization.",
+                },
+                {
+                  titleAr: "خدمات تحديد الموقع في الوقت الفعلي",
+                  titleEn: "Real-Time Location Services",
+                  descAr:
+                    "يتمكن الفريق الطبي والأمني من متابعة موقع كل رضيع بشكل مستمر عبر نظام رقمي مركزي للمراقبة.",
+                  descEn:
+                    "Clinical and security teams maintain constant visibility of every infant's location through a centralized digital monitoring interface.",
+                },
+              ].map((item, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 15 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.06 }}
+                  className="bg-popover border border-border/50 rounded-xl p-5"
+                >
+                  <h3 className="font-serif text-base text-foreground mb-2">{isAr ? item.titleAr : item.titleEn}</h3>
+                  <p className="font-body text-sm text-muted-foreground leading-relaxed">{isAr ? item.descAr : item.descEn}</p>
+                </motion.div>
+              ))}
+            </div>
+
+            <div className="bg-popover border border-border/50 rounded-2xl p-6 mb-8">
+              <div className="flex items-center gap-2 mb-3">
+                <Shield className="w-5 h-5 text-primary" />
+                <h3 className="font-serif text-lg text-foreground">
+                  {isAr ? "المطابقة التلقائية بين الأم والرضيع" : "Automated Mother-Infant Matching"}
+                </h3>
+              </div>
+              <p className="font-body text-sm text-muted-foreground mb-4">
+                {isAr
+                  ? "لضمان أعلى مستويات الأمان والدقة، يعتمد النظام على تقنية الربط الرقمي المشفّر بين الأم وطفلها، مما يتيح:"
+                  : "To ensure the absolute integrity of the mother-child bond, our system utilizes encrypted digital pairing:"}
+              </p>
+              <div className="space-y-2">
+                {(isAr
+                  ? [
+                      "ربطًا إلكترونيًا دقيقًا بين الأم والرضيع",
+                      "التحقق الفوري من هوية المولود عند كل عملية نقل أو تسليم",
+                      "تنبيهات تلقائية في حال وجود أي عدم تطابق بالنظام",
+                    ]
+                  : [
+                      "Mothers and infants are electronically linked to ensure the highest levels of accuracy and security",
+                      "Instant identity verification of the newborn at every transfer or handover",
+                      "Automatic alerts in case of any system mismatch",
+                    ]).map((point, i) => (
+                  <div key={i} className="flex items-start gap-3">
+                    <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
+                    <span className="font-body text-sm text-foreground">{point}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="text-center">
+              <h4 className="font-serif text-base text-foreground mb-3">{isAr ? "لماذا هذا النظام؟" : "Why?"}</h4>
+              <p className="font-body text-sm text-muted-foreground">
+                {isAr
+                  ? "حماية على مدار الساعة      تتبع لحظي      مطابقة آمنة بين الأم والرضيع      تنبيهات فورية عند العبث"
+                  : "24/7 Protection       Real-Time Tracking       Mother-Infant Match       Instant Tamper Alert"}
+              </p>
+            </div>
           </div>
         </div>
       </section>

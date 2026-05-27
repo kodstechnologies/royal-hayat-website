@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
-import ChatButton from "@/components/ChatButton";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
 import InsurancePartners from "@/components/InsurancePartners";
 import { Stethoscope, Shield, Bed, ClipboardList, Scale, Globe, CheckCircle2, Phone, Clock, Wifi, Tv, Newspaper, UtensilsCrossed, Sparkles, Search, AlertTriangle, Baby, Lock, Radio, Users, ChevronDown, Download } from "lucide-react";
@@ -30,17 +29,19 @@ const PatientsVisitors = () => {
   const sectionClass = "scroll-mt-[calc(var(--header-height,76px)+2rem)]";
 
   return (
-    <div className="min-h-screen bg-background pt-[var(--header-height,56px)] overflow-x-hidden flex flex-col [&_.text-accent]:text-[#816107]">
+    <div className="min-h-screen bg-background pt-[var(--header-height,56px)] overflow-x-hidden flex flex-col [&_.text-accent]:text-[#816107] [&_p:not(.no-mobile-justify)]:text-justify [&_li]:text-justify max-md:[&_p:not(.no-mobile-justify)]:hyphens-auto max-md:[&_p:not(.no-mobile-justify)]:break-words max-md:[&_p:not(.no-mobile-justify)]:[text-justify:inter-word] max-md:[&_p:not(.no-mobile-justify)]:[text-align-last:left] max-md:[&_li]:hyphens-auto max-md:[&_li]:break-words max-md:[&_li]:[text-justify:inter-word]">
       <Header />
 
       {/* Hero */}
       <section className={`bg-primary/5 ${tab === "rooms-package" ? "py-6 md:py-8" : "py-16 md:py-20"}`}>
         <div className="container mx-auto px-6 text-center">
           <ScrollAnimationWrapper>
-            <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">{lang === "ar" ? "لمرضانا" : "For Our Patients"}</p>
+            <p className="no-mobile-justify text-accent text-xs tracking-[0.3em] uppercase font-body mb-3 !text-center">
+              {lang === "ar" ? (tab === "admission" ? "للمرضى" : "لمرضانا") : "For Our Patients"}
+            </p>
             <h1 className={`font-serif text-foreground mb-4 ${tab === "rooms-package" ? "text-2xl md:text-3xl" : "text-4xl md:text-5xl"}`}>
               {tab === "nursing" ? (lang === "ar" ? "التمريض" : "Nursing")
-                : tab === "admission" ? (lang === "ar" ? "معلومات القبول" : "Admission Information")
+                : tab === "admission" ? (lang === "ar" ? "معلومات الدخول إلى المستشفى" : "Admission Information")
                   : tab === "insurance" ? (lang === "ar" ? "التأمين الصحي" : "Health Insurance")
                     : tab === "during-stay" ? (lang === "ar" ? "أثناء إقامتك" : "During Your Stay")
                       : tab === "rooms-package" ? (lang === "ar" ? "باقات أجنحة الولادة" : "Birthing Suites Packages")
@@ -49,7 +50,13 @@ const PatientsVisitors = () => {
             </h1>
             {tab !== "rooms-package" && (
               <p className="text-muted-foreground font-body text-sm max-w-xl mx-auto">
-                {lang === "ar" ? "كل ما تحتاج معرفته لتجربة مريحة ومطلعة في مستشفى رويال حياة." : "Everything you need to know for a comfortable and informed experience at Royale Hayat Hospital."}
+                {lang === "ar"
+                  ? tab === "admission"
+                    ? "كل ما تحتاجون معرفته لتجربة مريحة وواضحة في مستشفى رويال حياة."
+                    : tab === "nursing"
+                      ? "كل ما تحتاجون معرفته لضمان تجربة مريحة وواضحة خلال زيارتكم وإقامتكم في مستشفى رويال حياة."
+                      : "كل ما تحتاج معرفته لتجربة مريحة ومطلعة في مستشفى رويال حياة."
+                  : "Everything you need to know for a comfortable and informed experience at Royale Hayat Hospital."}
               </p>
             )}
           </ScrollAnimationWrapper>
@@ -65,7 +72,7 @@ const PatientsVisitors = () => {
                 <div className="bg-accent/5 border border-accent/10 rounded-2xl p-8 text-center">
                   <h2 className="text-2xl font-serif text-foreground mb-3">{lang === "ar" ? "مرحباً بكم في صفحة معلومات للمرضى والزوار" : "Welcome to Information for Patients & Visitors"}</h2>
                   <p className="text-muted-foreground font-body text-sm leading-relaxed">
-                    {lang === "ar" ? "هذا نص تجريبي سيتم استبداله لاحقاً. نحن ملتزمون بتوفير تجربة استثنائية لكل مريض وزائر في مستشفى رويال حياة. ستجد هنا كافة المعلومات المتعلقة بإقامتك وخدماتنا." : "This is a test text that will be replaced later. We are committed to providing an exceptional experience for every patient and visitor at Royale Hayat Hospital. Here you will find all the information related to your stay and our services."}
+                    {lang === "ar" ? "في مستشفى رويال حياة، نلتزم بتقديم تجربة استثنائية لكل مريض وزائر، وذلك من خلال خدمات متكاملة تجمع بين الرعاية الطبية المتقدمة والراحة والاهتمام بأدق التفاصيل. هنا ستجدون جميع المعلومات المتعلقة بإقامتكم والخدمات المقدمة لكم بكل سهولة ووضوح." : "This is a test text that will be replaced later. We are committed to providing an exceptional experience for every patient and visitor at Royale Hayat Hospital. Here you will find all the information related to your stay and our services."}
                   </p>
                 </div>
               </ScrollAnimationWrapper>
@@ -83,19 +90,24 @@ const PatientsVisitors = () => {
 
                 <div className="space-y-4 font-body text-sm text-muted-foreground leading-relaxed">
                   <p>
-                    {lang === "ar" ? "في مستشفى رويال حياة، نفخر بتقديم رعاية تمريضية استثنائية من خلال فريق من المتخصصين المدربين والمؤهلين والمعتمدين. يشتهر ممرضونا بتفانيهم ورحمتهم، وهم في قلب كل تجربة مريض، يضمنون الراحة والأمان والدعم على مدار الساعة." : "At Royale Hayat Hospital, we take pride in delivering exceptional nursing care through a team of highly trained, qualified, and certified professionals. Renowned for their dedication and compassion, our nurses are at the heart of every patient experience, ensuring comfort, safety, and support 24 hours a day."}
+                    {lang === "ar" ? "نفخر في مستشفى رويال حياة بتقديم رعاية تمريضية استثنائية من خلال فريق من الممرضين والممرضات المؤهلين والمعتمدين، المعروفين باحترافيتهم العالية وروحهم الإنسانية." : "At Royale Hayat Hospital, we take pride in delivering exceptional nursing care through a team of highly trained, qualified, and certified professionals. Renowned for their dedication and compassion, our nurses are at the heart of every patient experience, ensuring comfort, safety, and support 24 hours a day."}
                   </p>
                   <p>
-                    {lang === "ar" ? "سواء كنت تتلقى رعاية داخلية أو خارجية، فأنت في أيدٍ أمينة. تقود كل وحدة تمريض مديرة ذات خبرة، مدعومة بفريق من الممرضات المسجلات اللواتي يحافظن على أعلى معايير التميز السريري." : "Whether you're receiving inpatient or outpatient care, you are in capable hands. Each nursing unit is led by an experienced director, supported by a team of registered nurses who uphold the highest standards of clinical excellence."}
+                    {lang === "ar" ? "يشكل فريق التمريض محور تجربة المريض، حيث يعمل على توفير الراحة والأمان والدعم على مدار الساعة، سواء للمرضى المنومين أو المراجعين الخارجيين." : "Whether you're receiving inpatient or outpatient care, you are in capable hands. Each nursing unit is led by an experienced director, supported by a team of registered nurses who uphold the highest standards of clinical excellence."}
                   </p>
+                  {lang === "ar" && (
+                    <p>
+                      يقود كل قسم تمريضي مدير تمريض ذو خبرة، مدعوم بفريق من الممرضين المسجلين الذين يلتزمون بأعلى معايير الجودة والرعاية السريرية.
+                    </p>
+                  )}
                 </div>
 
                 <div className="mt-8">
                   <h3 className="font-serif text-lg text-foreground mb-4">{lang === "ar" ? "التزامنا يشمل:" : "Our Commitment Includes:"}</h3>
                   <div className="space-y-3">
                     {(lang === "ar" ? [
-                      "رعاية تمريضية على مدار الساعة مصممة حسب احتياجات المريض",
-                      "قيادة وإشراف من كبار الممرضين في كل قسم",
+                      "رعاية تمريضية متواصلة على مدار 24 ساعة وفق احتياجات كل مريض",
+                      "إشراف ومتابعة من الكوادر التمريضية القيادية في جميع الأقسام",
                     ] : [
                       "Round-the-clock nursing care tailored to patient needs",
                       "Leadership and supervision by senior nursing staff in every department",
@@ -109,11 +121,11 @@ const PatientsVisitors = () => {
                       <div className="flex items-start gap-3">
                         <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                         <div>
-                          <span className="font-body text-sm text-foreground">{lang === "ar" ? "تطوير مهني مستمر من خلال تدريب منظم في:" : "Ongoing professional development through structured training in:"}</span>
+                          <span className="font-body text-sm text-foreground">{lang === "ar" ? "تطوير مهني مستمر من خلال برامج تدريبية متخصصة تشمل:" : "Ongoing professional development through structured training in:"}</span>
                           <ul className="mt-2 ml-4 space-y-1">
                             <li className="font-body text-sm text-muted-foreground">• {lang === "ar" ? "الإسعافات الأولية" : "First aid"}</li>
                             <li className="font-body text-sm text-muted-foreground">• {lang === "ar" ? "مكافحة العدوى" : "Infection control"}</li>
-                            <li className="font-body text-sm text-muted-foreground">• {lang === "ar" ? "ممارسات رعاية المرضى المتقدمة" : "Advanced patient care practices"}</li>
+                            <li className="font-body text-sm text-muted-foreground">• {lang === "ar" ? "أحدث ممارسات رعاية المرضى المتقدمة" : "Advanced patient care practices"}</li>
                           </ul>
                         </div>
                       </div>
@@ -130,20 +142,33 @@ const PatientsVisitors = () => {
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                     <Shield className="w-6 h-6 text-primary" />
                   </div>
-                  <h2 className="text-2xl md:text-3xl font-serif text-foreground">{lang === "ar" ? "خدمات التأمين الصحي" : "Health Insurance Services"}</h2>
+                  <h2 className="text-2xl md:text-3xl font-serif text-foreground">{lang === "ar" ? "التأمين الصحي" : "Health Insurance"}</h2>
                 </div>}
 
                 <p className="font-body text-sm text-muted-foreground leading-relaxed mb-8">
-                  {lang === "ar" ? "في مستشفى رويال حياة، قسم التأمين الطبي لدينا مكرس لجعل تجربة الرعاية الصحية الخاصة بك سلسة وخالية من التوتر قدر الإمكان. أقمنا شراكات مع معظم شركات التأمين الطبي الخاصة الرئيسية ونقدم خطة دفع مصممة خصيصاً للمرضى المشمولين ببرامج التأمين الخاصة." : "At Royale Hayat Hospital, our Medical Insurance Department is dedicated to making your healthcare experience as smooth and stress-free as possible. We have established partnerships with most major private medical insurance companies and offer a tailored payment scheme for patients covered under private insurance programs."}
+                  {lang === "ar"
+                    ? "يحرص قسم التأمين الصحي في مستشفى رويال حياة على جعل تجربتكم العلاجية أكثر سهولة وراحة، من خلال التعاون مع معظم شركات التأمين الطبي الخاصة المعتمدة في الكويت، وتوفير حلول دفع مرنة للمرضى المشمولين بالتغطية التأمينية."
+                    : "At Royale Hayat Hospital, our Medical Insurance Department is dedicated to making your healthcare experience as smooth and stress-free as possible. We have established partnerships with most major private medical insurance companies and offer a tailored payment scheme for patients covered under private insurance programs."}
                 </p>
 
                 <div className="bg-popover border border-border/50 rounded-2xl p-6 mb-6">
-                  <h3 className="font-serif text-lg text-foreground mb-3">{lang === "ar" ? "دعم الفواتير المباشرة" : "Direct Billing Support"}</h3>
-                  <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
-                    {lang === "ar" ? "نتولى جميع تقديمات الفواتير ونسهل الفوترة المباشرة لمزود التأمين الخاص بك. لتمكين هذه الخدمة، يرجى التأكد من تقديم المعلومات التالية بدقة:" : "We handle all billing submissions and facilitate direct billing to your insurance provider, ensuring minimal hassle for you. To enable this service, please ensure the following information is accurately provided:"}
-                  </p>
+                  <h3 className="font-serif text-lg text-foreground mb-3">{lang === "ar" ? "خدمة المطالبات المباشرة" : "Direct Billing Support"}</h3>
+                  {lang === "ar" ? (
+                    <>
+                      <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
+                        يقوم فريقنا بإدارة جميع معاملات المطالبات والتنسيق المباشر مع شركة التأمين الخاصة بكم لتقليل أي إجراءات إضافية عليكم.
+                      </p>
+                      <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
+                        ولضمان الاستفادة من الخدمة، يرجى التأكد من توفير المعلومات التالية بشكل صحيح:
+                      </p>
+                    </>
+                  ) : (
+                    <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
+                      We handle all billing submissions and facilitate direct billing to your insurance provider, ensuring minimal hassle for you. To enable this service, please ensure the following information is accurately provided:
+                    </p>
+                  )}
                   <div className="space-y-2">
-                    {(lang === "ar" ? ["رقم بوليصة التأمين", "رقم المجموعة", "العنوان البريدي الصحيح"] : ["Insurance policy number", "Group number", "Correct mailing address"]).map((item, i) => (
+                    {(lang === "ar" ? ["رقم وثيقة التأمين", "رقم المجموعة", "العنوان البريدي الصحيح"] : ["Insurance policy number", "Group number", "Correct mailing address"]).map((item, i) => (
                       <div key={i} className="flex items-center gap-3">
                         <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
                         <span className="font-body text-sm text-foreground">{item}</span>
@@ -153,15 +178,17 @@ const PatientsVisitors = () => {
                 </div>
 
                 <div className="bg-popover border border-border/50 rounded-2xl p-6 mb-6">
-                  <h3 className="font-serif text-lg text-foreground mb-3">{lang === "ar" ? "مساعدة تأمينية شاملة" : "Comprehensive Insurance Assistance"}</h3>
+                  <h3 className="font-serif text-lg text-foreground mb-3">{lang === "ar" ? "خدمات دعم التأمين" : "Comprehensive Insurance Assistance"}</h3>
                   <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
-                    {lang === "ar" ? "فريق التأمين ذو الخبرة لدينا هنا لإرشادك في كل خطوة من العملية. تشمل الخدمات:" : "Our experienced insurance team is here to guide you through every step of the process. Services include:"}
+                    {lang === "ar"
+                      ? "فريق التأمين المتخصص لدينا جاهز لمساعدتكم في جميع مراحل الإجراءات، وتشمل الخدمات:"
+                      : "Our experienced insurance team is here to guide you through every step of the process. Services include:"}
                   </p>
                   <div className="space-y-2">
                     {(lang === "ar" ? [
-                      "توعية المرضى بتفاصيل بوليصة التأمين",
+                      "شرح تفاصيل وثيقة التأمين والتغطية",
                       "المساعدة في التسجيل والتقديرات المالية",
-                      "تنسيق الموافقات المسبقة للقبول الداخلي والإجراءات الجراحية",
+                      "التنسيق للحصول على الموافقات المسبقة للتنويم والعمليات الجراحية",
                     ] : [
                       "Educating patients on insurance policy details",
                       "Assistance with registration and financial estimates",
@@ -180,14 +207,29 @@ const PatientsVisitors = () => {
                     <Clock className="w-5 h-5 text-primary" />
                     <h3 className="font-serif text-lg text-foreground">{lang === "ar" ? "ساعات العمل" : "Operating Hours"}</h3>
                   </div>
-                  <p className="font-body text-sm text-muted-foreground mb-1">{lang === "ar" ? "مكتب التأمين مفتوح:" : "Our insurance office is open:"}</p>
-                  <p className="font-body text-sm text-foreground">{lang === "ar" ? "الأحد – الخميس: 8:00 ص – 8:00 م" : "Sunday – Thursday: 8:00 AM – 8:00 PM"}</p>
-                  <p className="font-body text-sm text-foreground">{lang === "ar" ? "السبت: 8:00 ص – 4:00 م" : "Saturday: 8:00 AM – 4:00 PM"}</p>
+                  {lang === "ar" ? (
+                    <>
+                      <p className="font-body text-sm text-muted-foreground mb-3">يفتح مكتب التأمين أبوابه خلال الأوقات التالية:</p>
+                      <p className="font-body text-sm text-foreground mb-1">الأحد إلى الخميس:</p>
+                      <p className="font-body text-sm text-foreground mb-3">8:00 صباحًا – 8:00 مساءً</p>
+                      <p className="font-body text-sm text-foreground mb-1">السبت:</p>
+                      <p className="font-body text-sm text-foreground">8:00 صباحًا – 4:00 مساءً</p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="font-body text-sm text-muted-foreground mb-1">Our insurance office is open:</p>
+                      <p className="font-body text-sm text-foreground">Sunday – Thursday: 8:00 AM – 8:00 PM</p>
+                      <p className="font-body text-sm text-foreground">Saturday: 8:00 AM – 4:00 PM</p>
+                    </>
+                  )}
                   <div className="flex items-center gap-2 mt-4">
                     <Phone className="w-4 h-4 text-accent" />
                     <p className="font-body text-sm text-foreground">
-                      {lang === "ar" ? "للاستفسارات أو للتحقق مما إذا كانت خطة التأمين الخاصة بك مقبولة، يرجى الاتصال بنا على " : "For inquiries or to verify if your insurance plan is accepted, please contact us at "}
-                      <a href="tel:25360453" className="text-accent hover:underline font-semibold">25360453</a>.
+                      {lang === "ar"
+                        ? "للاستفسارات أو للتأكد من قبول شركة التأمين الخاصة بكم:"
+                        : "For inquiries or to verify if your insurance plan is accepted, please contact us at "}
+                      <a href="tel:+96525360453" className="text-accent hover:underline font-semibold">25360453</a>
+                      {lang === "en" && "."}
                     </p>
                   </div>
                 </div>
@@ -286,11 +328,13 @@ const PatientsVisitors = () => {
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                     <Globe className="w-6 h-6 text-primary" />
                   </div>
-                  <h2 className="text-2xl md:text-3xl font-serif text-foreground">{lang === "ar" ? "المرضى الدوليون" : "International Patient"}</h2>
+                  <h2 className="text-2xl md:text-3xl font-serif text-foreground">{lang === "ar" ? "مركز المرضى الدوليين" : "International Patient Center"}</h2>
                 </div>
 
                 <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
-                  {lang === "ar" ? "لمعلومات مفصلة حول خدمات مركز المرضى الدوليين ونموذج الاستفسار وتفاصيل الاتصال، يرجى زيارة الصفحة المخصصة." : "For detailed information about our International Patient Center services, enquiry form, and contact details, please visit the dedicated page."}
+                  {lang === "ar"
+                    ? "يقدّم مركز المرضى الدوليين الدعم الكامل للمرضى من خارج الكويت، من خلال المساعدة في الإجراءات الإدارية، وحجز المواعيد، وترتيبات النقل، والتنسيق المالي، بالإضافة إلى توفير خدمات الترجمة بعدة لغات لضمان تجربة مريحة وسلسة. تبدأ رعاية المرضى الدوليين قبل وصولكم إلى المستشفى، وتستمر طوال فترة إقامتكم. كما يوفّر المركز خدمات متكاملة للمرضى والأطباء المحوِّلين الراغبين في الحصول على استشارة طبية، أو رأي طبي ثانٍ، أو علاج للحالات المعقدة."
+                    : "For detailed information about our International Patient Center services, enquiry form, and contact details, please visit the dedicated page."}
                 </p>
 
                 <Link
@@ -310,22 +354,29 @@ const PatientsVisitors = () => {
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                     <ClipboardList className="w-6 h-6 text-primary" />
                   </div>
-                  <h2 className="text-2xl md:text-3xl font-serif text-foreground">{lang === "ar" ? "معلومات القبول" : "Admission Information"}</h2>
+                  <h2 className="text-2xl md:text-3xl font-serif text-foreground">{lang === "ar" ? "معلومات الدخول إلى المستشفى" : "Admission Information"}</h2>
                 </div>}
 
                 <p className="font-body text-sm text-muted-foreground leading-relaxed mb-8">
-                  {lang === "ar" ? "في مستشفى رويال حياة، تبدأ راحتك ورعايتك من لحظة قبولك. سواء تمت إحالتك من أخصائي داخلي أو طبيب خارجي، تضمن عملية القبول المبسطة لدينا دخولاً سلساً لأي عملية جراحية أو إجراء طبي مخطط له." : "At Royale Hayat Hospital, your comfort and care begin the moment you're admitted. Whether you're referred by an in-house specialist or an external physician, our streamlined admission process ensures a smooth entry for any planned surgery or medical procedure."}
+                  {lang === "ar"
+                    ? "في مستشفى رويال حياة، تبدأ راحتكم ورعايتكم منذ لحظة الدخول. سواء تم تحويلكم من طبيب داخل المستشفى أو من جهة خارجية، فإن إجراءات الدخول لدينا تتم بسلاسة لضمان تجربة مريحة لأي عملية جراحية أو إجراء طبي مجدول."
+                    : "At Royale Hayat Hospital, your comfort and care begin the moment you're admitted. Whether you're referred by an in-house specialist or an external physician, our streamlined admission process ensures a smooth entry for any planned surgery or medical procedure."}
                 </p>
 
                 <div className="bg-popover border border-border/50 rounded-2xl p-6 mb-6">
-                  <h3 className="font-serif text-lg text-foreground mb-3">{lang === "ar" ? "كيفية القبول" : "How to Get Admitted"}</h3>
-                  <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
-                    {lang === "ar" ? "يتم ترتيب القبول مسبقاً بالتنسيق مع فريق المستشفى. يتم قبول المرضى بناءً على:" : "Admission is arranged in advance through coordination with our hospital team. Patients are admitted based on:"}
+                  <h3 className="font-serif text-lg text-foreground mb-3">{lang === "ar" ? "كيفية الدخول إلى المستشفى" : "How to Get Admitted"}</h3>
+                  <p
+                    lang={lang === "ar" ? "ar" : "en"}
+                    className="font-body text-sm text-muted-foreground leading-relaxed mb-4 max-md:hyphens-auto max-md:break-words max-md:[text-justify:inter-word] max-md:[text-align-last:left]"
+                  >
+                    {lang === "ar"
+                      ? "يتم ترتيب الدخول مسبقًا بالتنسيق مع فريق المستشفى، وذلك بناءً على:"
+                      : "Admission is arranged in advance through coordination with our hospital team. Patients are admitted based on:"}
                   </p>
                   <div className="space-y-2">
                     {(lang === "ar" ? [
-                      "إحالة من طبيب داخلي أو خارجي",
-                      "يتم تحديد موعد قبول مؤكد من خلال فريق خدمات المرضى",
+                      "تحويل من طبيب داخل المستشفى أو من خارجها",
+                      "تحديد موعد مؤكد للدخول من خلال فريق خدمات المرضى",
                     ] : [
                       "A referral from an in-house or external doctor",
                       "A confirmed date of admission is scheduled through our patient services team",
@@ -339,15 +390,17 @@ const PatientsVisitors = () => {
                 </div>
 
                 <div className="bg-popover border border-border/50 rounded-2xl p-6 mb-6">
-                  <h3 className="font-serif text-lg text-foreground mb-3">{lang === "ar" ? "ما ستحتاجه للتسجيل" : "What You'll Need for Registration"}</h3>
+                  <h3 className="font-serif text-lg text-foreground mb-3">{lang === "ar" ? "المستندات المطلوبة للتسجيل" : "What You'll Need for Registration"}</h3>
                   <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
-                    {lang === "ar" ? "لإتمام قبولك، يرجى تحضير المستندات التالية:" : "To complete your admission, please prepare the following documents:"}
+                    {lang === "ar"
+                      ? "يرجى تجهيز المستندات التالية لإتمام إجراءات الدخول:"
+                      : "To complete your admission, please prepare the following documents:"}
                   </p>
                   <div className="space-y-2">
                     {(lang === "ar" ? [
-                      "خطاب إحالة الطبيب",
-                      "اختيار جناح بناءً على تفضيلك والتوفر",
-                      "نماذج القبول المكتملة (متوفرة في المستشفى أو عبر الإنترنت)",
+                      "خطاب تحويل من الطبيب",
+                      "اختيار نوع الجناح حسب الرغبة والتوافر",
+                      "تعبئة نماذج الدخول (متوفرة في المستشفى أو إلكترونيًا)",
                     ] : [
                       "Doctor's referral letter",
                       "Selection of a suite based on your preference and availability",
@@ -359,15 +412,15 @@ const PatientsVisitors = () => {
                       </div>
                     ))}
                     <div className="ml-7 space-y-1">
-                      <p className="font-body text-sm text-foreground">{lang === "ar" ? "المستندات الرسمية، بما في ذلك:" : "Official documents, including:"}</p>
+                      <p className="font-body text-sm text-foreground">{lang === "ar" ? "المستندات الرسمية وتشمل:" : "Official documents, including:"}</p>
                       <ul className="ml-4 space-y-1">
                         <li className="font-body text-sm text-muted-foreground">• {lang === "ar" ? "البطاقة المدنية" : "Civil ID"}</li>
-                        <li className="font-body text-sm text-muted-foreground">• {lang === "ar" ? "شهادة الزواج (لخدمات الأمومة أو الخدمات ذات الصلة)" : "Marriage certificate (for maternity or related services)"}</li>
+                        <li className="font-body text-sm text-muted-foreground">• {lang === "ar" ? "عقد الزواج (لخدمات الولادة أو الخدمات ذات الصلة)" : "Marriage certificate (for maternity or related services)"}</li>
                       </ul>
                     </div>
                     {(lang === "ar" ? [
-                      "السجلات الطبية السابقة، مثل نتائج الفحوصات والتصوير والتقارير المخبرية",
-                      "إذا كنت مؤمناً، يرجى إحضار بطاقة التأمين أو خطاب الضمان",
+                      "السجلات الطبية السابقة، مثل نتائج الفحوصات والتقارير والصور الطبية",
+                      "بطاقة التأمين أو خطاب الضمان، في حال وجود تأمين صحي",
                     ] : [
                       "Previous medical records, such as test results, imaging, and lab reports",
                       "If insured, please bring your insurance card or letter of guarantee",
@@ -381,16 +434,30 @@ const PatientsVisitors = () => {
                 </div>
 
                 <div className="bg-primary/5 rounded-2xl p-6">
-                  <h3 className="font-serif text-lg text-foreground mb-3">{lang === "ar" ? "للمرضى المؤمنين" : "For Insured Patients"}</h3>
+                  <h3 className="font-serif text-lg text-foreground mb-3">{lang === "ar" ? "للمرضى الذين لديهم تأمين" : "For Insured Patients"}</h3>
                   <p className="font-body text-sm text-muted-foreground leading-relaxed">
-                    {lang === "ar" ? "إذا كنت مشمولاً بتأمين صحي خاص، سيدعمك قسم التأمين الطبي لدينا في الحصول على الموافقة المسبقة وتسهيل الفواتير المباشرة." : "If you are covered by a private health insurance provider, our Medical Insurance Department will support you in securing pre-approval and facilitating direct billing."}
+                    {lang === "ar"
+                      ? "إذا كنتم مشمولين بتأمين صحي خاص، سيقوم قسم التأمين الطبي بمساعدتكم في الحصول على الموافقات المسبقة وتسهيل إجراءات الفوترة المباشرة."
+                      : "If you are covered by a private health insurance provider, our Medical Insurance Department will support you in securing pre-approval and facilitating direct billing."}
                   </p>
                   <p className="font-body text-sm text-muted-foreground leading-relaxed mt-2">
-                    {lang === "ar" ? "تأكد من مراجعة " : "Be sure to review the "}
-                    <a href="#section-insurance" className="text-accent hover:underline font-semibold">
-                      {lang === "ar" ? "قسم التأمين الصحي" : "Health Insurance section"}
-                    </a>
-                    {lang === "ar" ? " لمزيد من المعلومات التفصيلية ونقاط الاتصال." : " for more detailed information and contact points."}
+                    {lang === "ar" ? (
+                      <>
+                        يرجى مراجعة{" "}
+                        <Link to="/patients-visitors?tab=insurance" className="text-accent hover:underline font-semibold">
+                          قسم التأمين الصحي
+                        </Link>{" "}
+                        للحصول على مزيد من التفاصيل ووسائل التواصل.
+                      </>
+                    ) : (
+                      <>
+                        Be sure to review the{" "}
+                        <Link to="/patients-visitors?tab=insurance" className="text-accent hover:underline font-semibold">
+                          Health Insurance section
+                        </Link>{" "}
+                        for more detailed information and contact points.
+                      </>
+                    )}
                   </p>
                 </div>
               </ScrollAnimationWrapper>
@@ -407,16 +474,16 @@ const PatientsVisitors = () => {
                 </div>
 
                 <p className="font-body text-sm text-muted-foreground leading-relaxed mb-8">
-                  {lang === "ar" ? "في مستشفى رويال حياة، نحن ملتزمون بجعل إقامتك مريحة وآمنة وممتعة قدر الإمكان. استكشف مجموعة وسائل الراحة المتميزة والخدمات الشخصية المتاحة لك أثناء إقامتك معنا." : "At Royale Hayat Hospital, we are committed to making your stay as comfortable, safe, and pleasant as possible. Explore the range of premium amenities and personalized services available to you during your time with us."}
+                  {lang === "ar" ? "في مستشفى رويال حياة، نلتزم بجعل إقامتك مريحة وآمنة وممتعة قدر الإمكان. اكتشف مجموعة المرافق الفاخرة والخدمات الشخصية المتوفرة لك خلال فترة إقامتك معنا." : "At Royale Hayat Hospital, we are committed to making your stay as comfortable, safe, and pleasant as possible. Explore the range of premium amenities and personalized services available to you during your time with us."}
                 </p>
 
                 <h3 className="font-serif text-xl text-foreground mb-5">{lang === "ar" ? "وسائل الراحة المجانية" : "Complimentary Amenities"}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
                   {(lang === "ar" ? [
-                    { icon: Wifi, title: "الواي فاي", desc: "ابقَ متصلاً بإنترنت عالي السرعة مجاني في جميع أنحاء المستشفى." },
-                    { icon: Phone, title: "الهواتف", desc: "استمتع بمكالمات محلية وداخلية مجانية. استخدم هاتف غرفتك للتواصل مع خدمات الضيوف أو التنظيف أو لطلب وجبة خاصة." },
-                    { icon: Tv, title: "الترفيه", desc: "استرخِ مع تلفزيونك المسطح الكبير، مع إمكانية الوصول إلى شبكة أوربت شوتايم، وكاميرا Hugs & Kisses للاطمئنان على مولودك في أي وقت." },
-                    { icon: Newspaper, title: "مواد القراءة", desc: "نوفر مجموعة من الصحف والمجلات الرائدة بالعربية والإنجليزية لمتعتك." },
+                    { icon: Wifi, title: "خدمة الإنترنت", desc: "ابقَ على اتصال من خلال خدمة الإنترنت عالية السرعة المجانية المتوفرة في جميع أنحاء المستشفى." },
+                    { icon: Phone, title: "الهواتف", desc: "استمتع بالمكالمات المحلية والداخلية المجانية. يمكنك استخدام هاتف الغرفة للتواصل مع خدمات الضيافة، أو قسم التدبير المنزلي، أو لطلب خدمة الطعام الخاصة." },
+                    { icon: Tv, title: "الترفيه", desc: "استرخِ أمام شاشة التلفاز العريضة، والتي توفر إمكانية الوصول إلى شبكة أوربت-شوتايم، بالإضافة إلى خدمات خاصة بالمستشفى مثل كاميرا القبلة والعناق لمتابعة طفلك حديث الولادة في أي وقت." },
+                    { icon: Newspaper, title: "مواد القراءة", desc: "نوفر مجموعة مختارة من أبرز الصحف والمجلات باللغة الإنجليزية والعربية لتستمتع بها خلال إقامتك." },
                   ] : [
                     { icon: Wifi, title: "Wi-Fi Access", desc: "Stay connected with high-speed, complimentary Wi-Fi throughout the hospital." },
                     { icon: Phone, title: "Telephones", desc: "Enjoy free local and internal calls. Use your room telephone to contact Guest Services, Housekeeping, or place a private dining order." },
@@ -439,9 +506,9 @@ const PatientsVisitors = () => {
                 <h3 className="font-serif text-xl text-foreground mb-5">{lang === "ar" ? "خدمات الغرف" : "Room Services"}</h3>
                 <div className="space-y-4 mb-10">
                   {(lang === "ar" ? [
-                    { icon: UtensilsCrossed, title: "المطبخ الخاص", desc: "استمتع بأطباق فاخرة من قائمتنا الشاملة، تضم المطبخ القاري والمتوسطي والآسيوي والمخصص — يعدها طهاتنا التنفيذيون الحائزون على جوائز." },
-                    { icon: Sparkles, title: "التنظيف", desc: "استمتع بخدمة تنظيف على مدار الساعة مع تجديد يومي للغرفة. يمكنك أيضاً جدولة الخدمة في الوقت الذي يناسبك." },
-                    { icon: Search, title: "المفقودات", desc: "إذا فقدت غرضاً، فريق خدمات الضيوف لدينا هنا للمساعدة. يرجى الاتصال بنا لتقديم تقرير مفقودات مع قسم الأمن." },
+                    { icon: UtensilsCrossed, title: "الطعام الخاص", desc: "استمتع بأطباق فاخرة من قائمة طعامنا المتنوعة، والتي تشمل المأكولات العالمية، والمتوسطية، والآسيوية، بالإضافة إلى خيارات مخصصة تُحضّر بواسطة طهاتنا التنفيذيين الحائزين على جوائز." },
+                    { icon: Sparkles, title: "خدمة التدبير المنزلي", desc: "نوفر خدمة تنظيف الغرف على مدار 24 ساعة مع تجديد يومي للغرفة. كما يمكنك تحديد وقت الخدمة بما يناسبك." },
+                    { icon: Search, title: "المفقودات", desc: "في حال فقدان أي غرض، فإن فريق خدمات الضيافة جاهز لمساعدتك. يرجى التواصل معنا لتقديم بلاغ إلى قسم الأمن. وعلى الرغم من أننا لا نتحمل مسؤولية المتعلقات الشخصية، إلا أننا نبذل كل الجهود الممكنة للمساعدة في العثور عليها." },
                   ] : [
                     { icon: UtensilsCrossed, title: "Private Dining", desc: "Savor gourmet dishes from our extensive menu, featuring Continental, Mediterranean, Pan-Asian, and personalized cuisine—all prepared by our award-winning executive chefs." },
                     { icon: Sparkles, title: "Housekeeping", desc: "Enjoy 24-hour housekeeping service with daily room refresh. You may also schedule service at a time that suits you best." },
@@ -460,15 +527,15 @@ const PatientsVisitors = () => {
                 </div>
 
                 <div className="bg-primary/5 rounded-2xl p-6">
-                  <h3 className="font-serif text-lg text-foreground mb-3">{lang === "ar" ? "سياسة الزيارة" : "Visitors Policy"}</h3>
+                  <h3 className="font-serif text-lg text-foreground mb-3">{lang === "ar" ? "سياسة الزوار" : "Visitors Policy"}</h3>
                   <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
-                    {lang === "ar" ? "يلعب أحباؤك دوراً أساسياً في رحلة شفائك. لضمان سلامتك وراحتك، نرجو من الزوار اتباع هذه الإرشادات:" : "Your loved ones play a key role in your healing journey. To ensure your safety and comfort, we kindly ask visitors to follow these guidelines:"}
+                    {lang === "ar" ? "يلعب أحباؤك دورًا مهمًا في رحلة تعافيك. ولضمان سلامتك وراحتك، نرجو من الزوار الالتزام بالإرشادات التالية:" : "Your loved ones play a key role in your healing journey. To ensure your safety and comfort, we kindly ask visitors to follow these guidelines:"}
                   </p>
                   <div className="space-y-2">
                     {(lang === "ar" ? [
-                      "يرجى عدم الجلوس على سرير المريض أو لمس أي معدات طبية.",
-                      "نطلب من جميع الزوار تعقيم أيديهم عند الدخول والخروج من الغرفة.",
-                      "يجب على الزوار الذين عانوا من أعراض مثل الحمى أو القيء أو الإسهال أو الطفح الجلدي أو السعال خلال الـ 72 ساعة الماضية الامتناع عن الزيارة.",
+                      "يُرجى عدم الجلوس على سرير المريض أو لمس الأجهزة الطبية.",
+                      "نرجو من جميع الزوار تعقيم أيديهم عند دخول الغرفة وعند مغادرتها.",
+                      "يُطلب من الزوار الذين ظهرت عليهم أعراض مثل الحمى، القيء، الإسهال، الطفح الجلدي، أو السعال خلال آخر 72 ساعة الامتناع عن الزيارة.",
                     ] : [
                       "Please do not sit on the patient's bed or handle any medical equipment.",
                       "We request that all visitors sanitize their hands when entering and exiting your room.",
@@ -491,13 +558,37 @@ const PatientsVisitors = () => {
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                     <Scale className="w-6 h-6 text-primary" />
                   </div>
-                  <h2 className="text-2xl md:text-3xl font-serif text-foreground">{lang === "ar" ? "وثيقة حقوق ومسؤوليات المريض" : "Patient Bill of Rights and Responsibilities"}</h2>
+                  <h2 className="text-2xl md:text-3xl font-serif text-foreground">{lang === "ar" ? "حقوق ومسؤوليات المريض" : "Patient Bill of Rights and Responsibilities"}</h2>
                 </div>
 
+                {lang === "ar" && (
+                  <p className="font-body text-sm text-muted-foreground leading-relaxed mb-6">
+                    في مستشفى رويال حياة، نلتزم بتقديم رعاية صحية تتمحور حول المريض، مع احترام كامل لحقوقه، إلى جانب تعزيز مسؤولياته لضمان تجربة علاجية آمنة وفعّالة.
+                  </p>
+                )}
+
                 <div className="bg-popover border border-border/50 rounded-2xl p-6 mb-6">
-                  <h3 className="font-serif text-lg text-foreground mb-4">{lang === "ar" ? "لديك الحق في:" : "You have the right to:"}</h3>
+                  <h3 className="font-serif text-lg text-foreground mb-4">{lang === "ar" ? "أولاً: حقوق المريض" : "You have the right to:"}</h3>
                   <ol className="space-y-3 list-decimal list-inside">
-                    {[
+                    {(lang === "ar" ? [
+                      "معرفة جميع المعلومات المتعلقة بحالتك الصحية، ورعايتك، وأسباب جميع الفحوصات والإجراءات التشخيصية، وكذلك الرسوم المفروضة على حسابك، وذلك بلغة تفهمها.",
+                      "قبول أو رفض التوقيع على الموافقة لأي إجراء جراحي أو تشخيصي.",
+                      "تلقي رعاية صحية رحيمة ومحترمة في جميع الأوقات، بغض النظر عن العمر، أو الجنس، أو العرق، أو الثقافة، أو الجنسية، أو اللغة، أو التوجه، أو الوضع الاجتماعي والاقتصادي، أو القدرة الجسدية أو الذهنية، أو الدين، أو التشخيص.",
+                      "الحصول على إقامة مريحة في بيئة نظيفة وآمنة، خالية من أي إساءة لفظية أو جسدية، مع الحفاظ على الخصوصية الشخصية.",
+                      "معرفة آلية تقديم الشكاوى بشكل مناسب، سواء شفهيًا أو كتابيًا، إلى المدير المناوب (هاتف: 66321214) أو محامي/ممثل المرضى (هاتف: 67051626).",
+                      "الحفاظ على سرية وخصوصية المعلومات المتعلقة بحالتك الصحية.",
+                      "الحصول على أي معلومات أو مستندات طبية مثل التقرير الطبي، أو إجازة مرضية، أو ملخص الخروج.",
+                      "ضمان استمرارية الرعاية الصحية حتى الخروج والمتابعة.",
+                      "الحصول على رأي طبي ثانٍ من طبيب مرخص، سواء داخل مستشفى رويال حياة أو في أي مؤسسة صحية أخرى، على أن يتحمل المريض التكاليف الإضافية إن وجدت.",
+                      "تحويلك إلى مؤسسة صحية أخرى إذا اقتضت الحالة الطبية ذلك، أو بناءً على طلبك أو طلب ولي الأمر القانوني.",
+                      "مغادرة المستشفى حتى في حال مخالفة رأي الطبيب، بعد توقيع نموذج \"الخروج ضد النصيحة الطبية\".",
+                      "معرفة أسماء ومناصب مقدمي الرعاية الصحية، وأن يتم مناداتك باسمك الصحيح.",
+                      "الحصول على شرح واضح للتكاليف وأي قيود محتملة على التغطية التأمينية.",
+                      "إشراكك أنت وعائلتك أو ممثلك القانوني في قرارات العلاج، بما في ذلك النتائج المتوقعة وغير المتوقعة، والمخاطر، والقرارات العلاجية.",
+                      "معرفة إجراءات السلامة التي يتم اتخاذها بعد التقييم، بما في ذلك المخاطر السريرية والجسدية والنفسية مثل خطر السقوط، والأدوية، والتفاعلات الدوائية، والعدوى.",
+                      "الإبلاغ عن أي نتائج سلبية غير متوقعة.",
+                      "الموافقة أو رفض الموافقة على التصوير أو التسجيل المرئي.",
+                    ] : [
                       'Know, in a language you understand, all information about your condition, your care, and the reasons for all investigations, diagnostic procedures, and the charges made to your account.',
                       'Accept or refuse to sign a consent for any operative or diagnostic procedure.',
                       'Receive compassionate and respectful care at all times regardless of age, gender, ethnicity, culture, national origin, language, sexual orientation, socioeconomic status, physical or mental ability, religion, or diagnosis.',
@@ -515,7 +606,7 @@ const PatientsVisitors = () => {
                       'Know the safety measures to be taken after the assessment that include clinical, physical, and psychological status, i.e., risk of fall, medications, drug reaction, cross-infection, etc.',
                       'Be informed about any unanticipated adverse outcomes.',
                       'Give or refuse consent before filming or recording images.',
-                    ].map((item, i) => (
+                    ]).map((item, i) => (
                       <li key={i} className="font-body text-sm text-foreground leading-relaxed">
                         {item}
                       </li>
@@ -524,9 +615,26 @@ const PatientsVisitors = () => {
                 </div>
 
                 <div className="bg-popover border border-border/50 rounded-2xl p-6 mb-6">
-                  <h3 className="font-serif text-lg text-foreground mb-4">{lang === "ar" ? "كمريض، تقع على عاتقك مسؤولية:" : "As a patient, it is your responsibility to:"}</h3>
+                  <h3 className="font-serif text-lg text-foreground mb-4">{lang === "ar" ? "ثانياً: مسؤوليات المريض" : "As a patient, it is your responsibility to:"}</h3>
                   <ol className="space-y-3 list-decimal list-inside">
-                    {[
+                    {(lang === "ar" ? [
+                      "الالتزام بالقوانين والأنظمة المعمول بها في مستشفى رويال حياة.",
+                      "تقديم معلومات كاملة ودقيقة عن حالتك الصحية، بما في ذلك التاريخ المرضي والأدوية التي تتناولها.",
+                      "تقديم المستندات المطلوبة وفقًا للقوانين أو البروتوكولات قبل الدخول أو إجراء أي إجراءات طبية.",
+                      "إبلاغ الطاقم الطبي بأي تغييرات في حالتك الصحية أو الأعراض، بما في ذلك الألم.",
+                      "طلب التوضيح في حال عدم فهم المعلومات المتعلقة بحالتك أو علاجك.",
+                      "سداد الفواتير كاملة قبل الخروج والالتزام بجميع الالتزامات المالية المتعلقة بالرعاية.",
+                      "الالتزام بالمواعيد وإبلاغ المستشفى أو الطبيب عند التعذر عن الحضور.",
+                      "ترك المتعلقات الشخصية في المنزل أو تسليمها للعائلة، أو حفظها في الخزنة المتوفرة بالغرفة.",
+                      "مراعاة حقوق المرضى الآخرين والموظفين وتجنب أي إزعاج.",
+                      "المشاركة الفعالة في خطة العلاج واتباع تعليمات الفريق الطبي.",
+                      "اتخاذ التدابير الوقائية في حالات الأمراض المعدية.",
+                      "التعامل باحترام مع الأطباء والتمريض وجميع العاملين في المستشفى.",
+                      "إدراك أن الحالات الطارئة لها الأولوية في تقديم الخدمة.",
+                      "المحافظة على ممتلكات المستشفى مثل الأجهزة الطبية والأثاث والسجلات الطبية.",
+                      "إبلاغ المستشفى في حال الرغبة بتغيير مقدم الخدمة أو المستشفى.",
+                      "المشاركة في الحفاظ على سلامة المريض ومنع أي ضرر أو إصابة كما أوضح مقدمو الخدمة.",
+                    ] : [
                       'Follow the rules and regulations of RHH.',
                       'Give us complete and accurate information about your health, including previous medical history and all the medications you are taking.',
                       'Submit documents required as per the law/protocol before admission or undergoing specific procedures.',
@@ -543,7 +651,7 @@ const PatientsVisitors = () => {
                       'Preserve and maintain hospital property like medical equipment, furniture, fittings, etc., including medical records.',
                       'Keep us informed if you want to change hospital or service provider.',
                       'Share the responsibility in maintaining the safety of the patient from any harm or injury, as explained by the service providers.',
-                    ].map((item, i) => (
+                    ]).map((item, i) => (
                       <li key={i} className="font-body text-sm text-foreground leading-relaxed">
                         {item}
                       </li>
@@ -555,7 +663,7 @@ const PatientsVisitors = () => {
                   <div className="flex items-start gap-3">
                     <AlertTriangle className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
                     <p className="font-body text-sm text-foreground leading-relaxed">
-                      <strong>{lang === "ar" ? "ملاحظة:" : "Note:"}</strong> {lang === "ar" ? "في حالة وجود حالة مهددة للحياة، يحق للاستشاري اتخاذ القرار والمضي قدماً في الفحوصات والإجراءات و/أو الأدوية دون طلب موافقة مسبقة من الأقارب أو الوصي كجزء من المسؤولية الممنوحة للمهنيين الطبيين المؤهلين." : "In case of a life-threatening situation, the Consultant will have the full right to decide and proceed with tests, procedures, and/or medications without seeking prior consent of the relatives or the guardian as part of the responsibility bestowed on a qualified medical professional."}
+                      <strong>{lang === "ar" ? "ملاحظة:" : "Note:"}</strong> {lang === "ar" ? "في الحالات الطبية الطارئة التي تهدد الحياة، يحق للطبيب الاستشاري اتخاذ القرار وإجراء الفحوصات أو الإجراءات أو إعطاء العلاج دون الحاجة إلى موافقة مسبقة من المريض أو ذويه، وذلك ضمن المسؤولية المهنية للطبيب المختص." : "In case of a life-threatening situation, the Consultant will have the full right to decide and proceed with tests, procedures, and/or medications without seeking prior consent of the relatives or the guardian as part of the responsibility bestowed on a qualified medical professional."}
                     </p>
                   </div>
                 </div>
@@ -657,7 +765,6 @@ const PatientsVisitors = () => {
       </section>
 
       <Footer />
-      <ChatButton />
       <ScrollToTop />
 
     </div>

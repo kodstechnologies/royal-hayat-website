@@ -76,7 +76,7 @@ const HeroSection = () => {
   return (
     <section
       ref={sectionRef}
-      className="relative h-[85vh] sm:h-[80vh] md:h-[90vh] min-h-[550px] md:min-h-[600px] overflow-hidden cursor-default"
+      className="relative h-[85vh] sm:h-[80vh] md:h-[90vh] min-h-[520px] max-lg:min-h-[calc(100dvh-var(--header-height,7.5rem)-2rem)] md:min-h-[600px] overflow-hidden cursor-default"
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
@@ -128,38 +128,49 @@ const HeroSection = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
-            className="relative z-10 container mx-auto px-6 py-12 h-full flex flex-col justify-center pointer-events-none"
+            className="relative z-10 container mx-auto px-4 sm:px-6 h-full flex flex-col justify-start pt-4 pb-20 max-lg:pt-2 lg:justify-center lg:py-12 pointer-events-none"
           >
-            <div className="max-w-3xl">
+            <div className={`max-w-3xl w-full ${isAr ? "ms-auto" : ""}`}>
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: 56 }}
                 transition={{ duration: 0.6 }}
-                className="h-0.5 bg-primary mb-8"
+                className={`h-0.5 bg-primary mb-4 max-lg:mb-5 md:mb-8 ${isAr ? "ms-auto" : ""}`}
               />
               <motion.h1
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-serif leading-[1.15] tracking-tight mb-4 md:mb-6"
+                className={`text-2xl sm:text-3xl md:text-5xl lg:text-6xl xl:text-7xl font-serif leading-[1.2] tracking-tight mb-3 max-lg:mb-4 md:mb-6 ${
+                  isAr ? "hero-rtl text-right" : ""
+                }`}
               >
                 <span className="text-foreground block">{t("exceptionalCare")}</span>
-                <span className="text-primary block mt-2">{t("everyStage")} {t("everyAge")}</span>
+                <span className="text-primary block mt-1 max-lg:mt-1.5 md:mt-2">
+                  {t("everyStage")}{" "}
+                  <span className="max-lg:block md:inline">{t("everyAge")}</span>
+                </span>
               </motion.h1>
-              <motion.p
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.2 }}
-                className="text-[#A67C00] font-body text-sm md:text-base leading-relaxed mb-5 max-w-xl text-left"
-                style={isAr ? { fontSize: "calc(0.875rem + 2px)" } : undefined}
-              >
-                {t("heroIntro")}
-              </motion.p>
+              {/* {t("heroIntro") ? (
+                <motion.p
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.2 }}
+                  className={`text-[#A67C00] font-body text-sm md:text-base leading-relaxed mb-3 max-lg:mb-4 md:mb-5 max-w-xl ${
+                    isAr ? "hero-rtl text-right ms-auto" : "text-left"
+                  }`}
+                  style={isAr ? { fontSize: "calc(0.875rem + 2px)" } : undefined}
+                >
+                  {t("heroIntro")}
+                </motion.p>
+              ) : null} */}
               <motion.p
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.3 }}
-                className="text-muted-foreground font-body text-sm md:text-base leading-relaxed mb-5 max-w-xl text-left whitespace-pre-line"
+                className={`text-muted-foreground font-body text-sm md:text-base leading-relaxed mb-3 max-lg:mb-4 md:mb-5 max-w-xl whitespace-pre-line ${
+                  isAr ? "hero-rtl text-right ms-auto" : "text-left"
+                }`}
                 style={isAr ? { fontSize: "calc(0.875rem + 2px)" } : undefined}
               >
                 {t("heroDesc")}
@@ -168,8 +179,10 @@ const HeroSection = () => {
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.38 }}
-                className="text-gray-400 font-serif text-lg md:text-xl mb-8 max-w-xl"
-                style={isAr ? { fontSize: "calc(1.125rem + 2px)" } : undefined} // Increased from 0.875rem to 1.125rem for text-lg baseline
+                className={`text-gray-400 font-serif text-base md:text-xl mb-5 max-lg:mb-6 md:mb-8 max-w-xl ${
+                  isAr ? "hero-rtl text-right ms-auto" : ""
+                }`}
+                style={isAr ? { fontSize: "calc(1.125rem + 2px)" } : undefined}
               >
                 {t("heroTagline")}
               </motion.p>
@@ -213,6 +226,12 @@ const HeroSection = () => {
           </motion.div>
         </div>
       </motion.button>
+
+      <style>{`
+        .hero-rtl {
+          direction: rtl;
+        }
+      `}</style>
     </section>
   );
 };

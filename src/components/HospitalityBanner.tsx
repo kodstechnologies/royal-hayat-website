@@ -8,13 +8,13 @@ const HospitalityBanner = () => {
   const { t } = useLanguage();
 
   const features = [
-    { icon: Crown, label: t("Birth Celebration Halls") },
-    { icon: Bed, label: t("Exclusive Suites") },
+    { icon: Crown, label: t("birthCelebrationHalls") },
+    { icon: Bed, label: t("exclusiveSuites") },
     { icon: Sparkles, label: t("inRoomEvents") },
-    { icon: Droplets, label: t("Elements Spa (by Banyan Tree)") },
+    { icon: Droplets, label: t("elementsSpaByBanyanTree") },
     { icon: Coffee, label: t("alLiwanCafe") },
-    { icon: Coffee, label: t("The 5th Floor Café") },
-    { icon: Baby, label: t("Newborn Photography services ") },
+    { icon: Coffee, label: t("fifthFloorCafe") },
+    { icon: Baby, label: t("newbornPhotography") },
   ];
 
   return (

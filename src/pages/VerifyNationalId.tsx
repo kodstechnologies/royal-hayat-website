@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import ChatButton from "@/components/ChatButton";
 import ScrollToTop from "@/components/ScrollToTop";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
@@ -273,15 +272,19 @@ const VerifyNationalId = () => {
               </motion.button>
             )}
 
-            {showWaiting && (
+            {phase === "starting" && (
               <div className="bg-muted/30 rounded-xl p-4 text-center border border-border">
                 <Loader2 className="w-6 h-6 animate-spin text-accent mx-auto mb-2" />
-                <p className="font-body text-sm text-foreground">
-                  {lang === "ar"
-                    ? "تم إرسال طلب الموافقة. يرجى الموافقة على الهاتف — سيتم التحديث تلقائياً."
-                    : "Approval request sent. Please approve on your phone — this page will update automatically."}
-                </p>
-                <p className="font-body text-[11px] text-muted-foreground mt-2 break-all">
+                <p className="font-body text-sm text-foreground">{t("identitySendingRequest")}</p>
+              </div>
+            )}
+
+            {showWaiting && (
+              <div className="rounded-xl p-4 text-center border border-accent/20 bg-accent/5">
+                <Loader2 className="w-6 h-6 animate-spin text-accent mx-auto mb-2" />
+                <p className="font-body text-sm font-medium text-foreground">{t("identityWaitingTitle")}</p>
+                <p className="font-body text-xs text-muted-foreground mt-2 leading-relaxed">{t("identityWaitingBody")}</p>
+                <p className="font-body text-[11px] text-muted-foreground mt-3 break-all">
                   operationId: {operationId}
                 </p>
               </div>
@@ -347,7 +350,6 @@ const VerifyNationalId = () => {
 
       <Footer />
       <ScrollToTop />
-      <ChatButton />
     </div>
   );
 };

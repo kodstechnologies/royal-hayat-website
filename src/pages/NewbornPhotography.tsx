@@ -1,7 +1,6 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
-import ChatButton from "@/components/ChatButton";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
 import { Baby, Phone, Image } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -167,7 +166,6 @@ const NewbornPhotography = () => {
       </AnimatePresence>
 
       <Footer />
-      <ChatButton />
       <ScrollToTop />
     </div>
   );

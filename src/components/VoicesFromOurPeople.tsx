@@ -50,7 +50,7 @@ const VoicesFromOurPeople = () => {
       <div className="container mx-auto px-6">
         <ScrollAnimationWrapper>
           <div className="text-center mb-12">
-            <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-4">
+            <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-4 !text-center">
               {isAr ? "كلمات من فريقنا" : "Testimonials"}
             </p>
             <h2 className="text-3xl md:text-4xl font-serif text-foreground">

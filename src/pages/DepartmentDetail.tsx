@@ -1,7 +1,6 @@
 import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import ChatButton from "@/components/ChatButton";
 import ScrollToTop from "@/components/ScrollToTop";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
 import { departmentDetails } from "@/data/departmentDetails";
@@ -92,7 +91,9 @@ const DepartmentDoctors = ({ doctors, lang }: { doctors: Doctor[]; lang: string 
             </h2>
           </div>
         </ScrollAnimationWrapper>
-        <div className="relative max-w-[1188px] mx-auto group/carousel"
+        <div
+          className="relative max-w-[1188px] mx-auto group/carousel"
+          dir="ltr"
           onMouseEnter={() => { isPausedRef.current = true; }}
           onMouseLeave={() => { isPausedRef.current = false; }}
         >
@@ -110,6 +111,7 @@ const DepartmentDoctors = ({ doctors, lang }: { doctors: Doctor[]; lang: string 
           )}
           <div
             ref={scrollRef}
+            dir="ltr"
             className={`flex gap-20 md:gap-6 overflow-x-auto pb-8 scroll-smooth snap-x snap-mandatory px-[20px] md:px-0 detail-doctor-carousel ${doctors.length <= 2 ? 'md:justify-center' : 'md:justify-start'}`}
             style={{
               scrollbarWidth: "none",
@@ -182,7 +184,8 @@ const DepartmentDetail = () => {
   const fromBookAppointment = Boolean(
     (location.state as { fromBookAppointment?: boolean } | null)?.fromBookAppointment
   );
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
+  const isAr = lang === "ar";
   const [expandedSub, setExpandedSub] = useState<string | null>(subSlug || null);
   /** Accordion: only keys with `true` are expanded (explicit open). */
   const [apiSubAccordionOpen, setApiSubAccordionOpen] = useState<Record<string, boolean>>({});
@@ -452,15 +455,19 @@ const DepartmentDetail = () => {
           <nav className="flex items-center gap-2 font-body text-xs text-muted-foreground">
             <Link to="/" className="hover:text-accent transition-colors">Home</Link>
             <ChevronRight className="w-3 h-3" />
-            <Link to="/medical-services" className="hover:text-accent transition-colors">Medical Services</Link>
+            <Link to="/medical-services" className="hover:text-accent transition-colors">
+              {t("medicalServices")}
+            </Link>
             <ChevronRight className="w-3 h-3" />
             {activeSub && dept ? (
               <>
                 <Link to={`/medical-services/${dept.slug}`} className="hover:text-accent transition-colors">
-                  {dept.name}
+                  {pickDeptText(lang, dept.name, dept.nameAr)}
                 </Link>
                 <ChevronRight className="w-3 h-3" />
-                <span className="text-foreground font-bold">{activeSub.name}</span>
+                <span className="text-foreground font-bold">
+                  {pickDeptText(lang, activeSub.name, activeSub.nameAr)}
+                </span>
               </>
             ) : matchedApiSubName && slug ? (
               <>
@@ -711,8 +718,10 @@ const DepartmentDetail = () => {
           <div className="container mx-auto px-6">
             <ScrollAnimationWrapper>
               <div className="text-center mb-8">
-                <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">Explore</p>
-                <h2 className="text-2xl md:text-3xl font-serif text-foreground">Sub-Specialties</h2>
+                <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">{t("exploreSubSpecialties")}</p>
+                <h2 className={`text-2xl md:text-3xl font-serif text-foreground ${isAr ? "dept-detail-rtl" : ""}`}>
+                  {t("subSpecialties")}
+                </h2>
               </div>
             </ScrollAnimationWrapper>
             <div className="max-w-4xl mx-auto space-y-3">
@@ -729,7 +738,9 @@ const DepartmentDetail = () => {
                       onClick={() => setExpandedSub(expandedSub === sub.slug ? null : sub.slug)}
                       className="w-full flex items-center justify-between px-6 py-4 hover:bg-muted/30 transition-colors"
                     >
-                      <span className="font-serif font-bold text-base text-foreground">{sub.name}</span>
+                      <span className={`font-serif font-bold text-base text-foreground ${isAr ? "dept-detail-rtl" : ""}`}>
+                        {pickDeptText(lang, sub.name, sub.nameAr)}
+                      </span>
                       <ChevronDown
                         className={`w-5 h-5 text-muted-foreground transition-transform ${expandedSub === sub.slug ? "rotate-180" : ""
                           }`}
@@ -741,25 +752,33 @@ const DepartmentDetail = () => {
                         animate={{ opacity: 1, height: "auto" }}
                         className="px-6 pb-5 border-t border-border/30"
                       >
-                        <p className="font-body text-sm text-muted-foreground leading-relaxed mt-4 mb-4 whitespace-pre-line">
-                          {sub.intro}
+                        <p
+                          className={`font-body text-sm text-muted-foreground leading-relaxed mt-4 mb-4 whitespace-pre-line text-justify ${
+                            isAr ? "dept-detail-rtl" : ""
+                          }`}
+                        >
+                          {pickDeptText(lang, sub.intro, sub.introAr)}
                         </p>
                         {sub.sections.map((section, j) => (
-                          <div key={j} className="mb-4">
-                            <h4 className="font-serif font-bold text-foreground mb-2">{section.title}</h4>
+                          <div key={j} className={`mb-4 ${isAr ? "dept-detail-rtl" : ""}`}>
+                            <h4 className="font-serif font-bold text-foreground mb-2">
+                              {pickDeptText(lang, section.title, section.titleAr)}
+                            </h4>
                             {section.content && (
-                              <p className="font-body text-sm text-muted-foreground leading-relaxed mb-2 whitespace-pre-line">
-                                {section.content}
+                              <p className="font-body text-sm text-muted-foreground leading-relaxed mb-2 whitespace-pre-line text-justify">
+                                {pickDeptText(lang, section.content, section.contentAr)}
                               </p>
                             )}
-                            {section.items && (
+                            {(lang === "ar" && section.itemsAr?.length ? section.itemsAr : section.items) && (
                               <div className="space-y-1.5">
-                                {section.items.map((item, k) => (
-                                  <div key={k} className="flex items-start gap-2">
-                                    <CheckCircle2 className="w-3.5 h-3.5 text-accent flex-shrink-0 mt-0.5" />
-                                    <span className="font-body text-xs text-foreground">{item}</span>
-                                  </div>
-                                ))}
+                                {(lang === "ar" && section.itemsAr?.length ? section.itemsAr : section.items)!.map(
+                                  (item, k) => (
+                                    <div key={k} className="flex items-start gap-2">
+                                      <CheckCircle2 className="w-3.5 h-3.5 text-accent flex-shrink-0 mt-0.5" />
+                                      <span className="font-body text-xs text-foreground text-justify">{item}</span>
+                                    </div>
+                                  )
+                                )}
                               </div>
                             )}
                           </div>
@@ -792,7 +811,7 @@ const DepartmentDetail = () => {
             <div className="max-w-2xl mx-auto">
               <div className="bg-popover border border-border/50 rounded-2xl p-6 md:p-8 text-center">
                 <h3 className="font-serif text-xl text-foreground mb-6">
-                  {lang === "ar" ? "استفسر الآن" : "Enquire Now"}
+                  {lang === "ar" ? "للاستفسار" : "Enquire Now"}
                 </h3>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                   <a
@@ -807,7 +826,7 @@ const DepartmentDetail = () => {
                     className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-full font-body text-xs tracking-[0.15em] uppercase hover:bg-primary/90 transition-colors"
                   >
                     <Phone className="w-4 h-4" />
-                    {lang === "ar" ? "اتصال: 25360500 965+" : "Call: +965 25360500"}
+                    {lang === "ar" ? "الهاتف: 25360500 965+" : "Call: +965 25360500"}
                   </a>
                 </div>
               </div>
@@ -816,8 +835,14 @@ const DepartmentDetail = () => {
         </section>
       )}
 
+      <style>{`
+        .dept-detail-rtl {
+          direction: rtl;
+          text-align: right;
+        }
+      `}</style>
+
       <Footer />
-      <ChatButton />
       <ScrollToTop />
     </div>
   );

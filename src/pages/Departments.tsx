@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import ChatButton from "@/components/ChatButton";
 import ScrollToTop from "@/components/ScrollToTop";
 import DepartmentsSection from "@/components/DepartmentsSection";
 import { getCatagoriesWithDepartmentsAndDoctors } from "@/api/catagory";
@@ -53,7 +52,6 @@ const Departments = () => {
         fetchDoctorsBySubspeciality={getDoctorsBySubspeciality}
       />
       <Footer />
-      <ChatButton />
       <ScrollToTop />
     </div>
   );

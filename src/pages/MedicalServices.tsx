@@ -1,6 +1,5 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import ChatButton from "@/components/ChatButton";
 import ScrollToTop from "@/components/ScrollToTop";
 import DepartmentsSection from "@/components/DepartmentsSection";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -172,7 +171,7 @@ const HomeHealthPreview = () => {
           </div>
           <div className="flex-1  md:text-left">
             <h3 className="font-serif text-xl text-foreground mb-2">
-              {lang === "ar" ? "رويال للرعاية المنزلية" : "Royale Home Health"}
+              {lang === "ar" ? "رويال هوم هيلث للرعاية المنزلية" : "Royale Home Health"}
             </h3>
             <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify mb-4">
               {lang === "ar"
@@ -232,7 +231,6 @@ const MedicalServices = () => {
       <FeaturedDoctors catalogState={catalogState} />
       <HomeHealthPreview />
       <Footer />
-      <ChatButton />
       <ScrollToTop />
     </div>
   );

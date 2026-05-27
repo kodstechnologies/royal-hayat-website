@@ -1,6 +1,5 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import ChatButton from "@/components/ChatButton";
 import ScrollToTop from "@/components/ScrollToTop";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -175,7 +174,7 @@ const renderInitiative = (
 };
 
 const CSR = () => {
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
   const isAr = lang === "ar";
   const [apiInitiatives, setApiInitiatives] = useState<CSRInitiative[]>([]);
   const [apiLoading, setApiLoading] = useState(true);
@@ -216,10 +215,8 @@ const CSR = () => {
             <h1 className="text-4xl md:text-5xl font-serif text-foreground mb-4">
               {isAr ? "الاحتفاء بالحياة" : "Celebrating Life"}
             </h1>
-            <p className="text-muted-foreground font-body text-sm max-w-xl mx-auto text-justify">
-              {isAr
-                ? "معلم مميز من مستشفى رويال حياة، تم إنشاؤه ليرمز إلى التجديد والوحدة وجمال الحياة."
-                : "A signature landmark by Royale Hayat Hospital, created to symbolize renewal, unity, and the beauty of life."}
+            <p className={`text-muted-foreground font-body text-sm max-w-xl mx-auto text-justify ${isAr ? "rtl-text" : ""}`}>
+              {t("csrAboutP1")}
             </p>
           </ScrollAnimationWrapper>
         </div>
@@ -292,8 +289,18 @@ const CSR = () => {
         </div>
       </section>
 
+      <style>{`
+        .rtl-text {
+          direction: rtl;
+          text-align: right;
+        }
+        .rtl-text-center {
+          direction: rtl;
+          text-align: center;
+        }
+      `}</style>
+
       <Footer />
-      <ChatButton />
       <ScrollToTop />
     </div>
   );

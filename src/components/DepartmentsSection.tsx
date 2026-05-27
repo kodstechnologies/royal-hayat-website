@@ -274,9 +274,28 @@ const DepartmentsSection = ({
           transition={{ duration: 0.7 }}
           className="text-center mb-10 md:mb-14"
         >
+          {showPageTitle && (
+            <h1
+              className={`text-4xl md:text-5xl lg:text-6xl font-serif text-foreground mb-4 ${
+                lang === "ar" ? "dept-rtl-center" : ""
+              }`}
+            >
+              {t("medicalServices")}
+            </h1>
+          )}
           <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-4">{t("ourSpecialties")}</p>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif text-foreground mb-4">{t("medicalDepartments")}</h2>
-          <p className="text-muted-foreground font-body max-w-lg mx-auto text-sm md:text-base">
+          <h2
+            className={`text-3xl md:text-4xl lg:text-5xl font-serif text-foreground mb-4 ${
+              lang === "ar" ? "dept-rtl-center" : ""
+            }`}
+          >
+            {t("medicalDepartments")}
+          </h2>
+          <p
+            className={`text-muted-foreground font-body max-w-lg mx-auto text-sm md:text-base ${
+              lang === "ar" ? "dept-rtl-center" : ""
+            }`}
+          >
             {t("deptCount")}
           </p>
         </motion.div>
@@ -288,7 +307,7 @@ const DepartmentsSection = ({
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={lang === "ar" ? "ابحث عن الأعراض، الطبيب، القسم..." : "Search departments..."}
+              placeholder={t("searchSymptoms")}
               className="pl-12 pr-4 py-6 text-base rounded-2xl border-border/60 bg-popover shadow-sm focus:ring-primary"
             />
           </div>
@@ -473,6 +492,13 @@ const DepartmentsSection = ({
           )}
         </div>
       </div>
+
+      <style>{`
+        .dept-rtl-center {
+          direction: rtl;
+          text-align: center;
+        }
+      `}</style>
     </section>
   );
 };

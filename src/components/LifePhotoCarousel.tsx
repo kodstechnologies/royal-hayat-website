@@ -42,19 +42,27 @@ const LifePhotoCarousel = ({ title, subtitle, photos, interval = 4500, variant =
     return () => clearInterval(t);
   }, [isPaused, next, interval, total]);
 
+  useEffect(() => {
+    if (total <= 1) return;
+    const nextSrc = photos[(index + 1) % total]?.src;
+    if (!nextSrc) return;
+    const img = new Image();
+    img.src = nextSrc;
+  }, [index, photos, total]);
+
   const current = photos[index];
   const isAr = lang === "ar";
 
   return (
     <section className={`py-16 ${variant === "muted" ? "bg-secondary/10" : "bg-background"}`}>
       <div className="container mx-auto px-6">
-        <div className="text-center mb-8">
-          <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">
+        <div className="mb-8 w-full flex flex-col items-center text-center">
+          <p className="w-full text-accent text-xs tracking-[0.3em] uppercase font-body mb-3 !text-center" style={{ textAlign: "center" }}>
             {isAr ? "حياة في رويال حياة" : "Life at Royale Hayat"}
           </p>
-          <h2 className="text-2xl md:text-3xl font-serif text-foreground">{title}</h2>
+          <h2 className="text-2xl md:text-3xl font-serif text-foreground text-center">{title}</h2>
           {subtitle && (
-            <p className="text-muted-foreground font-body text-sm max-w-2xl mx-auto mt-3">{subtitle}</p>
+            <p className="text-muted-foreground font-body text-sm max-w-2xl mx-auto mt-3 text-center">{subtitle}</p>
           )}
         </div>
 
@@ -79,6 +87,7 @@ const LifePhotoCarousel = ({ title, subtitle, photos, interval = 4500, variant =
                     alt={current.alt}
                     className="w-full h-full object-cover cursor-zoom-in"
                     loading="lazy"
+                    decoding="async"
                     onClick={() => setLightboxImage(current.src!)}
                   />
                 ) : (

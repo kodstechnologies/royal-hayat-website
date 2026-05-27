@@ -77,6 +77,13 @@
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
+
+  @media (max-width: 1023px) {
+    :root {
+      /* Mobile: nav row + Book Appointment / Medical Reports bar (JS overwrites after measure) */
+      --header-height: 7.5rem;
+    }
+  }
 }
 
 @layer base {
@@ -290,4 +297,25 @@ h1, h2, h3, h4, h5, h6, button, a, label, span, .text-center p {
 
 [dir="rtl"] .text-right, [dir="rtl"] .text-right p {
   text-align: right;
+}
+
+/* Work With Us culture hero — LTR + flat JPEG on desktop/phone */
+.work-culture-hero-wrap {
+  direction: ltr;
+  isolation: isolate;
+}
+
+.work-culture-hero-img {
+  image-orientation: none !important;
+}
+
+/*
+ * iPad Pro, Nest Hub, Zenbook Fold (1024–1535px): WebKit mirrors this hero;
+ * horizontal flip correction only in this band — phone & 2xl+ unchanged.
+ */
+@media (min-width: 1024px) and (max-width: 1535px) {
+  .work-culture-hero-wrap .work-culture-hero-img--tablet {
+    transform: scaleX(-1) !important;
+    -webkit-transform: scaleX(-1) !important;
+  }
 }

@@ -1,7 +1,6 @@
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import ChatButton from "@/components/ChatButton";
 
 const NotFound = () => {
   const location = useLocation();
@@ -21,7 +20,6 @@ const NotFound = () => {
           {isAr ? "العودة إلى الرئيسية" : "Return to Home"}
         </a>
       </div>
-      <ChatButton />
     </div>
   );
 };

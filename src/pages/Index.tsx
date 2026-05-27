@@ -17,7 +17,6 @@ import HospitalityBanner from "@/components/HospitalityBanner";
 import AlSafwaSpotlight from "@/components/AlSafwaSpotlight";
 import PatientsQuickLinks from "@/components/PatientsQuickLinks";
 import Footer from "@/components/Footer";
-import ChatButton from "@/components/ChatButton";
 import ScrollToTop from "@/components/ScrollToTop";
 import { getFeaturedDoctors } from "@/data/doctors";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -38,7 +37,7 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107]">
+    <div className="min-h-screen bg-background pt-[var(--header-height,56px)] max-lg:pt-[var(--header-height,7.5rem)] [&_.text-accent]:text-[#816107]">
       <Header />
       <HeroSection />
       <StatsRow />
@@ -67,7 +66,6 @@ const Index = () => {
       <PatientsQuickLinks />
       <TestimonialsSection />
       <Footer />
-      <ChatButton />
       <ScrollToTop />
     </div>
   );

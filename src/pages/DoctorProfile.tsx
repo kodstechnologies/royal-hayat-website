@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import ChatButton from "@/components/ChatButton";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { doctors } from "@/data/doctors";
 import { departments, deptDoctorAliases } from "@/data/departments";
@@ -649,7 +648,6 @@ const handleAddTestimonial = () => {
         </div>
       )}
       <Footer />
-      <ChatButton />
     </div>
   );
 };

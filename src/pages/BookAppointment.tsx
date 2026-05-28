@@ -32,6 +32,7 @@ import {
   type IdentityStatusResponse,
 } from "@/api/identity";
 import { subscribeToIdentityVerification } from "@/api/identitySocket";
+import { createAppointmentRequest } from "@/api/appointmentRequest";
 import {
   extractPatientId,
   getPatientLookupUserMessage,
@@ -692,6 +693,14 @@ const BookAppointment = () => {
         ? duplicateBookingMessage
         : normalized;
     };
+    const extractedSymptoms = [
+      ...symptomChips,
+      ...symptomText
+        .split(/[\n,]/)
+        .map((s) => s.trim())
+        .filter(Boolean),
+    ];
+    const symptoms = [...new Set(extractedSymptoms)];
     try {
       if (patientType === "returning" && patientId && selectedSlotId) {
         const res = await bookAppointment({
@@ -709,7 +718,26 @@ const BookAppointment = () => {
         return;
       }
 
-      // For non-returning flow, we intentionally skip enquiry API submission.
+      const departmentName =
+        selectedDeptObj?.name ||
+        selectedDoctorObj?.department ||
+        selectedDoctorObj?.specialty ||
+        "";
+      const doctorName = selectedDoctorObj?.name || "";
+
+      await createAppointmentRequest({
+        fullname: patientName.trim(),
+        phone: `${patientCountryCode}${patientPhone.trim()}`,
+        dob: patientDob || undefined,
+        // age: calculateAge(patientDob),
+        gender: patientGender as "male" | "female" | "other",
+        preferredDate: selectedDate || undefined,
+        timeSlot: selectedSlot || undefined,
+        symptoms: symptoms.length ? symptoms : undefined,
+        doctor: doctorName || undefined,
+        department: departmentName || undefined,
+      });
+
       setBooked(true);
     } catch (err: any) {
       console.error("Booking failed:", err);

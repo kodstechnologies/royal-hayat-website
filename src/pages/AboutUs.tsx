@@ -28,6 +28,7 @@ type Leader = {
   bioEn: string[];
   bioAr: string[];
   image?: string;
+  credentialsAfterRole?: any;
 };
 
 const mapApiToLeader = (item: LeadershipItem): Leader => ({

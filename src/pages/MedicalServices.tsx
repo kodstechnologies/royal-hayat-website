@@ -201,6 +201,7 @@ const MedicalServicesDepartments = ({ catalogState }: { catalogState: CatalogSta
     disableStaticFallback
     catalogFetchFailed={catalogState.status === "error"}
     fetchDoctorsBySubspeciality={getDoctorsBySubspeciality}
+    showPageTitle
   />
 );
 

@@ -4,6 +4,8 @@ export type CSRItem = {
   _id?: string;
   heading: string;
   headingArabic: string;
+  subheading?: string;
+  subheadingArabic?: string;
   description: string;
   descriptionArabic: string;
   images: string[];

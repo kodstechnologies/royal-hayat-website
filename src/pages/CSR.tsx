@@ -16,6 +16,8 @@ type CSRInitiative = {
   id: string;
   heading: string;
   headingAr: string;
+  subheading?: string;
+  subheadingAr?: string;
   paragraphs: string[];
   paragraphsAr: string[];
   images: string[];
@@ -25,6 +27,8 @@ const mapApiToInitiative = (item: CSRItem): CSRInitiative => ({
   id: item._id ?? item.heading,
   heading: item.heading,
   headingAr: item.headingArabic,
+  subheading: item.subheading,
+  subheadingAr: item.subheadingArabic,
   paragraphs: descriptionToParagraphs(item.description ?? ""),
   paragraphsAr: descriptionToParagraphs(item.descriptionArabic ?? ""),
   images: item.images ?? [],
@@ -33,10 +37,10 @@ const mapApiToInitiative = (item: CSRItem): CSRInitiative => ({
 const EXISTING_INITIATIVES: CSRInitiative[] = [
   {
     id: "breast-cancer-hospital",
-    heading:
-      "Breast Cancer Awareness Lecture - Hospital Session held on 7 October 2025",
-    headingAr:
-      "محاضرة التوعية بسرطان الثدي – جلسة داخل المستشفى أقيمت في 7 أكتوبر 2025",
+    heading: "Breast Cancer Awareness Lecture – Royale Hayat Hospital",
+    headingAr: "محاضرة التوعية بسرطان الثدي – مستشفى رويال حياة",
+    subheading: "held on 7 October 2025",
+    subheadingAr: "أُقيمت بتاريخ 7 أكتوبر 2025",
     images: ["/images/doctors/image4.png.png"],
     paragraphs: [
       "Within its walls, Royale Hayat Hospital hosted an exclusive Breast Cancer Awareness lecture led by our team of expert consultants. The session emphasized early detection, advanced treatment options, and holistic patient care, including emotional well-being.",
@@ -49,10 +53,10 @@ const EXISTING_INITIATIVES: CSRInitiative[] = [
   },
   {
     id: "breast-cancer-burgan",
-    heading:
-      "Breast Cancer Awareness Lecture - Burgan Bank Session held on 16 October 2025",
-    headingAr:
-      "محاضرة التوعية بسرطان الثدي – بنك برقان أقيمت في 16 أكتوبر 2025",
+    heading: "Breast Cancer Awareness Lecture - Burgan Bank",
+    headingAr: "محاضرة التوعية بسرطان الثدي – بنك برقان",
+    subheading: "held on 16 October 2025",
+    subheadingAr: "أُقيمت بتاريخ 16 أكتوبر 2025",
     images: ["/images/doctors/image.png.png"],
     paragraphs: [
       "As part of its signature community initiatives, Royale Hayat Hospital hosted a distinguished Breast Cancer Awareness lecture at Burgan Bank. Our elite consultants guided attendees through the importance of early detection, self-examination, and proactive health practices, empowering women with knowledge and confidence.",
@@ -66,9 +70,11 @@ const EXISTING_INITIATIVES: CSRInitiative[] = [
   {
     id: "special-olympics",
     heading:
-      "Royale Hayat Hospital participated in the 3rd Special Olympics Kuwait Health Screening Event held on 22 October 2025",
+      "Royale Hayat Hospital participated in the 3rd Special Olympics Kuwait Health Screening Event",
     headingAr:
-      "شارك مستشفى رويال حياة في الفعالية الثالثة للفحص الصحي للأولمبياد الخاص الكويتي التي أقيمت في 22 أكتوبر 2025",
+      "مشاركة مستشفى رويال حياة في فعالية الفحص الصحي للأولمبياد الخاص – الكويت",
+    subheading: "held on 22 October 2025",
+    subheadingAr: "أُقيمت بتاريخ 22 أكتوبر 2025",
     images: ["/images/doctors/image2.png.png"],
     paragraphs: [
       "Royale Hayat Hospital proudly participated in the 3rd Special Olympics Kuwait Health Screening Event through its dedicated medical team led by Dr. Alia Ali Ibrahim, Consultant in Internal and Respiratory Medicine. The initiative provided essential health screenings for 150 athletes with special needs across the State of Kuwait.",
@@ -82,9 +88,10 @@ const EXISTING_INITIATIVES: CSRInitiative[] = [
   {
     id: "womens-health-conference",
     heading:
-      "Royale Hayat Hospital's International Conference on Updates in Women's Health held on 29 November 2025",
-    headingAr:
-      "المؤتمر الدولي لمستشفى رويال حياة حول مستجدات صحة المرأة الذي أقيم في 29 نوفمبر 2025",
+      "Royale Hayat Hospital's International Conference on Updates in Women's Health",
+    headingAr: "المؤتمر الدولي لصحة المرأة – مستشفى رويال حياة",
+    subheading: "held on 29 November 2025",
+    subheadingAr: "أُقيم بتاريخ 29 نوفمبر 2025",
     images: ["/images/doctors/image3.png.png"],
     paragraphs: [
       "Royale Hayat Hospital had the honor of hosting an exclusive, high-level scientific conference on the latest advancements in women's health. Esteemed doctors and consultants from across the globe gathered to exchange insights, showcase best practices, and explore innovative approaches in women's healthcare.",
@@ -123,13 +130,21 @@ const renderInitiative = (
   isAr: boolean,
 ) => {
   const title = isAr ? initiative.headingAr : initiative.heading;
+  const subheading = isAr ? initiative.subheadingAr : initiative.subheading;
   const paragraphs = isAr ? initiative.paragraphsAr : initiative.paragraphs;
   const primaryImage = initiative.images[0];
 
   return (
     <ScrollAnimationWrapper key={initiative.id}>
       <div className="relative left-1/2 right-1/2 -mx-[50vw] w-screen border-y border-border/40 bg-primary/5 px-6 py-10 md:px-8 space-y-6">
-        <h3 className="font-serif text-2xl text-foreground text-center">{title}</h3>
+        <div className="text-center space-y-2">
+          <h3 className="font-serif text-2xl text-foreground">{title}</h3>
+          {subheading && (
+            <p className="font-body text-sm text-accent tracking-wide">
+              {subheading}
+            </p>
+          )}
+        </div>
 
         {primaryImage && (
           <div className="max-w-3xl mx-auto rounded-3xl overflow-hidden shadow-xl aspect-video bg-muted">

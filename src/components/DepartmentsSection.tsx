@@ -37,6 +37,8 @@ export type DepartmentsSectionProps = {
    * Pass from pages so Medical Services / Departments explicitly use that API.
    */
   fetchDoctorsBySubspeciality?: FetchDoctorsBySubspecialityFn;
+  /** When true, show the page-level "Medical Services" heading above the section title. */
+  showPageTitle?: boolean;
 };
 
 const DepartmentsSection = ({
@@ -47,6 +49,7 @@ const DepartmentsSection = ({
   catalogFetchFailed = false,
   showDepartmentDoctorsOnCards = false,
   fetchDoctorsBySubspeciality = getDoctorsBySubspeciality,
+  showPageTitle = false,
 }: DepartmentsSectionProps = {}) => {
   const [openSlug, setOpenSlug] = useState<string | null>(null);
   const [selectedSubByDept, setSelectedSubByDept] = useState<Record<string, string>>({});

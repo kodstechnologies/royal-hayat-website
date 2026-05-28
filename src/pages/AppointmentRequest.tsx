@@ -51,7 +51,7 @@ const AppointmentRequest = () => {
       await createAppointmentRequest({
         fullname: form.fullName.trim(),
         phone: `${form.countryCode}${form.phone.trim()}`,
-        dateOfBirth: form.dateOfBirth,
+        dob: form.dateOfBirth,
         gender: form.gender as "male" | "female" | "other",
         preferredDate:
           form.preferredDate ||

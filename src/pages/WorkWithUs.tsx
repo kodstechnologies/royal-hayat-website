@@ -10,7 +10,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getAllJobs, type JobPosting } from "@/api/job";
 import { getAllWorkCulture, type WorkCultureItem } from "@/api/workCulture";
-import { getAllCSR, type CSRItem } from "@/api/csr";
 import {
   getAllEmployeeRecognitions,
   achievementsTextToLines,
@@ -165,7 +164,7 @@ const mergeApiEmployees = (
 };
 
 const mapContentToCarousel = (
-  item: WorkCultureItem | CSRItem,
+  item: WorkCultureItem,
   variant?: "muted",
 ): GalleryCarousel => ({
   id: item._id ?? item.heading,
@@ -270,8 +269,6 @@ const WorkWithUs = ({
     GalleryCarousel[]
   >([]);
   const [workCultureApiLoading, setWorkCultureApiLoading] = useState(true);
-  const [csrCarousels, setCsrCarousels] = useState<GalleryCarousel[]>([]);
-  const [csrLoading, setCsrLoading] = useState(true);
 
   const existingWorkCultureCarousels = useMemo(
     () =>
@@ -310,12 +307,10 @@ const WorkWithUs = ({
 
     const loadCultureContent = async () => {
       setWorkCultureApiLoading(true);
-      setCsrLoading(true);
       setEmployeesApiLoading(true);
       try {
-        const [workCulture, csrItems, recognitions] = await Promise.all([
+        const [workCulture, recognitions] = await Promise.all([
           getAllWorkCulture(),
-          getAllCSR(),
           getAllEmployeeRecognitions(),
         ]);
         if (cancelled) return;
@@ -324,23 +319,15 @@ const WorkWithUs = ({
           mergeApiWorkCulture(workCulture, existingWorkCultureCarousels),
         );
 
-        setCsrCarousels(
-          csrItems.map((item, index) =>
-            mapContentToCarousel(item, index % 2 === 1 ? "muted" : undefined),
-          ),
-        );
-
         setApiEmployees(mergeApiEmployees(recognitions, EXISTING_EMPLOYEES));
       } catch {
         if (!cancelled) {
           setApiWorkCultureCarousels([]);
-          setCsrCarousels([]);
           setApiEmployees([]);
         }
       } finally {
         if (!cancelled) {
           setWorkCultureApiLoading(false);
-          setCsrLoading(false);
           setEmployeesApiLoading(false);
         }
       }
@@ -769,31 +756,6 @@ const WorkWithUs = ({
         apiWorkCultureCarousels.map((carousel) => (
           <LifePhotoCarousel
             key={carousel.id}
-            variant={carousel.variant}
-            title={isAr ? carousel.titleAr : carousel.titleEn}
-            subtitle={isAr ? carousel.subtitleAr : carousel.subtitleEn}
-            photos={toCarouselPhotos(
-              isAr ? carousel.titleAr : carousel.titleEn,
-              carousel.images,
-            )}
-          />
-        ))}
-
-      {/* CSR galleries from API */}
-      {showSection("culture") && csrLoading && (
-        <section className="py-16 bg-secondary/10">
-          <div className="container mx-auto px-6 max-w-5xl space-y-6">
-            <Skeleton className="h-8 w-64 mx-auto" />
-            <Skeleton className="h-64 w-full rounded-2xl" />
-          </div>
-        </section>
-      )}
-
-      {showSection("culture") &&
-        !csrLoading &&
-        csrCarousels.map((carousel) => (
-          <LifePhotoCarousel
-            key={`csr-${carousel.id}`}
             variant={carousel.variant}
             title={isAr ? carousel.titleAr : carousel.titleEn}
             subtitle={isAr ? carousel.subtitleAr : carousel.subtitleEn}

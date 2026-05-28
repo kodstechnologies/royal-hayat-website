@@ -182,7 +182,6 @@ const DoctorsSection = () => {
             {lang === "ar" ? "لا يوجد أطباء متاحون حالياً." : "No doctors are available right now."}
           </div>
         ) : (
-        <div className="relative group" onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)}>
         <div
           className="relative group"
           dir="ltr"

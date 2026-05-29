@@ -13,6 +13,7 @@ import { Link } from "react-router-dom";
 import {
   getAllLeadership,
   descriptionToParagraphs,
+  titleToLines,
   type LeadershipItem,
 } from "@/api/leadership";
 
@@ -22,8 +23,8 @@ type Leader = {
   initialsAr: string;
   nameEn: string;
   nameAr: string;
-  roleEn: string;
-  roleAr: string;
+  rolesEn: string[];
+  rolesAr: string[];
   bioEn: string[];
   bioAr: string[];
   image?: string;
@@ -35,19 +36,40 @@ const mapApiToLeader = (item: LeadershipItem): Leader => ({
   initialsAr: item.initialsArabic || item.initials,
   nameEn: item.name,
   nameAr: item.nameArabic,
-  roleEn: item.title,
-  roleAr: item.titleArabic,
+  rolesEn: titleToLines(item.title ?? ""),
+  rolesAr: titleToLines(item.titleArabic ?? ""),
   bioEn: descriptionToParagraphs(item.description ?? ""),
   bioAr: descriptionToParagraphs(item.descriptionArabic ?? ""),
   image: item.image,
 });
 
+const formatNameWithPrefix = (name: string, prefix: string, lang: string): string => {
+  const n = name.trim();
+  const p = prefix.trim();
+  if (!p || !n) return n;
+
+  if (n.startsWith(p) || n.startsWith(`${p} `)) return n;
+
+  if (lang === "en") {
+    const base = p.replace(/\.$/, "").toLowerCase();
+    const lower = n.toLowerCase();
+    if (lower.startsWith(`${base} `) || lower.startsWith(`${base}.`)) return n;
+  }
+
+  if (lang === "ar") {
+    if (/^(البروفيسور|د\.|أ\.د\.|بروف\.)/.test(n)) return n;
+  }
+
+  return `${p} ${n}`;
+};
+
 const LeaderCard = ({ leader, lang }: { leader: Leader; lang: string }) => {
   const [expanded, setExpanded] = useState(false);
-  const name = lang === "ar" ? leader.nameAr : leader.nameEn;
-  const role = lang === "ar" ? leader.roleAr : leader.roleEn;
+  const nameBase = lang === "ar" ? leader.nameAr : leader.nameEn;
+  const namePrefix = lang === "ar" ? leader.initialsAr : leader.initials;
+  const name = formatNameWithPrefix(nameBase, namePrefix, lang);
+  const roles = lang === "ar" ? leader.rolesAr : leader.rolesEn;
   const bio = lang === "ar" ? leader.bioAr : leader.bioEn;
-  const roles = role.split("\n");
   const displayInitials = lang === "ar" ? leader.initialsAr : leader.initials;
 
   return (

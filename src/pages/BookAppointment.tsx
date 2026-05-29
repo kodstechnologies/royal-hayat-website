@@ -1853,7 +1853,7 @@ Clinic Code:`;
                   {bookingError && <div className="mt-6 p-4 rounded-xl bg-destructive/10 border border-destructive/20 flex items-center gap-3"><AlertCircle className="w-5 h-5 text-destructive" /><p className="font-body text-sm text-destructive">{bookingError}</p></div>}
                   <div className="mt-8 flex flex-col gap-4">
                     <motion.button whileHover={!isSubmitting ? { scale: 1.02 } : {}} whileTap={!isSubmitting ? { scale: 0.98 } : {}} onClick={handleConfirm} disabled={isSubmitting} className="w-full bg-primary text-primary-foreground py-4 rounded-xl font-body text-sm tracking-widest uppercase hover:bg-primary/90 transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-70">
-                      {isSubmitting ? <><Loader2 className="w-5 h-5 animate-spin" />{isAr ? "جارِ الإرسال..." : "Submitting..."}</> : <>{isAr ? "تأكيد الحجز" : "Confirm Booking"}</>}
+                      {isSubmitting ? <><Loader2 className="w-5 h-5 animate-spin" />{isAr ? "جارِ الإرسال..." : "Submitting..."}</> : <>{patientType === "new" ? (isAr ? "تأكيد الطلب" : "Confirm Request") : (isAr ? "تأكيد الحجز" : "Confirm Booking")}</>}
                     </motion.button>
                   </div>
                 </div>

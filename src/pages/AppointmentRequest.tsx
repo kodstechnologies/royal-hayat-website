@@ -1,14 +1,16 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { ClipboardList, CheckCircle2, ArrowRight, ArrowLeft, User, Phone, Calendar } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { doctors as allDoctors } from "@/data/doctors";
+import { getDoctorById, mapApiDoctorRowToDoctor } from "@/api/doctors";
 import { createAppointmentRequest } from "@/api/appointmentRequest";
-// import { createAppointmentRequest } from "@/api/appointmentRequest";
+import type { Doctor } from "@/data/doctors";
 
 const AppointmentRequest = () => {
   const { lang, t } = useLanguage();
@@ -19,11 +21,31 @@ const AppointmentRequest = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
 
-  const returnState = (location.state as any) ?? {};
+  const returnState = (location.state as { selectedDoctor?: string } | null) ?? {};
 
-  // Pre-fill doctor info from query param
-  const doctorId = searchParams.get("doctor");
-  const prefilledDoctor = doctorId ? allDoctors.find(d => d.id === doctorId) : null;
+  const doctorId = searchParams.get("doctor") || returnState.selectedDoctor || null;
+  const localPrefilledDoctor = doctorId
+    ? allDoctors.find((d) => d.id === doctorId)
+    : null;
+
+  const { data: apiPrefilledDoctor } = useQuery({
+    queryKey: ["appointment-request-doctor", doctorId],
+    queryFn: async () => {
+      if (!doctorId || !/^[0-9a-fA-F]{24}$/i.test(doctorId)) return null;
+      try {
+        const res = await getDoctorById(doctorId);
+        if (res.success && res.data) {
+          return mapApiDoctorRowToDoctor(res.data, "", "");
+        }
+      } catch (err) {
+        console.error("Failed to load doctor for appointment request:", err);
+      }
+      return null;
+    },
+    enabled: !!doctorId && !localPrefilledDoctor,
+  });
+
+  const prefilledDoctor: Doctor | null = localPrefilledDoctor ?? apiPrefilledDoctor ?? null;
 
   const [form, setForm] = useState({
     fullName: "", phone: "", countryCode: "+965", dateOfBirth: "", gender: "",
@@ -48,6 +70,13 @@ const AppointmentRequest = () => {
     if (!validate()) return;
     setSubmitting(true);
     try {
+      const doctorName = prefilledDoctor
+        ? prefilledDoctor.name.trim()
+        : undefined;
+      const departmentName = prefilledDoctor
+        ? (prefilledDoctor.department || prefilledDoctor.specialty || "").trim()
+        : form.department.trim() || undefined;
+
       await createAppointmentRequest({
         fullname: form.fullName.trim(),
         phone: `${form.countryCode}${form.phone.trim()}`,
@@ -62,6 +91,8 @@ const AppointmentRequest = () => {
         },
         additionalNotes:
           form.message.trim() || undefined,
+        doctor: doctorName || undefined,
+        department: departmentName || undefined,
       });
       setSubmitted(true);
     } catch (error) {
@@ -113,6 +144,23 @@ const AppointmentRequest = () => {
                   value: form.message.trim() || (lang === "ar" ? "لا توجد ملاحظات" : "No additional notes"),
                   icon: ClipboardList
                 },
+                ...(prefilledDoctor
+                  ? [
+                      {
+                        label: t("doctor"),
+                        value: lang === "ar" ? prefilledDoctor.nameAr : prefilledDoctor.name,
+                        icon: User,
+                      },
+                      {
+                        label: t("department"),
+                        value:
+                          lang === "ar"
+                            ? prefilledDoctor.departmentAr || prefilledDoctor.department
+                            : prefilledDoctor.department,
+                        icon: ClipboardList,
+                      },
+                    ]
+                  : []),
               ].map((row) => (
                 <div key={row.label} className="grid grid-cols-[36px_1fr] items-start gap-x-2.5 py-3 border-b border-border last:border-0">
                   <div className="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center">

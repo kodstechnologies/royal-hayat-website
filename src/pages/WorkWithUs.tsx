@@ -82,85 +82,26 @@ const toCarouselPhotos = (label: string, images: string[]): LifePhoto[] => {
   }));
 };
 
-const EXISTING_EMPLOYEES: Employee[] = [
-  {
-    id: "ranga-tara-mahawan",
-    name: "Rangaa Tara Mahawan",
-    nameAr: "رانجا تارا مهاوان",
-    dept: "Guest Relation Department",
-    deptAr: "قطاع الضيافة",
-    role: "Bell Man - Guest Relations",
-    roleAr: "موظف استقبال الضيوف – قسم علاقات الضيوف",
-    image:
-      "/images/ranga-tara.png",
-    achievements: [
-      "Rangaa has earned this recognition through his exceptional helpfulness and a consistently positive attitude. A dependable team member with an exemplary attendance record, he ensures that our guests’ first impression of Royale Hayat is one of comfort and high-standard hospitality.",
-      "Dependable and dedicated team member who works harmoniously with others. He is reliable, always willing to extend his duty when needed, and completes tasks efficiently without complaint. Attentive in the lobby and consistently respectful, he is a valued part of the team.",
-    ],
-    achievementsAr: [
-      "حصل رانجا على هذا التكريم بفضل تعاونه الاستثنائي وروحه الإيجابية الدائمة. ويُعد عضوًا موثوقًا ومتفانيًا في فريق العمل، كما يتمتع بسجل حضور وانضباط مثالي، مما يساهم في منح ضيوف رويال حياة انطباعًا أوليًا يعكس الراحة وأعلى معايير الضيافة.",
-      "يتميز بروح التعاون والعمل الجماعي، ويُعرف باعتماديته واستعداده الدائم لتمديد ساعات العمل عند الحاجة، مع إنجاز المهام بكفاءة عالية ودون تذمر. كما يحرص دائمًا على متابعة احتياجات الضيوف في منطقة الاستقبال بأسلوب مهني ومحترم، مما يجعله عنصرًا قيّمًا ضمن الفريق.",
-    ],
-  },
-  {
-    id: "mohammad-niyaz-salam",
-    name: "Mohammad Niyaz Salam",
-    nameAr: "محمد نياز سلام",
-    dept: "Call Center Department",
-    deptAr: "قسم خدمة العملاء",
-    role: "Guest Services Operator - Call Center",
-    roleAr: "موظف خدمات الضيوف – مركز خدمة العملاء",
-    image:
-      "/images/mohammad-niyaz.png",
-    achievements: [
-      "Mohammad distinguishes himself through efficiency and a commitment to service excellence. His professional handling of guest inquiries, combined with his reliable attendance and disciplined work ethic, has been essential to the success of our Guest Services team.",
-      "Highly reliable and flexible team member who always brings positive energy and support to the workplace. He consistently completes tasks on time and never hesitates to step in when needed, even covering shifts at short notice while maintaining excellent performance.",
-    ],
-    achievementsAr: [
-      "يتميّز محمد بالكفاءة العالية والالتزام بتقديم أفضل مستويات الخدمة. وقد كان لتعامله المهني مع استفسارات الضيوف، إلى جانب انضباطه وسجله المتميز في الحضور، دور أساسي في نجاح فريق خدمات الضيوف.",
-      "كما يُعرف بمرونته العالية واعتماديته الكبيرة، حيث يحرص دائمًا على نشر الطاقة الإيجابية وتقديم الدعم لزملائه في بيئة العمل. ويتميز بإنجاز المهام في الوقت المحدد، واستعداده الدائم لتغطية المناوبات عند الحاجة حتى في الإشعارات القصيرة، مع الحفاظ على مستوى أداء متميز باستمرار.",
-    ],
-  },
-];
-
-const normalizeName = (name: string) => name.trim().toLowerCase();
-
 const mapRecognitionToEmployee = (item: EmployeeRecognition): Employee => {
   const lines = achievementsTextToLines(item.achievements ?? "");
   const achievements = lines.length > 0 ? lines : [item.achievements].filter(Boolean);
+  const linesAr = achievementsTextToLines(item.arabicAchievements ?? "");
+  const achievementsAr =
+    linesAr.length > 0
+      ? linesAr
+      : [item.arabicAchievements || item.achievements].filter(Boolean);
   return {
-    id: item._id ?? item.employeeId ?? item.employeeName,
+    id: item._id ?? item.employeeId ?? item.employeeID ?? item.employeeName,
     name: item.employeeName,
-    nameAr: item.employeeName,
+    nameAr: item.employeeNameArabic || item.employeeName,
     dept: item.department ?? "",
-    deptAr: item.department ?? "",
+    deptAr: item.arabicDepartment ?? item.department ?? "",
     role: item.title,
-    roleAr: item.title,
+    roleAr: item.arabicTitle || item.title,
     image: item.image ?? "",
     achievements,
-    achievementsAr: achievements,
+    achievementsAr,
   };
-};
-
-const mergeApiEmployees = (
-  apiItems: EmployeeRecognition[],
-  existing: Employee[],
-): Employee[] => {
-  const existingNames = new Set(
-    existing.flatMap((employee) => [
-      normalizeName(employee.name),
-      normalizeName(employee.nameAr),
-    ]),
-  );
-
-  return apiItems
-    .filter((item) => item.visibilityStatus !== "hide")
-    .map(mapRecognitionToEmployee)
-    .filter(
-      (employee) =>
-        !existingNames.has(normalizeName(employee.name)) &&
-        !existingNames.has(normalizeName(employee.nameAr)),
-    );
 };
 
 const mapContentToCarousel = (
@@ -261,10 +202,7 @@ const WorkWithUs = ({
   const [apiEmployees, setApiEmployees] = useState<Employee[]>([]);
   const [employeesApiLoading, setEmployeesApiLoading] = useState(true);
 
-  const displayEmployees = useMemo(
-    () => [...EXISTING_EMPLOYEES, ...apiEmployees],
-    [apiEmployees],
-  );
+  const displayEmployees = useMemo(() => apiEmployees, [apiEmployees]);
   const [apiWorkCultureCarousels, setApiWorkCultureCarousels] = useState<
     GalleryCarousel[]
   >([]);
@@ -319,7 +257,11 @@ const WorkWithUs = ({
           mergeApiWorkCulture(workCulture, existingWorkCultureCarousels),
         );
 
-        setApiEmployees(mergeApiEmployees(recognitions, EXISTING_EMPLOYEES));
+        setApiEmployees(
+          recognitions
+            .filter((item) => item.visibilityStatus !== "hide")
+            .map(mapRecognitionToEmployee),
+        );
       } catch {
         if (!cancelled) {
           setApiWorkCultureCarousels([]);

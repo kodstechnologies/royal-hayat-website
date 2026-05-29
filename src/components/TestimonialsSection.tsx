@@ -5,8 +5,8 @@ import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
   createHospitalFeedback,
-  getArabicHospitalFeedbacks,
-  getEnglishHospitalFeedbacks,
+  getAllHospitalFeedbacks,
+  type HospitalFeedbackRecord,
 } from "@/api/feedback";
 const testimonials = [
   {
@@ -47,13 +47,51 @@ const testimonials = [
   },
 ];
 
-const duplicated = [...testimonials, ...testimonials];
+type DisplayTestimonial = {
+  stars: number;
+  text: string;
+  textAr: string;
+  name: string;
+  nameAr: string;
+};
+
+const hasText = (value?: string) => Boolean(value?.trim());
+
+const mapHospitalFeedbackToDisplay = (
+  item: HospitalFeedbackRecord,
+  language: "en" | "ar"
+): DisplayTestimonial | null => {
+  const text = item.feedback ?? "";
+  const textAr = item.arabicFeedback ?? "";
+  const name = item.userName ?? "";
+  const nameAr = item.arabicUserName ?? "";
+
+  if (language === "ar") {
+    if (!hasText(textAr)) return null;
+    return {
+      stars: item.stars ?? 5,
+      text: hasText(text) ? text : textAr,
+      textAr,
+      name: hasText(nameAr) ? nameAr : name,
+      nameAr: hasText(nameAr) ? nameAr : name,
+    };
+  }
+
+  if (!hasText(text)) return null;
+  return {
+    stars: item.stars ?? 5,
+    text,
+    textAr: hasText(textAr) ? textAr : text,
+    name: hasText(name) ? name : nameAr,
+    nameAr: hasText(nameAr) ? nameAr : name,
+  };
+};
 
 const TestimonialsSection = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
   const { lang, t } = useLanguage();
-  const [hospitalFeedbacks, setHospitalFeedbacks] = useState<any[]>([]);
+  const [hospitalFeedbacks, setHospitalFeedbacks] = useState<DisplayTestimonial[]>([]);
   const [loadingFeedbacks, setLoadingFeedbacks] = useState(true);
   const [submittingFeedback, setSubmittingFeedback] = useState(false);
   const [showThankYou, setShowThankYou] = useState(false);
@@ -66,48 +104,30 @@ const TestimonialsSection = () => {
   });
 
   useEffect(() => {
-
     const fetchFeedbacks = async () => {
-
       try {
-
         setLoadingFeedbacks(true);
 
-        const response =
-          lang === "ar"
-            ? await getArabicHospitalFeedbacks()
-            : await getEnglishHospitalFeedbacks();
+        const response = await getAllHospitalFeedbacks();
+        const list = (response?.data ?? response ?? []) as HospitalFeedbackRecord[];
 
-        const feedbacks = response?.data || [];
-
-        const formattedFeedbacks = feedbacks.map((item: any) => ({
-          stars: item.stars,
-          text: item.feedback,
-          textAr: item.arabicFeedback,
-          name: item.userName,
-          nameAr: item.arabicUserName,
-        }));
+        const formattedFeedbacks = list
+          .filter((item) => item.shownOnWebsite === true)
+          .map((item) => mapHospitalFeedbackToDisplay(item, lang))
+          .filter((item): item is DisplayTestimonial => item !== null);
 
         setHospitalFeedbacks(
-          formattedFeedbacks.length
-            ? formattedFeedbacks
-            : testimonials
+          formattedFeedbacks.length ? formattedFeedbacks : testimonials
         );
-
       } catch (error) {
-
         console.error(error);
-
         setHospitalFeedbacks(testimonials);
-
       } finally {
-
         setLoadingFeedbacks(false);
       }
     };
 
     fetchFeedbacks();
-
   }, [lang]);
   const handleAddFeedback = async () => {
 
@@ -132,37 +152,23 @@ const TestimonialsSection = () => {
             stars: feedbackForm.stars || 5,
           };
 
-      await createHospitalFeedback(payload);
+      await createHospitalFeedback(payload, { addedBy: "patient" });
 
-      const newFeedback = {
-        stars: feedbackForm.stars || 5,
-        text:
-          lang === "en"
-            ? feedbackForm.feedback
-            : "",
-        textAr:
-          lang === "ar"
-            ? feedbackForm.feedback
-            : "",
-        name:
-          lang === "en"
-            ? feedbackForm.name
-            : "",
-        nameAr:
-          lang === "ar"
-            ? feedbackForm.name
-            : "",
-      };
+      const refresh = await getAllHospitalFeedbacks();
+      const list = (refresh?.data ?? refresh ?? []) as HospitalFeedbackRecord[];
+      const formattedFeedbacks = list
+        .filter((item) => item.shownOnWebsite === true)
+        .map((item) => mapHospitalFeedbackToDisplay(item, lang))
+        .filter((item): item is DisplayTestimonial => item !== null);
 
-      setHospitalFeedbacks((prev) => [
-        newFeedback,
-        ...prev,
-      ]);
+      if (formattedFeedbacks.length) {
+        setHospitalFeedbacks(formattedFeedbacks);
+      }
 
       setFeedbackForm({
         name: "",
         feedback: "",
-        stars: 5,
+        stars: 0,
       });
 
       setShowThankYou(true);

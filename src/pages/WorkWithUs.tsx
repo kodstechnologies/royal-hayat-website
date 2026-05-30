@@ -325,8 +325,15 @@ const WorkWithUs = ({
     },
   ];
 
+  const cultureNarrativeClass = isAr
+    ? "culture-narrative space-y-5 font-body text-foreground leading-relaxed text-justify [text-align-last:right]"
+    : "culture-narrative space-y-5 font-body text-foreground leading-relaxed text-justify hyphens-auto break-words [text-align-last:left] [&_p]:hyphens-auto [&_p]:break-words";
+
   return (
-    <div className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107] [&_p]:text-justify [&_li]:text-justify">
+    <div
+      id="work-culture-page"
+      className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107] [&_p]:text-justify [&_li]:text-justify"
+    >
       <Header />
 
       {/* Hero */}
@@ -383,15 +390,15 @@ const WorkWithUs = ({
         <section className="py-14 bg-background">
           <div className="container mx-auto px-6 max-w-3xl">
             <ScrollAnimationWrapper>
-              <h2 className="text-2xl md:text-3xl font-serif text-foreground text-center mb-3">
+              <h2 className="text-2xl md:text-3xl font-serif text-foreground text-center mb-3 hyphens-auto break-words text-pretty px-1">
                 {isAr ? "وعدنا لموظفينا" : "‘Our People Promise’"}
               </h2>
-              <p className="text-center !text-center text-accent font-body text-sm mb-8 italic">
+              <p className="text-center !text-center text-accent font-body text-sm mb-8 italic hyphens-auto break-words text-pretty px-1">
                 {isAr
                   ? "إن وعدنا لمرضانا يبدأ أولًا من وعدنا لموظفينا."
                   : "Our promise to patients begins with our promise to our people"}
               </p>
-              <div className="space-y-5 font-body text-center text-foreground leading-relaxed">
+              <div dir={isAr ? "rtl" : "ltr"} lang={isAr ? "ar" : "en"} className={cultureNarrativeClass}>
                 <p>
                   {isAr
                     ? "نعد بتوفير بيئة عمل يشعر فيها كل موظف بالاحترام، الثقة، والدعم، حيث لا تُقاس قيمة الإنسان بالمسمى الوظيفي، بل بما يقدمه من احترافية، نزاهة، وإسهام حقيقي."
@@ -418,10 +425,10 @@ const WorkWithUs = ({
         <section className="py-14 bg-secondary/10">
           <div className="container mx-auto px-6 max-w-3xl">
             <ScrollAnimationWrapper>
-              <h2 className="text-2xl md:text-3xl font-serif text-foreground text-center mb-8">
+              <h2 className="text-2xl md:text-3xl font-serif text-foreground text-center mb-8 hyphens-auto break-words text-pretty px-1">
                 {isAr ? "معًا… حيث ننتمي" : "‘Where We Belong Together.’"}
               </h2>
-              <div className="space-y-5 font-body text-center text-foreground leading-relaxed">
+              <div dir={isAr ? "rtl" : "ltr"} lang={isAr ? "ar" : "en"} className={cultureNarrativeClass}>
                 <p>
                   {isAr
                     ? "العمل في مستشفى رويال حياة يعني أن تكون جزءًا من فريق متنوع الثقافات، يجمعه هدف واحد قائم على الرعاية والإنسانية."
@@ -773,6 +780,20 @@ const WorkWithUs = ({
           </div>
         </section>
       )}
+
+      <style>{`
+        #work-culture-page .culture-narrative[dir="rtl"] {
+          -webkit-hyphens: none;
+          hyphens: none;
+        }
+        #work-culture-page .culture-narrative[dir="ltr"] p {
+          -webkit-hyphens: auto;
+          hyphens: auto;
+          text-wrap: pretty;
+          word-break: normal;
+          overflow-wrap: break-word;
+        }
+      `}</style>
 
       <Footer />
       <ScrollToTop />

@@ -270,6 +270,14 @@ const Header = () => {
   const linkClass =
     "text-foreground font-body text-[14px] tracking-wide hover:text-accent transition-colors duration-300 relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-[-4px] after:left-0 after:bg-accent after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left inline-flex items-center whitespace-nowrap";
 
+  const isAr = lang === "ar";
+  const dropdownSubLinkClass =
+    "flex items-start gap-4 p-3 rounded-xl hover:bg-background transition-colors group w-full";
+  const dropdownSubTextClass =
+    "font-body text-sm font-medium text-foreground group-hover:text-primary transition-colors text-start";
+  const dropdownSubDescClass =
+    "font-body text-xs text-muted-foreground mt-0.5 text-start";
+
   const getSubLinks = (key: string) => {
     switch (key) {
       case "about": return aboutSubLinks;
@@ -470,8 +478,9 @@ const Header = () => {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 8 }}
                       transition={{ duration: 0.2 }}
+                      dir={isAr ? "rtl" : "ltr"}
                       className={`absolute top-full mt-2 bg-popover border border-border rounded-2xl shadow-2xl z-[100] p-6 ${
-                        lang === "ar"
+                        isAr
                           ? "right-0"
                           : item.hasDropdown === "patients"
                             ? "left-1/2 -translate-x-[42%]"
@@ -485,7 +494,7 @@ const Header = () => {
                             : "min(460px, calc(100vw - 2rem))",
                       }}
                     >
-                      <p className="text-xs tracking-[0.2em] uppercase font-body text-accent mb-4">
+                      <p className="text-xs tracking-[0.2em] uppercase font-body text-accent mb-4 text-start">
                         {item.hasDropdown === "patients" ? t("patientsVisitorsDropdownTitle") : item.label}
                       </p>
                       <div className={`grid ${item.hasDropdown === "patients" ? "grid-cols-1 xl:grid-cols-2" : "grid-cols-1"} gap-2`}>
@@ -502,28 +511,28 @@ const Header = () => {
                                 }
                                 setActiveDropdown(null);
                               }}
-                              className="flex items-start gap-4 p-3 rounded-xl hover:bg-background transition-colors group"
+                              className={dropdownSubLinkClass}
                             >
                               <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
                                 <sub.icon className="w-4 h-4 text-primary" />
                               </div>
-                              <div>
-                                <p className="font-body text-sm font-medium text-foreground group-hover:text-primary transition-colors !text-left [text-align-last:auto]">{sub.label}</p>
-                                <p className="font-body text-xs text-muted-foreground mt-0.5 !text-left [text-align-last:auto]">{sub.desc}</p>
+                              <div className="min-w-0 flex-1">
+                                <p className={dropdownSubTextClass}>{sub.label}</p>
+                                <p className={dropdownSubDescClass}>{sub.desc}</p>
                               </div>
                             </Link>
                           ) : (
                             <a
                               key={sub.label}
                               href={sub.href}
-                              className="flex items-start gap-4 p-3 rounded-xl hover:bg-background transition-colors group"
+                              className={dropdownSubLinkClass}
                             >
                               <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
                                 <sub.icon className="w-4 h-4 text-primary" />
                               </div>
-                              <div>
-                                <p className="font-body text-sm font-medium text-foreground group-hover:text-primary transition-colors !text-left [text-align-last:auto]">{sub.label}</p>
-                                <p className="font-body text-xs text-muted-foreground mt-0.5 !text-left [text-align-last:auto]">{sub.desc}</p>
+                              <div className="min-w-0 flex-1">
+                                <p className={dropdownSubTextClass}>{sub.label}</p>
+                                <p className={dropdownSubDescClass}>{sub.desc}</p>
                               </div>
                             </a>
                           )
@@ -654,7 +663,10 @@ const Header = () => {
                           transition={{ duration: 0.3, ease: "easeInOut" }}
                           className="overflow-hidden bg-muted/20 rounded-xl mb-2"
                         >
-                          <div className="py-2 px-4 flex flex-col gap-1">
+                          <div
+                            dir={isAr ? "rtl" : "ltr"}
+                            className="py-2 px-4 flex flex-col gap-1"
+                          >
                             {getSubLinks(item.hasDropdown).map((sub) => (
                               sub.href.startsWith("/") ? (
                                 <Link
@@ -668,24 +680,28 @@ const Header = () => {
                                     }
                                     setMenuOpen(false);
                                   }}
-                                  className="flex items-center gap-3 py-2.5 px-3 rounded-lg hover:bg-background transition-colors group"
+                                  className="flex items-center gap-3 py-2.5 px-3 rounded-lg hover:bg-background transition-colors group w-full"
                                 >
                                   <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
                                     <sub.icon className="w-3.5 h-3.5 text-primary" />
                                   </div>
-                                  <span className="font-body text-xs font-medium text-foreground/80 group-hover:text-primary transition-colors">{sub.label}</span>
+                                  <span className="font-body text-xs font-medium text-foreground/80 group-hover:text-primary transition-colors text-start flex-1 min-w-0">
+                                    {sub.label}
+                                  </span>
                                 </Link>
                               ) : (
                                 <a
                                   key={sub.label}
                                   href={sub.href}
-                                  className="flex items-center gap-3 py-2.5 px-3 rounded-lg hover:bg-background transition-colors group"
+                                  className="flex items-center gap-3 py-2.5 px-3 rounded-lg hover:bg-background transition-colors group w-full"
                                   onClick={() => setMenuOpen(false)}
                                 >
                                   <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
                                     <sub.icon className="w-3.5 h-3.5 text-primary" />
                                   </div>
-                                  <span className="font-body text-xs font-medium text-foreground/80 group-hover:text-primary transition-colors">{sub.label}</span>
+                                  <span className="font-body text-xs font-medium text-foreground/80 group-hover:text-primary transition-colors text-start flex-1 min-w-0">
+                                    {sub.label}
+                                  </span>
                                 </a>
                               )
                             ))}

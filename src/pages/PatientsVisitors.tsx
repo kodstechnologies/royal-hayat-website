@@ -27,16 +27,39 @@ const PatientsVisitors = () => {
   // ───────────────────────────────────────────────────────────────────────
 
   const sectionClass = "scroll-mt-[calc(var(--header-height,76px)+2rem)]";
+  const isAr = lang === "ar";
+  /** Justified body copy: full words per line; hyphen only when a word wraps. */
+  const patientsProseLine = "patients-prose-line";
+  const bodyProse = `font-body text-sm text-foreground leading-relaxed text-justify [word-break:normal] ${patientsProseLine}`;
+  const mutedProse = `font-body text-sm text-muted-foreground leading-relaxed text-justify [word-break:normal] ${patientsProseLine}`;
+  const billRightsProse = bodyProse;
+  const billRightsIntro = `${mutedProse} mb-6`;
+
+  const renderBillRightsList = (items: string[]) => (
+    <ol className="space-y-3" dir={isAr ? "rtl" : "ltr"} lang={isAr ? "ar" : "en"}>
+      {items.map((item, i) => (
+        <li
+          key={i}
+          className={`flex items-start gap-2 sm:gap-3 ${isAr ? "flex-row-reverse" : ""}`}
+        >
+          <span className="font-medium shrink-0 tabular-nums leading-relaxed">
+            {i + 1}.
+          </span>
+          <span className={`min-w-0 flex-1 ${billRightsProse}`}>{item}</span>
+        </li>
+      ))}
+    </ol>
+  );
 
   return (
-    <div className="min-h-screen bg-background pt-[var(--header-height,56px)] overflow-x-hidden flex flex-col [&_.text-accent]:text-[#816107] [&_p:not(.no-mobile-justify)]:text-justify [&_li]:text-justify max-md:[&_p:not(.no-mobile-justify)]:hyphens-auto max-md:[&_p:not(.no-mobile-justify)]:break-words max-md:[&_p:not(.no-mobile-justify)]:[text-justify:inter-word] max-md:[&_p:not(.no-mobile-justify)]:[text-align-last:left] max-md:[&_li]:hyphens-auto max-md:[&_li]:break-words max-md:[&_li]:[text-justify:inter-word]">
+    <div className="min-h-screen bg-background pt-[var(--header-height,56px)] overflow-x-hidden flex flex-col patients-prose-root [&_.text-accent]:text-[#816107]">
       <Header />
 
       {/* Hero */}
       <section className={`bg-primary/5 ${tab === "rooms-package" ? "py-6 md:py-8" : "py-16 md:py-20"}`}>
         <div className="container mx-auto px-6 text-center">
           <ScrollAnimationWrapper>
-            <p className="no-mobile-justify text-accent text-xs tracking-[0.3em] uppercase font-body mb-3 !text-center">
+            <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3 !text-center">
               {lang === "ar" ? (tab === "admission" ? "للمرضى" : "لمرضانا") : "For Our Patients"}
             </p>
             <h1 className={`font-serif text-foreground mb-4 ${tab === "rooms-package" ? "text-2xl md:text-3xl" : "text-4xl md:text-5xl"}`}>
@@ -67,16 +90,7 @@ const PatientsVisitors = () => {
       <section className={tab === "rooms-package" ? "flex-1 flex flex-col py-0" : "py-12 md:py-16"}>
         <div className={tab === "rooms-package" ? "w-full flex-1 flex flex-col" : "container mx-auto px-6"}>
           <div className={tab === "rooms-package" ? "w-full flex-1 flex flex-col" : "max-w-4xl mx-auto space-y-20"}>
-            {showAll && (
-              <ScrollAnimationWrapper>
-                <div className="bg-accent/5 border border-accent/10 rounded-2xl p-8 text-center">
-                  <h2 className="text-2xl font-serif text-foreground mb-3">{lang === "ar" ? "مرحباً بكم في صفحة معلومات للمرضى والزوار" : "Welcome to Information for Patients & Visitors"}</h2>
-                  <p className="text-muted-foreground font-body text-sm leading-relaxed">
-                    {lang === "ar" ? "في مستشفى رويال حياة، نلتزم بتقديم تجربة استثنائية لكل مريض وزائر، وذلك من خلال خدمات متكاملة تجمع بين الرعاية الطبية المتقدمة والراحة والاهتمام بأدق التفاصيل. هنا ستجدون جميع المعلومات المتعلقة بإقامتكم والخدمات المقدمة لكم بكل سهولة ووضوح." : "This is a test text that will be replaced later. We are committed to providing an exceptional experience for every patient and visitor at Royale Hayat Hospital. Here you will find all the information related to your stay and our services."}
-                  </p>
-                </div>
-              </ScrollAnimationWrapper>
-            )}
+          
 
             {/* NURSING */}
             {show("nursing") && <div id="section-nursing" className={sectionClass}>
@@ -466,18 +480,23 @@ const PatientsVisitors = () => {
             {/* DURING YOUR STAY */}
             {show("during-stay") && <div id="section-during-stay" className={sectionClass}>
               <ScrollAnimationWrapper>
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <div
+                  dir={isAr ? "rtl" : "ltr"}
+                  lang={isAr ? "ar" : "en"}
+                  className="during-stay-prose"
+                >
+                <div className={`flex items-center gap-3 mb-6 ${isAr ? "flex-row-reverse" : ""}`}>
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                     <Bed className="w-6 h-6 text-primary" />
                   </div>
-                  <h2 className="text-2xl md:text-3xl font-serif text-foreground">{lang === "ar" ? "أثناء إقامتك في مستشفى رويال حياة" : "During Your Stay at Royale Hayat Hospital"}</h2>
+                  <h2 className="text-2xl md:text-3xl font-serif text-foreground text-start flex-1">{lang === "ar" ? "أثناء إقامتك في مستشفى رويال حياة" : "During Your Stay at Royale Hayat Hospital"}</h2>
                 </div>
 
-                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-8">
+                <p className={`${mutedProse} mb-8`}>
                   {lang === "ar" ? "في مستشفى رويال حياة، نلتزم بجعل إقامتك مريحة وآمنة وممتعة قدر الإمكان. اكتشف مجموعة المرافق الفاخرة والخدمات الشخصية المتوفرة لك خلال فترة إقامتك معنا." : "At Royale Hayat Hospital, we are committed to making your stay as comfortable, safe, and pleasant as possible. Explore the range of premium amenities and personalized services available to you during your time with us."}
                 </p>
 
-                <h3 className="font-serif text-xl text-foreground mb-5">{lang === "ar" ? "وسائل الراحة المجانية" : "Complimentary Amenities"}</h3>
+                <h3 className="font-serif text-xl text-foreground mb-5 text-start">{lang === "ar" ? "وسائل الراحة المجانية" : "Complimentary Amenities"}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
                   {(lang === "ar" ? [
                     { icon: Wifi, title: "خدمة الإنترنت", desc: "ابقَ على اتصال من خلال خدمة الإنترنت عالية السرعة المجانية المتوفرة في جميع أنحاء المستشفى." },
@@ -492,18 +511,18 @@ const PatientsVisitors = () => {
                   ]).map((item, i) => (
                     <motion.div key={i} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}
                       className="bg-popover border border-border/50 rounded-2xl p-5">
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center">
+                      <div className={`flex items-center gap-3 mb-2 ${isAr ? "flex-row-reverse" : ""}`}>
+                        <div className="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
                           <item.icon className="w-4 h-4 text-accent" />
                         </div>
-                        <h4 className="font-serif text-base text-foreground">{item.title}</h4>
+                        <h4 className="font-serif text-base text-foreground text-start flex-1">{item.title}</h4>
                       </div>
-                      <p className="font-body text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+                      <p className={mutedProse}>{item.desc}</p>
                     </motion.div>
                   ))}
                 </div>
 
-                <h3 className="font-serif text-xl text-foreground mb-5">{lang === "ar" ? "خدمات الغرف" : "Room Services"}</h3>
+                <h3 className="font-serif text-xl text-foreground mb-5 text-start">{lang === "ar" ? "خدمات الغرف" : "Room Services"}</h3>
                 <div className="space-y-4 mb-10">
                   {(lang === "ar" ? [
                     { icon: UtensilsCrossed, title: "الطعام الخاص", desc: "استمتع بأطباق فاخرة من قائمة طعامنا المتنوعة، والتي تشمل المأكولات العالمية، والمتوسطية، والآسيوية، بالإضافة إلى خيارات مخصصة تُحضّر بواسطة طهاتنا التنفيذيين الحائزين على جوائز." },
@@ -514,21 +533,21 @@ const PatientsVisitors = () => {
                     { icon: Sparkles, title: "Housekeeping", desc: "Enjoy 24-hour housekeeping service with daily room refresh. You may also schedule service at a time that suits you best." },
                     { icon: Search, title: "Lost & Found", desc: "If you misplace an item, our Guest Services team is here to help. Please contact us to file a Lost & Found report with the Security Department. While we are not liable for personal items, we will make every effort to assist in locating them." },
                   ]).map((item, i) => (
-                    <div key={i} className="bg-popover border border-border/50 rounded-2xl p-5 flex items-start gap-4">
+                    <div key={i} className={`bg-popover border border-border/50 rounded-2xl p-5 flex items-start gap-4 ${isAr ? "flex-row-reverse" : ""}`}>
                       <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                         <item.icon className="w-5 h-5 text-primary" />
                       </div>
-                      <div>
-                        <h4 className="font-serif text-base text-foreground mb-1">{item.title}</h4>
-                        <p className="font-body text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+                      <div className="min-w-0 flex-1">
+                        <h4 className="font-serif text-base text-foreground mb-1 text-start">{item.title}</h4>
+                        <p className={mutedProse}>{item.desc}</p>
                       </div>
                     </div>
                   ))}
                 </div>
 
                 <div className="bg-primary/5 rounded-2xl p-6">
-                  <h3 className="font-serif text-lg text-foreground mb-3">{lang === "ar" ? "سياسة الزوار" : "Visitors Policy"}</h3>
-                  <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
+                  <h3 className="font-serif text-lg text-foreground mb-3 text-start">{lang === "ar" ? "سياسة الزوار" : "Visitors Policy"}</h3>
+                  <p className={`${mutedProse} mb-4`}>
                     {lang === "ar" ? "يلعب أحباؤك دورًا مهمًا في رحلة تعافيك. ولضمان سلامتك وراحتك، نرجو من الزوار الالتزام بالإرشادات التالية:" : "Your loved ones play a key role in your healing journey. To ensure your safety and comfort, we kindly ask visitors to follow these guidelines:"}
                   </p>
                   <div className="space-y-2">
@@ -541,12 +560,13 @@ const PatientsVisitors = () => {
                       "We request that all visitors sanitize their hands when entering and exiting your room.",
                       "Visitors who have experienced symptoms such as fever, vomiting, diarrhea, rash, or cough within the past 72 hours should refrain from visiting.",
                     ]).map((item, i) => (
-                      <div key={i} className="flex items-start gap-3">
+                      <div key={i} className={`flex items-start gap-3 ${isAr ? "flex-row-reverse" : ""}`}>
                         <AlertTriangle className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
-                        <span className="font-body text-sm text-foreground">{item}</span>
+                        <span className={`${bodyProse} min-w-0 flex-1`}>{item}</span>
                       </div>
                     ))}
                   </div>
+                </div>
                 </div>
               </ScrollAnimationWrapper>
             </div>}
@@ -554,23 +574,27 @@ const PatientsVisitors = () => {
             {/* PATIENT BILL OF RIGHTS */}
             {show("bill-of-rights") && <div id="section-bill-of-rights" className={sectionClass}>
               <ScrollAnimationWrapper>
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <div
+                  dir={isAr ? "rtl" : "ltr"}
+                  lang={isAr ? "ar" : "en"}
+                  className="bill-of-rights-prose"
+                >
+                <div className={`flex items-center gap-3 mb-6 ${isAr ? "flex-row-reverse" : ""}`}>
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                     <Scale className="w-6 h-6 text-primary" />
                   </div>
-                  <h2 className="text-2xl md:text-3xl font-serif text-foreground">{lang === "ar" ? "حقوق ومسؤوليات المريض" : "Patient Bill of Rights and Responsibilities"}</h2>
+                  <h2 className="text-2xl md:text-3xl font-serif text-foreground text-start flex-1">{lang === "ar" ? "حقوق ومسؤوليات المريض" : "Patient Bill of Rights and Responsibilities"}</h2>
                 </div>
 
                 {lang === "ar" && (
-                  <p className="font-body text-sm text-muted-foreground leading-relaxed mb-6">
+                  <p className={billRightsIntro}>
                     في مستشفى رويال حياة، نلتزم بتقديم رعاية صحية تتمحور حول المريض، مع احترام كامل لحقوقه، إلى جانب تعزيز مسؤولياته لضمان تجربة علاجية آمنة وفعّالة.
                   </p>
                 )}
 
                 <div className="bg-popover border border-border/50 rounded-2xl p-6 mb-6">
-                  <h3 className="font-serif text-lg text-foreground mb-4">{lang === "ar" ? "أولاً: حقوق المريض" : "You have the right to:"}</h3>
-                  <ol className="space-y-3 list-decimal list-inside">
-                    {(lang === "ar" ? [
+                  <h3 className="font-serif text-lg text-foreground mb-4 text-start">{lang === "ar" ? "أولاً: حقوق المريض" : "You have the right to:"}</h3>
+                  {renderBillRightsList(lang === "ar" ? [
                       "معرفة جميع المعلومات المتعلقة بحالتك الصحية، ورعايتك، وأسباب جميع الفحوصات والإجراءات التشخيصية، وكذلك الرسوم المفروضة على حسابك، وذلك بلغة تفهمها.",
                       "قبول أو رفض التوقيع على الموافقة لأي إجراء جراحي أو تشخيصي.",
                       "تلقي رعاية صحية رحيمة ومحترمة في جميع الأوقات، بغض النظر عن العمر، أو الجنس، أو العرق، أو الثقافة، أو الجنسية، أو اللغة، أو التوجه، أو الوضع الاجتماعي والاقتصادي، أو القدرة الجسدية أو الذهنية، أو الدين، أو التشخيص.",
@@ -606,18 +630,12 @@ const PatientsVisitors = () => {
                       'Know the safety measures to be taken after the assessment that include clinical, physical, and psychological status, i.e., risk of fall, medications, drug reaction, cross-infection, etc.',
                       'Be informed about any unanticipated adverse outcomes.',
                       'Give or refuse consent before filming or recording images.',
-                    ]).map((item, i) => (
-                      <li key={i} className="font-body text-sm text-foreground leading-relaxed">
-                        {item}
-                      </li>
-                    ))}
-                  </ol>
+                    ])}
                 </div>
 
                 <div className="bg-popover border border-border/50 rounded-2xl p-6 mb-6">
-                  <h3 className="font-serif text-lg text-foreground mb-4">{lang === "ar" ? "ثانياً: مسؤوليات المريض" : "As a patient, it is your responsibility to:"}</h3>
-                  <ol className="space-y-3 list-decimal list-inside">
-                    {(lang === "ar" ? [
+                  <h3 className="font-serif text-lg text-foreground mb-4 text-start">{lang === "ar" ? "ثانياً: مسؤوليات المريض" : "As a patient, it is your responsibility to:"}</h3>
+                  {renderBillRightsList(lang === "ar" ? [
                       "الالتزام بالقوانين والأنظمة المعمول بها في مستشفى رويال حياة.",
                       "تقديم معلومات كاملة ودقيقة عن حالتك الصحية، بما في ذلك التاريخ المرضي والأدوية التي تتناولها.",
                       "تقديم المستندات المطلوبة وفقًا للقوانين أو البروتوكولات قبل الدخول أو إجراء أي إجراءات طبية.",
@@ -651,21 +669,17 @@ const PatientsVisitors = () => {
                       'Preserve and maintain hospital property like medical equipment, furniture, fittings, etc., including medical records.',
                       'Keep us informed if you want to change hospital or service provider.',
                       'Share the responsibility in maintaining the safety of the patient from any harm or injury, as explained by the service providers.',
-                    ]).map((item, i) => (
-                      <li key={i} className="font-body text-sm text-foreground leading-relaxed">
-                        {item}
-                      </li>
-                    ))}
-                  </ol>
+                    ])}
                 </div>
 
                 <div className="bg-accent/10 rounded-2xl p-6">
-                  <div className="flex items-start gap-3">
+                  <div className={`flex items-start gap-3 ${isAr ? "flex-row-reverse" : ""}`}>
                     <AlertTriangle className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
-                    <p className="font-body text-sm text-foreground leading-relaxed">
+                    <p className={billRightsProse}>
                       <strong>{lang === "ar" ? "ملاحظة:" : "Note:"}</strong> {lang === "ar" ? "في الحالات الطبية الطارئة التي تهدد الحياة، يحق للطبيب الاستشاري اتخاذ القرار وإجراء الفحوصات أو الإجراءات أو إعطاء العلاج دون الحاجة إلى موافقة مسبقة من المريض أو ذويه، وذلك ضمن المسؤولية المهنية للطبيب المختص." : "In case of a life-threatening situation, the Consultant will have the full right to decide and proceed with tests, procedures, and/or medications without seeking prior consent of the relatives or the guardian as part of the responsibility bestowed on a qualified medical professional."}
                     </p>
                   </div>
+                </div>
                 </div>
               </ScrollAnimationWrapper>
             </div>}
@@ -763,6 +777,35 @@ const PatientsVisitors = () => {
           </div>
         </div>
       </section>
+
+      <style>{`
+        .patients-prose-root .patients-prose-line {
+          word-spacing: normal !important;
+          letter-spacing: normal;
+          word-break: normal;
+          overflow-wrap: normal;
+        }
+
+        .patients-prose-root .bill-of-rights-prose[dir="ltr"] .patients-prose-line,
+        .patients-prose-root .during-stay-prose[dir="ltr"] .patients-prose-line {
+          -webkit-hyphens: auto;
+          hyphens: auto;
+          hyphenate-limit-chars: 6 4 2;
+          text-align: justify;
+          text-align-last: left;
+          text-justify: inter-word;
+          text-wrap: pretty;
+        }
+
+        .patients-prose-root .bill-of-rights-prose[dir="rtl"] .patients-prose-line,
+        .patients-prose-root .during-stay-prose[dir="rtl"] .patients-prose-line {
+          -webkit-hyphens: none;
+          hyphens: none;
+          text-align: justify;
+          text-align-last: right;
+          text-justify: inter-word;
+        }
+      `}</style>
 
       <Footer />
       <ScrollToTop />

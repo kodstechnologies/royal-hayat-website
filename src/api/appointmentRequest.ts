@@ -1,14 +1,23 @@
 import api from "./axiosInstance";
 
+export const APPOINTMENT_REQUEST_TYPES = {
+  DOCTOR_UNAVAILABILITY: "doctor unavailability request",
+  FIRST_TIME_VISITOR: "first time visitor request",
+} as const;
+
+export type AppointmentRequestType =
+  (typeof APPOINTMENT_REQUEST_TYPES)[keyof typeof APPOINTMENT_REQUEST_TYPES];
+
 export type CreateAppointmentRequestPayload = {
   fullname: string;
   phone: string;
+  requestType: AppointmentRequestType;
   dob?: string;
   age?: number;
   gender?: "male" | "female" | "other";
   additionalNotes?: string;
-  preferredDate: any;
-  timeSlot: any;
+  preferredDate?: string;
+  timeSlot?: { period?: string; time?: string; label?: string } | string;
   symptoms?: string[];
   doctor?: string;
   department?: string;

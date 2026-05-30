@@ -32,7 +32,10 @@ import {
   type IdentityStatusResponse,
 } from "@/api/identity";
 import { subscribeToIdentityVerification } from "@/api/identitySocket";
-import { createAppointmentRequest } from "@/api/appointmentRequest";
+import {
+  APPOINTMENT_REQUEST_TYPES,
+  createAppointmentRequest,
+} from "@/api/appointmentRequest";
 import {
   extractPatientId,
   getPatientLookupUserMessage,
@@ -728,6 +731,9 @@ const BookAppointment = () => {
       await createAppointmentRequest({
         fullname: patientName.trim(),
         phone: `${patientCountryCode}${patientPhone.trim()}`,
+        requestType: isRequestMode
+          ? APPOINTMENT_REQUEST_TYPES.DOCTOR_UNAVAILABILITY
+          : APPOINTMENT_REQUEST_TYPES.FIRST_TIME_VISITOR,
         dob: patientDob || undefined,
         // age: calculateAge(patientDob),
         gender: patientGender as "male" | "female" | "other",

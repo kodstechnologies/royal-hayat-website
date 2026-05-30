@@ -9,7 +9,10 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { doctors as allDoctors } from "@/data/doctors";
 import { getDoctorById, mapApiDoctorRowToDoctor } from "@/api/doctors";
-import { createAppointmentRequest } from "@/api/appointmentRequest";
+import {
+  APPOINTMENT_REQUEST_TYPES,
+  createAppointmentRequest,
+} from "@/api/appointmentRequest";
 import type { Doctor } from "@/data/doctors";
 
 const AppointmentRequest = () => {
@@ -80,6 +83,7 @@ const AppointmentRequest = () => {
       await createAppointmentRequest({
         fullname: form.fullName.trim(),
         phone: `${form.countryCode}${form.phone.trim()}`,
+        requestType: APPOINTMENT_REQUEST_TYPES.DOCTOR_UNAVAILABILITY,
         dob: form.dateOfBirth,
         gender: form.gender as "male" | "female" | "other",
         preferredDate:

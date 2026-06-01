@@ -217,8 +217,11 @@ const translations: Translations = {
   luxuryHallsDesc: { en: "Elegant event spaces for celebrations and gatherings.", ar: "مساحات أنيقة للمناسبات والاحتفالات." },
   birthCelebrationHalls: { en: "Birth Celebration Halls", ar: "قاعات احتفالات الولادة" },
   exclusiveSuites: { en: "Exclusive Suites", ar: "الأجنحة الحصرية" },
-  inRoomEvents: { en: "In-Suite Celebration Experiences", ar: "تجارب الاحتفال داخل الجناح" },
-  inRoomEventsDesc: { en: "Create meaningful celebrations in the comfort and privacy of your own suite.", ar: "احتفل بلحظاتك الخاصة في راحة وخصوصية جناحك." },
+  inRoomEvents: { en: "In-Suite Celebration Experiences", ar: "تجارب الاحتفال داخل الأجنحة" },
+  inRoomEventsDesc: {
+    en: "Create meaningful celebrations in the comfort and privacy of your own suite.",
+    ar: "اصنعوا لحظات لا تُنسى واحتفلوا بمناسباتكم الخاصة بكل خصوصية وراحة داخل أجنحتكم الفاخرة، حيث تلتقي الأجواء الدافئة بالضيافة الراقية لتمنحكم تجربة استثنائية مليئة بالذكريات الجميلة.",
+  },
   elementsSpa: { en: "Elements Spa", ar: "سبا إليمنتس" },
   elementsSpaByBanyanTree: { en: "Elements Spa (by Banyan Tree)", ar: "سبا إليمنتس (بانيان تري)" },
   fifthFloorCafe: { en: "The 5th Floor Café", ar: "مقهى الطابق الخامس" },

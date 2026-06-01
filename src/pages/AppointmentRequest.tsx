@@ -1,4 +1,7 @@
 import { useState } from "react";
+import axios from "axios";
+import { createAppointmentRequest } from "@/api/appointmentRequest";
+import { toast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { ClipboardList, CheckCircle2, ArrowRight, ArrowLeft, User, Phone, Calendar } from "lucide-react";
 import Header from "@/components/Header";
@@ -14,6 +17,7 @@ const AppointmentRequest = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const returnState = (location.state as any) ?? {};
 
@@ -39,9 +43,47 @@ const AppointmentRequest = () => {
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!validate()) return;
-    setSubmitted(true);
+
+    setSubmitting(true);
+    try {
+      await createAppointmentRequest({
+        fullname: form.fullName.trim(),
+        phone: `${form.countryCode}${form.phone.trim()}`,
+        dob: form.dateOfBirth,
+        gender: form.gender,
+        doctor: prefilledDoctor
+          ? lang === "ar"
+            ? prefilledDoctor.nameAr
+            : prefilledDoctor.name
+          : undefined,
+        department: prefilledDoctor
+          ? lang === "ar"
+            ? prefilledDoctor.departmentAr
+            : prefilledDoctor.department
+          : undefined,
+        preferredDate: form.preferredDate || undefined,
+        additionalNotes: form.message.trim() || undefined,
+        requestType: "first time visitor request",
+      });
+      setSubmitted(true);
+    } catch (error) {
+      const message = axios.isAxiosError(error)
+        ? error.response?.data?.message || error.message
+        : null;
+      toast({
+        title: lang === "ar" ? "خطأ" : "Error",
+        description:
+          message ||
+          (lang === "ar"
+            ? "تعذر إرسال الطلب. يرجى المحاولة مرة أخرى."
+            : "Could not submit your request. Please try again."),
+        variant: "destructive",
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const updateField = (field: string, value: string) => {
@@ -240,8 +282,16 @@ const AppointmentRequest = () => {
           </div>
 
           <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} onClick={handleSubmit}
-            className="w-full mt-6 bg-primary text-primary-foreground py-3.5 rounded-xl font-body text-sm tracking-widest uppercase hover:bg-primary/90 transition-all flex items-center justify-center gap-2">
-            {lang === "ar" ? "إرسال الطلب" : "Submit Request"} <ArrowRight className="w-4 h-4" />
+            disabled={submitting}
+            className="w-full mt-6 bg-primary text-primary-foreground py-3.5 rounded-xl font-body text-sm tracking-widest uppercase hover:bg-primary/90 transition-all flex items-center justify-center gap-2 disabled:opacity-60">
+            {submitting
+              ? lang === "ar"
+                ? "جاري الإرسال..."
+                : "Submitting..."
+              : lang === "ar"
+                ? "إرسال الطلب"
+                : "Submit Request"}{" "}
+            <ArrowRight className="w-4 h-4" />
           </motion.button>
         </motion.div>
       </div>

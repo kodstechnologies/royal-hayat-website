@@ -59,7 +59,7 @@ export const applyForJob = async (data: JobApplicationPayload) => {
   formData.append("email", data.email);
   formData.append("phone", data.phone);
   if (data.coverLetter) formData.append("coverLetter", data.coverLetter);
-  if (data.cv) formData.append("cv", data.cv);
+  if (data.cv) formData.append("resume", data.cv);
 
   const response = await api.post("/api/v1/jobs/apply", formData, {
     headers: { "Content-Type": "multipart/form-data" },

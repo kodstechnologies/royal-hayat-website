@@ -8,9 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Mail, Share2, ChevronRight } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
-import { useRef } from "react";
+import { applyForJob, getJobById, type JobPosting } from "@/api/job";
 const openPositions = [
   { title: "Floor Coordinator only Female, Bilingual (Arabic & English)", category: "Hospitality / Guest Services", location: "Royale Hayat Hospital", type: "Full-time", date: "March 19, 2026", desc: "Royale Hayat Hospital have devoted considerable effort to applying established strategies for quality improvement thus they created a position of Floor coordinator that make patient experience more valuable and focusing on patient satisfaction in the inpatient setting and how to improve it.", responsibilities: ["To ensure a differences and service recovery every day with every patient throughout his or her hospitalization.", "Positive outcomes of stay.", "Improved quality outcomes, and patient satisfaction which may help transform the acute care delivery model toward a more rational and safe approach.", "Coordinate floor operations and ensure smooth patient flow", "Liaise between departments to resolve patient concerns"], requirements: ["Bilingual proficiency in Arabic and English (mandatory)", "Female candidates only", "Minimum 2 years of experience in hospitality or healthcare coordination", "Excellent communication and organizational skills"] },
   { title: "Guest Relations Officer", category: "Hospitality / Guest Services", location: "Royale Hayat Hospital", type: "Full-time", date: "March 15, 2026", desc: "Provide outstanding hospitality and patient experience throughout the hospital premises.", responsibilities: ["Welcome and assist patients and visitors", "Handle complaints and feedback professionally", "Coordinate with departments for patient needs", "Maintain guest satisfaction records"], requirements: ["Experience in hospitality or guest relations", "Excellent interpersonal skills", "Bilingual preferred", "Professional appearance and demeanor"] },
@@ -29,22 +29,110 @@ const openPositions = [
   { title: "Medical Records Specialist", category: "Administrative", location: "Royale Hayat Hospital", type: "Full-time", date: "February 8, 2026", desc: "Manage and maintain accurate medical records, ensuring compliance with healthcare regulations and standards.", responsibilities: ["Maintain and organize medical records", "Ensure compliance with privacy regulations", "Process record requests accurately", "Support audits and quality reviews"], requirements: ["Experience in medical records management", "Knowledge of healthcare regulations", "Attention to detail", "Proficiency in electronic health records"] },
 ];
 
+const mapApiJobToDisplay = (apiJob: JobPosting) => ({
+  title: apiJob.title,
+  category: String(apiJob.classification ?? apiJob.category ?? apiJob.department ?? ""),
+  location: apiJob.location ?? "",
+  type: apiJob.type ?? "",
+  date: apiJob.postedDate ?? apiJob.date ?? "",
+  desc: apiJob.description ?? apiJob.desc ?? "",
+  responsibilities: apiJob.responsibilities ?? [],
+  requirements: apiJob.requirements ?? [],
+});
+
 const JobApplication = () => {
   const { lang } = useLanguage();
   const [searchParams] = useSearchParams();
+  const jobId = searchParams.get("jobId") ?? "";
   const jobIndex = parseInt(searchParams.get("job") || "0", 10);
-  const job = openPositions[jobIndex] || openPositions[0];
+  const fallbackJob = openPositions[jobIndex] || openPositions[0];
+  const [job, setJob] = useState(fallbackJob);
   const isAr = lang === "ar";
   const [showForm, setShowForm] = useState(false);
   const [cvFile, setCvFile] = useState<File | null>(null);
-  const formRef = useRef(null);
-  const handleSubmit = (e: React.FormEvent) => {
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [coverLetter, setCoverLetter] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const formRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!jobId) return;
+    let cancelled = false;
+    getJobById(jobId)
+      .then((data) => {
+        if (!cancelled && data) setJob(mapApiJobToDisplay(data as JobPosting));
+      })
+      .catch(() => {
+        if (!cancelled) {
+          toast({
+            title: isAr ? "خطأ" : "Error",
+            description: isAr ? "تعذر تحميل تفاصيل الوظيفة." : "Could not load job details.",
+            variant: "destructive",
+          });
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [jobId, isAr]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: isAr ? "تم إرسال الطلب" : "Application Submitted",
-      description: isAr ? "شكراً لتقديم طلبك. سنتواصل معك قريباً." : "Thank you for your application. We will get back to you shortly.",
-    });
-    setShowForm(false);
+    if (!jobId) {
+      toast({
+        title: isAr ? "غير متاح" : "Unavailable",
+        description: isAr
+          ? "يرجى التقديم من صفحة الوظائف المتاحة."
+          : "Please apply from the open positions page.",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (!cvFile) {
+      toast({
+        title: isAr ? "مطلوب" : "Required",
+        description: isAr ? "يرجى رفع السيرة الذاتية." : "Please upload your CV.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setSubmitting(true);
+    try {
+      await applyForJob({
+        jobId,
+        fullName: fullName.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
+        coverLetter: coverLetter.trim() || undefined,
+        cv: cvFile,
+      });
+      toast({
+        title: isAr ? "تم إرسال الطلب" : "Application Submitted",
+        description: isAr
+          ? "شكراً لتقديم طلبك. سنتواصل معك قريباً."
+          : "Thank you for your application. We will get back to you shortly.",
+      });
+      setShowForm(false);
+      setFullName("");
+      setEmail("");
+      setPhone("");
+      setCoverLetter("");
+      setCvFile(null);
+    } catch (err: unknown) {
+      const message =
+        (err as { response?: { data?: { message?: string } } })?.response?.data
+          ?.message ||
+        (isAr ? "تعذر إرسال الطلب. حاول مرة أخرى." : "Could not submit your application. Please try again.");
+      toast({
+        title: isAr ? "خطأ" : "Error",
+        description: message,
+        variant: "destructive",
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleShare = () => {
@@ -161,15 +249,15 @@ const JobApplication = () => {
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="space-y-2">
                   <Label htmlFor="fullName">{isAr ? "الاسم الكامل" : "Full Name"} <span className="text-destructive">*</span></Label>
-                  <Input id="fullName" required placeholder={isAr ? "أدخل اسمك الكامل" : "Enter your full name"} />
+                  <Input id="fullName" required value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder={isAr ? "أدخل اسمك الكامل" : "Enter your full name"} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">{isAr ? "البريد الإلكتروني" : "Email"} <span className="text-destructive">*</span></Label>
-                  <Input id="email" type="email" required placeholder={isAr ? "أدخل بريدك الإلكتروني" : "Enter your email address"} />
+                  <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder={isAr ? "أدخل بريدك الإلكتروني" : "Enter your email address"} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone">{isAr ? "رقم الهاتف" : "Phone Number"} <span className="text-destructive">*</span></Label>
-                  <Input id="phone" type="tel" required placeholder={isAr ? "أدخل رقم هاتفك" : "Enter your phone number"} />
+                  <Input id="phone" type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} placeholder={isAr ? "أدخل رقم هاتفك" : "Enter your phone number"} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="cv">{isAr ? "السيرة الذاتية" : "Upload CV"} <span className="text-destructive">*</span></Label>
@@ -178,9 +266,11 @@ const JobApplication = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="coverLetter">{isAr ? "خطاب التقديم (اختياري)" : "Cover Letter (Optional)"}</Label>
-                  <Textarea id="coverLetter" placeholder={isAr ? "اكتب خطاب التقديم هنا..." : "Write your cover letter here..."} rows={5} />
+                  <Textarea id="coverLetter" value={coverLetter} onChange={(e) => setCoverLetter(e.target.value)} placeholder={isAr ? "اكتب خطاب التقديم هنا..." : "Write your cover letter here..."} rows={5} />
                 </div>
-                <Button type="submit" className="w-full">{isAr ? "إرسال الطلب" : "Submit Application"}</Button>
+                <Button type="submit" className="w-full" disabled={submitting || !jobId}>
+                  {submitting ? (isAr ? "جاري الإرسال..." : "Submitting...") : isAr ? "إرسال الطلب" : "Submit Application"}
+                </Button>
               </form>
             </div>
           )}

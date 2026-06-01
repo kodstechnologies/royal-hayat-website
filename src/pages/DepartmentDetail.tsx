@@ -11,6 +11,7 @@ import { ChevronRight, ChevronLeft, ArrowLeft, CheckCircle2, ChevronDown, Stetho
 import { useState, useRef, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import type { DepartmentDetailSection } from "@/data/departmentDetails";
+import { resolveDepartmentBySlug } from "@/utils/resolveDepartmentSlug";
 
 const pickDeptText = (lang: string, en: string, ar?: string) => (lang === "ar" && ar ? ar : en);
 
@@ -168,7 +169,7 @@ const DepartmentDetail = () => {
   const isAr = lang === "ar";
   const [expandedSub, setExpandedSub] = useState<string | null>(subSlug || null);
 
-  const dept = departmentDetails.find((d) => d.slug === slug);
+  const dept = resolveDepartmentBySlug(slug);
 
   if (!dept) {
     return (

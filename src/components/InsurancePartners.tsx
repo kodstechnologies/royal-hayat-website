@@ -32,12 +32,22 @@ const InsurancePartners = ({ variant = "default" }: InsurancePartnersProps) => {
   const { lang, t } = useLanguage();
 
   return (
-    <section className="py-16 bg-background overflow-hidden" id="insurance">
+    <section className="insurance-partners-section py-16 bg-background overflow-hidden" id="insurance">
       <div className="container mx-auto px-6">
         <ScrollAnimationWrapper>
-          <div className="text-center mb-10">
-            <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3 !text-center">{t("trustedBy")}</p>
-            <h2 className="text-3xl md:text-4xl font-serif text-foreground">{t("insurancePartners")}</h2>
+          <div className="insurance-partners-heading mb-10 flex w-full flex-col items-center justify-center text-center">
+            <p
+              className="insurance-partners-title text-accent text-xs tracking-[0.3em] uppercase font-body mb-3 w-full"
+              style={{ textAlign: "center", textAlignLast: "center" }}
+            >
+              {t("trustedBy")}
+            </p>
+            <h2
+              className="insurance-partners-title text-3xl md:text-4xl font-serif text-foreground w-full"
+              style={{ textAlign: "center", textAlignLast: "center" }}
+            >
+              {t("insurancePartners")}
+            </h2>
           </div>
         </ScrollAnimationWrapper>
       </div>

@@ -38,8 +38,8 @@ const PatientsVisitors = () => {
   const isAr = lang === "ar";
   /** Justified body copy: full words per line; hyphen only when a word wraps. */
   const patientsProseLine = "patients-prose-line";
-  const bodyProse = `font-body text-sm text-foreground leading-relaxed text-justify [word-break:normal] ${patientsProseLine}`;
-  const mutedProse = `font-body text-sm text-muted-foreground leading-relaxed text-justify [word-break:normal] ${patientsProseLine}`;
+  const bodyProse = `font-body text-sm text-foreground leading-normal md:leading-relaxed text-justify [word-break:normal] ${patientsProseLine}`;
+  const mutedProse = `font-body text-sm text-muted-foreground leading-normal md:leading-relaxed text-justify [word-break:normal] ${patientsProseLine}`;
   const billRightsProse = bodyProse;
   const billRightsIntro = `${mutedProse} mb-6`;
 
@@ -68,7 +68,7 @@ const PatientsVisitors = () => {
       <Header />
 
       {/* Hero */}
-      <section className={`bg-primary/5 ${tab === "rooms-package" ? "py-6 md:py-8" : "py-16 md:py-20"}`}>
+      <section className={`bg-primary/5 ${tab === "rooms-package" ? "py-6 md:py-8" : "py-10 md:py-16 lg:py-20"}`}>
         <div className="container mx-auto px-6 text-center">
           <ScrollAnimationWrapper>
             <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3 !text-center">
@@ -99,13 +99,13 @@ const PatientsVisitors = () => {
       </section>
 
       {/* All Sections */}
-      <section className={tab === "rooms-package" ? "flex-1 flex flex-col py-0" : "py-12 md:py-16"}>
+      <section className={tab === "rooms-package" ? "flex-1 flex flex-col py-0" : "py-8 md:py-12 lg:py-16"}>
         <div className={tab === "rooms-package" ? "w-full flex-1 flex flex-col" : "container mx-auto px-6"}>
           <div
             className={
               tab === "rooms-package"
                 ? "w-full flex-1 flex flex-col"
-                : "max-w-4xl mx-auto space-y-20 patients-page-content"
+                : "max-w-4xl mx-auto space-y-10 md:space-y-16 lg:space-y-20 patients-page-content"
             }
           >
           
@@ -269,7 +269,7 @@ const PatientsVisitors = () => {
                   </div>
                 </div>
 
-                <div className="mt-10 relative left-1/2 right-1/2 -mx-[50vw] w-screen">
+                <div className="mt-6 md:mt-10 w-screen max-w-[100vw] relative left-1/2 -translate-x-1/2 overflow-hidden">
                   <InsurancePartners variant="patients-insurance" />
                 </div>
               </ScrollAnimationWrapper>
@@ -830,6 +830,69 @@ const PatientsVisitors = () => {
           -webkit-hyphens: none;
           hyphens: none;
           text-align-last: right;
+        }
+
+        @media (max-width: 767px) {
+          .patients-prose-root .patients-page-content p,
+          .patients-prose-root .patients-page-content li,
+          .patients-prose-root .patients-page-content span.font-body,
+          .patients-prose-root .patients-prose-line {
+            line-height: 1.55;
+            text-align: justify;
+            text-justify: inter-word;
+            text-align-last: start;
+            word-spacing: normal;
+            text-wrap: pretty;
+          }
+
+          .patients-prose-root[dir="ltr"] .patients-page-content p,
+          .patients-prose-root[dir="ltr"] .patients-page-content li,
+          .patients-prose-root[dir="ltr"] .patients-page-content span.font-body,
+          .patients-prose-root[dir="ltr"] .patients-prose-line {
+            -webkit-hyphens: auto;
+            hyphens: auto;
+            text-align-last: start;
+          }
+
+          .patients-prose-root[dir="rtl"] .patients-page-content p,
+          .patients-prose-root[dir="rtl"] .patients-page-content li,
+          .patients-prose-root[dir="rtl"] .patients-page-content span.font-body,
+          .patients-prose-root[dir="rtl"] .patients-prose-line {
+            text-align-last: start;
+          }
+
+          .patients-page-content .rounded-2xl.p-6,
+          .patients-page-content .rounded-2xl.p-5 {
+            padding: 1rem;
+          }
+
+          .patients-page-content .mb-8 {
+            margin-bottom: 1.25rem;
+          }
+
+          .patients-page-content .mb-6 {
+            margin-bottom: 1rem;
+          }
+
+          .patients-page-content .mb-10 {
+            margin-bottom: 1.5rem;
+          }
+
+          .patients-page-content .space-y-4 > :not([hidden]) ~ :not([hidden]) {
+            margin-top: 0.625rem;
+          }
+
+          .patients-page-content .space-y-3 > :not([hidden]) ~ :not([hidden]) {
+            margin-top: 0.5rem;
+          }
+        }
+
+        .patients-prose-root .patients-page-content .insurance-partners-section p,
+        .patients-prose-root .patients-page-content .insurance-partners-section .insurance-partners-title {
+          text-align: center !important;
+          text-align-last: center !important;
+          -webkit-hyphens: none;
+          hyphens: none;
         }
       `}</style>
 

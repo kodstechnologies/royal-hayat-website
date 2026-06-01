@@ -12,7 +12,7 @@ const translations: Translations = {
   about: { en: "About", ar: "عن المستشفى" },
   aboutUsNav: { en: "About Us", ar: "من نحن" },
   medicalServices: { en: "Medical Services", ar: "الخدمات الطبية" },
-  royaleHomeHealth: { en: "Royale Home Health", ar: "رويال للرعاية المنزلية" },
+  royaleHomeHealth: { en: "Royale Home Health", ar: "رويال هوم هيلث" },
   hospitalityServices: { en: "Hospitality Services", ar: "خدمات الضيافة" },
   patientsVisitors: { en: "Patients Info", ar: "معلومات للمرضى والزوار" },
   patientsVisitorsDropdownTitle: { en: "Information For Patients and Visitors", ar: "معلومات للمرضى والزوار" },
@@ -190,7 +190,7 @@ const translations: Translations = {
   },
 
   // Home Health
-  careAtHome: { en: "Care at Home", ar: "الرعاية في المنزل" },
+  careAtHome: { en: "Care at Home", ar: "خدمات الرعاية المنزلية" },
   homeHealthDesc: { en: "Premium medical care in the comfort of your home", ar: "رعاية طبية متميزة في راحة منزلك" },
   homeHealthFullDesc: { en: "Royale Home Health brings the excellence of hospital care to your doorstep. Our certified medical professionals provide comprehensive healthcare services including nursing, post-operative care, physiotherapy, and elder care — all within the comfort and privacy of your home.", ar: "يقدم رويال للرعاية المنزلية تميز الرعاية الصحية إلى عتبة بابك. يقدم المتخصصون الطبيون المعتمدون لدينا خدمات رعاية صحية شاملة تشمل التمريض والرعاية بعد العمليات والعلاج الطبيعي ورعاية كبار السن." },
   homeNursing: { en: "Home Nursing", ar: "التمريض المنزلي" },

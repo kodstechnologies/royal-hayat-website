@@ -11,21 +11,16 @@ export type CreateInternationalPatientEnquiryPayload = {
 };
 
 export const createInternationalPatientEnquiry = async (
-  data: CreateInternationalPatientEnquiryPayload
+  data: CreateInternationalPatientEnquiryPayload,
 ) => {
-  const payload = {
+  const response = await api.post("/api/v1/international-patient-enquiries", {
     firstName: data.firstName.trim(),
     lastName: data.lastName.trim(),
     email: data.email.trim(),
-    mobile: data.mobile.trim(),
+    mobile: data.mobile.replace(/\D/g, "").trim(),
     address: data.address?.trim() || "",
     country: data.country?.trim() || "",
     comments: data.comments?.trim() || "",
-  };
-
-  const response = await api.post(
-    "/api/v1/international-patient-enquiries",
-    payload
-  );
+  });
   return response.data;
 };

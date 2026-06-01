@@ -7,7 +7,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
-import { createInternationalPatientEnquiry } from "@/api/international-patients";
+import { createInternationalPatientEnquiry } from "@/api/internationalPatient";
 
 const InternationalPatient = () => {
   const { lang } = useLanguage();
@@ -53,7 +53,15 @@ const InternationalPatient = () => {
 
     try {
       setIsSubmitting(true);
-      await createInternationalPatientEnquiry(form);
+      await createInternationalPatientEnquiry({
+        firstName: form.firstName,
+        lastName: form.lastName,
+        email: form.email,
+        mobile: mobileDigits,
+        address: form.address,
+        country: form.country,
+        comments: form.comments,
+      });
       toast.success(isAr ? "تم إرسال الطلب وسنتواصل معك." : "Request sent and we will get back to you.");
       setForm({ firstName: "", lastName: "", mobile: "", email: "", address: "", country: "", comments: "" });
     } catch (error) {

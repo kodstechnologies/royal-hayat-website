@@ -338,12 +338,12 @@ const WorkWithUs = ({
 
       {/* Hero */}
       {showSection("culture") && (
-        <section className="py-0 bg-primary/5 overflow-hidden">
-          <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_0.7fr] gap-0 items-stretch lg:min-h-[480px] 2xl:min-h-[620px]">
-            {/* LEFT — phone: natural height; tablet: bg cover; 2xl+ desktop: img cover */}
+        <section className="py-0 bg-primary/5 overflow-x-clip">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_0.7fr] gap-0 items-stretch lg:items-start">
+            {/* LEFT — height follows image (no extra space below) */}
             <div
               dir="ltr"
-              className="work-culture-hero-wrap relative w-full overflow-hidden bg-primary/5 lg:min-h-[480px] lg:h-full 2xl:min-h-[620px]"
+              className="work-culture-hero-wrap relative w-full min-w-0 bg-background lg:h-auto"
             >
               <WorkCultureHeroImage
                 key={lang}
@@ -352,12 +352,16 @@ const WorkWithUs = ({
                     ? "الحياة في رويال حياة"
                     : "Life at Royale Hayat Hospital"
                 }
-                className="work-culture-hero-img block w-full h-auto max-w-none object-contain object-left 2xl:absolute 2xl:inset-0 2xl:h-full 2xl:w-full 2xl:object-cover 2xl:object-left"
               />
             </div>
 
             {/* RIGHT — content */}
-            <ScrollAnimationWrapper className="flex h-full flex-col justify-center py-16 md:py-24 px-8 md:px-14 lg:px-16">
+            <ScrollAnimationWrapper className="flex w-full flex-col justify-center px-8 py-10 md:px-14 md:py-12 lg:px-16 lg:self-center lg:py-12 2xl:py-16">
+              <div
+                dir={isAr ? "rtl" : "ltr"}
+                lang={isAr ? "ar" : "en"}
+                className={isAr ? "text-right" : "text-left"}
+              >
               <h1 className="text-4xl md:text-5xl font-serif text-primary mb-6 leading-tight">
                 {isAr
                   ? "الحياة في مستشفى رويال حياة"
@@ -379,6 +383,7 @@ const WorkWithUs = ({
                     ? "هنا، تلتقي المهنية باللطف، والمعايير العالية بالتعاطف، والعمل بالرسالة الهادفة. وإذا كانت هذه القيم تشبهك، فأنت بالفعل تنتمي إلى هنا."
                     : "Here, professionalism meets kindness. Standards meet empathy. And work carries purpose. If this belief resonates with you, you already belong here."}
                 </p>
+              </div>
               </div>
             </ScrollAnimationWrapper>
           </div>

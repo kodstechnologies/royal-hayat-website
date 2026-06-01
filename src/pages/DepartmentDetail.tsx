@@ -14,6 +14,9 @@ import type { DepartmentDetailSection } from "@/data/departmentDetails";
 
 const pickDeptText = (lang: string, en: string, ar?: string) => (lang === "ar" && ar ? ar : en);
 
+const isAlSafwaDepartment = (slug: string, name: string) =>
+  slug.includes("al-safwa") || name.toLowerCase().includes("safwa");
+
 const DepartmentDoctors = ({ doctors, lang }: { doctors: typeof allDoctors; lang: string }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const autoSlideRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -169,6 +172,9 @@ const DepartmentDetail = () => {
   const [expandedSub, setExpandedSub] = useState<string | null>(subSlug || null);
 
   const dept = departmentDetails.find((d) => d.slug === slug);
+  const alSafwaDept = dept ? isAlSafwaDepartment(dept.slug, dept.name) : false;
+
+  const goToAlSafwaProgram = () => navigate("/al-safwa");
 
   if (!dept) {
     return (
@@ -373,7 +379,26 @@ const DepartmentDetail = () => {
       {/* Show image only for main department */}
       {!activeSub && (
         <section className="container mx-auto px-6 py-8 flex justify-center">
-          <div className="aspect-video w-full max-w-4xl bg-muted/30 rounded-2xl border border-border/50 flex items-center justify-center overflow-hidden">
+          <div
+            role={alSafwaDept ? "link" : undefined}
+            tabIndex={alSafwaDept ? 0 : undefined}
+            onClick={alSafwaDept ? goToAlSafwaProgram : undefined}
+            onKeyDown={
+              alSafwaDept
+                ? (e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      goToAlSafwaProgram();
+                    }
+                  }
+                : undefined
+            }
+            className={`aspect-video w-full max-w-4xl bg-muted/30 rounded-2xl border border-border/50 flex items-center justify-center overflow-hidden ${
+              alSafwaDept
+                ? "cursor-pointer hover:border-primary/40 hover:shadow-md transition-all"
+                : ""
+            }`}
+          >
             {deptImage ? (
               <img
                 src={deptImage}
@@ -408,7 +433,24 @@ const DepartmentDetail = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.05 }}
-                  className="bg-popover border border-border/50 rounded-2xl p-6 md:p-8"
+                  role={alSafwaDept ? "link" : undefined}
+                  tabIndex={alSafwaDept ? 0 : undefined}
+                  onClick={alSafwaDept ? goToAlSafwaProgram : undefined}
+                  onKeyDown={
+                    alSafwaDept
+                      ? (e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            goToAlSafwaProgram();
+                          }
+                        }
+                      : undefined
+                  }
+                  className={`bg-popover border border-border/50 rounded-2xl p-6 md:p-8 ${
+                    alSafwaDept
+                      ? "cursor-pointer hover:border-primary/40 hover:shadow-md transition-all"
+                      : ""
+                  }`}
                 >
                   <h3
                     className={`font-serif text-lg md:text-xl text-foreground mb-4 ${

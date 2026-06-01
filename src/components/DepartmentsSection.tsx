@@ -2,7 +2,7 @@ import { useState, useRef, useMemo } from "react";
 import { ChevronLeft, ChevronRight, ArrowRight, X, Stethoscope, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { departments as staticDepartments, type Department, MAIN_CATEGORIES } from "@/data/departments";
 import { doctors, type Doctor } from "@/data/doctors";
@@ -12,7 +12,10 @@ type DepartmentsSectionProps = {
   showPageTitle?: boolean;
 };
 
+const isAlSafwaDeptSlug = (slug: string) => slug.includes("al-safwa");
+
 const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) => {
+  const navigate = useNavigate();
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [selectedSubByDept, setSelectedSubByDept] = useState<Record<number, string>>({});
   const [departments] = useState<Department[]>(
@@ -245,7 +248,13 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         transition={{ duration: 0.4, delay: 0.05, ease: [0.25, 0.46, 0.45, 0.94] }}
                         className={`bg-popover rounded-2xl overflow-hidden border border-border/50 cursor-pointer group transition-all duration-500 ${isExpanded ? "sm:col-span-2 lg:col-span-3" : ""}`}
-                        onClick={() => !isExpanded && handleToggle(origIdx)}
+                        onClick={() => {
+                          if (!isExpanded && isAlSafwaDeptSlug(dept.slug)) {
+                            navigate("/al-safwa");
+                            return;
+                          }
+                          if (!isExpanded) handleToggle(origIdx);
+                        }}
                       >
                         {!isExpanded ? (
                           <>
@@ -278,7 +287,10 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                     {lang === "ar" ? dept.nameAr : dept.name}
                                   </h3>
                                   <p className="text-muted-foreground font-body text-sm leading-relaxed">{lang === "ar" ? dept.descAr : dept.desc}</p>
-                                  <Link to={`/medical-services/${dept.slug}`} className="inline-flex w-full justify-end items-center gap-1.5 text-primary font-body text-xs tracking-wide hover:text-accent transition-colors">
+                                  <Link
+                                    to={isAlSafwaDeptSlug(dept.slug) ? "/al-safwa" : `/medical-services/${dept.slug}`}
+                                    className="inline-flex w-full justify-end items-center gap-1.5 text-primary font-body text-xs tracking-wide hover:text-accent transition-colors"
+                                  >
                                     {t("Read More")} <ArrowRight className="w-3.5 h-3.5" />
                                   </Link>
                                 </div>

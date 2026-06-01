@@ -289,7 +289,7 @@ const translations: Translations = {
   everyStage: { en: "Every Stage,", ar: "في كل مرحلة." },
   everyAge: { en: "Every Age.", ar: "في كل عمر." },
   heroIntro: {
-    en: "",
+    en: "At life's most meaningful moments, healthcare should feel deeply human.",
     ar: "في أكثر لحظات الحياة عمقاً ومعنى، ينبغي للرعاية الصحية أن تكون إنسانية حقاً.",
   },
   heroDesc: {
@@ -562,6 +562,10 @@ const translations: Translations = {
     ar: "رجوع",
   },
   dontSeeInsurance: { en: "Don't see your insurance provider?", ar: "لا ترى شركة التأمين الخاصة بك؟" },
+  dontSeeInsurancePatients: {
+    en: "Don't see your insurance provider? please contact us at ",
+    ar: "لا ترى شركة التأمين الخاصة بك؟ يرجى التواصل معنا على ",
+  },
   contactUs: { en: "Contact us", ar: "اتصل بنا" },
   toVerifyCoverage: { en: "to verify your coverage.", ar: "للتحقق من تغطيتك." },
 

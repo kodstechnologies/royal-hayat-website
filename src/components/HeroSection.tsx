@@ -90,8 +90,7 @@ const HeroSection = () => {
       <div className="absolute inset-0 z-0 overflow-hidden">
         <video
           ref={videoRef}
-          // src="https://royal-hayat.s3.eu-central-1.amazonaws.com/static/RHH+VIDEO+(1).mp4"
-          // src="https://res.cloudinary.com/dwhc8kzpv/video/upload/v1777986296/RHH_SH_16_Website_1_h7dabt.mp4"
+         
           src="https://royal-hayat.s3.eu-central-1.amazonaws.com/static/RHH+SH+16+Website+(1).mp4"
           autoPlay
           loop
@@ -164,12 +163,14 @@ const HeroSection = () => {
                   <span className="max-lg:block md:inline">{t("everyAge")}</span>
                 </span>
               </motion.h1>
-              {isAr && t("heroIntro") ? (
+              {t("heroIntro") ? (
                 <motion.p
                   initial={{ opacity: 0, y: 14 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.2 }}
-                  className="text-[#A67C00] font-body text-sm md:text-base leading-relaxed mb-3 max-lg:mb-4 md:mb-5 max-w-xl text-start"
+                  className={`text-[#A67C00] font-body text-sm md:text-base leading-relaxed mb-3 max-lg:mb-4 md:mb-5 max-w-xl ${
+                    isAr ? "text-start" : "text-left"
+                  }`}
                   style={{ fontSize: "calc(0.875rem + 2px)" }}
                 >
                   {t("heroIntro")}

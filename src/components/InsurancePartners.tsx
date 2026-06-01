@@ -1,4 +1,5 @@
 import { CheckCircle } from "lucide-react";
+import { Link } from "react-router-dom";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { useLanguage } from "@/contexts/LanguageContext";
 import alAhleiaLogo from "@/assets/insurance/al-ahleia.png";
@@ -22,7 +23,12 @@ const partners = [
 // Double the list for seamless loop
 const marqueePartners = [...partners, ...partners];
 
-const InsurancePartners = () => {
+type InsurancePartnersProps = {
+  /** Footer copy on Patients & Visitors → Health Insurance tab */
+  variant?: "default" | "patients-insurance";
+};
+
+const InsurancePartners = ({ variant = "default" }: InsurancePartnersProps) => {
   const { lang, t } = useLanguage();
 
   return (
@@ -94,9 +100,29 @@ const InsurancePartners = () => {
 
       <div className="container mx-auto px-6">
         <p className="text-center !text-center text-muted-foreground font-body text-sm">
-          {t("dontSeeInsurance")}{" "}
-          <a href="#contact" className="text-primary underline hover:text-accent transition-colors">{t("contactUs")}</a>{" "}
-          {t("toVerifyCoverage")}
+          {variant === "patients-insurance" ? (
+            <>
+              {t("dontSeeInsurancePatients")}
+              <a
+                href="tel:+96525360453"
+                className="text-accent hover:underline font-semibold"
+              >
+                25360453
+              </a>
+              {lang === "en" ? "." : ""}
+            </>
+          ) : (
+            <>
+              {t("dontSeeInsurance")}{" "}
+              <Link
+                to="/patients-visitors?tab=insurance#insurance-operating-hours"
+                className="text-primary underline hover:text-accent transition-colors"
+              >
+                {t("contactUs")}
+              </Link>{" "}
+              {t("toVerifyCoverage")}
+            </>
+          )}
         </p>
       </div>
     </section>

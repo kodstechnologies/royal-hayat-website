@@ -316,13 +316,15 @@ const AboutUs = () => {
                         : t("aboutUs")}
               </h1>
               {showAll && (
-                <p
-                  className={`text-muted-foreground font-body text-sm md:text-base max-w-3xl mx-auto leading-relaxed text-justify ${
-                    lang === "ar" ? "rtl-text" : ""
-                  }`}
+                <div
+                  className="about-hero-intro max-w-3xl mx-auto"
+                  dir={lang === "ar" ? "rtl" : "ltr"}
+                  lang={lang === "ar" ? "ar" : "en"}
                 >
-                  {t("storyP1")}
-                </p>
+                  <p className="text-muted-foreground font-body text-sm md:text-base leading-relaxed">
+                    {t("storyP1")}
+                  </p>
+                </div>
               )}
             </ScrollAnimationWrapper>
           </div>
@@ -532,6 +534,22 @@ const AboutUs = () => {
         #leadership [dir="rtl"].text-justify {
           -webkit-hyphens: none;
           hyphens: none;
+        }
+        @media (max-width: 767px) {
+          .about-hero-intro p {
+            text-align: justify !important;
+            text-justify: inter-word;
+            -webkit-hyphens: auto;
+            hyphens: auto;
+            text-align-last: left;
+            word-break: normal;
+            overflow-wrap: normal;
+          }
+          .about-hero-intro[dir="rtl"] p {
+            text-align-last: right;
+            -webkit-hyphens: none;
+            hyphens: none;
+          }
         }
       `}</style>
 

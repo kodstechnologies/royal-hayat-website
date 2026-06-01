@@ -14,7 +14,7 @@ export interface ChatMessage {
   content: string;
 }
 
-export type ChatHelpStage = "topics" | "guided" | "need-help" | "whatsapp";
+export type ChatHelpStage = "topics" | "guided" | "whatsapp";
 
 interface ChatContextValue {
   isOpen: boolean;

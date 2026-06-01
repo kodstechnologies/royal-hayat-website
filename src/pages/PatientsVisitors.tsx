@@ -48,7 +48,7 @@ const PatientsVisitors = () => {
       {items.map((item, i) => (
         <li
           key={i}
-          className={`flex items-start gap-2 sm:gap-3 ${isAr ? "flex-row-reverse" : ""}`}
+          className="flex items-start gap-2 sm:gap-3"
         >
           <span className="font-medium shrink-0 tabular-nums leading-relaxed">
             {i + 1}.
@@ -268,12 +268,12 @@ const PatientsVisitors = () => {
                     </p>
                   </div>
                 </div>
-
-                <div className="mt-6 md:mt-10 w-screen max-w-[100vw] relative left-1/2 -translate-x-1/2 overflow-hidden">
-                  <InsurancePartners variant="patients-insurance" />
-                </div>
               </ScrollAnimationWrapper>
             </div>}
+
+            {show("insurance") && (
+              <InsurancePartners variant="patients-insurance" />
+            )}
 
             {/* BIRTHING SUITES PACKAGES */}
             {show("rooms-package") && <div id="section-rooms-package" className={tab === "rooms-package" ? "flex-1 flex flex-col" : sectionClass}>

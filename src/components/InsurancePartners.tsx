@@ -32,7 +32,14 @@ const InsurancePartners = ({ variant = "default" }: InsurancePartnersProps) => {
   const { lang, t } = useLanguage();
 
   return (
-    <section className="insurance-partners-section py-16 bg-background overflow-hidden" id="insurance">
+    <section
+      className={`insurance-partners-section py-16 bg-background overflow-hidden ${
+        variant === "patients-insurance"
+          ? "w-screen max-w-[100vw] [margin-inline:calc(50%-50vw)]"
+          : ""
+      }`}
+      id="insurance"
+    >
       <div className="container mx-auto px-6">
         <ScrollAnimationWrapper>
           <div className="insurance-partners-heading mb-10 flex w-full flex-col items-center justify-center text-center">
@@ -52,6 +59,7 @@ const InsurancePartners = ({ variant = "default" }: InsurancePartnersProps) => {
         </ScrollAnimationWrapper>
       </div>
 
+      <div className="insurance-marquee-ltr" dir="ltr">
       {/* Marquee ticker - row 1 */}
       <div className="relative w-full overflow-hidden mb-4">
         <div className="flex animate-marquee hover:[animation-play-state:paused]">
@@ -69,7 +77,7 @@ const InsurancePartners = ({ variant = "default" }: InsurancePartnersProps) => {
                   <span className="font-serif text-2xl text-foreground">{p.name.charAt(0)}</span>
                 </div>
               )}
-              <div>
+              <div dir={lang === "ar" ? "rtl" : "ltr"}>
                 <p className="font-body text-sm font-medium text-foreground whitespace-nowrap">{lang === "ar" ? p.nameAr : p.name}</p>
                 <span className="inline-flex items-center gap-1 text-xs text-accent font-body mt-1">
                   <CheckCircle className="w-3.5 h-3.5" />{t("verified")}
@@ -97,7 +105,7 @@ const InsurancePartners = ({ variant = "default" }: InsurancePartnersProps) => {
                   <span className="font-serif text-2xl text-foreground">{p.name.charAt(0)}</span>
                 </div>
               )}
-              <div>
+              <div dir={lang === "ar" ? "rtl" : "ltr"}>
                 <p className="font-body text-sm font-medium text-foreground whitespace-nowrap">{lang === "ar" ? p.nameAr : p.name}</p>
                 <span className="inline-flex items-center gap-1 text-xs text-accent font-body mt-1">
                   <CheckCircle className="w-3.5 h-3.5" />{t("verified")}
@@ -106,6 +114,7 @@ const InsurancePartners = ({ variant = "default" }: InsurancePartnersProps) => {
             </div>
           ))}
         </div>
+      </div>
       </div>
 
       <div className="container mx-auto px-6">

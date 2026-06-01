@@ -1,5 +1,8 @@
 import { useState } from "react";
+import axios from "axios";
+import { toast } from "sonner";
 import { useNavigate, useLocation } from "react-router-dom";
+import { createAlSafwaEnrollment } from "@/api/alSafwa";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -20,19 +23,50 @@ const EnrollmentModal = ({ isOpen, onClose, t, isAr, onSuccess }: { isOpen: bool
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
+
+    if (!formData.age.trim() || !formData.gender || !formData.notes.trim()) {
+      toast.error(
+        isAr
+          ? "يرجى تعبئة العمر والجنس والملاحظات."
+          : "Please fill in age, gender, and notes."
+      );
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      await createAlSafwaEnrollment(formData);
       setIsSuccess(true);
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        age: "",
+        gender: "",
+        notes: "",
+      });
       setTimeout(() => {
         setIsSuccess(false);
         onSuccess();
         onClose();
       }, 1500);
-    }, 1500);
+    } catch (error) {
+      const backendMessage =
+        axios.isAxiosError(error)
+          ? error.response?.data?.message || error.response?.data?.error || error.message
+          : null;
+
+      toast.error(
+        backendMessage ||
+          (isAr
+            ? "تعذر إرسال التسجيل. يرجى المحاولة مرة أخرى."
+            : "Failed to submit enrollment. Please try again.")
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -133,7 +167,9 @@ const EnrollmentModal = ({ isOpen, onClose, t, isAr, onSuccess }: { isOpen: bool
                         {isAr ? "العمر" : "Age"}
                       </label>
                       <input
+                        required
                         type="number"
+                        min={1}
                         className="w-full px-4 py-2.5 rounded-xl bg-primary/5 border border-primary/10 focus:border-primary/30 focus:bg-background focus:outline-none transition-all font-body text-sm"
                         placeholder={isAr ? "العمر" : "Age"}
                         value={formData.age}
@@ -145,6 +181,7 @@ const EnrollmentModal = ({ isOpen, onClose, t, isAr, onSuccess }: { isOpen: bool
                         {isAr ? "الجنس" : "Gender"}
                       </label>
                       <select
+                        required
                         className="w-full px-4 py-2.5 rounded-xl bg-primary/5 border border-primary/10 focus:border-primary/30 focus:bg-background focus:outline-none transition-all font-body text-sm appearance-none cursor-pointer"
                         value={formData.gender}
                         onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
@@ -162,6 +199,7 @@ const EnrollmentModal = ({ isOpen, onClose, t, isAr, onSuccess }: { isOpen: bool
                       {isAr ? "ملاحظات إضافية" : "Additional Notes"}
                     </label>
                     <textarea
+                      required
                       rows={2}
                       className="w-full px-4 py-2.5 rounded-xl bg-primary/5 border border-primary/10 focus:border-primary/30 focus:bg-background focus:outline-none transition-all font-body text-sm resize-none placeholder:text-muted-foreground/40"
                       placeholder={isAr ? "أي معلومات أو ملاحظات طبية..." : "Any medical information or notes..."}

@@ -11,6 +11,7 @@ import { ChevronRight, ChevronLeft, ArrowLeft, CheckCircle2, ChevronDown, Stetho
 import { useState, useRef, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import type { DepartmentDetailSection } from "@/data/departmentDetails";
+import { resolveDepartmentBySlug } from "@/utils/resolveDepartmentSlug";
 
 const pickDeptText = (lang: string, en: string, ar?: string) => (lang === "ar" && ar ? ar : en);
 

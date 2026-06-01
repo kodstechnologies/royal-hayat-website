@@ -609,6 +609,14 @@ const translations: Translations = {
   chatGuidedSteps: { en: "Quick steps", ar: "خطوات سريعة" },
   chatNeedHelp: { en: "Need help?", ar: "هل تحتاج مساعدة؟" },
   chatNeedMoreHelp: { en: "Need more help?", ar: "هل تحتاج مزيداً من المساعدة؟" },
+  chatAiHighTraffic: {
+    en: "Our AI assistant is experiencing high demand right now. Please **try again in a few minutes**, use the quick topic buttons below, or call **+965 2536 0000** for immediate assistance.",
+    ar: "مساعدنا الذكي يشهد ضغطاً عالياً حالياً. يرجى **المحاولة مرة أخرى بعد قليل**، أو استخدام الأزرار السريعة أدناه، أو الاتصال على **+965 2536 0000** للمساعدة الفورية.",
+  },
+  chatAiUnavailable: {
+    en: "The AI assistant is temporarily unavailable. Please try again shortly, use the topic buttons below, or call **+965 2536 0000**.",
+    ar: "المساعد الذكي غير متاح مؤقتاً. يرجى المحاولة لاحقاً أو استخدام الأزرار أدناه أو الاتصال على **+965 2536 0000**.",
+  },
   chatContinueWhatsApp: { en: "Continue on WhatsApp", ar: "المتابعة عبر واتساب" },
   chatTopicAppt: { en: "You can book an appointment online in a few minutes. Follow these steps:", ar: "يمكنك حجز موعد عبر الإنترنت خلال دقائق. اتبع الخطوات التالية:" },
   chatTopicSafwa: { en: "Learn about the Al Safwa elite healthcare program and how to enroll.", ar: "تعرّف على برنامج الصفوة للرعاية الصحية وكيفية التسجيل." },

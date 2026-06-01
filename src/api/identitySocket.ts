@@ -1,13 +1,14 @@
 import { io, type Socket } from "socket.io-client";
 import type { IdentityStatusResponse } from "./identity";
+import { getBackendApiBase } from "./backendBase";
 
 const getSocketBaseUrl = (): string => {
   if (import.meta.env.DEV) {
     return typeof window !== "undefined" ? window.location.origin : "";
   }
-  const raw = import.meta.env.VITE_BACKEND_API_URL;
-  const trimmed = typeof raw === "string" ? raw.trim() : "";
-  return trimmed !== "" ? trimmed.replace(/\/+$/, "") : "";
+  const base = getBackendApiBase();
+  if (base) return base;
+  return typeof window !== "undefined" ? window.location.origin : "";
 };
 
 export type IdentitySocketSubscription = {

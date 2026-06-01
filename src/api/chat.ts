@@ -1,4 +1,5 @@
 import api from "./axiosInstance";
+import { getBackendApiBase } from "./backendBase";
 
 export type ChatMessagePayload = {
   role: "user" | "assistant";
@@ -28,12 +29,6 @@ type StreamEvent =
   | { type: "chunk"; text: string }
   | { type: "done"; reply: string }
   | { type: "error"; message: string; code?: string };
-
-function getChatApiBase(): string {
-  const raw = import.meta.env.VITE_BACKEND_API_URL;
-  const trimmed = typeof raw === "string" ? raw.trim() : "";
-  return import.meta.env.DEV ? "" : trimmed !== "" ? trimmed.replace(/\/+$/, "") : "";
-}
 
 function parseSseEvents(buffer: string): { events: StreamEvent[]; rest: string } {
   const events: StreamEvent[] = [];
@@ -91,7 +86,7 @@ export async function postChatStream(
   onDelta: (text: string) => void,
   signal?: AbortSignal,
 ): Promise<string> {
-  const base = getChatApiBase();
+  const base = getBackendApiBase();
   const response = await fetch(`${base}/api/v1/chat/stream`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

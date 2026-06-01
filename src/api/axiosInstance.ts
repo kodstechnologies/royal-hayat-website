@@ -1,11 +1,7 @@
 import axios from "axios";
+import { getBackendApiBase } from "./backendBase";
 
-const raw = import.meta.env.VITE_BACKEND_API_URL;
-const trimmed = typeof raw === "string" ? raw.trim() : "";
-
-/** In dev, same-origin `/api` is proxied by Vite (avoids CORS when using the Network URL or any non-matching Origin). */
-const baseURL =
-  import.meta.env.DEV ? "" : trimmed !== "" ? trimmed.replace(/\/+$/, "") : "";
+const baseURL = getBackendApiBase();
 
 const api = axios.create({
   baseURL,

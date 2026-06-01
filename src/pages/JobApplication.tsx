@@ -8,9 +8,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Mail, Share2, ChevronRight, Loader2 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import { getAllJobs, getJobById, applyForJob, type JobPosting } from "@/api/job";
+import { localizeJobPosting } from "@/lib/jobLocale";
 
 // ── Static fallback positions (same as WorkWithUs) ────────────────────────────
 const staticPositions: JobPosting[] = [
@@ -31,9 +32,14 @@ const JobApplication = () => {
   const jobParam = searchParams.get("job") ?? "0";
   const isAr = lang === "ar";
 
-  const [job, setJob] = useState<JobPosting | null>(null);
+  const [jobRecord, setJobRecord] = useState<JobPosting | null>(null);
   const [jobLoading, setJobLoading] = useState(true);
   const [jobError, setJobError] = useState(false);
+
+  const displayJob = useMemo(
+    () => (jobRecord ? localizeJobPosting(jobRecord, isAr) : null),
+    [jobRecord, isAr],
+  );
 
   const [showForm, setShowForm] = useState(false);
   const [resumeFile, setResumeFile] = useState<File | null>(null);
@@ -57,26 +63,15 @@ const JobApplication = () => {
 
       if (isMongoId) {
         try {
-          const data = await getJobById(jobParam);
+          const data = (await getJobById(jobParam)) as JobPosting | null;
           if (data) {
-            setJob({
-              _id: data._id,
-              title: data.title,
-              category: data.department ?? data.category ?? "General",
-              location: data.location ?? "On-Site",
-              type: data.type ?? "Full-time",
-              description: data.description,
-              desc: data.description,
-              responsibilities: data.responsibilities ?? [],
-              requirements: data.requirements ?? [],
-              postedDate: data.postedDate,
-            });
+            setJobRecord(data);
             setJobLoading(false);
             return;
           }
         } catch {
           setJobError(true);
-          setJob(null);
+          setJobRecord(null);
           setJobLoading(false);
           return;
         }
@@ -87,18 +82,7 @@ const JobApplication = () => {
       try {
         const apiJobs = await getAllJobs({ isActive: true, limit: 100 });
         if (apiJobs.length > 0 && !isNaN(numericIndex) && apiJobs[numericIndex]) {
-          const j = apiJobs[numericIndex];
-          setJob({
-            _id: String(j._id ?? j.id ?? numericIndex),
-            title: j.title,
-            category: j.department ?? j.category ?? "General",
-            location: j.location ?? "On-Site",
-            type: j.type ?? "Full-time",
-            description: j.description ?? j.desc,
-            desc: j.description ?? j.desc,
-            responsibilities: j.responsibilities ?? [],
-            requirements: j.requirements ?? [],
-          });
+          setJobRecord(apiJobs[numericIndex]);
           setJobLoading(false);
           return;
         }
@@ -108,7 +92,7 @@ const JobApplication = () => {
 
       // Final fallback: static list by numeric index
       const idx = isNaN(numericIndex) ? 0 : Math.min(numericIndex, staticPositions.length - 1);
-      setJob(staticPositions[idx] ?? staticPositions[0]);
+      setJobRecord(staticPositions[idx] ?? staticPositions[0]);
       setJobLoading(false);
     };
 
@@ -118,7 +102,7 @@ const JobApplication = () => {
   // ── Submit ────────────────────────────────────────────────────────────────
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!job) return;
+    if (!jobRecord) return;
 
     const fullName = fullNameRef.current?.value.trim() ?? "";
     const email = emailRef.current?.value.trim() ?? "";
@@ -131,7 +115,7 @@ const JobApplication = () => {
     }
 
     // If we have a real MongoDB _id, call the API
-    const jobMongoId = job._id;
+    const jobMongoId = jobRecord._id;
     const isMongoId = jobMongoId && /^[0-9a-fA-F]{24}$/.test(String(jobMongoId));
 
     if (isMongoId) {
@@ -173,9 +157,9 @@ const JobApplication = () => {
   };
 
   const handleShare = () => {
-    if (!job) return;
+    if (!displayJob) return;
     if (navigator.share) {
-      navigator.share({ title: job?.title ?? "", url: window.location.href });
+      navigator.share({ title: displayJob.title, url: window.location.href });
     } else {
       void navigator.clipboard.writeText(window.location.href);
       toast({ title: isAr ? "تم نسخ الرابط" : "Link Copied" });
@@ -195,11 +179,15 @@ const JobApplication = () => {
     );
   }
 
-  const responsibilities = (job?.responsibilities ?? []) as string[];
-  const requirements = (job?.requirements ?? []) as string[];
-  const postedDate = job?.postedDate
-    ? new Date(job.postedDate).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
-    : (job?.date as string | undefined) ?? "";
+  const responsibilities = displayJob?.responsibilities ?? [];
+  const requirements = displayJob?.requirements ?? [];
+  const postedDate = displayJob?.postedDate
+    ? new Date(displayJob.postedDate).toLocaleDateString(isAr ? "ar-KW" : "en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })
+    : (jobRecord?.date as string | undefined) ?? "";
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
@@ -224,7 +212,7 @@ const JobApplication = () => {
             <span className="text-muted-foreground">{isAr ? "تقديم" : "Apply"}</span>
           </div>
 
-          {jobError || !job ? (
+          {jobError || !displayJob ? (
             <div className="rounded-2xl border border-destructive/30 bg-destructive/5 px-6 py-14 text-center max-w-xl mx-auto">
               <p className="font-serif text-lg text-foreground mb-2">
                 {isAr ? "تعذر تحميل تفاصيل الوظيفة" : "Could not load this job"}
@@ -240,11 +228,15 @@ const JobApplication = () => {
             <>
             <div className="grid lg:grid-cols-3 gap-10">
               {/* Left: Job Details */}
-              <div className="lg:col-span-2">
-                <h1 className="text-3xl md:text-4xl font-serif text-foreground mb-6 uppercase leading-tight">{job.title}</h1>
+              <div className="lg:col-span-2" dir={isAr ? "rtl" : "ltr"}>
+                <h1
+                  className={`text-3xl md:text-4xl font-serif text-foreground mb-6 leading-tight ${isAr ? "" : "uppercase"}`}
+                >
+                  {displayJob.title}
+                </h1>
 
                 <p className="font-body text-base text-muted-foreground leading-relaxed mb-8 text-justify">
-                  {job.desc ?? job.description}
+                  {displayJob.desc}
                 </p>
 
                 <Link
@@ -324,20 +316,20 @@ const JobApplication = () => {
                     <p className="font-body text-xs uppercase tracking-widest text-foreground font-semibold mb-1">
                       {isAr ? "الموقع" : "Location"}
                     </p>
-                    <p className="font-body text-sm text-muted-foreground">{job.location ?? "On-Site"}</p>
+                    <p className="font-body text-sm text-muted-foreground">{displayJob.location}</p>
                   </div>
                   <div>
                     <p className="font-body text-xs uppercase tracking-widest text-foreground font-semibold mb-1">
                       {isAr ? "نوع العمل" : "Work Type"}
                     </p>
-                    <p className="font-body text-sm text-muted-foreground">{job.type ?? "Full-time"}</p>
+                    <p className="font-body text-sm text-muted-foreground">{displayJob.type}</p>
                   </div>
                   <div>
                     <p className="font-body text-xs uppercase tracking-widest text-foreground font-semibold mb-1">
                       {isAr ? "التصنيف" : "Classification"}
                     </p>
                     <p className="font-body text-sm text-muted-foreground">
-                      {job.category ?? job.department ?? "General"}
+                      {displayJob.category}
                     </p>
                   </div>
                 </div>

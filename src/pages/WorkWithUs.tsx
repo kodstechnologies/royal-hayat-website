@@ -9,6 +9,7 @@ import VoicesFromOurPeople from "@/components/VoicesFromOurPeople.tsx";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getAllJobs, type JobPosting } from "@/api/job";
+import { localizeJobPosting, type LocalizedJob } from "@/lib/jobLocale";
 import { getAllWorkCulture, type WorkCultureItem } from "@/api/workCulture";
 import {
   getAllEmployeeRecognitions,
@@ -31,16 +32,6 @@ import {
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
-
-type Position = {
-  id: string;
-  _id: string;        // MongoDB _id — used for the apply link
-  title: string;
-  category: string;
-  location: string;
-  type: string;
-  desc: string;
-};
 
 type WorkWithUsProps = {
   staffActivitiesImages?: string[];
@@ -196,7 +187,7 @@ const WorkWithUs = ({
   const { lang } = useLanguage();
   const isAr = lang === "ar";
   const [activeCategory, setActiveCategory] = useState("View All");
-  const [positions, setPositions] = useState<Position[]>([]);
+  const [jobPostings, setJobPostings] = useState<JobPosting[]>([]);
   const [jobsLoading, setJobsLoading] = useState(true);
   const [jobsError, setJobsError] = useState(false);
   const [apiEmployees, setApiEmployees] = useState<Employee[]>([]);
@@ -294,36 +285,11 @@ const WorkWithUs = ({
       try {
         const jobs = await getAllJobs({ limit: 100, isActive: true });
         if (cancelled) return;
-        const mapped = jobs
-          .filter((job) => job.isActive !== false)
-          .map((job: JobPosting, index: number): Position | null => {
-            const title = job.title?.toString().trim();
-            if (!title) return null;
-            const categoryRaw =
-              job.department?.toString().trim() ||
-              job.category?.toString().trim() ||
-              "";
-            const descRaw =
-              job.description?.toString().trim() ||
-              job.desc?.toString().trim() ||
-              "";
-            const mongoId = String(job._id ?? job.id ?? index);
-            return {
-              id: mongoId,
-              _id: mongoId,
-              title,
-              category: categoryRaw || "General",
-              location: job.location?.toString().trim() || "On-site",
-              type: job.type?.toString().trim() || "Full-time",
-              desc: descRaw,
-            };
-          })
-          .filter((job): job is Position => job !== null);
-        setPositions(mapped);
+        setJobPostings(jobs.filter((job) => job.isActive !== false));
       } catch {
         if (!cancelled) {
           setJobsError(true);
-          setPositions([]);
+          setJobPostings([]);
         }
       } finally {
         if (!cancelled) setJobsLoading(false);
@@ -340,6 +306,14 @@ const WorkWithUs = ({
     const amount = direction === "left" ? -280 : 280;
     categoriesScrollRef.current.scrollBy({ left: amount, behavior: "smooth" });
   };
+
+  const positions = useMemo(
+    () =>
+      jobPostings
+        .map((job, index) => localizeJobPosting(job, isAr, index))
+        .filter((job): job is LocalizedJob => job !== null),
+    [jobPostings, isAr],
+  );
 
   const categories = [
     "View All",
@@ -798,7 +772,9 @@ const WorkWithUs = ({
                             : "bg-popover text-foreground border-border hover:border-primary/40"
                         }`}
                       >
-                        {cat.toUpperCase()}
+                        {isAr
+                          ? (categoryLabelAr[cat] ?? cat)
+                          : cat.toUpperCase()}
                       </button>
                     ))}
                   </div>
@@ -817,6 +793,7 @@ const WorkWithUs = ({
               {filtered.map((pos) => (
                   <motion.div
                     key={pos._id}
+                    dir={isAr ? "rtl" : "ltr"}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
@@ -840,6 +817,7 @@ const WorkWithUs = ({
                       <div className="flex flex-col items-end gap-3 flex-shrink-0">
                         <Link
                           to={`/job-application?job=${pos._id}`}
+                          dir={isAr ? "rtl" : "ltr"}
                           className="inline-flex items-center gap-1 text-accent font-body text-sm font-semibold hover:underline"
                         >
                           {isAr ? "تقدم الآن" : "Apply Now"}{" "}

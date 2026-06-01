@@ -5,15 +5,21 @@ export type JobPosting = {
   id?: string | number;
   jobId?: string;
   title: string;
+  arabicTitle?: string;
   /** Backend field used for grouping (maps to "category" in UI). */
   department?: string;
   category?: string;
+  classification?: string;
   location?: string;
+  arabicLocation?: string;
   type?: string;
   desc?: string;
   description?: string;
+  arabicDescription?: string;
   responsibilities?: string[];
+  arabicResponsibilities?: string[];
   requirements?: string[];
+  arabicRequirements?: string[];
   postedDate?: string;
   date?: string;
   isActive?: boolean;

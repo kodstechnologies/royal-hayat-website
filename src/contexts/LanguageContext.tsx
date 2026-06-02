@@ -473,7 +473,7 @@ const translations: Translations = {
   patientSatisfaction: { en: "Patient Satisfaction", ar: "رضا المرضى" },
 
   // Stats
-  yearsOfExcellence: { en: "/* Years of Excellence */", ar: "سنوات من التميز" },
+  yearsOfExcellence: { en: " Years of Excellence ", ar: "سنوات من التميز" },
   specialistDoctors: { en: "Healthcare Professionals", ar: "متخصصون في الرعاية الصحية" },
   departmentsLabel: { en: "Departments", ar: "الأقسام" },
 

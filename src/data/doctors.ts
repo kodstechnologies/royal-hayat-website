@@ -1526,7 +1526,7 @@ export const doctors: Doctor[] = [
     id: 'dr-husain-alqattan',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/hussain-alqattan.png',
 
-    name: 'Dr. Husain Alqattan', nameAr: 'د.هـيليــن الكـعبــي د. حسيــن القطــان',
+    name: 'Dr. Husain Alqattan', nameAr: ' القطان د. حسين',
     specialty: 'La Cosmetique', specialtyAr: 'التجميل',
     department: 'La Cosmetique', departmentAr: 'التجميل',
     providerCode: 'PT079',

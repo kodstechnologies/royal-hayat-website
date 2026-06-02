@@ -199,14 +199,17 @@ const WorkWithUs = ({
   const { lang } = useLanguage();
   const isAr = lang === "ar";
   const [activeCategory, setActiveCategory] = useState("View All");
-  const positions: Position[] = openPositions.map((p, index) => ({
-    id: String(index),
-    title: p.title,
-    category: p.category,
-    location: p.location,
-    type: p.type,
-    desc: p.desc,
-  }));
+  const [isIOSWebKit, setIsIOSWebKit] = useState(false);
+  const [positions, setPositions] = useState<Position[]>(() =>
+    openPositions.map((p, index) => ({
+      id: String(index),
+      title: p.title,
+      category: p.category,
+      location: p.location,
+      type: p.type,
+      desc: p.desc,
+    })),
+  );
   const [empIndex, setEmpIndex] = useState(0);
   const [isEmpPaused, setIsEmpPaused] = useState(false);
 
@@ -226,6 +229,18 @@ const WorkWithUs = ({
     img.src = next;
   }, [empIndex]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const ua = window.navigator.userAgent || "";
+    const platform = window.navigator.platform || "";
+    const maxTouchPoints = window.navigator.maxTouchPoints || 0;
+    const isIOSDevice =
+      /iPad|iPhone|iPod/.test(ua) ||
+      (platform === "MacIntel" && maxTouchPoints > 1);
+    const isWebKit = /WebKit/i.test(ua) && !/CriOS|FxiOS|OPiOS|EdgiOS/i.test(ua);
+    setIsIOSWebKit(isIOSDevice && isWebKit);
+  }, []);
+
   const categoriesScrollRef = useRef<HTMLDivElement | null>(null);
   const [searchParams] = useSearchParams();
   const section = searchParams.get("section");
@@ -244,7 +259,9 @@ const WorkWithUs = ({
           jobs.map((job: JobPosting) => ({
             id: String(job._id ?? job.id ?? ""),
             title: job.title,
-            category: job.classification ?? job.category ?? job.department ?? "",
+            category: String(
+              job.classification ?? job.category ?? job.department ?? "",
+            ),
             location: job.location ?? "",
             type: job.type ?? "",
             desc: job.description ?? job.desc ?? "",
@@ -487,11 +504,11 @@ const WorkWithUs = ({
               <AnimatePresence mode="wait">
                 <motion.div
                   key={empIndex}
-                  initial={{ opacity: 0, x: isAr ? -30 : 30 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: isAr ? 30 : -30 }}
+                  initial={isIOSWebKit ? false : { opacity: 0, x: isAr ? -30 : 30 }}
+                  animate={isIOSWebKit ? { opacity: 1 } : { opacity: 1, x: 0 }}
+                  exit={isIOSWebKit ? { opacity: 0 } : { opacity: 0, x: isAr ? 30 : -30 }}
                   transition={{ duration: 0.4 }}
-                  className="bg-popover border border-border/50 rounded-2xl overflow-hidden shadow-lg"
+                  className="ios-flicker-fix bg-popover border border-border/50 rounded-2xl overflow-hidden shadow-lg"
                 >
                   <div className="flex flex-col md:flex-row">
                     <div className="md:w-96 flex-shrink-0 bg-primary/5 p-6 flex items-center justify-center">
@@ -729,11 +746,11 @@ const WorkWithUs = ({
                 return (
                   <motion.div
                     key={pos.title}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
+                    initial={isIOSWebKit ? false : { opacity: 0, y: 20 }}
+                    whileInView={isIOSWebKit ? { opacity: 1 } : { opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.4 }}
-                    className="bg-popover border border-border/50 rounded-2xl p-6 md:p-8 hover:shadow-lg transition-shadow"
+                    className="ios-flicker-fix bg-popover border border-border/50 rounded-2xl p-6 md:p-8 hover:shadow-lg transition-shadow"
                   >
                     <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                       <div className="flex-1">
@@ -796,6 +813,14 @@ const WorkWithUs = ({
       )}
 
       <style>{`
+        #work-culture-page .ios-flicker-fix {
+          transform: translateZ(0);
+          -webkit-transform: translateZ(0);
+          backface-visibility: hidden;
+          -webkit-backface-visibility: hidden;
+          will-change: opacity;
+        }
+
         #work-culture-page .culture-narrative[dir="rtl"] {
           -webkit-hyphens: none;
           hyphens: none;

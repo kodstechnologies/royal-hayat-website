@@ -13,6 +13,8 @@ import {
   ADMISSION_HOW_INTRO_EN,
   ADMISSION_HOW_ITEMS_EN,
   INSURANCE_ASSISTANCE_EN,
+  INSURED_PATIENTS_EN,
+  PATIENT_RIGHTS_EN,
   PATIENT_RESPONSIBILITIES_EN,
   ROOM_SERVICE_HOUSEKEEPING_EN,
   ROOM_SERVICE_LOST_FOUND_EN,
@@ -499,14 +501,17 @@ const PatientsVisitors = () => {
                   </div>
                 </div>
 
-                <div className="bg-primary/5 rounded-2xl p-6">
+                <div
+                  className={`bg-primary/5 rounded-2xl p-6 ${!isAr ? "patients-justified-card" : ""}`}
+                  lang={isAr ? "ar" : "en"}
+                >
                   <h3 className="font-serif text-lg text-foreground mb-3">{lang === "ar" ? "للمرضى الذين لديهم تأمين" : "For Insured Patients"}</h3>
-                  <p className={mutedProse}>
+                  <p lang={isAr ? "ar" : "en"} className={isAr ? mutedProse : cardIntroProse}>
                     {lang === "ar"
                       ? "إذا كنتم مشمولين بتأمين صحي خاص، سيقوم قسم التأمين الطبي بمساعدتكم في الحصول على الموافقات المسبقة وتسهيل إجراءات الفوترة المباشرة."
-                      : "If you are covered by a private health insurance provider, our Medical Insurance Department will support you in securing pre-approval and facilitating direct billing."}
+                      : INSURED_PATIENTS_EN.intro}
                   </p>
-                  <p className={`${mutedProse} mt-2`}>
+                  <p lang={isAr ? "ar" : "en"} className={`${isAr ? mutedProse : cardIntroProse} mt-2`}>
                     {lang === "ar" ? (
                       <>
                         يرجى مراجعة{" "}
@@ -517,11 +522,11 @@ const PatientsVisitors = () => {
                       </>
                     ) : (
                       <>
-                        Be sure to review the{" "}
+                        {INSURED_PATIENTS_EN.detailPrefix}{" "}
                         <Link to="/patients-visitors?tab=insurance" className="text-accent hover:underline font-semibold">
                           Health Insurance section
                         </Link>{" "}
-                        for more detailed information and contact points.
+                        {INSURED_PATIENTS_EN.detailSuffix}
                       </>
                     )}
                   </p>
@@ -650,7 +655,10 @@ const PatientsVisitors = () => {
                   </p>
                 )}
 
-                <div className="bg-popover border border-border/50 rounded-2xl p-6 mb-6">
+                <div
+                  className={`bg-popover border border-border/50 rounded-2xl p-6 mb-6 ${!isAr ? "patients-justified-card" : ""}`}
+                  lang={isAr ? "ar" : "en"}
+                >
                   <h3 className="font-serif text-lg text-foreground mb-4 text-start">{lang === "ar" ? "أولاً: حقوق المريض" : "You have the right to:"}</h3>
                   {renderBillRightsList(lang === "ar" ? [
                       "معرفة جميع المعلومات المتعلقة بحالتك الصحية، ورعايتك، وأسباب جميع الفحوصات والإجراءات التشخيصية، وكذلك الرسوم المفروضة على حسابك، وذلك بلغة تفهمها.",
@@ -670,25 +678,7 @@ const PatientsVisitors = () => {
                       "معرفة إجراءات السلامة التي يتم اتخاذها بعد التقييم، بما في ذلك المخاطر السريرية والجسدية والنفسية مثل خطر السقوط، والأدوية، والتفاعلات الدوائية، والعدوى.",
                       "الإبلاغ عن أي نتائج سلبية غير متوقعة.",
                       "الموافقة أو رفض الموافقة على التصوير أو التسجيل المرئي.",
-                    ] : [
-                      'Know, in a language you understand, all information about your condition, your care, and the reasons for all investigations, diagnostic procedures, and the charges made to your account.',
-                      'Accept or refuse to sign a consent for any operative or diagnostic procedure.',
-                      'Receive compassionate and respectful care at all times regardless of age, gender, ethnicity, culture, national origin, language, sexual orientation, socioeconomic status, physical or mental ability, religion, or diagnosis.',
-                      'Have a comfortable stay in a clean, safe environment, free from verbal or physical abuse, and enjoy personal privacy.',
-                      'Be informed of the process to raise complaints appropriately, either verbally or in writing, to the Manager on Duty (Mob: 66321214) or Patient Advocate (Mob: 67051626).',
-                      'Privacy and confidentiality of information regarding your condition.',
-                      'Obtain any information or documents, such as Medical Report, Sick Leave, Discharge Summary, etc.',
-                      'Expect continuity of care till discharge and follow-up.',
-                      'Obtain a second opinion from a physician holding a valid license, whether working in Royale Hayat Hospital or any other medical facility, either private or public, provided that you meet the additional expenses, if any.',
-                      'Be referred to another healthcare organization if the medical condition warrants, and/or on the request of the patient/legal guardian.',
-                      'Leave the hospital even against the advice of the physician after signing the "Discharge Against Medical Advice (DAMA)" form.',
-                      'Know the names and professional titles of your caregivers and be called by your proper name.',
-                      'Receive well-explained information about charges that you may be responsible for, and any potential limitations to your insurance coverage.',
-                      'Involve you and your family or legal representative in your treatment, expected as well as unexpected outcomes, risk & service decisions.',
-                      'Know the safety measures to be taken after the assessment that include clinical, physical, and psychological status, i.e., risk of fall, medications, drug reaction, cross-infection, etc.',
-                      'Be informed about any unanticipated adverse outcomes.',
-                      'Give or refuse consent before filming or recording images.',
-                    ])}
+                    ] : PATIENT_RIGHTS_EN, !isAr)}
                 </div>
 
                 <div

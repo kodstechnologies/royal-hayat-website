@@ -92,6 +92,12 @@ export const INSURANCE_ASSISTANCE_EN = {
   ],
 };
 
+export const INSURED_PATIENTS_EN = {
+  intro: `If you are cov${SHY}ered by a${NBSP}pri${SHY}vate health in${SHY}sur${SHY}ance pro${SHY}vider, our Med${SHY}i${SHY}cal In${SHY}sur${SHY}ance De${SHY}part${SHY}ment will sup${SHY}port you in se${SHY}cur${SHY}ing pre-ap${SHY}prov${SHY}al and fa${SHY}cil${SHY}i${SHY}tat${SHY}ing di${SHY}rect bill${SHY}ing.`,
+  detailPrefix: hyphEn("Be sure to review the"),
+  detailSuffix: hyphEn("for more detailed information and contact points."),
+};
+
 export const ROOM_SERVICE_PRIVATE_DINING_EN = hyphEn(
   "Savor gourmet dishes from our extensive menu, featuring Continental, Mediterranean, Pan-Asian, and personalized cuisine—all prepared by our award-winning executive chefs."
 );
@@ -134,4 +140,50 @@ export const PATIENT_RESPONSIBILITIES_EN = [
   hyphEn(
     "Share the responsibility in maintaining the safety of the patient from any harm or injury, as explained by the service providers."
   ),
+];
+
+export const PATIENT_RIGHTS_EN = [
+  hyphEn(
+    "Know, in a language you understand, all information about your condition, your care, and the reasons for all investigations, diagnostic procedures, and the charges made to your account."
+  ),
+  hyphEn(
+    "Accept or refuse to sign a consent for any operative or diagnostic procedure."
+  ),
+  hyphEn(
+    "Receive compassionate and respectful care at all times regardless of age, gender, ethnicity, culture, national origin, language, sexual orientation, socioeconomic status, physical or mental ability, religion, or diagnosis."
+  ),
+  hyphEn(
+    "Have a comfortable stay in a clean, safe environment, free from verbal or physical abuse, and enjoy personal privacy."
+  ),
+  hyphEn(
+    "Be informed of the process to raise complaints appropriately, either verbally or in writing, to the Manager on Duty (Mob: 66321214) or Patient Advocate (Mob: 67051626)."
+  ),
+  hyphEn("Privacy and confidentiality of information regarding your condition."),
+  hyphEn(
+    "Obtain any information or documents, such as Medical Report, Sick Leave, Discharge Summary, etc."
+  ),
+  hyphEn("Expect continuity of care till discharge and follow-up."),
+  hyphEn(
+    "Obtain a second opinion from a physician holding a valid license, whether working in Royale Hayat Hospital or any other medical facility, either private or public, provided that you meet the additional expenses, if any."
+  ),
+  hyphEn(
+    "Be referred to another healthcare organization if the medical condition warrants, and/or on the request of the patient/legal guardian."
+  ),
+  hyphEn(
+    'Leave the hospital even against the advice of the physician after signing the "Discharge Against Medical Advice (DAMA)" form.'
+  ),
+  hyphEn(
+    "Know the names and professional titles of your caregivers and be called by your proper name."
+  ),
+  hyphEn(
+    "Receive well-explained information about charges that you may be responsible for, and any potential limitations to your insurance coverage."
+  ),
+  hyphEn(
+    "Involve you and your family or legal representative in your treatment, expected as well as unexpected outcomes, risk & service decisions."
+  ),
+  hyphEn(
+    "Know the safety measures to be taken after the assessment that include clinical, physical, and psychological status, i.e., risk of fall, medications, drug reaction, cross-infection, etc."
+  ),
+  hyphEn("Be informed about any unanticipated adverse outcomes."),
+  hyphEn("Give or refuse consent before filming or recording images."),
 ];

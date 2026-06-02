@@ -2461,7 +2461,7 @@ export const doctors: Doctor[] = [
     id: 'farah-hachem',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/farah2.png',
 
-    name: 'Farah Hachem', nameAr: 'Farah Hachem',
+    name: 'Farah Hachem', nameAr: 'فـرح هاشـم',
     specialty: 'Nutricare', specialtyAr: 'التغذية السريرية',
     department: 'Nutricare', departmentAr: 'التغذية السريرية',
     providerCode: 'E2395',
@@ -2502,7 +2502,7 @@ export const doctors: Doctor[] = [
     id: 'fatme-khreis',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/fatme-khreis.png',
 
-    name: 'Fatme Khreis', nameAr: 'Fatme Khreis',
+    name: 'Fatme Khreis', nameAr: 'فاطمــة خريــس',
     specialty: 'Nutricare', specialtyAr: 'التغذية السريرية',
     department: 'Nutricare', departmentAr: 'التغذية السريرية',
     providerCode: '6015',
@@ -2541,7 +2541,7 @@ export const doctors: Doctor[] = [
     id: 'heba-ben-salamah',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/heba1.png',
 
-    name: 'Heba Ben Salamah', nameAr: 'Heba Ben Salamah',
+    name: 'Heba Ben Salamah', nameAr: 'هبه بن سلامة',
     specialty: 'Nutricare', specialtyAr: 'التغذية السريرية',
     department: 'Nutricare', departmentAr: 'التغذية السريرية',
     providerCode: 'E2728',

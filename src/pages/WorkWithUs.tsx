@@ -433,7 +433,7 @@ const WorkWithUs = ({
 
   const cultureNarrativeClass = isAr
     ? "culture-narrative space-y-5 font-body text-foreground leading-relaxed text-justify [text-align-last:right]"
-    : "culture-narrative space-y-5 font-body text-foreground leading-relaxed text-justify hyphens-auto break-words [text-align-last:left] [&_p]:hyphens-auto [&_p]:break-words";
+    : "culture-narrative space-y-5 font-body text-foreground leading-relaxed text-justify hyphens-auto [text-align-last:left] [&_p]:hyphens-auto";
 
   return (
     <div
@@ -513,17 +513,17 @@ const WorkWithUs = ({
                 <p>
                   {isAr
                     ? "نعد بتوفير بيئة عمل يشعر فيها كل موظف بالاحترام، الثقة، والدعم، حيث لا تُقاس قيمة الإنسان بالمسمى الوظيفي، بل بما يقدمه من احترافية، نزاهة، وإسهام حقيقي."
-                    : "We promise a workplace where employees are respected, trusted, and supported not defined by titles, but valued for their professionalism, integrity, and contribution."}
+                    : "We promise a work\u00ADplace where em\u00ADploy\u00ADees are re\u00ADspect\u00ADed, trust\u00ADed, and sup\u00ADport\u00ADed not de\u00ADfined by ti\u00ADtles, but val\u00ADued for their pro\u00ADfes\u00ADsion\u00ADal\u00ADism, in\u00ADteg\u00ADri\u00ADty, and con\u00ADtri\u00ADbu\u00ADtion."}
                 </p>
                 <p>
                   {isAr
                     ? "نستثمر بوعي في التطوير والتعلم المستمر، من خلال البرامج التدريبية، والتعرّف على المعايير العالمية، والتعاون بين التخصصات، وتوفير الفرص التي تساعد موظفينا على النمو بثقة وتميّز."
-                    : "We invest deliberately in learning and development, through continuous training, exposure to international standards, collaboration across disciplines, and opportunities to grow with confidence."}
+                    : "We in\u00ADvest de\u00ADlib\u00ADer\u00ADate\u00ADly in learn\u00ADing and de\u00ADvel\u00ADop\u00ADment, through con\u00ADtin\u00ADu\u00ADous train\u00ADing, ex\u00ADpo\u00ADsure to in\u00ADter\u00ADna\u00ADtion\u00ADal stan\u00ADdards, col\u00ADlab\u00ADo\u00ADra\u00ADtion across dis\u00ADci\u00ADplines, and op\u00ADpor\u00ADtu\u00ADni\u00ADties to grow with con\u00ADfi\u00ADdence."}
                 </p>
                 <p>
                   {isAr
                     ? "فنحن نؤمن بأن التميّز يُبنى بالتعلم، ويستمر بالثقة. ووعدنا بسيط: سندعم تطوركم، ونقدّر جهودكم، ونرافقكم في بناء مسيرة مهنية تفتخرون بها."
-                    : "We believe excellence is built through learning—and sustained through trust. Our promise is simple: we will help you grow, we will recognize your effort, and we will walk with you as you build a career you can be proud of."}
+                    : "We be\u00ADlieve ex\u00ADcel\u00ADlence is built through learn\u00ADing-and sus\u00ADtained through trust. Our prom\u00ADise is sim\u00ADple: we will help you grow, we will rec\u00ADog\u00ADnize your ef\u00ADfort, and we will walk with you as you build a ca\u00ADreer you can be proud of."}
                 </p>
               </div>
             </ScrollAnimationWrapper>
@@ -934,7 +934,19 @@ const WorkWithUs = ({
           hyphens: auto;
           text-wrap: pretty;
           word-break: normal;
-          overflow-wrap: break-word;
+          overflow-wrap: normal;
+          hyphenate-character: "-";
+          word-spacing: normal;
+        }
+        @media (max-width: 767px) {
+          #work-culture-page .culture-narrative[dir="ltr"] p {
+            text-align: justify;
+            text-justify: inter-word;
+            text-align-last: start;
+            -webkit-hyphens: auto;
+            hyphens: auto;
+            word-spacing: normal;
+          }
         }
       `}</style>
 

@@ -126,17 +126,19 @@ const Footer = () => {
                 <Clock className="w-4 h-4 text-accent flex-shrink-0" />
                 <p className="text-accent text-xs tracking-wider uppercase">{t("emergencyServices247")}</p>
               </div>
+              <div className="border-t border-secondary/10 pt-3 mt-1">
+                {[{ key: "privacyPolicy" }].map((l) => (
+                  <a key={l.key} href="#" className="text-primary-foreground/50 font-body text-xs hover:text-accent transition-colors">
+                    {t(l.key)}
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="border-t border-secondary/10 pt-5 pb-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-primary-foreground/50 font-body text-xs">{t("allRightsReserved")}</p>
-          <div className="flex items-center gap-6">
-            {[{ key: "privacyPolicy" }].map((l) => (
-              <a key={l.key} href="#" className="text-primary-foreground/50 font-body text-xs hover:text-accent transition-colors">{t(l.key)}</a>
-            ))}
-          </div>
+        <div className="border-t border-secondary/10 pt-5 pb-6 flex flex-col md:flex-row items-center justify-between gap-3">
+          <p className="text-primary-foreground/50 font-body text-xs text-center md:text-left">{t("allRightsReserved")}</p>
         </div>
       </div>  
     </footer>

@@ -32,7 +32,12 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-y-10 gap-x-12 mb-10">
           <div className="space-y-5 flex flex-col items-center text-center">
             <img src={logo} alt="Royale Hayat Hospital" className="h-20 w-auto brightness-0 invert opacity-90" />
-            <p className="text-primary-foreground/70 font-body text-sm leading-relaxed">{t("footerDesc")}</p>
+            <p
+              className="text-primary-foreground/70 font-body text-sm leading-relaxed !text-center tracking-normal"
+              style={{ wordSpacing: "normal", textAlign: "center" }}
+            >
+              {t("footerDesc")}
+            </p>
             <div className="flex items-center gap-3">
               {[
                 { key: "instagram", icon: Instagram, href: "#", type: "outline" },
@@ -104,7 +109,9 @@ const Footer = () => {
                 <Phone className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
                 <div>
                   <p className="text-primary-foreground font-medium">{t("hotline247")}</p>
-                  <p className="text-primary-foreground/70">+965 2536 0000</p>
+                  <p className="text-primary-foreground/70">
+                    <span className="inline-block [direction:ltr] [unicode-bidi:isolate]">+965 2536 0000</span>
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -119,17 +126,19 @@ const Footer = () => {
                 <Clock className="w-4 h-4 text-accent flex-shrink-0" />
                 <p className="text-accent text-xs tracking-wider uppercase">{t("emergencyServices247")}</p>
               </div>
+              <div className="border-t border-secondary/10 pt-3 mt-1">
+                {[{ key: "privacyPolicy" }].map((l) => (
+                  <a key={l.key} href="#" className="text-primary-foreground/50 font-body text-xs hover:text-accent transition-colors">
+                    {t(l.key)}
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="border-t border-secondary/10 pt-5 pb-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-primary-foreground/50 font-body text-xs">{t("allRightsReserved")}</p>
-          <div className="flex items-center gap-6">
-            {[{ key: "privacyPolicy" }].map((l) => (
-              <a key={l.key} href="#" className="text-primary-foreground/50 font-body text-xs hover:text-accent transition-colors">{t(l.key)}</a>
-            ))}
-          </div>
+        <div className="border-t border-secondary/10 pt-5 pb-6 flex flex-col md:flex-row items-center justify-between gap-3">
+          <p className="text-primary-foreground/50 font-body text-xs text-center md:text-left">{t("allRightsReserved")}</p>
         </div>
       </div>  
     </footer>

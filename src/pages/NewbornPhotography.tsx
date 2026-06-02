@@ -8,13 +8,14 @@ import { useState, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const babyImages = [
-  "/images/baby/baby1.jpg",
-  "/images/baby/baby2.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/baby-images/WhatsApp+Image+2026-05-12+at+2.39.52+PM+(1).jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/baby-images/WhatsApp+Image+2026-05-12+at+2.39.52+PM.jpeg",
 ];
 
 const NewbornPhotography = () => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
+  const ltrPhoneClass = "inline-block [direction:ltr] [unicode-bidi:isolate]";
   const [slide, setSlide] = useState(0);
   const [lightbox, setLightbox] = useState<string | null>(null);
 
@@ -129,7 +130,7 @@ const NewbornPhotography = () => {
                   <Phone className="w-4 h-4 text-accent" />
                   <p className="font-body text-sm text-foreground">
                     {isAr ? "للاستفسارات والمواعيد، اتصل:" : "For inquiries and appointments, please contact:"}{" "}
-                    <a href="tel:25360960" className="text-accent hover:underline font-semibold">2536 0960</a>
+                    <a href="tel:25360960" className={`text-accent hover:underline font-semibold ${ltrPhoneClass}`}>2536 0960</a>
                   </p>
                 </div>
               </div>

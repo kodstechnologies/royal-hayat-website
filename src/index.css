@@ -292,6 +292,12 @@ article p,
   -ms-hyphens: auto;
 }
 
+.patients-prose-root .patients-card-prose-intro,
+.patients-prose-root .patients-card-prose-list {
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+}
+
 h1, h2, h3, h4, h5, h6, button, a, label, span, .text-center p {
   text-align: inherit;
 }

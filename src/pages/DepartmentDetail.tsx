@@ -8,7 +8,7 @@ import { departments as staticDepartments } from "@/data/departments";
 import { doctors as allDoctors } from "@/data/doctors";
 import { motion } from "framer-motion";
 import { ChevronRight, ChevronLeft, ArrowLeft, CheckCircle2, ChevronDown, Stethoscope, MessageCircle, Phone } from "lucide-react";
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import type { DepartmentDetailSection } from "@/data/departmentDetails";
 import { resolveDepartmentBySlug } from "@/utils/resolveDepartmentSlug";
@@ -171,18 +171,6 @@ const DepartmentDetail = () => {
   const { lang, t } = useLanguage();
   const isAr = lang === "ar";
   const [expandedSub, setExpandedSub] = useState<string | null>(subSlug || null);
-  /** Accordion: only keys with `true` are expanded (explicit open). */
-  const [apiSubAccordionOpen, setApiSubAccordionOpen] = useState<Record<string, boolean>>({});
-  const [apiLoading, setApiLoading] = useState(true);
-  const [apiDepartment, setApiDepartment] = useState<Record<string, unknown> | null>(null);
-  const [apiDoctors, setApiDoctors] = useState<Doctor[]>([]);
-
-  const slugify = (value: string) =>
-    value
-      .toLowerCase()
-      .replace(/&/g, "and")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "");
 
   const dept = departmentDetails.find((d) => d.slug === slug);
   const alSafwaDept = dept ? isAlSafwaDepartment(dept.slug, dept.name) : false;
@@ -326,7 +314,7 @@ const DepartmentDetail = () => {
               {t("medicalServices")}
             </Link>
             <ChevronRight className="w-3 h-3" />
-            {activeSub && dept ? (
+            {activeSub ? (
               <>
                 <Link to={`/medical-services/${dept.slug}`} className="hover:text-accent transition-colors">
                   {pickDeptText(lang, dept.name, dept.nameAr)}
@@ -336,16 +324,8 @@ const DepartmentDetail = () => {
                   {pickDeptText(lang, activeSub.name, activeSub.nameAr)}
                 </span>
               </>
-            ) : matchedApiSubName && slug ? (
-              <>
-                <Link to={`/medical-services/${slug}`} className="hover:text-accent transition-colors">
-                  {apiDeptName || "Department"}
-                </Link>
-                <ChevronRight className="w-3 h-3" />
-                <span className="text-foreground font-medium">{matchedApiSubName}</span>
-              </>
             ) : (
-              <span className="text-foreground font-medium">{apiDeptName || "Department"}</span>
+              <span className="text-foreground font-bold">{pickDeptText(lang, dept.name, dept.nameAr)}</span>
             )}
           </nav>
         </div>
@@ -365,7 +345,7 @@ const DepartmentDetail = () => {
                   {lang === "ar" ? "العودة إلى حجز الموعد" : "Back to Book Appointment"}
                 </button>
               )}
-              {activeSub && dept && (
+              {activeSub && (
                 <button
                   onClick={() => navigate(`/medical-services/${dept.slug}`)}
                   className="inline-flex items-center gap-2 text-accent font-body text-xs tracking-wide mb-4 hover:underline"
@@ -375,125 +355,26 @@ const DepartmentDetail = () => {
                 </button>
               )}
               <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">
-                {activeSub && dept ? dept.name : "Medical Services"}
+                {activeSub ? pickDeptText(lang, dept.name, dept.nameAr) : t("medicalServices")}
               </p>
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-serif text-foreground mb-4">{apiDeptName}</h1>
-              <p className="font-body text-sm md:text-base text-muted-foreground leading-relaxed max-w-3xl whitespace-pre-line">
-                {apiDeptDescription}
+              <h1
+                className={`text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-foreground mb-4 ${
+                  isAr ? "dept-detail-rtl" : ""
+                }`}
+              >
+                {pickDeptText(lang, displayDept.name, displayDept.nameAr)}
+              </h1>
+              <p
+                className={`font-body text-sm md:text-base text-muted-foreground leading-relaxed max-w-3xl whitespace-pre-line text-justify ${
+                  isAr ? "dept-detail-rtl" : ""
+                }`}
+              >
+                {pickDeptText(lang, displayDept.intro, displayDept.introAr)}
               </p>
-              {apiDeptContentBlocks.length > 0 ? (
-                <div className="mt-6 space-y-5 max-w-3xl">
-                  {apiDeptContentBlocks.map((block, bi) => (
-                    <div key={`dept-block-${bi}`}>
-                      {block.subHeading?.trim() ? (
-                        <p className="text-accent text-[10px] tracking-[0.2em] uppercase font-body mb-2">
-                          {block.subHeading.trim()}
-                        </p>
-                      ) : null}
-                      {block.explanations.length > 0 ? (
-                        <ul className="list-disc ps-5 space-y-1.5 font-body text-sm text-foreground/90">
-                          {block.explanations.map((line, li) => (
-                            <li key={`dept-block-${bi}-ex-${li}`}>{line}</li>
-                          ))}
-                        </ul>
-                      ) : null}
-                    </div>
-                  ))}
-                </div>
-              ) : null}
             </div>
           </ScrollAnimationWrapper>
         </div>
       </section>
-
-      {apiSubspecialitiesList.length > 0 && (
-        <section className="py-12 bg-secondary/10">
-          <div className="container mx-auto px-6">
-            <ScrollAnimationWrapper>
-              <div className="text-center mb-8">
-                <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">
-                  {lang === "ar" ? "استكشاف" : "Explore"}
-                </p>
-                <h2 className="text-2xl md:text-3xl font-serif text-foreground">
-                  {apiSubspecialitiesList.length > 1
-                    ? lang === "ar"
-                      ? "التخصصات الفرعية"
-                      : "Sub-Specialties"
-                    : lang === "ar"
-                      ? "التخصص الفرعي"
-                      : "Sub-Specialty"}
-                </h2>
-              </div>
-            </ScrollAnimationWrapper>
-            <div className="max-w-4xl mx-auto space-y-3">
-              {apiSubspecialitiesList.map((sub, i) => {
-                const key = apiSubKey(sub, i);
-                const name = String(sub.name ?? "");
-                const description = String(sub.description ?? "");
-                const customBlocks = apiCustomBlocksFromSub(sub);
-                const open = isApiSubOpen(key);
-                return (
-                  <div
-                    key={key}
-                    className="bg-popover border border-border/50 rounded-xl overflow-hidden"
-                  >
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setApiSubAccordionOpen((prev) => ({
-                          ...prev,
-                          [key]: !(prev[key] === true),
-                        }))
-                      }
-                      className="w-full flex items-center justify-between px-6 py-4 hover:bg-muted/30 transition-colors"
-                    >
-                      <span className="font-serif text-base text-foreground">{name}</span>
-                      <ChevronDown
-                        className={`w-5 h-5 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
-                      />
-                    </button>
-                    {open && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        className="px-6 pb-5 border-t border-border/30"
-                      >
-                        {description ? (
-                          <p className="font-body text-sm text-muted-foreground leading-relaxed mt-4 whitespace-pre-line">
-                            {description}
-                          </p>
-                        ) : !customBlocks.length ? (
-                          <p className="font-body text-sm text-muted-foreground leading-relaxed mt-4">
-                            {lang === "ar"
-                              ? "لا يوجد وصف متاح لهذا التخصص الفرعي."
-                              : "No description is available for this subspeciality."}
-                          </p>
-                        ) : null}
-                        {customBlocks.map((block, bi) => (
-                          <div key={`cb-${key}-${bi}`} className="mt-4 space-y-2">
-                            {block.subHeading ? (
-                              <p className="text-accent text-[10px] tracking-[0.2em] uppercase font-body">
-                                {block.subHeading}
-                              </p>
-                            ) : null}
-                            {block.explanations.length > 0 ? (
-                              <ul className="list-disc ps-4 space-y-1.5 font-body text-sm text-foreground/90">
-                                {block.explanations.map((line, li) => (
-                                  <li key={`${bi}-ex-${li}`}>{line}</li>
-                                ))}
-                              </ul>
-                            ) : null}
-                          </div>
-                        ))}
-                      </motion.div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* Image/Video Placeholder */}
       {/* Show image only for main department */}
@@ -535,11 +416,18 @@ const DepartmentDetail = () => {
       )}
 
       {/* Content Sections */}
-      {displayDept && (
-        <section className="py-8 md:py-12">
-          <div className="container mx-auto px-6">
-            <div className="max-w-4xl mx-auto space-y-8">
-              {displayDept.sections.map((section, i) => (
+      <section className="py-8 md:py-12">
+        <div className="container mx-auto px-6">
+          <div className="max-w-4xl mx-auto space-y-8">
+            {displayDept.sections.map((section: DepartmentDetailSection, i) => {
+              const sectionTitle = pickDeptText(lang, section.title, section.titleAr);
+              const sectionContent = section.content
+                ? pickDeptText(lang, section.content, section.contentAr)
+                : undefined;
+              const sectionItems =
+                lang === "ar" && section.itemsAr?.length ? section.itemsAr : section.items;
+
+              return (
                 <motion.div
                   key={i}
                   initial={{ opacity: 0, y: 15 }}
@@ -581,28 +469,34 @@ const DepartmentDetail = () => {
                       {sectionContent}
                     </p>
                   )}
-                  {section.items && (
+                  {sectionItems && (
                     <div className="space-y-2.5">
-                      {section.items.map((item, j) => (
-                        <div key={j} className="flex items-start gap-3">
+                      {sectionItems.map((item, j) => (
+                        <div key={j} className={`flex items-start gap-3 ${isAr ? "dept-detail-rtl" : ""}`}>
                           <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
-                          <span className="font-body text-sm text-foreground leading-relaxed">{item}</span>
+                          <span className="font-body text-sm text-foreground leading-relaxed text-justify">
+                            {item}
+                          </span>
                         </div>
                       ))}
                     </div>
                   )}
                   {section.subsections?.map((sub, k) => (
-                    <div key={k} className="mt-6 pl-4 border-l-2 border-accent/20">
-                      <h4 className="font-serif text-base text-foreground mb-3">{sub.title}</h4>
+                    <div key={k} className={`mt-6 pl-4 border-l-2 border-accent/20 ${isAr ? "dept-detail-rtl" : ""}`}>
+                      <h4 className="font-serif text-base text-foreground mb-3">
+                        {pickDeptText(lang, sub.title, sub.titleAr)}
+                      </h4>
                       {sub.content && (
-                        <p className="font-body text-sm text-muted-foreground leading-relaxed mb-3">{sub.content}</p>
+                        <p className="font-body text-sm text-muted-foreground leading-relaxed mb-3 text-justify">
+                          {pickDeptText(lang, sub.content, sub.contentAr)}
+                        </p>
                       )}
-                      {sub.items && (
+                      {(lang === "ar" && sub.itemsAr?.length ? sub.itemsAr : sub.items) && (
                         <div className="space-y-2">
-                          {sub.items.map((item, l) => (
+                          {(lang === "ar" && sub.itemsAr?.length ? sub.itemsAr : sub.items)!.map((item, l) => (
                             <div key={l} className="flex items-start gap-3">
                               <CheckCircle2 className="w-3.5 h-3.5 text-primary flex-shrink-0 mt-0.5" />
-                              <span className="font-body text-sm text-foreground">{item}</span>
+                              <span className="font-body text-sm text-foreground text-justify">{item}</span>
                             </div>
                           ))}
                         </div>
@@ -610,11 +504,11 @@ const DepartmentDetail = () => {
                     </div>
                   ))}
                 </motion.div>
-              ))}
-            </div>
+              );
+            })}
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
       {/* Image/Video Placeholder 2 */}
       {/* {displayDept.sections.length > 2 && (
@@ -626,7 +520,7 @@ const DepartmentDetail = () => {
       )} */}
 
       {/* Sub-Departments */}
-      {!activeSub && dept && dept.subDepartments && dept.subDepartments.length > 0 && (
+      {!activeSub && dept.subDepartments && dept.subDepartments.length > 0 && (
         <section className="py-12 bg-secondary/10">
           <div className="container mx-auto px-6">
             <ScrollAnimationWrapper>
@@ -718,7 +612,7 @@ const DepartmentDetail = () => {
       )}
 
       {/* Home Health contact card */}
-      {dept && dept.slug === "home-health" && !activeSub && (
+      {dept.slug === "home-health" && !activeSub && (
         <section className="pb-12">
           <div className="container mx-auto px-6">
             <div className="max-w-2xl mx-auto">

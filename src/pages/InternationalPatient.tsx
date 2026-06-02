@@ -6,10 +6,10 @@ import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useState } from "react";
 import axios from "axios";
-import axios from "axios";
+// import axios from "axios";
 import { toast } from "sonner";
 import { createInternationalPatientEnquiry } from "@/api/internationalPatient";
-import { createInternationalPatientEnquiry } from "@/api/internationalPatient";
+// import { createInternationalPatientEnquiry } from "@/api/internationalPatient";
 
 const InternationalPatient = () => {
   const { lang } = useLanguage();

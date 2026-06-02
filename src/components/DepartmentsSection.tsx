@@ -1,7 +1,7 @@
-import { useState, useRef, useMemo, useEffect, useCallback } from "react";
+import { useState, useRef, useMemo } from "react";
 import { ChevronLeft, ChevronRight, ArrowRight, X, Stethoscope, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { motion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { departments as staticDepartments, type Department, MAIN_CATEGORIES } from "@/data/departments";
@@ -12,8 +12,6 @@ import type {
   MedicalCategoryGroup,
 } from "@/utils/mapMedicalCatalogFromApi";
 import { getSubSlugForDepartment } from "@/utils/departmentSubSlug";
-import { Skeleton } from "@/components/ui/skeleton";
-import { getDoctorsBySubspeciality, mapApiDoctorRowToDoctor } from "@/api/doctors";
 
 export type FetchDoctorsBySubspecialityFn = (
   subspecialityId: string,
@@ -45,8 +43,8 @@ const isAlSafwaDeptSlug = (slug: string) => slug.includes("al-safwa");
 
 const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) => {
   const navigate = useNavigate();
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
-  const [selectedSubByDept, setSelectedSubByDept] = useState<Record<number, string>>({});
+  const [openSlug, setOpenSlug] = useState<string | null>(null);
+  const [selectedSubByDept, setSelectedSubByDept] = useState<Record<string, string>>({});
   const [departments] = useState<Department[]>(
     staticDepartments.filter((dept) => dept.name !== "Allergy & Immunology")
   );
@@ -105,12 +103,6 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
   );
   const deptDoctors = useMemo(() => {
     if (!selectedDept) return [];
-    const apiDoctors = subDoctorsByDept[selectedDept.slug];
-    if (apiDoctors !== undefined) {
-      return [...apiDoctors].sort((a, b) =>
-        (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en"),
-      );
-    }
     const selectedSubSlug = selectedSubByDept[selectedDept.slug];
 
     // Explicit sub-specialty → doctor name keywords map for reliable filtering
@@ -192,7 +184,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
     return [...baseDoctors].sort((a, b) =>
       (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en"),
     );
-  }, [deptDoctorsMap, selectedDept, selectedSubByDept, subDoctorsByDept, lang]);
+  }, [deptDoctorsMap, selectedDept, selectedSubByDept, lang]);
 
   return (
     <section className="py-16 md:py-24 bg-background" ref={sectionRef} id="departments">
@@ -261,7 +253,6 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                   {catDepts.map((dept) => {
                     const isExpanded = openSlug === dept.slug;
                     const selectedSubSlug = selectedSubByDept[dept.slug];
-                    const subDoctorsLoading = Boolean(subDoctorsLoadingByDept[dept.slug]);
 
                     return (
                       <motion.div
@@ -276,7 +267,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                             navigate("/al-safwa");
                             return;
                           }
-                          if (!isExpanded) handleToggle(origIdx);
+                          if (!isExpanded) handleToggle(dept.slug);
                         }}
                       >
                         {!isExpanded ? (
@@ -334,18 +325,11 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                               const isAlreadySelected = selectedSubSlug === subSlug;
                                               if (isAlreadySelected) {
                                                 setSelectedSubByDept((prev) => ({ ...prev, [dept.slug]: "" }));
-                                                setSubDoctorsByDept((p) => {
-                                                  const next = { ...p };
-                                                  delete next[dept.slug];
-                                                  return next;
-                                                });
-                                                setSubDoctorsLoadingByDept((p) => {
-                                                  const next = { ...p };
-                                                  delete next[dept.slug];
-                                                  return next;
-                                                });
                                               } else {
-                                                selectSubspecialityPill(dept, sub);
+                                                setSelectedSubByDept((prev) => ({
+                                                  ...prev,
+                                                  [dept.slug]: subSlug,
+                                                }));
                                               }
                                               if (doctorScrollRef.current) doctorScrollRef.current.scrollTo({ left: 0, behavior: "smooth" });
                                             }}
@@ -362,12 +346,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                   <X className="w-4 h-4 text-muted-foreground" />
                                 </button>
                               </div>
-                              {subDoctorsLoading ? (
-                                <div className="mt-auto flex gap-4 overflow-hidden py-2">
-                                  <Skeleton className="h-48 w-[280px] rounded-2xl shrink-0" />
-                                  <Skeleton className="h-48 w-[280px] rounded-2xl shrink-0 hidden md:block" />
-                                </div>
-                              ) : deptDoctors.length > 0 ? (
+                              {deptDoctors.length > 0 ? (
                                 <div className="mt-auto">
                                   <p className="text-accent text-center text-xl tracking-[0.2em] uppercase font-body font-semibold mb-4">{lang === "ar" ? "أطباء القسم" : "Department Doctors"}</p>
                                   <div className="relative max-w-[576px] mx-auto lg:mt-6">

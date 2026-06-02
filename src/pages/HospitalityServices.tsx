@@ -43,6 +43,7 @@ const HospitalityServices = ({
   const [orchidSlide, setOrchidSlide] = useState(0);
   const [spaSlide, setSpaSlide] = useState(0);
   const [cafeSlide, setCafeSlide] = useState(0);
+  const [fifthCafeSlide, setFifthCafeSlide] = useState(0);
   const [inRoomSlide, setInRoomSlide] = useState(0);
   const [babySlide, setBabySlide] = useState(0);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
@@ -54,6 +55,10 @@ const HospitalityServices = ({
   const babyImages = [
     "https://royal-hayat.s3.eu-central-1.amazonaws.com/baby-images/WhatsApp+Image+2026-05-12+at+2.39.52+PM+(1).jpeg",
     "https://royal-hayat.s3.eu-central-1.amazonaws.com/baby-images/WhatsApp+Image+2026-05-12+at+2.39.52+PM.jpeg",
+  ];
+  const fifthFloorCafeImages = [
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/fifth-floor/WhatsApp+Image+2026-06-02+at+2.17.44+PM+(1).jpeg",
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/fifth-floor/WhatsApp+Image+2026-06-02+at+2.17.44+PM.jpeg",
   ];
   const activeSuiteImages = suiteCarouselImagesByIndex[activeSuite] ?? suiteCarouselImagesByIndex[6];
 
@@ -92,6 +97,14 @@ const HospitalityServices = ({
     }, 4500);
     return () => window.clearInterval(timer);
   }, [cafeImages.length]);
+
+  useEffect(() => {
+    if (fifthFloorCafeImages.length <= 1) return;
+    const timer = window.setInterval(() => {
+      setFifthCafeSlide((prev) => (prev + 1) % fifthFloorCafeImages.length);
+    }, 4500);
+    return () => window.clearInterval(timer);
+  }, [fifthFloorCafeImages.length]);
 
   useEffect(() => {
     if (babyImages.length <= 1) return;
@@ -1459,8 +1472,8 @@ const HospitalityServices = ({
       {/* ===== 5TH FLOOR CAFÉ (Show All Order) — layout aligned with FifthFloorCafe page */}
       {showAll && <section className="py-6 bg-muted/10">
         <div className="container mx-auto px-6 max-w-6xl">
-          <div className="w-full">
-            <ScrollAnimationWrapper>
+          <div className="grid lg:grid-cols-2 gap-10 items-start">
+            <ScrollAnimationWrapper className="order-2 lg:order-1">
               <div className="text-justify">
                 <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-2 text-center">
                   {isAr ? "مقهى الطابق الخامس" : "The 5th Floor Café"}
@@ -1499,6 +1512,52 @@ const HospitalityServices = ({
                 </p>
               </div>
             </ScrollAnimationWrapper>
+
+            <div className="relative order-1 lg:order-2">
+              <div className="relative aspect-[5/4] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
+                <AnimatePresence initial={false}>
+                  <motion.div
+                    key={`fifth-cafe-showall-${fifthCafeSlide}`}
+                    initial={{ x: 36 }}
+                    animate={{ x: 0 }}
+                    exit={{ x: -36 }}
+                    transition={{ duration: 0.35, ease: "easeInOut" }}
+                    className="absolute inset-0"
+                  >
+                    <img
+                      src={fifthFloorCafeImages[fifthCafeSlide]}
+                      alt={isAr ? `مقهى الطابق الخامس ${fifthCafeSlide + 1}` : `The 5th Floor Cafe image ${fifthCafeSlide + 1}`}
+                      className="w-full h-full object-cover cursor-zoom-in"
+                      loading="lazy"
+                      onClick={() => setLightboxImage(fifthFloorCafeImages[fifthCafeSlide])}
+                    />
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+              <>
+                <button
+                  onClick={() => setFifthCafeSlide((prev) => (prev - 1 + fifthFloorCafeImages.length) % fifthFloorCafeImages.length)}
+                  aria-label={isAr ? "السابق" : "Previous"}
+                  disabled={fifthFloorCafeImages.length <= 1}
+                  className="absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-background/95 disabled:hover:text-foreground disabled:hover:border-border"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={() => setFifthCafeSlide((prev) => (prev + 1) % fifthFloorCafeImages.length)}
+                  aria-label={isAr ? "التالي" : "Next"}
+                  disabled={fifthFloorCafeImages.length <= 1}
+                  className="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-background/95 disabled:hover:text-foreground disabled:hover:border-border"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </>
+              <div className="flex items-center justify-center gap-3 mt-5">
+                <span className="font-body text-xs text-muted-foreground tracking-widest">
+                  {String(fifthCafeSlide + 1).padStart(2, "0")} / {String(fifthFloorCafeImages.length).padStart(2, "0")}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </section>}

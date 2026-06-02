@@ -214,7 +214,7 @@ const workWithUsHospitalityWeekImages: string[] = [
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/8.jpeg",
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/9.jpeg",
 
-  "hhttps://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/10.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/10.jpeg",
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/11.jpeg",
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/12.jpeg",
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/13.jpeg",
@@ -222,7 +222,7 @@ const workWithUsHospitalityWeekImages: string[] = [
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/17.jpeg",
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/19.jpeg",
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/20.jpeg",
-  "hhttps://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/f2puzid2k2knsjky1cin.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/f2puzid2k2knsjky1cin.jpeg",
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/hxxxtukrqjmuglvizvqy.jpeg",
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/qfxefcsafmvobw936o59.jpeg",
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/tf7uuik4lr5m1grkj3db.jpeg"

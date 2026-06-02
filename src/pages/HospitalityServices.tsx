@@ -77,6 +77,22 @@ const HospitalityServices = ({
   }, [activeSuite]);
 
   useEffect(() => {
+    if (activeHall !== "gardenia" || gardeniaHallImages.length <= 1) return;
+    const timer = window.setInterval(() => {
+      setGardeniaSlide((prev) => (prev + 1) % gardeniaHallImages.length);
+    }, 5000);
+    return () => window.clearInterval(timer);
+  }, [activeHall, gardeniaHallImages.length]);
+
+  useEffect(() => {
+    if (activeHall !== "aljouri" || alJouriHallImages.length <= 1) return;
+    const timer = window.setInterval(() => {
+      setAlJouriSlide((prev) => (prev + 1) % alJouriHallImages.length);
+    }, 5000);
+    return () => window.clearInterval(timer);
+  }, [activeHall, alJouriHallImages.length]);
+
+  useEffect(() => {
     if (activeSuite !== 0) return;
     const timer = window.setInterval(() => {
       setOrchidSlide((prev) => (prev + 1) % orchidSuiteImages.length);

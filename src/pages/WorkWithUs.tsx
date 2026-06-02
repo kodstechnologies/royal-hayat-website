@@ -348,8 +348,8 @@ const WorkWithUs = ({
   ];
 
   const cultureNarrativeClass = isAr
-    ? "culture-narrative space-y-5 font-body text-foreground leading-relaxed text-start"
-    : "culture-narrative space-y-5 font-body text-foreground leading-relaxed text-start hyphens-auto break-words [&_p]:hyphens-auto [&_p]:break-words";
+    ? "culture-narrative space-y-5 font-body tracking-normal text-foreground leading-relaxed text-start"
+    : "culture-narrative space-y-5 font-body tracking-normal text-foreground leading-relaxed text-start";
 
   return (
     <div
@@ -378,7 +378,7 @@ const WorkWithUs = ({
             </div>
 
             {/* RIGHT — content */}
-            <ScrollAnimationWrapper className="flex w-full flex-col justify-center px-8 py-10 md:px-14 md:py-12 lg:px-16 lg:self-center lg:py-12 2xl:py-16">
+            <ScrollAnimationWrapper className="flex w-full flex-col justify-center px-4 py-10 sm:px-6 md:px-14 md:py-12 lg:px-16 lg:self-center lg:py-12 2xl:py-16">
               <div
                 dir={isAr ? "rtl" : "ltr"}
                 lang={isAr ? "ar" : "en"}
@@ -389,7 +389,7 @@ const WorkWithUs = ({
                   ? "الحياة في مستشفى رويال حياة"
                   : "Life at Royale Hayat Hospital"}
               </h1>
-              <div className="space-y-4 font-body text-sm text-foreground leading-relaxed text-start">
+              <div className="work-body-copy space-y-4 font-body tracking-normal text-[13px] sm:text-sm text-foreground leading-relaxed text-start">
                 <p>
                   {isAr
                     ? "في مستشفى رويال حياة، نؤمن بفكرة بسيطة: قد ينسى الناس ما قلناه، لكنهم لن ينسوا أبداً كيف جعلناهم يشعرون كمرضى، أو أفراد عائلة، أو زملاء."
@@ -415,12 +415,12 @@ const WorkWithUs = ({
       {/* Our People Promise — narrative from document */}
       {showSection("culture") && (
         <section className="py-14 bg-background">
-          <div className="container mx-auto px-6 max-w-3xl">
+          <div className="container mx-auto px-3 md:px-6 max-w-none md:max-w-5xl lg:max-w-6xl">
             <ScrollAnimationWrapper>
-              <h2 className="text-2xl md:text-3xl font-serif text-foreground text-center mb-3 hyphens-auto break-words text-pretty px-1">
+              <h2 className="text-2xl md:text-3xl font-serif text-foreground text-center mb-3 text-pretty px-1">
                 {isAr ? "وعدنا لموظفينا" : "‘Our People Promise’"}
               </h2>
-              <p className="text-center !text-center text-accent font-body text-sm mb-8 italic hyphens-auto break-words text-pretty px-1">
+              <p className="text-center !text-center text-accent font-body text-sm mb-8 italic text-pretty px-1">
                 {isAr
                   ? "إن وعدنا لمرضانا يبدأ أولًا من وعدنا لموظفينا."
                   : "Our promise to patients begins with our promise to our people"}
@@ -450,9 +450,9 @@ const WorkWithUs = ({
       {/* Where We Belong Together */}
       {showSection("culture") && (
         <section className="py-14 bg-secondary/10">
-          <div className="container mx-auto px-6 max-w-3xl">
+          <div className="container mx-auto px-3 md:px-6 max-w-none md:max-w-5xl lg:max-w-6xl">
             <ScrollAnimationWrapper>
-              <h2 className="text-2xl md:text-3xl font-serif text-foreground text-center mb-8 hyphens-auto break-words text-pretty px-1">
+              <h2 className="text-2xl md:text-3xl font-serif text-foreground text-center mb-8 text-pretty px-1">
                 {isAr ? "معًا… حيث ننتمي" : "‘Where We Belong Together.’"}
               </h2>
               <div dir={isAr ? "rtl" : "ltr"} lang={isAr ? "ar" : "en"} className={cultureNarrativeClass}>
@@ -480,7 +480,7 @@ const WorkWithUs = ({
       {/* Recognition & Appreciation gallery */}
       {showSection("culture") && (
         <section className="py-16 bg-secondary/10">
-          <div className="container mx-auto px-6">
+          <div className="container mx-auto px-3 md:px-6">
             <div className="text-center mb-8">
               <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3 !text-center">
                 {isAr ? "التكريم والتقدير" : "Life at Royale Hayat"}
@@ -538,7 +538,10 @@ const WorkWithUs = ({
                           : employees[empIndex].dept}
                       </p>
 
-                      <p className="font-body text-sm text-accent mb-5">
+                      <p
+                        className={`font-body text-sm text-accent mb-5 ${isAr ? "" : "justified-body-en"}`}
+                        lang={isAr ? "ar" : "en"}
+                      >
                         {isAr
                           ? employees[empIndex].roleAr
                           : employees[empIndex].role}
@@ -554,7 +557,9 @@ const WorkWithUs = ({
                             ? employees[empIndex].achievementsAr
                             : employees[empIndex].achievements
                           ).map((ach, idx) => (
-                            <p key={idx}>{ach}</p>
+                            <p key={idx} className={isAr ? "" : "justified-body-en"} lang={isAr ? "ar" : "en"}>
+                              {ach}
+                            </p>
                           ))}
                         </div>
                       </div>
@@ -665,7 +670,7 @@ const WorkWithUs = ({
       {/* Explore Careers heading */}
       {showSection("culture") && (
         <section className="py-12 bg-background text-center">
-          <div className="container mx-auto px-6">
+          <div className="container mx-auto px-3 md:px-6">
             <Link
               to="/work-with-us?section=positions"
               className="inline-block group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded-sm"
@@ -683,7 +688,7 @@ const WorkWithUs = ({
       {/* Open Positions */}
       {showSection("positions") && (
         <section className="py-16 bg-secondary/10" id="open-positions">
-          <div className="container mx-auto px-6">
+          <div className="container mx-auto px-3 md:px-6">
             <ScrollAnimationWrapper>
               <div className="text-center mb-8">
                 <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3 !text-center">
@@ -692,7 +697,10 @@ const WorkWithUs = ({
                 <h2 className="text-2xl md:text-3xl font-serif text-foreground">
                   {isAr ? "الوظائف الشاغرة" : "Open Positions"}
                 </h2>
-                <p className="text-muted-foreground font-body text-sm max-w-xl mx-auto mt-3">
+                <p
+                  className={`text-muted-foreground font-body text-sm max-w-xl mx-auto mt-3 ${isAr ? "" : "justified-body-en"}`}
+                  lang={isAr ? "ar" : "en"}
+                >
                   {isAr
                     ? "اكتشف الفرص المهنية المتاحة وابدأ رحلتك المهنية معنا اليوم، ضمن بيئة عمل تجمع بين التميّز، التطوير، والرعاية الإنسانية الراقية."
                     : "Explore current opportunities and launch your career with us today."}
@@ -762,7 +770,10 @@ const WorkWithUs = ({
                             {pos.category.toUpperCase()}
                           </span>
                         </div>
-                        <p className="font-body text-sm text-muted-foreground leading-relaxed">
+                        <p
+                          className={`font-body text-sm text-muted-foreground leading-relaxed ${isAr ? "" : "justified-body-en"}`}
+                          lang={isAr ? "ar" : "en"}
+                        >
                           {pos.desc}
                         </p>
                       </div>
@@ -821,16 +832,73 @@ const WorkWithUs = ({
           will-change: opacity;
         }
 
-        #work-culture-page .culture-narrative[dir="rtl"] {
+        #work-culture-page .culture-narrative[dir="rtl"],
+        #work-culture-page .work-body-copy[dir="rtl"] {
           -webkit-hyphens: none;
           hyphens: none;
         }
-        #work-culture-page .culture-narrative[dir="ltr"] p {
+
+        #work-culture-page .culture-narrative[lang="en"] p,
+        #work-culture-page .work-body-copy[lang="en"] p {
+          text-align: justify;
+          text-justify: inter-word;
+          text-align-last: auto;
           -webkit-hyphens: auto;
           hyphens: auto;
-          text-wrap: pretty;
+          hyphenate-limit-chars: 6 3 3;
+          text-wrap: auto;
           word-break: normal;
-          overflow-wrap: break-word;
+          overflow-wrap: normal;
+          max-width: 100%;
+          letter-spacing: normal !important;
+          font-kerning: normal;
+        }
+
+        #work-culture-page .justified-body-en {
+          text-align: justify;
+          text-justify: inter-word;
+          text-align-last: auto;
+          -webkit-hyphens: auto;
+          hyphens: auto;
+          hyphenate-limit-chars: 6 3 3;
+          word-break: normal;
+          overflow-wrap: normal;
+          letter-spacing: normal !important;
+          font-kerning: normal;
+        }
+
+        @media (max-width: 767px) {
+          #work-culture-page section .container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+          }
+
+          #work-culture-page .culture-narrative[lang="en"] p,
+          #work-culture-page .work-body-copy[lang="en"] p {
+            text-align: justify !important;
+            text-align-last: auto !important;
+            text-justify: inter-word;
+            -webkit-hyphens: auto !important;
+            hyphens: auto !important;
+            hyphenate-limit-chars: 6 3 3;
+            word-spacing: normal;
+            letter-spacing: normal;
+            word-break: normal;
+            overflow-wrap: normal;
+            white-space: normal;
+            text-wrap: auto;
+            letter-spacing: normal !important;
+            font-kerning: normal;
+          }
+
+          #work-culture-page .justified-body-en {
+            text-align: justify !important;
+            text-align-last: auto !important;
+            text-justify: inter-word;
+            -webkit-hyphens: auto !important;
+            hyphens: auto !important;
+            hyphenate-limit-chars: 6 3 3;
+          }
         }
       `}</style>
 

@@ -10,6 +10,7 @@ export type AppointmentRequestType =
 
 export type CreateAppointmentRequestPayload = {
   fullname: string;
+  fullname: string;
   phone: string;
   requestType: AppointmentRequestType;
   dob?: string;

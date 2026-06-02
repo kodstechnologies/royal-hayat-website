@@ -11,14 +11,14 @@ const HomeHealth = () => {
   const isAr = lang === "ar";
 
   const rehabServices = isAr ? [
-    "صحة المرأة والعافية والتعافي",
-    "إعادة التأهيل القلبي",
-    "إعادة تأهيل السكتة الدماغية",
-    "إدارة آلام الظهر",
-    "مشاكل العضلات والعظام والحركة",
-    "تدريب القوة وتحسين الحركة",
-    "التدليك العلاجي",
-    "إعادة تأهيل الأطفال",
+    "صحة المرأة والتعافي بعد الولادة",
+    "التأهيل القلبي",
+    "التأهيل بعد الجلطات والسكتات الدماغية",
+    "علاج آلام الظهر",
+    "مشكلات الجهاز العضلي والحركي",
+    "تقوية العضلات وتحسين الحركة",
+    "العلاج بالتدليك العلاجي",
+    "تأهيل الأطفال",
   ] : [
     "Women's health, wellness, and recovery",
     "Cardiac rehabilitation",
@@ -61,8 +61,8 @@ const HomeHealth = () => {
   ];
 
   const longTermServices = isAr ? [
-    "رعاية الأطفال ومراقبة حديثي الولادة",
-    "رعاية كبار السن (المسنين)",
+    "رعاية الأطفال وحديثي الولادة",
+    "رعاية كبار السن",
   ] : [
     "Baby care and newborn monitoring",
     "Senior (geriatric) care",
@@ -89,10 +89,12 @@ const HomeHealth = () => {
       <section className="py-16">
         <div className="container mx-auto px-6 max-w-4xl">
           <ScrollAnimationWrapper>
-            <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-4">{isAr ? "عن الرعاية المنزلية" : "About Us"}</h2>
+            <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-4">
+              {isAr ? "رويال هوم هيلث للرعاية المنزلية" : "Royale Home Health"}
+            </h2>
             <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify">
               {isAr
-                ? "رويال للرعاية المنزلية هي امتداد حصري لمستشفى رويال حياة، تقدم دعماً استثنائياً للصحة والعافية مباشرة في منزلك. تمزج خدماتنا بين الرعاية الطبية عالية الجودة والفخامة والضيافة المميزة التي يُعرف بها مستشفى رويال حياة. مدعومين بفريق متعدد التخصصات من المتخصصين في الرعاية الصحية، نقدم رعاية شخصية ورحيمة ومتخصصة تتوافق مع أعلى المعايير الدولية."
+                ? "تُعد خدمات الرعاية الصحية المنزلية في مستشفى رويال حياة امتدادًا حصريًا لخدمات المستشفى، حيث توفر رعاية صحية وعلاجية متكاملة داخل المنزل، تجمع بين الجودة الطبية العالية ومستوى الضيافة والرعاية الراقية التي تتميز بها رويال حياة. ويشرف على هذه الخدمات فريق متعدد التخصصات من الكوادر الطبية المؤهلة لتقديم رعاية شخصية وإنسانية وفق أعلى المعايير العالمية."
                 : "Royale Home Health is an exclusive extension of Royale Hayat Hospital, offering exceptional health and wellness support delivered directly to your home. Our services blend high-quality medical care with the signature luxury and hospitality that Royale Hayat is known for. Backed by a multi-disciplinary team of healthcare professionals, we provide personalized, compassionate, and expert care aligned with the highest international standards."}
             </p>
           </ScrollAnimationWrapper>
@@ -107,11 +109,11 @@ const HomeHealth = () => {
               <div className="w-12 h-12 rounded-full bg-accent/15 flex items-center justify-center">
                 <Activity className="w-6 h-6 text-accent" />
               </div>
-              <h2 className="text-2xl md:text-3xl font-serif text-foreground">{isAr ? "خدمات إعادة التأهيل" : "Rehabilitation Services"}</h2>
+              <h2 className="text-2xl md:text-3xl font-serif text-foreground">{isAr ? "خدمات التأهيل والعلاج الطبيعي" : "Rehabilitation Services"}</h2>
             </div>
             <p className="font-body text-sm text-muted-foreground leading-relaxed mb-6 ml-15">
               {isAr
-                ? "برامج إعادة التأهيل المنزلية لدينا مصممة لاستعادة الصحة وتحسين الحركة وتعزيز جودة الحياة عبر مجموعة من الحالات:"
+                ? "تم تصميم برامج التأهيل المنزلي للمساعدة في استعادة الصحة وتحسين الحركة وجودة الحياة لمختلف الحالات، وتشمل:"
                 : "Our home-based rehabilitation programs are designed to restore health, enhance mobility, and improve quality of life across a range of conditions:"}
             </p>
           </ScrollAnimationWrapper>
@@ -139,7 +141,7 @@ const HomeHealth = () => {
             </div>
             <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify mb-8 ml-15">
               {isAr
-                ? "يقدم فريق التمريض المتخصص لدينا خدمات طبية شاملة في راحة منزلك، تشمل:"
+                ? "يقدم فريق التمريض خدمات طبية متكاملة داخل المنزل تشمل:"
                 : "Our specialized nursing team offers comprehensive medical services in the comfort of your home, including:"}
             </p>
           </ScrollAnimationWrapper>
@@ -148,7 +150,7 @@ const HomeHealth = () => {
           <div className="mb-10">
             <div className="flex items-center gap-2 mb-4">
               <Syringe className="w-5 h-5 text-primary" />
-              <h3 className="font-serif text-lg text-foreground">{isAr ? "زيارات قصيرة المدى" : "Short-Term Visits"}</h3>
+              <h3 className="font-serif text-lg text-foreground">{isAr ? "الزيارات قصيرة المدى" : "Short-Term Visits"}</h3>
             </div>
             <div className="grid gap-3 max-w-3xl mx-auto">
               {shortTermServices.map((item, i) => (
@@ -165,7 +167,7 @@ const HomeHealth = () => {
           <div>
             <div className="flex items-center gap-2 mb-4">
               <Heart className="w-5 h-5 text-accent" />
-              <h3 className="font-serif text-lg text-foreground">{isAr ? "زيارات طويلة المدى (رعاية على مدار الساعة)" : "Long-Term Visits (24/7 Care)"}</h3>
+              <h3 className="font-serif text-lg text-foreground">{isAr ? "الزيارات طويلة المدى والرعاية على مدار الساعة" : "Long-Term Visits (24/7 Care)"}</h3>
             </div>
             <div className="grid gap-3 max-w-3xl mx-auto">
               {longTermServices.map((item, i) => (
@@ -186,7 +188,7 @@ const HomeHealth = () => {
                   <ScrollAnimationWrapper>
                     <div className="bg-popover border border-border/50 rounded-2xl p-6 md:p-8 text-center">
                       <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-4">
-                        {isAr ? "استفسر اليوم" : "Enquire Now"}
+                        {isAr ? "للاستفسار" : "Enquire Now"}
                       </h2>
                       <div className="flex flex-col sm:flex-row gap-3 justify-center">
                         <a
@@ -201,7 +203,7 @@ const HomeHealth = () => {
                           className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-full font-body text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-colors"
                         >
                           <Phone className="w-4 h-4" />
-                          {isAr ? "اتصال: +965 25360500" : "Call: +965 25360500"}
+                          {isAr ? "الهاتف: +965 25360500" : "Call: +965 25360500"}
                         </a>
                       </div>
                     </div>

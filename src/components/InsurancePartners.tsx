@@ -1,4 +1,5 @@
 import { CheckCircle } from "lucide-react";
+import { Link } from "react-router-dom";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { useLanguage } from "@/contexts/LanguageContext";
 import alAhleiaLogo from "@/assets/insurance/al-ahleia.png";
@@ -22,20 +23,43 @@ const partners = [
 // Double the list for seamless loop
 const marqueePartners = [...partners, ...partners];
 
-const InsurancePartners = () => {
+type InsurancePartnersProps = {
+  /** Footer copy on Patients & Visitors → Health Insurance tab */
+  variant?: "default" | "patients-insurance";
+};
+
+const InsurancePartners = ({ variant = "default" }: InsurancePartnersProps) => {
   const { lang, t } = useLanguage();
 
   return (
-    <section className="py-16 bg-background overflow-hidden" id="insurance">
+    <section
+      className={`insurance-partners-section py-16 bg-background overflow-hidden ${
+        variant === "patients-insurance"
+          ? "w-screen max-w-[100vw] [margin-inline:calc(50%-50vw)]"
+          : ""
+      }`}
+      id="insurance"
+    >
       <div className="container mx-auto px-6">
         <ScrollAnimationWrapper>
-          <div className="text-center mb-10">
-            <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3 !text-center">{t("trustedBy")}</p>
-            <h2 className="text-3xl md:text-4xl font-serif text-foreground">{t("insurancePartners")}</h2>
+          <div className="insurance-partners-heading mb-10 flex w-full flex-col items-center justify-center text-center">
+            <p
+              className="insurance-partners-title text-accent text-xs tracking-[0.3em] uppercase font-body mb-3 w-full"
+              style={{ textAlign: "center", textAlignLast: "center" }}
+            >
+              {t("trustedBy")}
+            </p>
+            <h2
+              className="insurance-partners-title text-3xl md:text-4xl font-serif text-foreground w-full"
+              style={{ textAlign: "center", textAlignLast: "center" }}
+            >
+              {t("insurancePartners")}
+            </h2>
           </div>
         </ScrollAnimationWrapper>
       </div>
 
+      <div className="insurance-marquee-ltr" dir="ltr">
       {/* Marquee ticker - row 1 */}
       <div className="relative w-full overflow-hidden mb-4">
         <div className="flex animate-marquee hover:[animation-play-state:paused]">
@@ -53,7 +77,7 @@ const InsurancePartners = () => {
                   <span className="font-serif text-2xl text-foreground">{p.name.charAt(0)}</span>
                 </div>
               )}
-              <div>
+              <div dir={lang === "ar" ? "rtl" : "ltr"}>
                 <p className="font-body text-sm font-medium text-foreground whitespace-nowrap">{lang === "ar" ? p.nameAr : p.name}</p>
                 <span className="inline-flex items-center gap-1 text-xs text-accent font-body mt-1">
                   <CheckCircle className="w-3.5 h-3.5" />{t("verified")}
@@ -81,7 +105,7 @@ const InsurancePartners = () => {
                   <span className="font-serif text-2xl text-foreground">{p.name.charAt(0)}</span>
                 </div>
               )}
-              <div>
+              <div dir={lang === "ar" ? "rtl" : "ltr"}>
                 <p className="font-body text-sm font-medium text-foreground whitespace-nowrap">{lang === "ar" ? p.nameAr : p.name}</p>
                 <span className="inline-flex items-center gap-1 text-xs text-accent font-body mt-1">
                   <CheckCircle className="w-3.5 h-3.5" />{t("verified")}
@@ -91,12 +115,33 @@ const InsurancePartners = () => {
           ))}
         </div>
       </div>
+      </div>
 
       <div className="container mx-auto px-6">
         <p className="text-center !text-center text-muted-foreground font-body text-sm">
-          {t("dontSeeInsurance")}{" "}
-          <a href="#contact" className="text-primary underline hover:text-accent transition-colors">{t("contactUs")}</a>{" "}
-          {t("toVerifyCoverage")}
+          {variant === "patients-insurance" ? (
+            <>
+              {t("dontSeeInsurancePatients")}
+              <a
+                href="tel:+96525360453"
+                className="text-accent hover:underline font-semibold"
+              >
+                25360453
+              </a>
+              {lang === "en" ? "." : ""}
+            </>
+          ) : (
+            <>
+              {t("dontSeeInsurance")}{" "}
+              <Link
+                to="/patients-visitors?tab=insurance#insurance-operating-hours"
+                className="text-primary underline hover:text-accent transition-colors"
+              >
+                {t("contactUs")}
+              </Link>{" "}
+              {t("toVerifyCoverage")}
+            </>
+          )}
         </p>
       </div>
     </section>

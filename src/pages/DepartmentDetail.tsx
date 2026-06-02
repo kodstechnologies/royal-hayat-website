@@ -10,31 +10,15 @@ import { motion } from "framer-motion";
 import { ChevronRight, ChevronLeft, ArrowLeft, CheckCircle2, ChevronDown, Stethoscope, MessageCircle, Phone } from "lucide-react";
 import { useState, useRef, useEffect, useMemo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { getDepartmentById } from "@/api/department";
-import { getCatagoriesWithDepartmentsAndDoctors } from "@/api/catagory";
-import { getDoctorsByDepartment, mapApiDoctorRowToDoctor } from "@/api/doctors";
-import { getSubSlugForDepartment } from "@/utils/departmentSubSlug";
-import { parseDepartmentContentBlocksFromApi } from "@/utils/mapMedicalCatalogFromApi";
+import type { DepartmentDetailSection } from "@/data/departmentDetails";
+import { resolveDepartmentBySlug } from "@/utils/resolveDepartmentSlug";
 
-function apiCustomBlocksFromSub(
-  sub: Record<string, unknown>,
-): { subHeading: string; explanations: string[] }[] {
-  const raw = sub.customSubspecialities;
-  if (!Array.isArray(raw)) return [];
-  return raw
-    .filter((x): x is Record<string, unknown> => Boolean(x && typeof x === "object"))
-    .map((block) => {
-      const subHeading = String(block.subHeading ?? "").trim();
-      const ex = block.explanations;
-      const explanations = Array.isArray(ex)
-        ? ex.map((e) => String(e ?? "").trim()).filter(Boolean)
-        : [];
-      return { subHeading, explanations };
-    })
-    .filter((b) => b.subHeading || b.explanations.length > 0);
-}
+const pickDeptText = (lang: string, en: string, ar?: string) => (lang === "ar" && ar ? ar : en);
 
-const DepartmentDoctors = ({ doctors, lang }: { doctors: Doctor[]; lang: string }) => {
+const isAlSafwaDepartment = (slug: string, name: string) =>
+  slug.includes("al-safwa") || name.toLowerCase().includes("safwa");
+
+const DepartmentDoctors = ({ doctors, lang }: { doctors: typeof allDoctors; lang: string }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const autoSlideRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const isPausedRef = useRef(false);
@@ -201,128 +185,11 @@ const DepartmentDetail = () => {
       .replace(/^-+|-+$/g, "");
 
   const dept = departmentDetails.find((d) => d.slug === slug);
+  const alSafwaDept = dept ? isAlSafwaDepartment(dept.slug, dept.name) : false;
 
-  useEffect(() => {
-    setApiSubAccordionOpen({});
-  }, [slug]);
+  const goToAlSafwaProgram = () => navigate("/al-safwa");
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      if (!slug) {
-        if (!cancelled) setApiLoading(false);
-        return;
-      }
-      try {
-        setApiLoading(true);
-        const categories = await getCatagoriesWithDepartmentsAndDoctors();
-        let departmentId = "";
-        let departmentName = "";
-        for (const cat of categories) {
-          for (const dep of cat.departments || []) {
-            const generatedSlug = `${slugify(dep.name)}-${String(dep._id).slice(-6)}`;
-            if (generatedSlug === slug) {
-              departmentId = String(dep._id);
-              departmentName = dep.name;
-              break;
-            }
-          }
-          if (departmentId) break;
-        }
-        if (!departmentId) {
-          if (!cancelled) {
-            setApiDepartment(null);
-            setApiDoctors([]);
-          }
-          return;
-        }
-
-        const [departmentRes, doctorsRows] = await Promise.all([
-          getDepartmentById(departmentId),
-          getDoctorsByDepartment(departmentId),
-        ]);
-
-        if (cancelled) return;
-        const departmentPayload =
-          departmentRes && typeof departmentRes === "object" && "data" in (departmentRes as Record<string, unknown>)
-            ? ((departmentRes as { data?: unknown }).data as Record<string, unknown> | undefined) ?? null
-            : (departmentRes as Record<string, unknown> | null);
-
-        setApiDepartment(departmentPayload);
-        const mappedDoctors = (doctorsRows || []).map((row) =>
-          mapApiDoctorRowToDoctor(row, departmentName, departmentName),
-        );
-        setApiDoctors(mappedDoctors);
-      } catch {
-        if (!cancelled) {
-          setApiDepartment(null);
-          setApiDoctors([]);
-        }
-      } finally {
-        if (!cancelled) setApiLoading(false);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [slug]);
-
-  const apiSubspecialitiesList = useMemo((): Record<string, unknown>[] => {
-    if (!apiDepartment || typeof apiDepartment !== "object") return [];
-    const raw = (apiDepartment as Record<string, unknown>).subspecialities;
-    const single = (apiDepartment as Record<string, unknown>).subspeciality;
-    const fromArr = Array.isArray(raw)
-      ? (raw as unknown[]).filter((x): x is Record<string, unknown> => Boolean(x && typeof x === "object"))
-      : [];
-    const merged = [...fromArr];
-    if (single && typeof single === "object") {
-      const sid = String((single as Record<string, unknown>)._id ?? "");
-      if (!sid || !merged.some((m) => String(m._id ?? "") === sid)) {
-        merged.push(single as Record<string, unknown>);
-      }
-    }
-    return merged.filter((s) => String(s.name ?? "").trim().length > 0);
-  }, [apiDepartment]);
-
-  const apiSubKey = (sub: Record<string, unknown>, index: number) =>
-    String(sub._id ?? `sub-${index}`);
-
-  const isApiSubOpen = (key: string) => apiSubAccordionOpen[key] === true;
-
-  useEffect(() => {
-    if (!slug || apiLoading) return;
-    if (!apiSubspecialitiesList.length) return;
-    if (!subSlug) {
-      setApiSubAccordionOpen({});
-      return;
-    }
-    const next: Record<string, boolean> = {};
-    apiSubspecialitiesList.forEach((sub, i) => {
-      const key = apiSubKey(sub, i);
-      const gen = getSubSlugForDepartment(slug, String(sub.name ?? ""));
-      next[key] = gen === subSlug;
-    });
-    setApiSubAccordionOpen(next);
-  }, [slug, subSlug, apiLoading, apiSubspecialitiesList]);
-
-  let matchedApiSubName = "";
-  if (slug && subSlug && apiSubspecialitiesList.length) {
-    for (let i = 0; i < apiSubspecialitiesList.length; i++) {
-      const sub = apiSubspecialitiesList[i];
-      if (getSubSlugForDepartment(slug, String(sub.name ?? "")) === subSlug) {
-        matchedApiSubName = String(sub.name ?? "");
-        break;
-      }
-    }
-  }
-
-  const apiDeptContentBlocks = useMemo(() => {
-    if (!apiDepartment || typeof apiDepartment !== "object") return [];
-    const raw = (apiDepartment as Record<string, unknown>).customExplainantions;
-    return parseDepartmentContentBlocksFromApi(raw) ?? [];
-  }, [apiDepartment]);
-
-  if (!dept && !apiDepartment && !apiLoading) {
+  if (!dept) {
     return (
       <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
         <Header />
@@ -632,7 +499,26 @@ const DepartmentDetail = () => {
       {/* Show image only for main department */}
       {!activeSub && (
         <section className="container mx-auto px-6 py-8 flex justify-center">
-          <div className="aspect-video w-full max-w-4xl bg-muted/30 rounded-2xl border border-border/50 flex items-center justify-center overflow-hidden">
+          <div
+            role={alSafwaDept ? "link" : undefined}
+            tabIndex={alSafwaDept ? 0 : undefined}
+            onClick={alSafwaDept ? goToAlSafwaProgram : undefined}
+            onKeyDown={
+              alSafwaDept
+                ? (e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      goToAlSafwaProgram();
+                    }
+                  }
+                : undefined
+            }
+            className={`aspect-video w-full max-w-4xl bg-muted/30 rounded-2xl border border-border/50 flex items-center justify-center overflow-hidden ${
+              alSafwaDept
+                ? "cursor-pointer hover:border-primary/40 hover:shadow-md transition-all"
+                : ""
+            }`}
+          >
             {deptImage ? (
               <img
                 src={deptImage}
@@ -660,12 +546,39 @@ const DepartmentDetail = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.05 }}
-                  className="bg-popover border border-border/50 rounded-2xl p-6 md:p-8"
+                  role={alSafwaDept ? "link" : undefined}
+                  tabIndex={alSafwaDept ? 0 : undefined}
+                  onClick={alSafwaDept ? goToAlSafwaProgram : undefined}
+                  onKeyDown={
+                    alSafwaDept
+                      ? (e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            goToAlSafwaProgram();
+                          }
+                        }
+                      : undefined
+                  }
+                  className={`bg-popover border border-border/50 rounded-2xl p-6 md:p-8 ${
+                    alSafwaDept
+                      ? "cursor-pointer hover:border-primary/40 hover:shadow-md transition-all"
+                      : ""
+                  }`}
                 >
-                  <h3 className="font-serif text-lg md:text-xl text-foreground mb-4">{section.title}</h3>
-                  {section.content && (
-                    <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4 whitespace-pre-line">
-                      {section.content}
+                  <h3
+                    className={`font-serif text-lg md:text-xl text-foreground mb-4 ${
+                      isAr ? "dept-detail-rtl" : ""
+                    }`}
+                  >
+                    {sectionTitle}
+                  </h3>
+                  {sectionContent && (
+                    <p
+                      className={`font-body text-sm text-muted-foreground leading-relaxed mb-4 whitespace-pre-line text-justify ${
+                        isAr ? "dept-detail-rtl" : ""
+                      }`}
+                    >
+                      {sectionContent}
                     </p>
                   )}
                   {section.items && (

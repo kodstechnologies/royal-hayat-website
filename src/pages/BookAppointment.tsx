@@ -548,16 +548,40 @@ const BookAppointment = () => {
     else if (pathParam === "symptoms") { setBookingPath("symptoms"); setStep(0); }
   }, [searchParams, locState.step]);
 
+  const symptomResultsTopRef = useRef<HTMLDivElement>(null);
+
+  const scrollBookingViewToTop = useCallback(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    symptomResultsTopRef.current?.scrollIntoView({
+      block: "start",
+      behavior: "auto",
+    });
+  }, []);
+
   useEffect(() => {
-    if (booked) {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  }, [booked]);
+    if (booked) scrollBookingViewToTop();
+  }, [booked, scrollBookingViewToTop]);
 
   // Scroll to top on every step change so mobile users always start at the top
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [step]);
+    scrollBookingViewToTop();
+  }, [step, scrollBookingViewToTop]);
+
+  // Symptom analyze shows a new screen without changing `step` — scroll after results render
+  useEffect(() => {
+    if (symptomResults === null) return;
+
+    scrollBookingViewToTop();
+    const t1 = window.setTimeout(scrollBookingViewToTop, 0);
+    const t2 = window.setTimeout(scrollBookingViewToTop, 100);
+
+    return () => {
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+    };
+  }, [symptomResults, scrollBookingViewToTop]);
 
   useEffect(() => {
     if (step !== 3) setShowSlotSelection(false);
@@ -1476,7 +1500,10 @@ Clinic Code:`;
     return (
       <div className="min-h-screen bg-background pt-[var(--header-height,56px)] overflow-x-hidden">
         <Header />
-        <div className="container mx-auto px-6 py-6 max-w-5xl">
+        <div
+          ref={symptomResultsTopRef}
+          className="container mx-auto px-6 py-6 max-w-5xl scroll-mt-[var(--header-height,56px)]"
+        >
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
             <h2 className="text-2xl font-serif text-foreground mb-2">{lang === "ar" ? "الأقسام الموصى بها" : "Recommended Departments"}</h2>
             <p className="text-muted-foreground font-body text-xs">{lang === "ar" ? "بناءً على أعراضك، نوصي بالأقسام التالية" : "Based on your symptoms, we recommend these departments"}</p>
@@ -1888,7 +1915,7 @@ Clinic Code:`;
                   {bookingError && <div className="mt-6 p-4 rounded-xl bg-destructive/10 border border-destructive/20 flex items-center gap-3"><AlertCircle className="w-5 h-5 text-destructive" /><p className="font-body text-sm text-destructive">{bookingError}</p></div>}
                   <div className="mt-8 flex flex-col gap-4">
                     <motion.button whileHover={!isSubmitting ? { scale: 1.02 } : {}} whileTap={!isSubmitting ? { scale: 0.98 } : {}} onClick={handleConfirm} disabled={isSubmitting} className="w-full bg-primary text-primary-foreground py-4 rounded-xl font-body text-sm tracking-widest uppercase hover:bg-primary/90 transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-70">
-                      {isSubmitting ? <><Loader2 className="w-5 h-5 animate-spin" />{isAr ? "جارِ الإرسال..." : "Submitting..."}</> : <>{isAr ? "تأكيد الحجز" : "Confirm Booking"}</>}
+                      {isSubmitting ? <><Loader2 className="w-5 h-5 animate-spin" />{isAr ? "جارِ الإرسال..." : "Submitting..."}</> : <>{patientType === "new" ? (isAr ? "تأكيد الطلب" : "Confirm Request") : (isAr ? "تأكيد الحجز" : "Confirm Booking")}</>}
                     </motion.button>
                   </div>
                 </div>

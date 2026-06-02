@@ -1,8 +1,8 @@
 import { useState, useRef, useMemo, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight, ArrowRight, X, Stethoscope, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { motion, useInView } from "framer-motion";
-import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Link, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { departments as staticDepartments, type Department, MAIN_CATEGORIES } from "@/data/departments";
 import { doctors, type Doctor } from "@/data/doctors";
@@ -41,89 +41,15 @@ export type DepartmentsSectionProps = {
   showPageTitle?: boolean;
 };
 
-const DepartmentsSection = ({
-  apiCatalog,
-  apiGroupedCatalog,
-  apiCatalogLoading = false,
-  disableStaticFallback = false,
-  catalogFetchFailed = false,
-  showDepartmentDoctorsOnCards = false,
-  fetchDoctorsBySubspeciality = getDoctorsBySubspeciality,
-  showPageTitle = false,
-}: DepartmentsSectionProps = {}) => {
-  const [openSlug, setOpenSlug] = useState<string | null>(null);
-  const [selectedSubByDept, setSelectedSubByDept] = useState<Record<string, string>>({});
-  /** When set for a department slug, carousel shows doctors from GET /doctors/subspeciality/:id */
-  const [subDoctorsByDept, setSubDoctorsByDept] = useState<Record<string, Doctor[]>>({});
-  const [subDoctorsLoadingByDept, setSubDoctorsLoadingByDept] = useState<Record<string, boolean>>({});
+const isAlSafwaDeptSlug = (slug: string) => slug.includes("al-safwa");
 
-  useEffect(() => {
-    if (openSlug === null) {
-      setSubDoctorsByDept({});
-      setSubDoctorsLoadingByDept({});
-    }
-  }, [openSlug]);
-
-  const rowDepartmentMongoId = (row: Record<string, unknown>): string => {
-    const d = row.department;
-    if (d && typeof d === "object" && "_id" in d) {
-      return String((d as { _id: unknown })._id);
-    }
-    return String(d ?? "");
-  };
-
-  const fetchDoctorsForSubspeciality = useCallback(async (dept: Department, subspecialityId: string) => {
-    const slug = dept.slug;
-    const withApi = dept as DepartmentWithEmbeddedDoctors;
-    const deptMongoId = withApi.apiDepartmentId?.trim() || "";
-    setSubDoctorsLoadingByDept((p) => ({ ...p, [slug]: true }));
-    try {
-      const rows = await fetchDoctorsBySubspeciality(subspecialityId, { limit: 100 });
-      const scoped =
-        deptMongoId !== ""
-          ? rows.filter((row) => rowDepartmentMongoId(row as Record<string, unknown>) === deptMongoId)
-          : rows;
-      const mapped = scoped.map((row) =>
-        mapApiDoctorRowToDoctor(row, dept.name, dept.nameAr),
-      );
-      setSubDoctorsByDept((p) => ({ ...p, [slug]: mapped }));
-    } catch {
-      setSubDoctorsByDept((p) => ({ ...p, [slug]: [] }));
-    } finally {
-      setSubDoctorsLoadingByDept((p) => ({ ...p, [slug]: false }));
-    }
-  }, [fetchDoctorsBySubspeciality]);
-
-  const selectSubspecialityPill = useCallback(
-    (dept: Department, sub: { name: string; nameAr: string; subspecialityId?: string }) => {
-      const subSlug = getSubSlugForDepartment(dept.slug, sub.name);
-      setSelectedSubByDept((prev) => ({ ...prev, [dept.slug]: subSlug }));
-      if (sub.subspecialityId) {
-        void fetchDoctorsForSubspeciality(dept, sub.subspecialityId);
-      } else {
-        setSubDoctorsByDept((p) => {
-          const next = { ...p };
-          delete next[dept.slug];
-          return next;
-        });
-        setSubDoctorsLoadingByDept((p) => {
-          const next = { ...p };
-          delete next[dept.slug];
-          return next;
-        });
-      }
-    },
-    [fetchDoctorsForSubspeciality],
+const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) => {
+  const navigate = useNavigate();
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [selectedSubByDept, setSelectedSubByDept] = useState<Record<number, string>>({});
+  const [departments] = useState<Department[]>(
+    staticDepartments.filter((dept) => dept.name !== "Allergy & Immunology")
   );
-
-  const useGroupedLayout = apiGroupedCatalog !== undefined && apiGroupedCatalog !== null;
-
-  const departments = useMemo<Department[]>(() => {
-    if (useGroupedLayout) return apiGroupedCatalog.flatMap((g) => g.departments);
-    if (apiCatalog !== undefined && apiCatalog !== null) return apiCatalog;
-    if (disableStaticFallback) return [];
-    return staticDepartments.filter((dept) => dept.name !== "Allergy & Immunology");
-  }, [apiCatalog, apiGroupedCatalog, useGroupedLayout, disableStaticFallback]);
   const doctorScrollRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-80px" });
@@ -345,7 +271,13 @@ const DepartmentsSection = ({
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         transition={{ duration: 0.4, delay: 0.05, ease: [0.25, 0.46, 0.45, 0.94] }}
                         className={`bg-popover rounded-2xl overflow-hidden border border-border/50 cursor-pointer group transition-all duration-500 ${isExpanded ? "sm:col-span-2 lg:col-span-3" : ""}`}
-                        onClick={() => !isExpanded && handleToggle(dept.slug)}
+                        onClick={() => {
+                          if (!isExpanded && isAlSafwaDeptSlug(dept.slug)) {
+                            navigate("/al-safwa");
+                            return;
+                          }
+                          if (!isExpanded) handleToggle(origIdx);
+                        }}
                       >
                         {!isExpanded ? (
                           <>
@@ -378,7 +310,10 @@ const DepartmentsSection = ({
                                     {lang === "ar" ? dept.nameAr : dept.name}
                                   </h3>
                                   <p className="text-muted-foreground font-body text-sm leading-relaxed">{lang === "ar" ? dept.descAr : dept.desc}</p>
-                                  <Link to={`/medical-services/${dept.slug}`} className="inline-flex w-full justify-end items-center gap-1.5 text-primary font-body text-xs tracking-wide hover:text-accent transition-colors">
+                                  <Link
+                                    to={isAlSafwaDeptSlug(dept.slug) ? "/al-safwa" : `/medical-services/${dept.slug}`}
+                                    className="inline-flex w-full justify-end items-center gap-1.5 text-primary font-body text-xs tracking-wide hover:text-accent transition-colors"
+                                  >
                                     {t("Read More")} <ArrowRight className="w-3.5 h-3.5" />
                                   </Link>
                                 </div>

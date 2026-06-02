@@ -6,7 +6,9 @@ import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useState } from "react";
 import axios from "axios";
+import axios from "axios";
 import { toast } from "sonner";
+import { createInternationalPatientEnquiry } from "@/api/internationalPatient";
 import { createInternationalPatientEnquiry } from "@/api/internationalPatient";
 
 const InternationalPatient = () => {
@@ -38,7 +40,7 @@ const InternationalPatient = () => {
     e.preventDefault();
     if (!form.firstName.trim() || !form.lastName.trim() || !form.email.trim() || !form.mobile.trim()) {
       toast.error(isAr ? "يرجى ملء الحقول المطلوبة." : "Please fill in required fields.");
-      return;
+      return false;
     }
 
     const mobileDigits = form.mobile.replace(/\D/g, "");
@@ -195,6 +197,7 @@ const InternationalPatient = () => {
                 </div>
                 <div>
                   <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "اسم العائلة" : "Last Name"} *</label>
+                  <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "اسم العائلة" : "Last Name"} *</label>
                   <input type="text" value={form.lastName} onChange={e => handleChange("lastName", e.target.value)}
                     className="w-full rounded-lg border border-border bg-background px-4 py-2.5 font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
                 </div>
@@ -242,120 +245,14 @@ const InternationalPatient = () => {
                 className="w-full inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg font-body text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed">
                 <Send className="w-4 h-4" />
                 {isSubmitting ? (isAr ? "جاري الإرسال..." : "Sending...") : isAr ? "إرسال" : "Send"}
+                {isSubmitting ? (isAr ? "جاري الإرسال..." : "Sending...") : isAr ? "إرسال" : "Send"}
               </button>
             </motion.form>
           </div>
         </div>
       </section>
 
-      {/* Newborn Safety */}
-      <section className="py-16 bg-primary/5">
-        <div className="container mx-auto px-6">
-          <div className="max-w-4xl mx-auto">
-            <motion.h2
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-2xl md:text-3xl font-serif text-foreground mb-3 text-center"
-            >
-              {isAr ? "نظام الحماية المتقدم لحديثي الولادة" : "Infant Security System"}
-            </motion.h2>
-            <motion.p
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.05 }}
-              className="font-body text-sm text-muted-foreground leading-relaxed text-center mb-8"
-            >
-              {isAr
-                ? "يتم تزويد كل مولود جديد بسوار إلكتروني خفيف وآمن على البشرة، يرتبط بشكل متكامل مع منظومة الأمن المتطورة في مستشفى رويال حياة لضمان أعلى مستويات الحماية والرعاية."
-                : "At Royale Hayat Hospital, the safety of every newborn is our highest priority. We utilize the RTLS, a sophisticated real-time monitoring system designed to provide comprehensive, 24/7 protection for every infant in our care."}
-            </motion.p>
-
-            <div className="grid md:grid-cols-3 gap-4 mb-8">
-              {[
-                {
-                  titleAr: "حماية محيطية فعّالة",
-                  titleEn: "Active Perimeter Protection",
-                  descAr:
-                    "يقوم النظام بمراقبة جميع المخارج ونقاط التنقل داخل المستشفى، حيث يؤدي أي تحرك غير مصرح به باتجاه المصاعد أو السلالم إلى إغلاق فوري للأبواب وإطلاق تنبيهات أمنية عالية الأولوية.",
-                  descEn:
-                    "The system monitors all exits and transit points. Any unauthorized movement toward elevators or stairwells triggers immediate door locks and high-priority security alerts.",
-                },
-                {
-                  titleAr: "تقنية كشف العبث",
-                  titleEn: "Tamper-Sensing Technology",
-                  descAr:
-                    "توفر الأساور الذكية إشعارات فورية إلى محطة التمريض في حال محاولة فك أو إزالة السوار دون تصريح.",
-                  descEn:
-                    "Our smart tags provide instant notification to the nursing station if a band is loosened or removed without authorization.",
-                },
-                {
-                  titleAr: "خدمات تحديد الموقع في الوقت الفعلي",
-                  titleEn: "Real-Time Location Services",
-                  descAr:
-                    "يتمكن الفريق الطبي والأمني من متابعة موقع كل رضيع بشكل مستمر عبر نظام رقمي مركزي للمراقبة.",
-                  descEn:
-                    "Clinical and security teams maintain constant visibility of every infant's location through a centralized digital monitoring interface.",
-                },
-              ].map((item, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 15 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.06 }}
-                  className="bg-popover border border-border/50 rounded-xl p-5"
-                >
-                  <h3 className="font-serif text-base text-foreground mb-2">{isAr ? item.titleAr : item.titleEn}</h3>
-                  <p className="font-body text-sm text-muted-foreground leading-relaxed">{isAr ? item.descAr : item.descEn}</p>
-                </motion.div>
-              ))}
-            </div>
-
-            <div className="bg-popover border border-border/50 rounded-2xl p-6 mb-8">
-              <div className="flex items-center gap-2 mb-3">
-                <Shield className="w-5 h-5 text-primary" />
-                <h3 className="font-serif text-lg text-foreground">
-                  {isAr ? "المطابقة التلقائية بين الأم والرضيع" : "Automated Mother-Infant Matching"}
-                </h3>
-              </div>
-              <p className="font-body text-sm text-muted-foreground mb-4">
-                {isAr
-                  ? "لضمان أعلى مستويات الأمان والدقة، يعتمد النظام على تقنية الربط الرقمي المشفّر بين الأم وطفلها، مما يتيح:"
-                  : "To ensure the absolute integrity of the mother-child bond, our system utilizes encrypted digital pairing:"}
-              </p>
-              <div className="space-y-2">
-                {(isAr
-                  ? [
-                      "ربطًا إلكترونيًا دقيقًا بين الأم والرضيع",
-                      "التحقق الفوري من هوية المولود عند كل عملية نقل أو تسليم",
-                      "تنبيهات تلقائية في حال وجود أي عدم تطابق بالنظام",
-                    ]
-                  : [
-                      "Mothers and infants are electronically linked to ensure the highest levels of accuracy and security",
-                      "Instant identity verification of the newborn at every transfer or handover",
-                      "Automatic alerts in case of any system mismatch",
-                    ]).map((point, i) => (
-                  <div key={i} className="flex items-start gap-3">
-                    <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
-                    <span className="font-body text-sm text-foreground">{point}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="text-center">
-              <h4 className="font-serif text-base text-foreground mb-3">{isAr ? "لماذا هذا النظام؟" : "Why?"}</h4>
-              <p className="font-body text-sm text-muted-foreground">
-                {isAr
-                  ? "حماية على مدار الساعة      تتبع لحظي      مطابقة آمنة بين الأم والرضيع      تنبيهات فورية عند العبث"
-                  : "24/7 Protection       Real-Time Tracking       Mother-Infant Match       Instant Tamper Alert"}
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+ 
 
       <Footer />
       <ScrollToTop />

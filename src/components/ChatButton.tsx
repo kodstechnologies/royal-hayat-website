@@ -1,6 +1,8 @@
 import { MessageCircle, X, Send, Bot } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useRef, useEffect, useMemo, type ReactNode, type MouseEvent } from "react";
+import { useRef, useEffect, useState, type ReactNode, type MouseEvent } from "react";
+import { ChatStreamError, postChatStream } from "@/api/chat";
+import { formatChatMessageHtml } from "@/utils/chatMessageFormat";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useChat } from "@/contexts/ChatContext";
@@ -127,20 +129,22 @@ const ChatButton = () => {
     setIsTyping,
     helpStage,
     setHelpStage,
-    selectedTopicId,
     setSelectedTopicId,
     closeChat,
   } = useChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const otherTopics = useMemo(
-    () => CHAT_TOPICS.filter((topic) => topic.id !== selectedTopicId),
-    [selectedTopicId],
-  );
+  const streamAbortRef = useRef<AbortController | null>(null);
+  const [isStreaming, setIsStreaming] = useState(false);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping, helpStage]);
+
+  useEffect(() => {
+    return () => {
+      streamAbortRef.current?.abort();
+    };
+  }, []);
 
   const handleInternalLinkClick = (e: MouseEvent<HTMLDivElement>) => {
     const anchor = (e.target as HTMLElement).closest("a");
@@ -168,28 +172,81 @@ const ChatButton = () => {
     }, 600 + Math.random() * 400);
   };
 
-  const handleSend = () => {
+  const getAiErrorMessage = (err: unknown) => {
+    if (err instanceof ChatStreamError) {
+      if (err.code === "MODEL_OVERLOADED") return t("chatAiHighTraffic");
+      return t("chatAiUnavailable");
+    }
+    return t("chatAiUnavailable");
+  };
+
+  const handleSend = async () => {
     const trimmed = input.trim();
-    if (!trimmed) return;
+    if (!trimmed || isTyping || isStreaming) return;
     setInput("");
     setHelpStage("topics");
     setSelectedTopicId(null);
-    setMessages((prev) => [...prev, { role: "user", content: trimmed }]);
+
+    streamAbortRef.current?.abort();
+    const abortController = new AbortController();
+    streamAbortRef.current = abortController;
+
+    const userMessage = { role: "user" as const, content: trimmed };
+    const historyForApi = [...messages, userMessage];
+    setMessages((prev) => [...prev, userMessage, { role: "assistant", content: "" }]);
     setIsTyping(true);
-    setTimeout(() => {
-      setMessages((prev) => [...prev, { role: "assistant", content: getResponse(trimmed) }]);
+    setIsStreaming(true);
+
+    let streamed = "";
+
+    try {
+      await postChatStream(
+        historyForApi.map((m) => ({ role: m.role, content: m.content })),
+        isAr ? "ar" : "en",
+        (delta) => {
+          streamed += delta;
+          const snapshot = streamed;
+          setIsTyping(false);
+          setMessages((prev) => {
+            if (prev.length === 0) return prev;
+            const next = [...prev];
+            const last = next[next.length - 1];
+            if (last.role === "assistant") {
+              next[next.length - 1] = { role: "assistant", content: snapshot };
+            }
+            return next;
+          });
+        },
+        abortController.signal,
+      );
+    } catch (err) {
+      if (abortController.signal.aborted) return;
+      const errorMessage = getAiErrorMessage(err);
+      setMessages((prev) => {
+        const next = [...prev];
+        const last = next[next.length - 1];
+        if (last?.role === "assistant") {
+          next[next.length - 1] = { role: "assistant", content: errorMessage };
+          return next;
+        }
+        return [...next, { role: "assistant", content: errorMessage }];
+      });
+    } finally {
       setIsTyping(false);
-    }, 700);
+      setIsStreaming(false);
+      if (streamAbortRef.current === abortController) {
+        streamAbortRef.current = null;
+      }
+    }
   };
 
-  const renderContent = (text: string) => {
+  const showTypingIndicator =
+    isTyping ||
+    (isStreaming && messages.length > 0 && messages[messages.length - 1]?.role === "assistant" && !messages[messages.length - 1]?.content);
+
+  const renderContent = (text: string, streaming = false) => {
     return text.split("\n").map((line, i) => {
-      const processed = line
-        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-        .replace(
-          /\[(.*?)\]\((.*?)\)/g,
-          '<a href="$2" class="text-accent underline hover:text-accent/80 font-medium">$1</a>',
-        );
+      const processed = formatChatMessageHtml(line, streaming);
       if (/^\d+\.\s/.test(line)) {
         return <p key={i} className="ps-1" dangerouslySetInnerHTML={{ __html: processed }} />;
       }
@@ -291,7 +348,15 @@ const ChatButton = () => {
             </div>
 
             <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 min-h-0">
-              {messages.map((msg, i) => (
+              {messages.map((msg, i) => {
+                const isEmptyStreamingAssistant =
+                  isStreaming &&
+                  i === messages.length - 1 &&
+                  msg.role === "assistant" &&
+                  !msg.content.trim();
+                if (isEmptyStreamingAssistant) return null;
+
+                return (
                 <motion.div
                   key={i}
                   initial={{ opacity: 0, y: 8 }}
@@ -308,11 +373,17 @@ const ChatButton = () => {
                         : "bg-secondary/30 text-foreground rounded-bl-md"
                     }`}
                   >
-                    {renderContent(msg.content)}
+                    {renderContent(
+                      msg.content,
+                      isStreaming &&
+                        msg.role === "assistant" &&
+                        i === messages.length - 1,
+                    )}
                   </div>
                 </motion.div>
-              ))}
-              {isTyping && (
+                );
+              })}
+              {showTypingIndicator && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start">
                   <div className="bg-secondary/30 rounded-2xl rounded-bl-md px-4 py-3 flex items-center gap-1.5">
                     <span
@@ -331,7 +402,7 @@ const ChatButton = () => {
                 </motion.div>
               )}
 
-              {!isTyping && (
+              {!isTyping && !isStreaming && (
                 <div className="pt-1 space-y-2.5">
                   {helpStage === "topics" && (
                     <div className="flex flex-wrap items-start gap-2">
@@ -347,29 +418,10 @@ const ChatButton = () => {
 
                   {helpStage === "guided" && (
                     <div className="flex flex-wrap items-start gap-2">
-                      <ActionButton onClick={() => setHelpStage("need-help")}>
-                        {t("chatNeedHelp")}
+                      <ActionButton onClick={() => setHelpStage("whatsapp")}>
+                        {t("chatNeedMoreHelp")}
                       </ActionButton>
                     </div>
-                  )}
-
-                  {helpStage === "need-help" && (
-                    <>
-                      <div className="flex flex-wrap items-start gap-2">
-                        {otherTopics.map((topic) => (
-                          <CapsuleButton
-                            key={topic.id}
-                            topic={topic}
-                            onClick={() => handleTopicSelect(topic)}
-                          />
-                        ))}
-                      </div>
-                      <div className="flex flex-wrap items-start gap-2">
-                        <ActionButton onClick={() => setHelpStage("whatsapp")}>
-                          {t("chatNeedMoreHelp")}
-                        </ActionButton>
-                      </div>
-                    </>
                   )}
 
                   {helpStage === "whatsapp" && (
@@ -396,11 +448,12 @@ const ChatButton = () => {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder={t("chatPlaceholder")}
-                  className="flex-1 bg-secondary/20 rounded-xl px-4 py-2.5 text-sm font-body text-foreground placeholder:text-muted-foreground/50 outline-none focus:ring-1 focus:ring-accent/50 transition-all"
+                  disabled={isTyping || isStreaming}
+                  className="flex-1 bg-secondary/20 rounded-xl px-4 py-2.5 text-sm font-body text-foreground placeholder:text-muted-foreground/50 outline-none focus:ring-1 focus:ring-accent/50 transition-all disabled:opacity-60"
                 />
                 <button
                   type="submit"
-                  disabled={!input.trim()}
+                  disabled={!input.trim() || isTyping || isStreaming}
                   className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-40"
                 >
                   <Send className="w-4 h-4" />

@@ -4,8 +4,14 @@ import { Volume2, VolumeX } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const HeroSection = () => {
-  const { t, lang } = useLanguage();
+  const { t, lang, dir } = useLanguage();
   const isAr = lang === "ar";
+  /** Video copy is on the physical right; align block to that edge in both LTR/RTL page dirs */
+  const heroAlignClass = isAr
+    ? dir === "rtl"
+      ? "items-start"
+      : "items-end"
+    : "items-start";
   const [isVisible, setIsVisible] = useState(true);
   const [isMuted, setIsMuted] = useState(true);   // start muted so browser allows autoplay
   const [isPlaying, setIsPlaying] = useState(true);
@@ -84,8 +90,7 @@ const HeroSection = () => {
       <div className="absolute inset-0 z-0 overflow-hidden">
         <video
           ref={videoRef}
-          // src="https://royal-hayat.s3.eu-central-1.amazonaws.com/static/RHH+VIDEO+(1).mp4"
-          // src="https://res.cloudinary.com/dwhc8kzpv/video/upload/v1777986296/RHH_SH_16_Website_1_h7dabt.mp4"
+         
           src="https://royal-hayat.s3.eu-central-1.amazonaws.com/static/RHH+SH+16+Website+(1).mp4"
           autoPlay
           loop
@@ -102,7 +107,11 @@ const HeroSection = () => {
 
         {/* Heavier overlay fades in on hover */}
         <motion.div
-          className="absolute inset-0 bg-gradient-to-r from-background/80 via-background/40 to-transparent pointer-events-none"
+          className={`absolute inset-0 pointer-events-none ${
+            isAr
+              ? "bg-gradient-to-l from-background/80 via-background/40 to-transparent"
+              : "bg-gradient-to-r from-background/80 via-background/40 to-transparent"
+          }`}
           initial={{ opacity: 0 }}
           animate={{ opacity: isVisible ? 1 : 0 }}
           transition={{ duration: 0.6 }}
@@ -128,21 +137,26 @@ const HeroSection = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
-            className="relative z-10 container mx-auto px-4 sm:px-6 h-full flex flex-col justify-start pt-4 pb-20 max-lg:pt-2 lg:justify-center lg:py-12 pointer-events-none"
+            className={`relative z-10 container mx-auto px-4 sm:px-6 h-full flex flex-col justify-start pt-4 pb-20 max-lg:pt-2 lg:justify-center lg:py-12 pointer-events-none ${heroAlignClass}`}
           >
-            <div className={`max-w-3xl w-full ${isAr ? "ms-auto" : ""}`}>
+            <div
+              className="max-w-3xl w-full flex flex-col"
+              dir={isAr ? "rtl" : "ltr"}
+            >
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: 56 }}
                 transition={{ duration: 0.6 }}
-                className={`h-0.5 bg-primary mb-4 max-lg:mb-5 md:mb-8 ${isAr ? "ms-auto" : ""}`}
+                className={`h-0.5 bg-primary mb-4 max-lg:mb-5 md:mb-8 ${isAr ? "self-start" : ""}`}
               />
               <motion.h1
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
-                className={`text-2xl sm:text-3xl md:text-5xl lg:text-6xl xl:text-7xl font-serif leading-[1.2] tracking-tight mb-3 max-lg:mb-4 md:mb-6 ${
-                  isAr ? "hero-rtl text-right" : ""
+                className={`font-serif leading-[1.2] tracking-tight mb-3 max-lg:mb-4 md:mb-6 ${
+                  isAr
+                    ? "text-start text-xl sm:text-2xl md:text-3xl lg:text-4xl"
+                    : "text-2xl sm:text-3xl md:text-5xl lg:text-6xl xl:text-7xl"
                 }`}
               >
                 <span className="text-foreground block">{t("exceptionalCare")}</span>
@@ -151,46 +165,45 @@ const HeroSection = () => {
                   <span className="max-lg:block md:inline">{t("everyAge")}</span>
                 </span>
               </motion.h1>
-              {/* {t("heroIntro") ? (
+              {t("heroIntro") ? (
                 <motion.p
                   initial={{ opacity: 0, y: 14 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.2 }}
-                  className={`text-[#A67C00] font-body text-sm md:text-base leading-relaxed mb-3 max-lg:mb-4 md:mb-5 max-w-xl ${
-                    isAr ? "hero-rtl text-right ms-auto" : "text-left"
+                  className={`text-[#A67C00] font-body leading-relaxed mb-3 max-lg:mb-4 md:mb-5 max-w-xl ${
+                    isAr ? "text-start text-xs md:text-sm" : "text-left text-sm md:text-base"
                   }`}
-                  style={isAr ? { fontSize: "calc(0.875rem + 2px)" } : undefined}
                 >
                   {t("heroIntro")}
                 </motion.p>
-              ) : null} */}
+              ) : null}
               <motion.p
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.3 }}
-                className={`text-muted-foreground font-body text-sm md:text-base leading-relaxed mb-3 max-lg:mb-4 md:mb-5 max-w-xl whitespace-pre-line ${
-                  isAr ? "hero-rtl text-right ms-auto" : "text-left"
+                className={`text-muted-foreground font-body leading-relaxed mb-3 max-lg:mb-4 md:mb-5 max-w-xl whitespace-pre-line ${
+                  isAr ? "text-start text-xs md:text-sm" : "text-left text-sm md:text-base"
                 }`}
-                style={isAr ? { fontSize: "calc(0.875rem + 2px)" } : undefined}
               >
                 {t("heroDesc")}
               </motion.p>
-              <motion.p
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.38 }}
-                className={`text-gray-400 font-serif text-base md:text-xl mb-5 max-lg:mb-6 md:mb-8 max-w-xl ${
-                  isAr ? "hero-rtl text-right ms-auto" : ""
-                }`}
-                style={isAr ? { fontSize: "calc(1.125rem + 2px)" } : undefined}
-              >
-                {t("heroTagline")}
-              </motion.p>
+              {t("heroTagline") ? (
+                <motion.p
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.38 }}
+                  className={`text-gray-400 font-serif mb-5 max-lg:mb-6 md:mb-8 max-w-xl ${
+                    isAr ? "text-start text-sm md:text-base" : "text-base md:text-xl"
+                  }`}
+                >
+                  {t("heroTagline")}
+                </motion.p>
+              ) : null}
               <motion.div
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.45 }}
-                className="flex flex-wrap gap-4 pointer-events-auto"
+                className={`flex flex-wrap gap-4 pointer-events-auto ${isAr ? "justify-start" : ""}`}
               >
                 <a
                   href="/medical-services"
@@ -227,11 +240,6 @@ const HeroSection = () => {
         </div>
       </motion.button>
 
-      <style>{`
-        .hero-rtl {
-          direction: rtl;
-        }
-      `}</style>
     </section>
   );
 };

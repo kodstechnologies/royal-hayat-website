@@ -1,4 +1,7 @@
 import { useState } from "react";
+import axios from "axios";
+import { createAppointmentRequest } from "@/api/appointmentRequest";
+import { toast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { ClipboardList, CheckCircle2, ArrowRight, ArrowLeft, User, Phone, Calendar } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
@@ -69,6 +72,7 @@ const AppointmentRequest = () => {
     return Object.keys(e).length === 0;
   };
 
+  const handleSubmit = async () => {
   const handleSubmit = async () => {
     if (!validate()) return;
     setSubmitting(true);

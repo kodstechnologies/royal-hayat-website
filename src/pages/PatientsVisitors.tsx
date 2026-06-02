@@ -8,17 +8,25 @@ import { Stethoscope, Shield, Bed, ClipboardList, Scale, Globe, CheckCircle2, Ph
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams, useLocation } from "react-router-dom";
 const PatientsVisitors = () => {
   const { lang } = useLanguage();
   const [searchParams] = useSearchParams();
+  const location = useLocation();
   const tab = searchParams.get("tab");
   const showAll = !tab;
   const show = (s: string) => showAll || tab === s;
 
   useEffect(() => {
+    const hash = location.hash.replace("#", "");
+    if (hash) {
+      const timer = window.setTimeout(() => {
+        document.getElementById(hash)?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 150);
+      return () => window.clearTimeout(timer);
+    }
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-  }, [tab]);
+  }, [tab, location.hash]);
 
   // ─── ROOMS PACKAGE PDF LINKS ───────────────────────────────────────────
   // Using local PDF files from /public/images/doctors/
@@ -27,16 +35,43 @@ const PatientsVisitors = () => {
   // ───────────────────────────────────────────────────────────────────────
 
   const sectionClass = "scroll-mt-[calc(var(--header-height,76px)+2rem)]";
+  const isAr = lang === "ar";
+  /** Justified body copy: full words per line; hyphen only when a word wraps. */
+  const patientsProseLine = "patients-prose-line";
+  const bodyProse = `font-body text-sm text-foreground leading-normal md:leading-relaxed text-justify [word-break:normal] ${patientsProseLine}`;
+  const mutedProse = `font-body text-sm text-muted-foreground leading-normal md:leading-relaxed text-justify [word-break:normal] ${patientsProseLine}`;
+  const billRightsProse = bodyProse;
+  const billRightsIntro = `${mutedProse} mb-6`;
+
+  const renderBillRightsList = (items: string[]) => (
+    <ol className="space-y-3" dir={isAr ? "rtl" : "ltr"} lang={isAr ? "ar" : "en"}>
+      {items.map((item, i) => (
+        <li
+          key={i}
+          className="flex items-start gap-2 sm:gap-3"
+        >
+          <span className="font-medium shrink-0 tabular-nums leading-relaxed">
+            {i + 1}.
+          </span>
+          <span className={`min-w-0 flex-1 ${billRightsProse}`}>{item}</span>
+        </li>
+      ))}
+    </ol>
+  );
 
   return (
-    <div className="min-h-screen bg-background pt-[var(--header-height,56px)] overflow-x-hidden flex flex-col [&_.text-accent]:text-[#816107] [&_p:not(.no-mobile-justify)]:text-justify [&_li]:text-justify max-md:[&_p:not(.no-mobile-justify)]:hyphens-auto max-md:[&_p:not(.no-mobile-justify)]:break-words max-md:[&_p:not(.no-mobile-justify)]:[text-justify:inter-word] max-md:[&_p:not(.no-mobile-justify)]:[text-align-last:left] max-md:[&_li]:hyphens-auto max-md:[&_li]:break-words max-md:[&_li]:[text-justify:inter-word]">
+    <div
+      dir={isAr ? "rtl" : "ltr"}
+      lang={isAr ? "ar" : "en"}
+      className="min-h-screen bg-background pt-[var(--header-height,56px)] overflow-x-hidden flex flex-col patients-prose-root [&_.text-accent]:text-[#816107]"
+    >
       <Header />
 
       {/* Hero */}
-      <section className={`bg-primary/5 ${tab === "rooms-package" ? "py-6 md:py-8" : "py-16 md:py-20"}`}>
+      <section className={`bg-primary/5 ${tab === "rooms-package" ? "py-6 md:py-8" : "py-10 md:py-16 lg:py-20"}`}>
         <div className="container mx-auto px-6 text-center">
           <ScrollAnimationWrapper>
-            <p className="no-mobile-justify text-accent text-xs tracking-[0.3em] uppercase font-body mb-3 !text-center">
+            <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3 !text-center">
               {lang === "ar" ? (tab === "admission" ? "للمرضى" : "لمرضانا") : "For Our Patients"}
             </p>
             <h1 className={`font-serif text-foreground mb-4 ${tab === "rooms-package" ? "text-2xl md:text-3xl" : "text-4xl md:text-5xl"}`}>
@@ -64,19 +99,16 @@ const PatientsVisitors = () => {
       </section>
 
       {/* All Sections */}
-      <section className={tab === "rooms-package" ? "flex-1 flex flex-col py-0" : "py-12 md:py-16"}>
+      <section className={tab === "rooms-package" ? "flex-1 flex flex-col py-0" : "py-8 md:py-12 lg:py-16"}>
         <div className={tab === "rooms-package" ? "w-full flex-1 flex flex-col" : "container mx-auto px-6"}>
-          <div className={tab === "rooms-package" ? "w-full flex-1 flex flex-col" : "max-w-4xl mx-auto space-y-20"}>
-            {showAll && (
-              <ScrollAnimationWrapper>
-                <div className="bg-accent/5 border border-accent/10 rounded-2xl p-8 text-center">
-                  <h2 className="text-2xl font-serif text-foreground mb-3">{lang === "ar" ? "مرحباً بكم في صفحة معلومات للمرضى والزوار" : "Welcome to Information for Patients & Visitors"}</h2>
-                  <p className="text-muted-foreground font-body text-sm leading-relaxed">
-                    {lang === "ar" ? "في مستشفى رويال حياة، نلتزم بتقديم تجربة استثنائية لكل مريض وزائر، وذلك من خلال خدمات متكاملة تجمع بين الرعاية الطبية المتقدمة والراحة والاهتمام بأدق التفاصيل. هنا ستجدون جميع المعلومات المتعلقة بإقامتكم والخدمات المقدمة لكم بكل سهولة ووضوح." : "This is a test text that will be replaced later. We are committed to providing an exceptional experience for every patient and visitor at Royale Hayat Hospital. Here you will find all the information related to your stay and our services."}
-                  </p>
-                </div>
-              </ScrollAnimationWrapper>
-            )}
+          <div
+            className={
+              tab === "rooms-package"
+                ? "w-full flex-1 flex flex-col"
+                : "max-w-4xl mx-auto space-y-10 md:space-y-16 lg:space-y-20 patients-page-content"
+            }
+          >
+          
 
             {/* NURSING */}
             {show("nursing") && <div id="section-nursing" className={sectionClass}>
@@ -88,15 +120,15 @@ const PatientsVisitors = () => {
                   <h2 className="text-2xl md:text-3xl font-serif text-foreground">{lang === "ar" ? "التمريض" : "Nursing"}</h2>
                 </div>}
 
-                <div className="space-y-4 font-body text-sm text-muted-foreground leading-relaxed">
-                  <p>
+                <div className="space-y-4">
+                  <p className={mutedProse}>
                     {lang === "ar" ? "نفخر في مستشفى رويال حياة بتقديم رعاية تمريضية استثنائية من خلال فريق من الممرضين والممرضات المؤهلين والمعتمدين، المعروفين باحترافيتهم العالية وروحهم الإنسانية." : "At Royale Hayat Hospital, we take pride in delivering exceptional nursing care through a team of highly trained, qualified, and certified professionals. Renowned for their dedication and compassion, our nurses are at the heart of every patient experience, ensuring comfort, safety, and support 24 hours a day."}
                   </p>
-                  <p>
+                  <p className={mutedProse}>
                     {lang === "ar" ? "يشكل فريق التمريض محور تجربة المريض، حيث يعمل على توفير الراحة والأمان والدعم على مدار الساعة، سواء للمرضى المنومين أو المراجعين الخارجيين." : "Whether you're receiving inpatient or outpatient care, you are in capable hands. Each nursing unit is led by an experienced director, supported by a team of registered nurses who uphold the highest standards of clinical excellence."}
                   </p>
                   {lang === "ar" && (
-                    <p>
+                    <p className={mutedProse}>
                       يقود كل قسم تمريضي مدير تمريض ذو خبرة، مدعوم بفريق من الممرضين المسجلين الذين يلتزمون بأعلى معايير الجودة والرعاية السريرية.
                     </p>
                   )}
@@ -114,18 +146,18 @@ const PatientsVisitors = () => {
                     ]).map((item, i) => (
                       <div key={i} className="flex items-start gap-3 bg-popover border border-border/50 rounded-xl px-5 py-4">
                         <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                        <span className="font-body text-sm text-foreground">{item}</span>
+                        <span className={bodyProse}>{item}</span>
                       </div>
                     ))}
                     <div className="bg-popover border border-border/50 rounded-xl px-5 py-4">
                       <div className="flex items-start gap-3">
                         <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                         <div>
-                          <span className="font-body text-sm text-foreground">{lang === "ar" ? "تطوير مهني مستمر من خلال برامج تدريبية متخصصة تشمل:" : "Ongoing professional development through structured training in:"}</span>
+                          <span className={bodyProse}>{lang === "ar" ? "تطوير مهني مستمر من خلال برامج تدريبية متخصصة تشمل:" : "Ongoing professional development through structured training in:"}</span>
                           <ul className="mt-2 ml-4 space-y-1">
-                            <li className="font-body text-sm text-muted-foreground">• {lang === "ar" ? "الإسعافات الأولية" : "First aid"}</li>
-                            <li className="font-body text-sm text-muted-foreground">• {lang === "ar" ? "مكافحة العدوى" : "Infection control"}</li>
-                            <li className="font-body text-sm text-muted-foreground">• {lang === "ar" ? "أحدث ممارسات رعاية المرضى المتقدمة" : "Advanced patient care practices"}</li>
+                            <li className={mutedProse}>• {lang === "ar" ? "الإسعافات الأولية" : "First aid"}</li>
+                            <li className={mutedProse}>• {lang === "ar" ? "مكافحة العدوى" : "Infection control"}</li>
+                            <li className={mutedProse}>• {lang === "ar" ? "أحدث ممارسات رعاية المرضى المتقدمة" : "Advanced patient care practices"}</li>
                           </ul>
                         </div>
                       </div>
@@ -145,7 +177,7 @@ const PatientsVisitors = () => {
                   <h2 className="text-2xl md:text-3xl font-serif text-foreground">{lang === "ar" ? "التأمين الصحي" : "Health Insurance"}</h2>
                 </div>}
 
-                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-8">
+                <p className={`${mutedProse} mb-8`}>
                   {lang === "ar"
                     ? "يحرص قسم التأمين الصحي في مستشفى رويال حياة على جعل تجربتكم العلاجية أكثر سهولة وراحة، من خلال التعاون مع معظم شركات التأمين الطبي الخاصة المعتمدة في الكويت، وتوفير حلول دفع مرنة للمرضى المشمولين بالتغطية التأمينية."
                     : "At Royale Hayat Hospital, our Medical Insurance Department is dedicated to making your healthcare experience as smooth and stress-free as possible. We have established partnerships with most major private medical insurance companies and offer a tailored payment scheme for patients covered under private insurance programs."}
@@ -155,15 +187,15 @@ const PatientsVisitors = () => {
                   <h3 className="font-serif text-lg text-foreground mb-3">{lang === "ar" ? "خدمة المطالبات المباشرة" : "Direct Billing Support"}</h3>
                   {lang === "ar" ? (
                     <>
-                      <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
+                      <p className={`${mutedProse} mb-4`}>
                         يقوم فريقنا بإدارة جميع معاملات المطالبات والتنسيق المباشر مع شركة التأمين الخاصة بكم لتقليل أي إجراءات إضافية عليكم.
                       </p>
-                      <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
+                      <p className={`${mutedProse} mb-4`}>
                         ولضمان الاستفادة من الخدمة، يرجى التأكد من توفير المعلومات التالية بشكل صحيح:
                       </p>
                     </>
                   ) : (
-                    <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
+                    <p className={`${mutedProse} mb-4`}>
                       We handle all billing submissions and facilitate direct billing to your insurance provider, ensuring minimal hassle for you. To enable this service, please ensure the following information is accurately provided:
                     </p>
                   )}
@@ -171,7 +203,7 @@ const PatientsVisitors = () => {
                     {(lang === "ar" ? ["رقم وثيقة التأمين", "رقم المجموعة", "العنوان البريدي الصحيح"] : ["Insurance policy number", "Group number", "Correct mailing address"]).map((item, i) => (
                       <div key={i} className="flex items-center gap-3">
                         <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
-                        <span className="font-body text-sm text-foreground">{item}</span>
+                        <span className={bodyProse}>{item}</span>
                       </div>
                     ))}
                   </div>
@@ -179,7 +211,7 @@ const PatientsVisitors = () => {
 
                 <div className="bg-popover border border-border/50 rounded-2xl p-6 mb-6">
                   <h3 className="font-serif text-lg text-foreground mb-3">{lang === "ar" ? "خدمات دعم التأمين" : "Comprehensive Insurance Assistance"}</h3>
-                  <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
+                  <p className={`${mutedProse} mb-4`}>
                     {lang === "ar"
                       ? "فريق التأمين المتخصص لدينا جاهز لمساعدتكم في جميع مراحل الإجراءات، وتشمل الخدمات:"
                       : "Our experienced insurance team is here to guide you through every step of the process. Services include:"}
@@ -196,35 +228,38 @@ const PatientsVisitors = () => {
                     ]).map((item, i) => (
                       <div key={i} className="flex items-center gap-3">
                         <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
-                        <span className="font-body text-sm text-foreground">{item}</span>
+                        <span className={bodyProse}>{item}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                <div className="bg-primary/5 rounded-2xl p-6">
+                <div
+                  id="insurance-operating-hours"
+                  className="bg-primary/5 rounded-2xl p-6 scroll-mt-[calc(var(--header-height,76px)+2rem)]"
+                >
                   <div className="flex items-center gap-3 mb-3">
                     <Clock className="w-5 h-5 text-primary" />
                     <h3 className="font-serif text-lg text-foreground">{lang === "ar" ? "ساعات العمل" : "Operating Hours"}</h3>
                   </div>
                   {lang === "ar" ? (
                     <>
-                      <p className="font-body text-sm text-muted-foreground mb-3">يفتح مكتب التأمين أبوابه خلال الأوقات التالية:</p>
-                      <p className="font-body text-sm text-foreground mb-1">الأحد إلى الخميس:</p>
-                      <p className="font-body text-sm text-foreground mb-3">8:00 صباحًا – 8:00 مساءً</p>
-                      <p className="font-body text-sm text-foreground mb-1">السبت:</p>
-                      <p className="font-body text-sm text-foreground">8:00 صباحًا – 4:00 مساءً</p>
+                      <p className={`${mutedProse} mb-3`}>يفتح مكتب التأمين أبوابه خلال الأوقات التالية:</p>
+                      <p className={`${bodyProse} mb-1`}>الأحد إلى الخميس:</p>
+                      <p className={`${bodyProse} mb-3`}>8:00 صباحًا – 8:00 مساءً</p>
+                      <p className={`${bodyProse} mb-1`}>السبت:</p>
+                      <p className={bodyProse}>8:00 صباحًا – 4:00 مساءً</p>
                     </>
                   ) : (
                     <>
-                      <p className="font-body text-sm text-muted-foreground mb-1">Our insurance office is open:</p>
-                      <p className="font-body text-sm text-foreground">Sunday – Thursday: 8:00 AM – 8:00 PM</p>
-                      <p className="font-body text-sm text-foreground">Saturday: 8:00 AM – 4:00 PM</p>
+                      <p className={`${mutedProse} mb-1`}>Our insurance office is open:</p>
+                      <p className={bodyProse}>Sunday – Thursday: 8:00 AM – 8:00 PM</p>
+                      <p className={bodyProse}>Saturday: 8:00 AM – 4:00 PM</p>
                     </>
                   )}
                   <div className="flex items-center gap-2 mt-4">
                     <Phone className="w-4 h-4 text-accent" />
-                    <p className="font-body text-sm text-foreground">
+                    <p className={bodyProse}>
                       {lang === "ar"
                         ? "للاستفسارات أو للتأكد من قبول شركة التأمين الخاصة بكم:"
                         : "For inquiries or to verify if your insurance plan is accepted, please contact us at "}
@@ -233,12 +268,12 @@ const PatientsVisitors = () => {
                     </p>
                   </div>
                 </div>
-
-                <div className="mt-10 relative left-1/2 right-1/2 -mx-[50vw] w-screen">
-                  <InsurancePartners />
-                </div>
               </ScrollAnimationWrapper>
             </div>}
+
+            {show("insurance") && (
+              <InsurancePartners variant="patients-insurance" />
+            )}
 
             {/* BIRTHING SUITES PACKAGES */}
             {show("rooms-package") && <div id="section-rooms-package" className={tab === "rooms-package" ? "flex-1 flex flex-col" : sectionClass}>
@@ -288,7 +323,7 @@ const PatientsVisitors = () => {
                       <h2 className="text-2xl md:text-3xl font-serif text-foreground">{lang === "ar" ? "باقات أجنحة الولادة" : "Birthing Suites Packages"}</h2>
                     </div>}
                     {/* 
-                    <p className="font-body text-sm text-muted-foreground leading-relaxed mb-6">
+                    <p className={`${mutedProse} mb-6`}>
                       {lang === "ar"
                         ? "يوفر مستشفى رويال حياة مجموعة من الأجنحة الفاخرة. يمكنك استعراض كافة التفاصيل والباقات."
                         : "Royale Hayat Hospital offers a range of luxurious birthing suites. Explore all details and packages."}
@@ -331,7 +366,7 @@ const PatientsVisitors = () => {
                   <h2 className="text-2xl md:text-3xl font-serif text-foreground">{lang === "ar" ? "مركز المرضى الدوليين" : "International Patient Center"}</h2>
                 </div>
 
-                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
+                <p className={`${mutedProse} mb-4`}>
                   {lang === "ar"
                     ? "يقدّم مركز المرضى الدوليين الدعم الكامل للمرضى من خارج الكويت، من خلال المساعدة في الإجراءات الإدارية، وحجز المواعيد، وترتيبات النقل، والتنسيق المالي، بالإضافة إلى توفير خدمات الترجمة بعدة لغات لضمان تجربة مريحة وسلسة. تبدأ رعاية المرضى الدوليين قبل وصولكم إلى المستشفى، وتستمر طوال فترة إقامتكم. كما يوفّر المركز خدمات متكاملة للمرضى والأطباء المحوِّلين الراغبين في الحصول على استشارة طبية، أو رأي طبي ثانٍ، أو علاج للحالات المعقدة."
                     : "For detailed information about our International Patient Center services, enquiry form, and contact details, please visit the dedicated page."}
@@ -357,7 +392,7 @@ const PatientsVisitors = () => {
                   <h2 className="text-2xl md:text-3xl font-serif text-foreground">{lang === "ar" ? "معلومات الدخول إلى المستشفى" : "Admission Information"}</h2>
                 </div>}
 
-                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-8">
+                <p className={`${mutedProse} mb-8`}>
                   {lang === "ar"
                     ? "في مستشفى رويال حياة، تبدأ راحتكم ورعايتكم منذ لحظة الدخول. سواء تم تحويلكم من طبيب داخل المستشفى أو من جهة خارجية، فإن إجراءات الدخول لدينا تتم بسلاسة لضمان تجربة مريحة لأي عملية جراحية أو إجراء طبي مجدول."
                     : "At Royale Hayat Hospital, your comfort and care begin the moment you're admitted. Whether you're referred by an in-house specialist or an external physician, our streamlined admission process ensures a smooth entry for any planned surgery or medical procedure."}
@@ -367,7 +402,7 @@ const PatientsVisitors = () => {
                   <h3 className="font-serif text-lg text-foreground mb-3">{lang === "ar" ? "كيفية الدخول إلى المستشفى" : "How to Get Admitted"}</h3>
                   <p
                     lang={lang === "ar" ? "ar" : "en"}
-                    className="font-body text-sm text-muted-foreground leading-relaxed mb-4 max-md:hyphens-auto max-md:break-words max-md:[text-justify:inter-word] max-md:[text-align-last:left]"
+                    className={`${mutedProse} mb-4`}
                   >
                     {lang === "ar"
                       ? "يتم ترتيب الدخول مسبقًا بالتنسيق مع فريق المستشفى، وذلك بناءً على:"
@@ -383,7 +418,7 @@ const PatientsVisitors = () => {
                     ]).map((item, i) => (
                       <div key={i} className="flex items-center gap-3">
                         <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
-                        <span className="font-body text-sm text-foreground">{item}</span>
+                        <span className={bodyProse}>{item}</span>
                       </div>
                     ))}
                   </div>
@@ -391,7 +426,7 @@ const PatientsVisitors = () => {
 
                 <div className="bg-popover border border-border/50 rounded-2xl p-6 mb-6">
                   <h3 className="font-serif text-lg text-foreground mb-3">{lang === "ar" ? "المستندات المطلوبة للتسجيل" : "What You'll Need for Registration"}</h3>
-                  <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
+                  <p className={`${mutedProse} mb-4`}>
                     {lang === "ar"
                       ? "يرجى تجهيز المستندات التالية لإتمام إجراءات الدخول:"
                       : "To complete your admission, please prepare the following documents:"}
@@ -408,14 +443,14 @@ const PatientsVisitors = () => {
                     ]).map((item, i) => (
                       <div key={i} className="flex items-center gap-3">
                         <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
-                        <span className="font-body text-sm text-foreground">{item}</span>
+                        <span className={bodyProse}>{item}</span>
                       </div>
                     ))}
                     <div className="ml-7 space-y-1">
-                      <p className="font-body text-sm text-foreground">{lang === "ar" ? "المستندات الرسمية وتشمل:" : "Official documents, including:"}</p>
+                      <p className={bodyProse}>{lang === "ar" ? "المستندات الرسمية وتشمل:" : "Official documents, including:"}</p>
                       <ul className="ml-4 space-y-1">
-                        <li className="font-body text-sm text-muted-foreground">• {lang === "ar" ? "البطاقة المدنية" : "Civil ID"}</li>
-                        <li className="font-body text-sm text-muted-foreground">• {lang === "ar" ? "عقد الزواج (لخدمات الولادة أو الخدمات ذات الصلة)" : "Marriage certificate (for maternity or related services)"}</li>
+                        <li className={mutedProse}>• {lang === "ar" ? "البطاقة المدنية" : "Civil ID"}</li>
+                        <li className={mutedProse}>• {lang === "ar" ? "عقد الزواج (لخدمات الولادة أو الخدمات ذات الصلة)" : "Marriage certificate (for maternity or related services)"}</li>
                       </ul>
                     </div>
                     {(lang === "ar" ? [
@@ -427,7 +462,7 @@ const PatientsVisitors = () => {
                     ]).map((item, i) => (
                       <div key={i} className="flex items-center gap-3">
                         <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
-                        <span className="font-body text-sm text-foreground">{item}</span>
+                        <span className={bodyProse}>{item}</span>
                       </div>
                     ))}
                   </div>
@@ -435,12 +470,12 @@ const PatientsVisitors = () => {
 
                 <div className="bg-primary/5 rounded-2xl p-6">
                   <h3 className="font-serif text-lg text-foreground mb-3">{lang === "ar" ? "للمرضى الذين لديهم تأمين" : "For Insured Patients"}</h3>
-                  <p className="font-body text-sm text-muted-foreground leading-relaxed">
+                  <p className={mutedProse}>
                     {lang === "ar"
                       ? "إذا كنتم مشمولين بتأمين صحي خاص، سيقوم قسم التأمين الطبي بمساعدتكم في الحصول على الموافقات المسبقة وتسهيل إجراءات الفوترة المباشرة."
                       : "If you are covered by a private health insurance provider, our Medical Insurance Department will support you in securing pre-approval and facilitating direct billing."}
                   </p>
-                  <p className="font-body text-sm text-muted-foreground leading-relaxed mt-2">
+                  <p className={`${mutedProse} mt-2`}>
                     {lang === "ar" ? (
                       <>
                         يرجى مراجعة{" "}
@@ -466,18 +501,23 @@ const PatientsVisitors = () => {
             {/* DURING YOUR STAY */}
             {show("during-stay") && <div id="section-during-stay" className={sectionClass}>
               <ScrollAnimationWrapper>
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <div
+                  dir={isAr ? "rtl" : "ltr"}
+                  lang={isAr ? "ar" : "en"}
+                  className="during-stay-prose"
+                >
+                <div className={`flex items-center gap-3 mb-6 ${isAr ? "flex-row-reverse" : ""}`}>
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                     <Bed className="w-6 h-6 text-primary" />
                   </div>
-                  <h2 className="text-2xl md:text-3xl font-serif text-foreground">{lang === "ar" ? "أثناء إقامتك في مستشفى رويال حياة" : "During Your Stay at Royale Hayat Hospital"}</h2>
+                  <h2 className="text-2xl md:text-3xl font-serif text-foreground text-start flex-1">{lang === "ar" ? "أثناء إقامتك في مستشفى رويال حياة" : "During Your Stay at Royale Hayat Hospital"}</h2>
                 </div>
 
-                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-8">
+                <p className={`${mutedProse} mb-8`}>
                   {lang === "ar" ? "في مستشفى رويال حياة، نلتزم بجعل إقامتك مريحة وآمنة وممتعة قدر الإمكان. اكتشف مجموعة المرافق الفاخرة والخدمات الشخصية المتوفرة لك خلال فترة إقامتك معنا." : "At Royale Hayat Hospital, we are committed to making your stay as comfortable, safe, and pleasant as possible. Explore the range of premium amenities and personalized services available to you during your time with us."}
                 </p>
 
-                <h3 className="font-serif text-xl text-foreground mb-5">{lang === "ar" ? "وسائل الراحة المجانية" : "Complimentary Amenities"}</h3>
+                <h3 className="font-serif text-xl text-foreground mb-5 text-start">{lang === "ar" ? "وسائل الراحة المجانية" : "Complimentary Amenities"}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
                   {(lang === "ar" ? [
                     { icon: Wifi, title: "خدمة الإنترنت", desc: "ابقَ على اتصال من خلال خدمة الإنترنت عالية السرعة المجانية المتوفرة في جميع أنحاء المستشفى." },
@@ -492,18 +532,18 @@ const PatientsVisitors = () => {
                   ]).map((item, i) => (
                     <motion.div key={i} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}
                       className="bg-popover border border-border/50 rounded-2xl p-5">
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center">
+                      <div className={`flex items-center gap-3 mb-2 ${isAr ? "flex-row-reverse" : ""}`}>
+                        <div className="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
                           <item.icon className="w-4 h-4 text-accent" />
                         </div>
-                        <h4 className="font-serif text-base text-foreground">{item.title}</h4>
+                        <h4 className="font-serif text-base text-foreground text-start flex-1">{item.title}</h4>
                       </div>
-                      <p className="font-body text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+                      <p className={mutedProse}>{item.desc}</p>
                     </motion.div>
                   ))}
                 </div>
 
-                <h3 className="font-serif text-xl text-foreground mb-5">{lang === "ar" ? "خدمات الغرف" : "Room Services"}</h3>
+                <h3 className="font-serif text-xl text-foreground mb-5 text-start">{lang === "ar" ? "خدمات الغرف" : "Room Services"}</h3>
                 <div className="space-y-4 mb-10">
                   {(lang === "ar" ? [
                     { icon: UtensilsCrossed, title: "الطعام الخاص", desc: "استمتع بأطباق فاخرة من قائمة طعامنا المتنوعة، والتي تشمل المأكولات العالمية، والمتوسطية، والآسيوية، بالإضافة إلى خيارات مخصصة تُحضّر بواسطة طهاتنا التنفيذيين الحائزين على جوائز." },
@@ -514,21 +554,21 @@ const PatientsVisitors = () => {
                     { icon: Sparkles, title: "Housekeeping", desc: "Enjoy 24-hour housekeeping service with daily room refresh. You may also schedule service at a time that suits you best." },
                     { icon: Search, title: "Lost & Found", desc: "If you misplace an item, our Guest Services team is here to help. Please contact us to file a Lost & Found report with the Security Department. While we are not liable for personal items, we will make every effort to assist in locating them." },
                   ]).map((item, i) => (
-                    <div key={i} className="bg-popover border border-border/50 rounded-2xl p-5 flex items-start gap-4">
+                    <div key={i} className={`bg-popover border border-border/50 rounded-2xl p-5 flex items-start gap-4 ${isAr ? "flex-row-reverse" : ""}`}>
                       <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                         <item.icon className="w-5 h-5 text-primary" />
                       </div>
-                      <div>
-                        <h4 className="font-serif text-base text-foreground mb-1">{item.title}</h4>
-                        <p className="font-body text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+                      <div className="min-w-0 flex-1">
+                        <h4 className="font-serif text-base text-foreground mb-1 text-start">{item.title}</h4>
+                        <p className={mutedProse}>{item.desc}</p>
                       </div>
                     </div>
                   ))}
                 </div>
 
                 <div className="bg-primary/5 rounded-2xl p-6">
-                  <h3 className="font-serif text-lg text-foreground mb-3">{lang === "ar" ? "سياسة الزوار" : "Visitors Policy"}</h3>
-                  <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
+                  <h3 className="font-serif text-lg text-foreground mb-3 text-start">{lang === "ar" ? "سياسة الزوار" : "Visitors Policy"}</h3>
+                  <p className={`${mutedProse} mb-4`}>
                     {lang === "ar" ? "يلعب أحباؤك دورًا مهمًا في رحلة تعافيك. ولضمان سلامتك وراحتك، نرجو من الزوار الالتزام بالإرشادات التالية:" : "Your loved ones play a key role in your healing journey. To ensure your safety and comfort, we kindly ask visitors to follow these guidelines:"}
                   </p>
                   <div className="space-y-2">
@@ -541,12 +581,13 @@ const PatientsVisitors = () => {
                       "We request that all visitors sanitize their hands when entering and exiting your room.",
                       "Visitors who have experienced symptoms such as fever, vomiting, diarrhea, rash, or cough within the past 72 hours should refrain from visiting.",
                     ]).map((item, i) => (
-                      <div key={i} className="flex items-start gap-3">
+                      <div key={i} className={`flex items-start gap-3 ${isAr ? "flex-row-reverse" : ""}`}>
                         <AlertTriangle className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
-                        <span className="font-body text-sm text-foreground">{item}</span>
+                        <span className={`${bodyProse} min-w-0 flex-1`}>{item}</span>
                       </div>
                     ))}
                   </div>
+                </div>
                 </div>
               </ScrollAnimationWrapper>
             </div>}
@@ -554,23 +595,27 @@ const PatientsVisitors = () => {
             {/* PATIENT BILL OF RIGHTS */}
             {show("bill-of-rights") && <div id="section-bill-of-rights" className={sectionClass}>
               <ScrollAnimationWrapper>
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <div
+                  dir={isAr ? "rtl" : "ltr"}
+                  lang={isAr ? "ar" : "en"}
+                  className="bill-of-rights-prose"
+                >
+                <div className={`flex items-center gap-3 mb-6 ${isAr ? "flex-row-reverse" : ""}`}>
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                     <Scale className="w-6 h-6 text-primary" />
                   </div>
-                  <h2 className="text-2xl md:text-3xl font-serif text-foreground">{lang === "ar" ? "حقوق ومسؤوليات المريض" : "Patient Bill of Rights and Responsibilities"}</h2>
+                  <h2 className="text-2xl md:text-3xl font-serif text-foreground text-start flex-1">{lang === "ar" ? "حقوق ومسؤوليات المريض" : "Patient Bill of Rights and Responsibilities"}</h2>
                 </div>
 
                 {lang === "ar" && (
-                  <p className="font-body text-sm text-muted-foreground leading-relaxed mb-6">
+                  <p className={billRightsIntro}>
                     في مستشفى رويال حياة، نلتزم بتقديم رعاية صحية تتمحور حول المريض، مع احترام كامل لحقوقه، إلى جانب تعزيز مسؤولياته لضمان تجربة علاجية آمنة وفعّالة.
                   </p>
                 )}
 
                 <div className="bg-popover border border-border/50 rounded-2xl p-6 mb-6">
-                  <h3 className="font-serif text-lg text-foreground mb-4">{lang === "ar" ? "أولاً: حقوق المريض" : "You have the right to:"}</h3>
-                  <ol className="space-y-3 list-decimal list-inside">
-                    {(lang === "ar" ? [
+                  <h3 className="font-serif text-lg text-foreground mb-4 text-start">{lang === "ar" ? "أولاً: حقوق المريض" : "You have the right to:"}</h3>
+                  {renderBillRightsList(lang === "ar" ? [
                       "معرفة جميع المعلومات المتعلقة بحالتك الصحية، ورعايتك، وأسباب جميع الفحوصات والإجراءات التشخيصية، وكذلك الرسوم المفروضة على حسابك، وذلك بلغة تفهمها.",
                       "قبول أو رفض التوقيع على الموافقة لأي إجراء جراحي أو تشخيصي.",
                       "تلقي رعاية صحية رحيمة ومحترمة في جميع الأوقات، بغض النظر عن العمر، أو الجنس، أو العرق، أو الثقافة، أو الجنسية، أو اللغة، أو التوجه، أو الوضع الاجتماعي والاقتصادي، أو القدرة الجسدية أو الذهنية، أو الدين، أو التشخيص.",
@@ -606,18 +651,12 @@ const PatientsVisitors = () => {
                       'Know the safety measures to be taken after the assessment that include clinical, physical, and psychological status, i.e., risk of fall, medications, drug reaction, cross-infection, etc.',
                       'Be informed about any unanticipated adverse outcomes.',
                       'Give or refuse consent before filming or recording images.',
-                    ]).map((item, i) => (
-                      <li key={i} className="font-body text-sm text-foreground leading-relaxed">
-                        {item}
-                      </li>
-                    ))}
-                  </ol>
+                    ])}
                 </div>
 
                 <div className="bg-popover border border-border/50 rounded-2xl p-6 mb-6">
-                  <h3 className="font-serif text-lg text-foreground mb-4">{lang === "ar" ? "ثانياً: مسؤوليات المريض" : "As a patient, it is your responsibility to:"}</h3>
-                  <ol className="space-y-3 list-decimal list-inside">
-                    {(lang === "ar" ? [
+                  <h3 className="font-serif text-lg text-foreground mb-4 text-start">{lang === "ar" ? "ثانياً: مسؤوليات المريض" : "As a patient, it is your responsibility to:"}</h3>
+                  {renderBillRightsList(lang === "ar" ? [
                       "الالتزام بالقوانين والأنظمة المعمول بها في مستشفى رويال حياة.",
                       "تقديم معلومات كاملة ودقيقة عن حالتك الصحية، بما في ذلك التاريخ المرضي والأدوية التي تتناولها.",
                       "تقديم المستندات المطلوبة وفقًا للقوانين أو البروتوكولات قبل الدخول أو إجراء أي إجراءات طبية.",
@@ -651,21 +690,17 @@ const PatientsVisitors = () => {
                       'Preserve and maintain hospital property like medical equipment, furniture, fittings, etc., including medical records.',
                       'Keep us informed if you want to change hospital or service provider.',
                       'Share the responsibility in maintaining the safety of the patient from any harm or injury, as explained by the service providers.',
-                    ]).map((item, i) => (
-                      <li key={i} className="font-body text-sm text-foreground leading-relaxed">
-                        {item}
-                      </li>
-                    ))}
-                  </ol>
+                    ])}
                 </div>
 
                 <div className="bg-accent/10 rounded-2xl p-6">
-                  <div className="flex items-start gap-3">
+                  <div className={`flex items-start gap-3 ${isAr ? "flex-row-reverse" : ""}`}>
                     <AlertTriangle className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
-                    <p className="font-body text-sm text-foreground leading-relaxed">
+                    <p className={billRightsProse}>
                       <strong>{lang === "ar" ? "ملاحظة:" : "Note:"}</strong> {lang === "ar" ? "في الحالات الطبية الطارئة التي تهدد الحياة، يحق للطبيب الاستشاري اتخاذ القرار وإجراء الفحوصات أو الإجراءات أو إعطاء العلاج دون الحاجة إلى موافقة مسبقة من المريض أو ذويه، وذلك ضمن المسؤولية المهنية للطبيب المختص." : "In case of a life-threatening situation, the Consultant will have the full right to decide and proceed with tests, procedures, and/or medications without seeking prior consent of the relatives or the guardian as part of the responsibility bestowed on a qualified medical professional."}
                     </p>
                   </div>
+                </div>
                 </div>
               </ScrollAnimationWrapper>
             </div>}
@@ -677,10 +712,10 @@ const PatientsVisitors = () => {
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                     <Baby className="w-6 h-6 text-primary" />
                   </div>
-                  <h2 className="text-2xl md:text-3xl font-serif text-foreground">{lang === "ar" ? "نظام أمان الرضّع" : "Infant Security System"}</h2>
+                  <h2 className="text-2xl md:text-3xl font-serif text-foreground">{lang === "ar" ? "نظام الحماية المتقدم لحديثي الولادة" : "Infant Security System"}</h2>
                 </div>
 
-                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-8">
+                <p className={`${mutedProse} mb-8`}>
                   {lang === "ar" ? "في مستشفى رويال حياة، سلامة كل مولود هي أولويتنا القصوى. نستخدم نظام RTLS، وهو نظام مراقبة متطور يعمل في الوقت الفعلي مصمم لتوفير حماية شاملة على مدار الساعة لكل رضيع في رعايتنا." : "At Royale Hayat Hospital, the safety of every newborn is our highest priority. We utilize the RTLS, a sophisticated real-time monitoring system designed to provide comprehensive, 24/7 protection for every infant in our care."}
                 </p>
 
@@ -700,7 +735,7 @@ const PatientsVisitors = () => {
 
                 <div className="bg-popover border border-border/50 rounded-2xl p-6 mb-6">
                   <h3 className="font-serif text-lg text-foreground mb-4">{lang === "ar" ? "أمان متقدم للرضّع" : "Advanced Infant Security"}</h3>
-                  <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
+                  <p className={`${mutedProse} mb-4`}>
                     {lang === "ar" ? "يتم تزويد كل رضيع بعلامة إلكترونية خفيفة الوزن وآمنة على البشرة تتكامل بسلاسة مع البنية التحتية الأمنية على مستوى المستشفى:" : "Every infant is equipped with a lightweight, skin-safe electronic tag that integrates seamlessly with our hospital-wide security infrastructure:"}
                   </p>
                   <div className="space-y-4">
@@ -710,7 +745,7 @@ const PatientsVisitors = () => {
                       </div>
                       <div>
                         <h4 className="font-serif text-sm text-foreground mb-1">{lang === "ar" ? "حماية محيطية نشطة" : "Active Perimeter Protection"}</h4>
-                        <p className="font-body text-xs text-muted-foreground leading-relaxed">
+                        <p className={`${mutedProse} text-xs`}>
                           {lang === "ar" ? "يراقب النظام جميع المخارج ونقاط العبور. أي حركة غير مصرح بها نحو المصاعد أو السلالم تؤدي إلى قفل الأبواب فوراً وتنبيهات أمنية عالية الأولوية." : "The system monitors all exits and transit points. Any unauthorized movement toward elevators or stairwells triggers immediate door locks and high-priority security alerts."}
                         </p>
                       </div>
@@ -721,7 +756,7 @@ const PatientsVisitors = () => {
                       </div>
                       <div>
                         <h4 className="font-serif text-sm text-foreground mb-1">{lang === "ar" ? "تقنية استشعار العبث" : "Tamper-Sensing Technology"}</h4>
-                        <p className="font-body text-xs text-muted-foreground leading-relaxed">
+                        <p className={`${mutedProse} text-xs`}>
                           {lang === "ar" ? "توفر علاماتنا الذكية إشعاراً فورياً لمحطة التمريض إذا تم فك أو إزالة السوار دون إذن." : "Our smart tags provide instant notification to the nursing station if a band is loosened or removed without authorization."}
                         </p>
                       </div>
@@ -732,7 +767,7 @@ const PatientsVisitors = () => {
                       </div>
                       <div>
                         <h4 className="font-serif text-sm text-foreground mb-1">{lang === "ar" ? "خدمات تحديد الموقع في الوقت الفعلي" : "Real-Time Location Services"}</h4>
-                        <p className="font-body text-xs text-muted-foreground leading-relaxed">
+                        <p className={`${mutedProse} text-xs`}>
                           {lang === "ar" ? "تحافظ الفرق السريرية والأمنية على رؤية مستمرة لموقع كل رضيع من خلال واجهة مراقبة رقمية مركزية." : "Clinical and security teams maintain constant visibility of every infant's location through a centralized digital monitoring interface."}
                         </p>
                       </div>
@@ -742,7 +777,7 @@ const PatientsVisitors = () => {
 
                 <div className="bg-popover border border-border/50 rounded-2xl p-6">
                   <h3 className="font-serif text-lg text-foreground mb-4">{lang === "ar" ? "مطابقة الأم والرضيع الآلية" : "Automated Mother-Infant Matching"}</h3>
-                  <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
+                  <p className={`${mutedProse} mb-4`}>
                     {lang === "ar" ? "لضمان سلامة الرابطة بين الأم والطفل بشكل مطلق، يستخدم نظامنا الاقتران الرقمي المشفر:" : "To ensure the absolute integrity of the mother-child bond, our system utilizes encrypted digital pairing:"}
                   </p>
                   <div className="flex items-start gap-3">
@@ -751,7 +786,7 @@ const PatientsVisitors = () => {
                     </div>
                     <div>
                       <h4 className="font-serif text-sm text-foreground mb-1">{lang === "ar" ? "التحقق الدقيق" : "Precision Verification"}</h4>
-                      <p className="font-body text-xs text-muted-foreground leading-relaxed">
+                      <p className={`${mutedProse} text-xs`}>
                         {lang === "ar" ? "يتم ربط الأمهات والرضّع إلكترونياً لضمان أعلى مستويات الدقة والأمان." : "Mothers and infants are electronically linked to ensure the highest levels of accuracy and security."}
                       </p>
                     </div>
@@ -763,6 +798,103 @@ const PatientsVisitors = () => {
           </div>
         </div>
       </section>
+
+      <style>{`
+        .patients-prose-root .patients-page-content p,
+        .patients-prose-root .patients-page-content li,
+        .patients-prose-root .patients-page-content span.font-body,
+        .patients-prose-root .patients-prose-line {
+          text-align: justify;
+          text-justify: inter-word;
+          word-spacing: normal;
+          letter-spacing: normal;
+          word-break: normal;
+          overflow-wrap: normal;
+        }
+
+        .patients-prose-root[dir="ltr"] .patients-page-content p,
+        .patients-prose-root[dir="ltr"] .patients-page-content li,
+        .patients-prose-root[dir="ltr"] .patients-page-content span.font-body,
+        .patients-prose-root[dir="ltr"] .patients-prose-line {
+          -webkit-hyphens: auto;
+          hyphens: auto;
+          hyphenate-limit-chars: 6 4 2;
+          text-align-last: left;
+          text-wrap: pretty;
+        }
+
+        .patients-prose-root[dir="rtl"] .patients-page-content p,
+        .patients-prose-root[dir="rtl"] .patients-page-content li,
+        .patients-prose-root[dir="rtl"] .patients-page-content span.font-body,
+        .patients-prose-root[dir="rtl"] .patients-prose-line {
+          -webkit-hyphens: none;
+          hyphens: none;
+          text-align-last: right;
+        }
+
+        @media (max-width: 767px) {
+          .patients-prose-root .patients-page-content p,
+          .patients-prose-root .patients-page-content li,
+          .patients-prose-root .patients-page-content span.font-body,
+          .patients-prose-root .patients-prose-line {
+            line-height: 1.55;
+            text-align: justify;
+            text-justify: inter-word;
+            text-align-last: start;
+            word-spacing: normal;
+            text-wrap: pretty;
+          }
+
+          .patients-prose-root[dir="ltr"] .patients-page-content p,
+          .patients-prose-root[dir="ltr"] .patients-page-content li,
+          .patients-prose-root[dir="ltr"] .patients-page-content span.font-body,
+          .patients-prose-root[dir="ltr"] .patients-prose-line {
+            -webkit-hyphens: auto;
+            hyphens: auto;
+            text-align-last: start;
+          }
+
+          .patients-prose-root[dir="rtl"] .patients-page-content p,
+          .patients-prose-root[dir="rtl"] .patients-page-content li,
+          .patients-prose-root[dir="rtl"] .patients-page-content span.font-body,
+          .patients-prose-root[dir="rtl"] .patients-prose-line {
+            text-align-last: start;
+          }
+
+          .patients-page-content .rounded-2xl.p-6,
+          .patients-page-content .rounded-2xl.p-5 {
+            padding: 1rem;
+          }
+
+          .patients-page-content .mb-8 {
+            margin-bottom: 1.25rem;
+          }
+
+          .patients-page-content .mb-6 {
+            margin-bottom: 1rem;
+          }
+
+          .patients-page-content .mb-10 {
+            margin-bottom: 1.5rem;
+          }
+
+          .patients-page-content .space-y-4 > :not([hidden]) ~ :not([hidden]) {
+            margin-top: 0.625rem;
+          }
+
+          .patients-page-content .space-y-3 > :not([hidden]) ~ :not([hidden]) {
+            margin-top: 0.5rem;
+          }
+        }
+
+        .patients-prose-root .patients-page-content .insurance-partners-section p,
+        .patients-prose-root .patients-page-content .insurance-partners-section .insurance-partners-title {
+          text-align: center !important;
+          text-align-last: center !important;
+          -webkit-hyphens: none;
+          hyphens: none;
+        }
+      `}</style>
 
       <Footer />
       <ScrollToTop />

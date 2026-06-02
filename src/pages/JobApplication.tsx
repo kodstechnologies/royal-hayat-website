@@ -26,6 +26,17 @@ const staticPositions: JobPosting[] = [
   { title: "Medical Records Specialist", category: "Administrative", location: "Royale Hayat Hospital", type: "Full-time", date: "February 8, 2026", desc: "Manage and maintain accurate medical records, ensuring compliance with healthcare regulations and standards.", responsibilities: ["Maintain and organize medical records", "Ensure compliance with privacy regulations", "Process record requests accurately", "Support audits and quality reviews"], requirements: ["Experience in medical records management", "Knowledge of healthcare regulations", "Attention to detail", "Proficiency in electronic health records"] },
 ];
 
+const mapApiJobToDisplay = (apiJob: JobPosting) => ({
+  title: apiJob.title,
+  category: String(apiJob.classification ?? apiJob.category ?? apiJob.department ?? ""),
+  location: apiJob.location ?? "",
+  type: apiJob.type ?? "",
+  date: apiJob.postedDate ?? apiJob.date ?? "",
+  desc: apiJob.description ?? apiJob.desc ?? "",
+  responsibilities: apiJob.responsibilities ?? [],
+  requirements: apiJob.requirements ?? [],
+});
+
 const JobApplication = () => {
   const { lang } = useLanguage();
   const [searchParams] = useSearchParams();

@@ -2,6 +2,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
+import EventBookingModal from "@/components/EventBookingModal";
 import { Crown, Utensils, Sparkles, Flower2, Coffee, Phone, CheckCircle2, Baby, Image, Video, Bed, Star, ChevronLeft, ChevronRight, X, Gift, UtensilsCrossed, UserCheck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -47,6 +48,7 @@ const HospitalityServices = ({
   const [inRoomSlide, setInRoomSlide] = useState(0);
   const [babySlide, setBabySlide] = useState(0);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+  const [eventBookingOpen, setEventBookingOpen] = useState(false);
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
@@ -66,7 +68,7 @@ const HospitalityServices = ({
     if (activeSuite === 0) return;
     const timer = window.setInterval(() => {
       setSuiteSlide((prev) => (prev + 1) % activeSuiteImages.length);
-    }, 4500);
+    }, 5000);
     return () => window.clearInterval(timer);
   }, [activeSuite, activeSuiteImages.length]);
 
@@ -78,7 +80,7 @@ const HospitalityServices = ({
     if (activeSuite !== 0) return;
     const timer = window.setInterval(() => {
       setOrchidSlide((prev) => (prev + 1) % orchidSuiteImages.length);
-    }, 4500);
+    }, 5000);
     return () => window.clearInterval(timer);
   }, [activeSuite, orchidSuiteImages.length]);
 
@@ -86,7 +88,7 @@ const HospitalityServices = ({
     if (spaImages.length <= 1) return;
     const timer = window.setInterval(() => {
       setSpaSlide((prev) => (prev + 1) % spaImages.length);
-    }, 4500);
+    }, 5000);
     return () => window.clearInterval(timer);
   }, [spaImages.length]);
 
@@ -94,7 +96,7 @@ const HospitalityServices = ({
     if (cafeImages.length <= 1) return;
     const timer = window.setInterval(() => {
       setCafeSlide((prev) => (prev + 1) % cafeImages.length);
-    }, 4500);
+    }, 5000);
     return () => window.clearInterval(timer);
   }, [cafeImages.length]);
 
@@ -102,7 +104,7 @@ const HospitalityServices = ({
     if (fifthFloorCafeImages.length <= 1) return;
     const timer = window.setInterval(() => {
       setFifthCafeSlide((prev) => (prev + 1) % fifthFloorCafeImages.length);
-    }, 4500);
+    }, 5000);
     return () => window.clearInterval(timer);
   }, [fifthFloorCafeImages.length]);
 
@@ -110,7 +112,7 @@ const HospitalityServices = ({
     if (babyImages.length <= 1) return;
     const timer = window.setInterval(() => {
       setBabySlide((prev) => (prev + 1) % babyImages.length);
-    }, 4500);
+    }, 5000);
     return () => window.clearInterval(timer);
   }, [babyImages.length]);
 
@@ -388,10 +390,14 @@ const HospitalityServices = ({
           </ScrollAnimationWrapper>
 
           <div className="mt-8 text-center">
-            <a href="tel:+96525360573" className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-full font-body text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-colors">
+            <button
+              type="button"
+              onClick={() => setEventBookingOpen(true)}
+              className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-full font-body text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-colors"
+            >
               <Phone className="w-4 h-4" />
               {isAr ? "اضغط لحجز مناسبتك" : "Book your Event Online"}
-            </a>
+            </button>
           </div>
 
           {/* <div className="mt-10 aspect-video bg-muted/30 rounded-2xl border border-border flex items-center justify-center">
@@ -1650,6 +1656,8 @@ const HospitalityServices = ({
           </div>
         </div>
       </section>}
+      <EventBookingModal isOpen={eventBookingOpen} isAr={isAr} onClose={() => setEventBookingOpen(false)} />
+
       <AnimatePresence>
         {lightboxImage && (
           <motion.div

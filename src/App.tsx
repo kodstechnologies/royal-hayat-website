@@ -203,22 +203,19 @@ const workWithUsGalaDinnerImages: string[] = [
 ];
 const workWithUsHospitalityWeekImages: string[] = [
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/0.jpeg",
-  // "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776935736/DSC09306_fihok4.jpg",
+ 
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/1.jpeg",
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/2.jpeg",
-  // "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776935748/DSC09610_srzdoh.jpg",
-  // "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776935753/DSC09634_eknzqv.jpg",
-  // "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776935760/DSC09636_ichbwp.jpg",
+
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/3.jpeg",
-  // "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776935765/DSC09140_lflsb8.jpg",
+
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/4.jpeg",
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/7.jpeg",
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/8.jpeg",
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/9.jpeg",
-  // "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776935775/DSC09414_s9sbgq.jpg",
-  // "https://res.cloudinary.com/dwhc8kzpv/image/upload/v1776935777/DSC09290_g0ripb.jpg",
+
   "hhttps://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/10.jpeg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/11.jpeg|",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/11.jpeg",
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/12.jpeg",
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/13.jpeg",
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/14.jpeg",

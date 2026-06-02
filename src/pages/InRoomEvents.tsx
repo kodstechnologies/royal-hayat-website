@@ -32,7 +32,7 @@ const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) =
     if (topCarouselImages.length <= 1) return;
     const timer = window.setInterval(() => {
       setActiveSlide((prev) => (prev + 1) % topCarouselImages.length);
-    }, 4500);
+    }, 5000);
     return () => window.clearInterval(timer);
   }, [topCarouselImages.length]);
 

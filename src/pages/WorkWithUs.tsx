@@ -593,7 +593,7 @@ const WorkWithUs = ({
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.3 }}
-                  className="bg-popover border border-border/50 rounded-2xl overflow-hidden"
+                  className="ios-flicker-fix bg-popover border border-border/50 rounded-2xl overflow-hidden"
                 >
                   <div className="flex flex-col md:flex-row">
                     <div className="md:w-96 flex-shrink-0 bg-primary/5 p-6 flex items-center justify-center">
@@ -852,11 +852,11 @@ const WorkWithUs = ({
                   <motion.div
                     key={pos._id}
                     dir={isAr ? "rtl" : "ltr"}
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={false}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.4 }}
-                    className="bg-popover border border-border/50 rounded-2xl p-6 md:p-8 hover:shadow-lg transition-shadow"
+                    className="ios-flicker-fix bg-popover border border-border/50 rounded-2xl p-6 md:p-8 hover:shadow-lg transition-shadow"
                   >
                     <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                       <div className="flex-1">
@@ -917,6 +917,14 @@ const WorkWithUs = ({
       )}
 
       <style>{`
+        #work-culture-page .ios-flicker-fix {
+          transform: translateZ(0);
+          -webkit-transform: translateZ(0);
+          backface-visibility: hidden;
+          -webkit-backface-visibility: hidden;
+          will-change: transform, opacity;
+        }
+
         #work-culture-page .culture-narrative[dir="rtl"] {
           -webkit-hyphens: none;
           hyphens: none;

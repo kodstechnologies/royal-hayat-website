@@ -9,6 +9,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 const HomeHealth = () => {
   const { t, lang } = useLanguage();
   const isAr = lang === "ar";
+  const ltrPhoneClass = "inline-block [direction:ltr] [unicode-bidi:isolate]";
 
   const rehabServices = isAr ? [
     "صحة المرأة والتعافي بعد الولادة",
@@ -196,14 +197,26 @@ const HomeHealth = () => {
                           className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-full font-body text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-colors"
                         >
                           <MessageCircle className="w-4 h-4" />
-                          {isAr ? "واتساب: +965 66320717" : "WhatsApp: +965 66320717"}
+                          {isAr ? (
+                            <>
+                              واتساب: <span className={ltrPhoneClass}>+965 66320717</span>
+                            </>
+                          ) : (
+                            <>WhatsApp: <span className={ltrPhoneClass}>+965 66320717</span></>
+                          )}
                         </a>
                         <a
                           href="tel:+96525360500"
                           className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-full font-body text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-colors"
                         >
                           <Phone className="w-4 h-4" />
-                          {isAr ? "الهاتف: +965 25360500" : "Call: +965 25360500"}
+                          {isAr ? (
+                            <>
+                              الهاتف: <span className={ltrPhoneClass}>+965 25360500</span>
+                            </>
+                          ) : (
+                            <>Call: <span className={ltrPhoneClass}>+965 25360500</span></>
+                          )}
                         </a>
                       </div>
                     </div>

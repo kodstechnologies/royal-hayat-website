@@ -16,8 +16,8 @@ const FifthFloorCafe = () => {
     ? ["قهوة مختصة طازجة", "تشكيلة من الساندويتشات", "سلطات طازجة", "حلويات شهية"]
     : ["Freshly brewed specialty coffee", "A selection of sandwiches", "Fresh salads", "Indulgent desserts"];
   const cafeCarouselImages = [
-    "https://royal-hayat.s3.eu-central-1.amazonaws.com/al-liwan-cafe/DSC09215.jpg",
-    "https://royal-hayat.s3.eu-central-1.amazonaws.com/al-liwan-cafe/DSC09120.jpg",
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/fifth-floor/WhatsApp+Image+2026-06-02+at+2.17.44+PM+(1).jpeg",
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/fifth-floor/WhatsApp+Image+2026-06-02+at+2.17.44+PM.jpeg",
  
   ];
 

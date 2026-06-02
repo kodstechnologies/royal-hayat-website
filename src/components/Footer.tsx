@@ -104,7 +104,9 @@ const Footer = () => {
                 <Phone className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
                 <div>
                   <p className="text-primary-foreground font-medium">{t("hotline247")}</p>
-                  <p className="text-primary-foreground/70">+965 2536 0000</p>
+                  <p className="text-primary-foreground/70">
+                    <span className="inline-block [direction:ltr] [unicode-bidi:isolate]">+965 2536 0000</span>
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-3">

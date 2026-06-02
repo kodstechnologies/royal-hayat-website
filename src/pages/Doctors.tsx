@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo, useCallback } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { Search, ChevronLeft, ChevronRight, Stethoscope } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
@@ -6,41 +6,18 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { getDoctorDepartmentIds, getDoctorsByDepartment, mapApiDoctorRowToDoctor } from "@/api/doctors";
-import { getAllDepartments } from "@/api/department";
-import type { Doctor } from "@/data/doctors";
-import { Skeleton } from "@/components/ui/skeleton";
+import {
+  getDoctorsByDepartment,
+  searchDoctorsBySymptom,
+  type Doctor,
+} from "@/data/doctors";
 import { Input } from "@/components/ui/input";
-// import type { Doctor } from "@/data/doctors";
-// import { Input } from "@/components/ui/input";
-// import { Skeleton } from "@/components/ui/skeleton";
-// import {
-//   getDoctorDepartmentIds,
-//   getDoctorsByDepartment,
-//   mapApiDoctorRowToDoctor,
-// } from "@/api/doctors";
-// import { getAllDepartments } from "@/api/department";
 
 type DepartmentDoctorGroup = {
-  departmentId: string;
   department: string;
   departmentAr: string;
   doctors: Doctor[];
 };
-// import { Skeleton } from "@/components/ui/skeleton";
-// import {
-//   getDoctorDepartmentIds,
-//   getDoctorsByDepartment,
-//   mapApiDoctorRowToDoctor,
-// } from "@/api/doctors";
-// import { getAllDepartments } from "@/api/department";
-
-// type DepartmentDoctorGroup = {
-//   departmentId: string;
-//   department: string;
-//   departmentAr: string;
-//   doctors: Doctor[];
-// };
 
 const DoctorCard = ({ doc }: { doc: Doctor }) => {
   const { lang } = useLanguage();
@@ -198,68 +175,22 @@ const DepartmentRow = ({ department, departmentAr, docs }: { department: string;
 
 const Doctors = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [loadState, setLoadState] = useState<"loading" | "ok" | "error">("loading");
-  const [groups, setGroups] = useState<DepartmentDoctorGroup[]>([]);
   const { lang, t } = useLanguage();
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      setLoadState("loading");
-      try {
-        const [deptIds, departmentRows] = await Promise.all([
-          getDoctorDepartmentIds(),
-          getAllDepartments({ limit: 100, page: 1, isActive: true }),
-        ]);
-        if (cancelled) return;
-
-        const idToName = new Map<string, { en: string; ar: string }>();
-        for (const d of departmentRows) {
-          const id = String(d._id);
-          const en = String(d.name ?? "");
-          idToName.set(id, { en, ar: en });
-        }
-
-        const next: DepartmentDoctorGroup[] = [];
-        for (const deptId of deptIds) {
-          const rows = await getDoctorsByDepartment(deptId);
-          if (cancelled) return;
-          if (rows.length === 0) continue;
-          const label = idToName.get(deptId) ?? { en: "Department", ar: "قسم" };
-          const doctors = rows.map((row) => mapApiDoctorRowToDoctor(row, label.en, label.ar));
-          next.push({
-            departmentId: deptId,
-            department: label.en,
-            departmentAr: label.ar,
-            doctors,
-          });
-        }
-
-        setGroups(next);
-        setLoadState("ok");
-      } catch {
-        if (!cancelled) setLoadState("error");
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
+  const groups = useMemo<DepartmentDoctorGroup[]>(() => {
+    const grouped = getDoctorsByDepartment();
+    return Object.entries(grouped).map(([department, deptDoctors]) => ({
+      department,
+      departmentAr: deptDoctors[0]?.departmentAr ?? department,
+      doctors: deptDoctors,
+    }));
   }, []);
 
-  const allDoctors = useMemo(() => groups.flatMap((g) => g.doctors), [groups]);
-
   const searchResults = useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
+    const query = searchQuery.trim();
     if (!query) return [];
-    return allDoctors.filter((doc) => {
-      const searchableFields = [
-        doc.name, doc.nameAr, doc.specialty, doc.specialtyAr,
-        doc.department, doc.departmentAr, doc.title, doc.titleAr,
-        ...(doc.symptoms || []),
-      ];
-      return searchableFields.some((field) => (field || "").toLowerCase().includes(query));
-    });
-  }, [allDoctors, searchQuery]);
+    return searchDoctorsBySymptom(query);
+  }, [searchQuery]);
 
   const isSearching = searchQuery.trim().length > 0;
   const locale = lang === "ar" ? "ar" : "en";
@@ -314,63 +245,34 @@ const Doctors = () => {
             </div>
           </div>
 
-          {loadState === "loading" && (
-            <div className="flex flex-col items-center justify-center min-h-[280px] gap-3">
-              <Skeleton className="h-10 w-64" />
-              <Skeleton className="h-48 w-full max-w-3xl" />
-              <p className="text-muted-foreground font-body text-sm">
-                {lang === "ar" ? "جاري تحميل الأطباء…" : "Loading doctors…"}
-              </p>
-            </div>
-          )}
-
-          {loadState === "error" && (
-            <div className="rounded-2xl border border-destructive/30 bg-destructive/5 px-6 py-16 text-center max-w-xl mx-auto">
-              <p className="font-serif text-lg text-foreground mb-2">
-                {lang === "ar" ? "تعذر تحميل قائمة الأطباء" : "Could not load doctors"}
-              </p>
-              <p className="text-muted-foreground font-body text-sm">
-                {lang === "ar" ? "تحقق من الاتصال بالخادم وحاول مرة أخرى." : "Check your connection to the server and try again."}
-              </p>
-            </div>
-          )}
-
-          {loadState === "ok" && (
-            <>
-              {isSearching ? (
-                <div>
-                  <h3 className="text-lg font-serif text-foreground mb-6">
-                    {lang === "ar" ? `نتائج البحث (${searchResults.length})` : `Search Results (${searchResults.length})`}
-                  </h3>
-                  {searchResults.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                      {searchResults.map((doc) => (
-                        <div key={doc.id} className="min-w-0 max-w-none">
-                          <DoctorCard doc={doc} />
-                        </div>
-                      ))}
+          {isSearching ? (
+            <div>
+              <h3 className="text-lg font-serif text-foreground mb-6">
+                {lang === "ar" ? `نتائج البحث (${searchResults.length})` : `Search Results (${searchResults.length})`}
+              </h3>
+              {searchResults.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                  {searchResults.map((doc) => (
+                    <div key={doc.id} className="min-w-0 max-w-none">
+                      <DoctorCard doc={doc} />
                     </div>
-                  ) : (
-                    <p className="text-muted-foreground text-center py-12 font-body">
-                      {lang === "ar" ? "لم يتم العثور على نتائج. حاول بكلمات مختلفة." : "No results found. Try different keywords."}
-                    </p>
-                  )}
+                  ))}
                 </div>
-              ) : sortedGroups.length > 0 ? (
-                sortedGroups.map((g) => (
-                  <DepartmentRow
-                    key={g.departmentId}
-                    department={g.department}
-                    departmentAr={g.departmentAr}
-                    docs={g.doctors}
-                  />
-                ))
               ) : (
                 <p className="text-muted-foreground text-center py-12 font-body">
-                  {lang === "ar" ? "لا يوجد أطباء مسجلون في الأقسام حاليًا." : "No doctors are listed under any department yet."}
+                  {lang === "ar" ? "لم يتم العثور على نتائج. حاول بكلمات مختلفة." : "No results found. Try different keywords."}
                 </p>
               )}
-            </>
+            </div>
+          ) : (
+            sortedGroups.map((g) => (
+              <DepartmentRow
+                key={g.department}
+                department={g.department}
+                departmentAr={g.departmentAr}
+                docs={g.doctors}
+              />
+            ))
           )}
         </div>
       </section>

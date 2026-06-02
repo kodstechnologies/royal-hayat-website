@@ -9,6 +9,7 @@ export type CreateHospitalFeedbackPayload = {
   feedback?: string;
   arabicFeedback?: string;
   stars: number;
+  shownOnWebsite?: boolean;
 };
 
 export type HospitalFeedbackRecord = {
@@ -23,26 +24,59 @@ export type HospitalFeedbackRecord = {
   createdAt?: string;
 };
 
+export type CreateHospitalFeedbackResponse = {
+  success?: boolean;
+  message?: string;
+  data?: HospitalFeedbackRecord;
+};
+
+export const extractHospitalFeedbackRecord = (
+  res: unknown,
+): HospitalFeedbackRecord | null => {
+  if (!res || typeof res !== "object") return null;
+  const wrapped = res as CreateHospitalFeedbackResponse & HospitalFeedbackRecord;
+  if (wrapped.data && typeof wrapped.data === "object") {
+    return wrapped.data;
+  }
+  if (wrapped._id || (wrapped as { id?: string }).id) {
+    return wrapped as HospitalFeedbackRecord;
+  }
+  return null;
+};
+
 export const createHospitalFeedback = async (
   data: CreateHospitalFeedbackPayload,
   options?: { addedBy?: "patient" | "admin" }
-) => {
+): Promise<CreateHospitalFeedbackResponse> => {
   const query = new URLSearchParams();
   if (options?.addedBy) query.append("addedBy", options.addedBy);
   const qs = query.toString();
 
-  const response = await api.post(
+  const response = await api.post<CreateHospitalFeedbackResponse>(
     `/api/v1/hospital-feedback/create${qs ? `?${qs}` : ""}`,
-    data
+    data,
   );
 
   return response.data;
 };
 
+
+export const normalizeHospitalFeedbackList = (
+  res: unknown,
+): HospitalFeedbackRecord[] => {
+  if (Array.isArray(res)) return res as HospitalFeedbackRecord[];
+  if (!res || typeof res !== "object") return [];
+  const obj = res as Record<string, unknown>;
+  if (Array.isArray(obj.data)) return obj.data as HospitalFeedbackRecord[];
+  return [];
+};
+
 /** Fetch all hospital feedbacks (GET /api/v1/hospital-feedback/all). */
-export const getAllHospitalFeedbacks = async () => {
+export const getAllHospitalFeedbacks = async (): Promise<
+  HospitalFeedbackRecord[]
+> => {
   const response = await api.get("/api/v1/hospital-feedback/all");
-  return response.data;
+  return normalizeHospitalFeedbackList(response.data);
 };
 
 

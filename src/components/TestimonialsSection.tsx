@@ -5,49 +5,14 @@ import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
   createHospitalFeedback,
+  extractHospitalFeedbackRecord,
   getAllHospitalFeedbacks,
   type HospitalFeedbackRecord,
 } from "@/api/feedback";
-const testimonials = [
-  {
-    stars: 5,
-    text: "The care I received at Royale Hayat was truly exceptional. From the moment I arrived, the staff treated me with warmth and professionalism. The VIP suite was like a five-star hotel.",
-    textAr: "كانت الرعاية التي تلقيتها في رويال حياة استثنائية حقاً. منذ لحظة وصولي، عاملني الطاقم بدفء واحترافية. كان الجناح الفاخر كفندق خمس نجوم.",
-    name: "Sarah Al-Mutairi", nameAr: "سارة المطيري",
-  },
-  {
-    stars: 5,
-    text: "Dr. Al-Shammari and her team made my pregnancy journey stress-free and comfortable. The neonatal unit gave us complete peace of mind. Highly recommend their maternity services.",
-    textAr: "جعلت د. الشمري وفريقها رحلة حملي خالية من التوتر ومريحة. وحدة حديثي الولادة منحتنا راحة بال تامة. أوصي بشدة بخدمات الأمومة لديهم.",
-    name: "Fatima Al-Rashidi", nameAr: "فاطمة الرشيدي",
-  },
-  {
-    stars: 5,
-    text: "World-class medical care in Kuwait. The international accreditations speak volumes about their quality standards. My entire family trusts Royale Hayat for all our healthcare needs.",
-    textAr: "رعاية طبية عالمية المستوى في الكويت. الاعتمادات الدولية تتحدث عن معايير الجودة لديهم. عائلتي بأكملها تثق في رويال حياة لجميع احتياجاتنا الصحية.",
-    name: "Ahmed Al-Sabah", nameAr: "أحمد الصباح",
-  },
-  {
-    stars: 5,
-    text: "The pediatric department was outstanding. My children felt comfortable and safe. The doctors were incredibly patient and thorough with their examinations.",
-    textAr: "كان قسم الأطفال متميزاً. شعر أطفالي بالراحة والأمان. كان الأطباء صبورين للغاية ودقيقين في فحوصاتهم.",
-    name: "Noura Al-Hajri", nameAr: "نورة الهاجري",
-  },
-  {
-    stars: 5,
-    text: "From consultation to recovery, every step was handled with care and precision. The surgical team was world-class and the post-operative care was exceptional.",
-    textAr: "من الاستشارة إلى التعافي، تم التعامل مع كل خطوة بعناية ودقة. كان الفريق الجراحي عالمي المستوى والرعاية بعد العملية كانت استثنائية.",
-    name: "Mohammed Al-Enezi", nameAr: "محمد العنزي",
-  },
-  {
-    stars: 5,
-    text: "I traveled from abroad specifically for treatment here. The international patient services made everything seamless. Truly a premium healthcare experience.",
-    textAr: "سافرت من الخارج خصيصاً للعلاج هنا. خدمات المرضى الدوليين جعلت كل شيء سلساً. تجربة رعاية صحية فاخرة حقاً.",
-    name: "Layla Hassan", nameAr: "ليلى حسن",
-  },
-];
+import { toast } from "@/hooks/use-toast";
 
 type DisplayTestimonial = {
+  id: string;
   stars: number;
   text: string;
   textAr: string;
@@ -57,34 +22,124 @@ type DisplayTestimonial = {
 
 const hasText = (value?: string) => Boolean(value?.trim());
 
+const isShownOnWebsite = (item: HospitalFeedbackRecord) => {
+  const value = item.shownOnWebsite as unknown;
+  return value === true || value === 1 || value === "true";
+};
+
+const feedbackHasContent = (
+  item: HospitalFeedbackRecord,
+  language: "en" | "ar",
+) => {
+  if (language === "ar") {
+    return hasText(item.arabicFeedback) || hasText(item.feedback);
+  }
+  return hasText(item.feedback) || hasText(item.arabicFeedback);
+};
+
+const dedupeFeedbacks = (items: HospitalFeedbackRecord[]) => {
+  const seen = new Set<string>();
+  return items.filter((item) => {
+    const id = String(item._id ?? (item as { id?: string }).id ?? "").trim();
+    if (!id) return true;
+    if (seen.has(id)) return false;
+    seen.add(id);
+    return true;
+  });
+};
+
 const mapHospitalFeedbackToDisplay = (
   item: HospitalFeedbackRecord,
-  language: "en" | "ar"
+  language: "en" | "ar",
 ): DisplayTestimonial | null => {
   const text = item.feedback ?? "";
   const textAr = item.arabicFeedback ?? "";
   const name = item.userName ?? "";
   const nameAr = item.arabicUserName ?? "";
 
+  if (!feedbackHasContent(item, language)) return null;
+
+  const id =
+    String(item._id ?? (item as { id?: string }).id ?? "").trim() ||
+    `fb-${name || nameAr}-${text.slice(0, 12) || textAr.slice(0, 12)}`;
+
   if (language === "ar") {
-    if (!hasText(textAr)) return null;
     return {
+      id,
       stars: item.stars ?? 5,
       text: hasText(text) ? text : textAr,
-      textAr,
+      textAr: hasText(textAr) ? textAr : text,
       name: hasText(nameAr) ? nameAr : name,
       nameAr: hasText(nameAr) ? nameAr : name,
     };
   }
 
-  if (!hasText(text)) return null;
   return {
+    id,
     stars: item.stars ?? 5,
-    text,
+    text: hasText(text) ? text : textAr,
     textAr: hasText(textAr) ? textAr : text,
     name: hasText(name) ? name : nameAr,
     nameAr: hasText(nameAr) ? nameAr : name,
   };
+};
+
+const toDisplayFromApi = (
+  list: HospitalFeedbackRecord[],
+  language: "en" | "ar",
+): DisplayTestimonial[] =>
+  dedupeFeedbacks(list)
+    .filter(isShownOnWebsite)
+    .filter((item) => feedbackHasContent(item, language))
+    .map((item) => mapHospitalFeedbackToDisplay(item, language))
+    .filter((item): item is DisplayTestimonial => item !== null);
+
+const buildDisplayFromForm = (
+  form: { name: string; feedback: string; stars: number },
+  language: "en" | "ar",
+  id: string,
+): DisplayTestimonial => {
+  const name = form.name.trim();
+  const text = form.feedback.trim();
+  const stars = form.stars >= 1 ? form.stars : 5;
+
+  if (language === "ar") {
+    return {
+      id,
+      stars,
+      text,
+      textAr: text,
+      name,
+      nameAr: name,
+    };
+  }
+
+  return {
+    id,
+    stars,
+    text,
+    textAr: text,
+    name,
+    nameAr: name,
+  };
+};
+
+const mergeDisplayFeedbacks = (
+  ...groups: DisplayTestimonial[][]
+): DisplayTestimonial[] => {
+  const seen = new Set<string>();
+  const merged: DisplayTestimonial[] = [];
+
+  for (const group of groups) {
+    for (const item of group) {
+      const key = item.id || `${item.name}-${item.text}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      merged.push(item);
+    }
+  }
+
+  return merged;
 };
 
 const TestimonialsSection = () => {
@@ -96,6 +151,7 @@ const TestimonialsSection = () => {
   const [submittingFeedback, setSubmittingFeedback] = useState(false);
   const [showThankYou, setShowThankYou] = useState(false);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const [feedbackForm, setFeedbackForm] = useState({
     name: "",
@@ -108,20 +164,11 @@ const TestimonialsSection = () => {
       try {
         setLoadingFeedbacks(true);
 
-        const response = await getAllHospitalFeedbacks();
-        const list = (response?.data ?? response ?? []) as HospitalFeedbackRecord[];
-
-        const formattedFeedbacks = list
-          .filter((item) => item.shownOnWebsite === true)
-          .map((item) => mapHospitalFeedbackToDisplay(item, lang))
-          .filter((item): item is DisplayTestimonial => item !== null);
-
-        setHospitalFeedbacks(
-          formattedFeedbacks.length ? formattedFeedbacks : testimonials
-        );
+        const list = await getAllHospitalFeedbacks();
+        setHospitalFeedbacks(toDisplayFromApi(list, lang));
       } catch (error) {
         console.error(error);
-        setHospitalFeedbacks(testimonials);
+        setHospitalFeedbacks([]);
       } finally {
         setLoadingFeedbacks(false);
       }
@@ -129,41 +176,79 @@ const TestimonialsSection = () => {
 
     fetchFeedbacks();
   }, [lang]);
-  const handleAddFeedback = async () => {
 
-    if (!feedbackForm.name || !feedbackForm.feedback) {
+  const shouldAnimateMarquee = hospitalFeedbacks.length > 1;
+  const marqueeItems = shouldAnimateMarquee
+    ? [...hospitalFeedbacks, ...hospitalFeedbacks]
+    : hospitalFeedbacks;
+
+  const handleAddFeedback = async () => {
+    const name = feedbackForm.name.trim();
+    const feedback = feedbackForm.feedback.trim();
+
+    if (!name || !feedback) {
+      setSubmitError(
+        lang === "ar"
+          ? "يرجى إدخال الاسم والتقييم"
+          : "Please enter your name and feedback",
+      );
       return;
     }
 
+    if (!feedbackForm.stars) {
+      setSubmitError(
+        lang === "ar"
+          ? "يرجى اختيار التقييم بالنجوم"
+          : "Please select a star rating",
+      );
+      return;
+    }
+
+    setSubmittingFeedback(true);
+    setSubmitError(null);
+
     try {
-
-      setSubmittingFeedback(true);
-
+      const stars = feedbackForm.stars;
       const payload =
         lang === "ar"
           ? {
-            arabicUserName: feedbackForm.name,
-            arabicFeedback: feedbackForm.feedback,
-            stars: feedbackForm.stars || 5,
-          }
+              arabicUserName: name,
+              arabicFeedback: feedback,
+              stars,
+              shownOnWebsite: true,
+            }
           : {
-            userName: feedbackForm.name,
-            feedback: feedbackForm.feedback,
-            stars: feedbackForm.stars || 5,
-          };
+              userName: name,
+              feedback,
+              stars,
+              shownOnWebsite: true,
+            };
 
-      await createHospitalFeedback(payload, { addedBy: "patient" });
+      const createResponse = await createHospitalFeedback(payload, {
+        addedBy: "patient",
+      });
 
-      const refresh = await getAllHospitalFeedbacks();
-      const list = (refresh?.data ?? refresh ?? []) as HospitalFeedbackRecord[];
-      const formattedFeedbacks = list
-        .filter((item) => item.shownOnWebsite === true)
-        .map((item) => mapHospitalFeedbackToDisplay(item, lang))
-        .filter((item): item is DisplayTestimonial => item !== null);
+      const createdRecord = extractHospitalFeedbackRecord(createResponse);
+      const submittedDisplay =
+        (createdRecord &&
+          mapHospitalFeedbackToDisplay(createdRecord, lang)) ||
+        buildDisplayFromForm(
+          { name, feedback, stars },
+          lang,
+          createdRecord?._id ?? `submitted-${Date.now()}`,
+        );
 
-      if (formattedFeedbacks.length) {
-        setHospitalFeedbacks(formattedFeedbacks);
+      let published: DisplayTestimonial[] = [];
+      try {
+        const refreshList = await getAllHospitalFeedbacks();
+        published = toDisplayFromApi(refreshList, lang);
+      } catch {
+        // Keep showing the submission even if refresh fails
       }
+
+      setHospitalFeedbacks((prev) =>
+        mergeDisplayFeedbacks([submittedDisplay], published, prev),
+      );
 
       setFeedbackForm({
         name: "",
@@ -172,23 +257,38 @@ const TestimonialsSection = () => {
       });
 
       setShowThankYou(true);
+      toast({
+        title: lang === "ar" ? "تم إرسال التقييم" : "Feedback submitted",
+        description:
+          lang === "ar"
+            ? "شكراً لمشاركتك. يظهر تقييمك أدناه."
+            : "Thank you. Your feedback is shown below.",
+      });
 
       setTimeout(() => {
         setShowThankYou(false);
         setIsFeedbackOpen(false);
       }, 2000);
-
-    } catch (error) {
-
+    } catch (error: unknown) {
       console.error(error);
-
+      const message =
+        (error as { response?: { data?: { message?: string } } })?.response
+          ?.data?.message ??
+        (lang === "ar"
+          ? "تعذر إرسال التقييم. حاول مرة أخرى."
+          : "Could not submit feedback. Please try again.");
+      setSubmitError(message);
+      toast({
+        title: lang === "ar" ? "خطأ" : "Error",
+        description: message,
+        variant: "destructive",
+      });
     } finally {
-
       setSubmittingFeedback(false);
     }
   };
   return (
-    <section className="py-24 bg-popover overflow-hidden">
+    <section id="testimonials" className="py-24 bg-popover overflow-hidden">
       <div className="container mx-auto px-6">
         <ScrollAnimationWrapper>
           <div className="text-center mb-16">
@@ -227,25 +327,56 @@ const TestimonialsSection = () => {
           {lang === "ar" ? "إضافة تقييم" : "Add Feedback"}
         </motion.button>
       </div>
-      <div ref={containerRef} className="relative w-full" onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)}>
-        <motion.div className="flex gap-6 w-max px-6"
-          animate={{ x: lang === "ar" ? ["0%", "50%"] : ["0%", "-50%"] }}
-          transition={{ x: { repeat: Infinity, repeatType: "loop", duration: 40, ease: "linear" } }}
-          style={{ animationPlayState: isPaused ? "paused" : "running" }}>
-          {[...hospitalFeedbacks, ...hospitalFeedbacks].map((item, i) => (
-            <motion.div key={`${item.name}-${i}`} whileHover={{ y: -6, boxShadow: "0 20px 40px -15px rgba(74,20,35,0.1)" }}
-              className="bg-background rounded-2xl p-6 md:p-8 border border-border/50 w-[300px] sm:w-[360px] flex-shrink-0">
-              <div className="flex gap-1 mb-4">
-                {Array.from({ length: item.stars }).map((_, j) => (
-                  <Star key={j} className="w-4 h-4 fill-accent text-accent" />
-                ))}
-              </div>
-              <p className="text-foreground font-body leading-relaxed mb-6 text-sm">"{lang === "ar" ? item.textAr : item.text}"</p>
-              <p className="font-serif text-foreground text-sm">{lang === "ar" ? item.nameAr : item.name}</p>
-            </motion.div>
-          ))}
-        </motion.div>
-      </div>
+      {loadingFeedbacks && (
+        <div className="flex justify-center py-12 px-6">
+          <p className="text-sm text-muted-foreground font-body">
+            {lang === "ar" ? "جاري تحميل آراء المرضى..." : "Loading patient feedback..."}
+          </p>
+        </div>
+      )}
+      {!loadingFeedbacks && hospitalFeedbacks.length > 0 && (
+        <div
+          ref={containerRef}
+          className="relative w-full"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+        >
+          <motion.div
+            className={`flex gap-3 sm:gap-6 w-max px-4 sm:px-6 ${shouldAnimateMarquee ? "" : "mx-auto"}`}
+            animate={
+              shouldAnimateMarquee
+                ? { x: lang === "ar" ? ["0%", "50%"] : ["0%", "-50%"] }
+                : { x: 0 }
+            }
+            transition={
+              shouldAnimateMarquee
+                ? { x: { repeat: Infinity, repeatType: "loop", duration: 40, ease: "linear" } }
+                : {}
+            }
+            style={{ animationPlayState: isPaused ? "paused" : "running" }}
+          >
+            {marqueeItems.map((item, i) => (
+              <motion.div
+                key={`${item.id || item.name}-${i}`}
+                whileHover={{ y: -6, boxShadow: "0 20px 40px -15px rgba(74,20,35,0.1)" }}
+                className="bg-background rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 border border-border/50 w-[220px] sm:w-[300px] md:w-[360px] flex-shrink-0"
+              >
+                <div className="flex gap-0.5 sm:gap-1 mb-2 sm:mb-4">
+                  {Array.from({ length: item.stars }).map((_, j) => (
+                    <Star key={j} className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-accent text-accent" />
+                  ))}
+                </div>
+                <p className="text-foreground font-body leading-relaxed mb-3 sm:mb-6 text-xs sm:text-sm line-clamp-5 sm:line-clamp-none">
+                  "{lang === "ar" ? item.textAr : item.text}"
+                </p>
+                <p className="font-serif text-foreground text-xs sm:text-sm">
+                  {lang === "ar" ? item.nameAr : item.name}
+                </p>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      )}
       {isFeedbackOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
           <motion.div
@@ -302,12 +433,13 @@ const TestimonialsSection = () => {
               <input
                 type="text"
                 value={feedbackForm.name}
-                onChange={(e) =>
+                onChange={(e) => {
+                  setSubmitError(null);
                   setFeedbackForm({
                     ...feedbackForm,
                     name: e.target.value,
-                  })
-                }
+                  });
+                }}
                 placeholder={
                   lang === "ar" ? "أدخل اسمك" : "Enter your name"
                 }
@@ -338,12 +470,13 @@ const TestimonialsSection = () => {
               <textarea
                 rows={3}
                 value={feedbackForm.feedback}
-                onChange={(e) =>
+                onChange={(e) => {
+                  setSubmitError(null);
                   setFeedbackForm({
                     ...feedbackForm,
                     feedback: e.target.value,
-                  })
-                }
+                  });
+                }}
                 placeholder={
                   lang === "ar"
                     ? "اكتب تجربتك مع المستشفى"
@@ -381,12 +514,13 @@ const TestimonialsSection = () => {
                     whileHover={{ scale: 1.2 }}
                     whileTap={{ scale: 0.9 }}
                     type="button"
-                    onClick={() =>
+                    onClick={() => {
+                      setSubmitError(null);
                       setFeedbackForm({
                         ...feedbackForm,
                         stars: index + 1,
-                      })
-                    }
+                      });
+                    }}
                   >
                     <Star
                       className={`w-8 h-8 transition-all duration-300 ${index < feedbackForm.stars
@@ -399,8 +533,15 @@ const TestimonialsSection = () => {
               </div>
             </div>
 
+            {submitError && (
+              <p className="mb-4 text-center text-sm text-destructive font-body">
+                {submitError}
+              </p>
+            )}
+
             {/* Submit */}
             <motion.button
+              type="button"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={handleAddFeedback}

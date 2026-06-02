@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
+import { getAllJobs, type JobPosting } from "@/api/job";
 
 /* ------------------------------------------------------------------ */
 /* OPEN POSITIONS — sourced 1:1 from https://royalehayat.com/careers/ */
@@ -234,6 +235,24 @@ const WorkWithUs = ({
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, [section]);
+
+  useEffect(() => {
+    getAllJobs({ isActive: true })
+      .then((jobs) => {
+        if (!jobs.length) return;
+        setPositions(
+          jobs.map((job: JobPosting) => ({
+            id: String(job._id ?? job.id ?? ""),
+            title: job.title,
+            category: job.classification ?? job.category ?? job.department ?? "",
+            location: job.location ?? "",
+            type: job.type ?? "",
+            desc: job.description ?? job.desc ?? "",
+          })),
+        );
+      })
+      .catch(() => {});
+  }, []);
 
   const scrollCategories = (direction: "left" | "right") => {
     if (!categoriesScrollRef.current) return;
@@ -732,7 +751,11 @@ const WorkWithUs = ({
                       </div>
                       <div className="flex flex-col items-end gap-3 flex-shrink-0">
                         <Link
-                          to={`/job-application?job=${originalIndex}`}
+                          to={
+                            pos.id && /^[0-9a-fA-F]{24}$/.test(pos.id)
+                              ? `/job-application?jobId=${pos.id}`
+                              : `/job-application?job=${originalIndex}`
+                          }
                           className="inline-flex items-center gap-1 text-accent font-body text-sm font-semibold hover:underline"
                         >
                           {isAr ? "تقدم الآن" : "Apply Now"}{" "}

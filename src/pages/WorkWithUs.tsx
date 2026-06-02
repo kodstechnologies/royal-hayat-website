@@ -110,6 +110,50 @@ const mapContentToCarousel = (
 
 const normalizeHeading = (heading: string) => heading.trim().toLowerCase();
 
+const EXPIRY_DATE_KEYS = [
+  "expiryDate",
+  "expirationDate",
+  "expiresAt",
+  "expiresOn",
+  "deadline",
+  "applicationDeadline",
+  "closingDate",
+  "lastDateToApply",
+  "validTill",
+  "validUntil",
+  "endDate",
+] as const;
+
+const parseDateValue = (value: unknown): Date | null => {
+  if (typeof value !== "string" && typeof value !== "number") return null;
+  const raw = String(value).trim();
+  if (!raw) return null;
+  const parsed = new Date(raw);
+  if (Number.isNaN(parsed.getTime())) return null;
+  return parsed;
+};
+
+const endOfDay = (date: Date) => {
+  const next = new Date(date);
+  next.setHours(23, 59, 59, 999);
+  return next;
+};
+
+const isJobNotExpired = (job: JobPosting) => {
+  const record = job as Record<string, unknown>;
+  const expiryRaw = EXPIRY_DATE_KEYS.map((key) => record[key]).find(
+    (value) => value !== undefined && value !== null && String(value).trim() !== "",
+  );
+
+  // If backend doesn't provide an expiry field, keep showing the job.
+  if (expiryRaw === undefined) return true;
+
+  const expiryDate = parseDateValue(expiryRaw);
+  if (!expiryDate) return true;
+
+  return endOfDay(expiryDate).getTime() >= Date.now();
+};
+
 const buildExistingWorkCultureCarousels = (
   staffActivitiesImages: string[],
   galaDinnerImages: string[],
@@ -285,7 +329,9 @@ const WorkWithUs = ({
       try {
         const jobs = await getAllJobs({ limit: 100, isActive: true });
         if (cancelled) return;
-        setJobPostings(jobs.filter((job) => job.isActive !== false));
+        setJobPostings(
+          jobs.filter((job) => job.isActive !== false && isJobNotExpired(job)),
+        );
       } catch {
         if (!cancelled) {
           setJobsError(true);

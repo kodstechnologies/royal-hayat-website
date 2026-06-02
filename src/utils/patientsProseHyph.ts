@@ -113,7 +113,7 @@ export const ROOM_SERVICE_LOST_FOUND_EN = hyphEn(
 export const PATIENT_RESPONSIBILITIES_EN = [
   // NBSP prevents `text-align: justify` from expanding word gaps; SHY provides wrap points inside long words.
   hyphEn("Follow the rules and regulations of RHH.").split(" ").join(NBSP),
-  `Give us com${SHY}plete and ac${SHY}cu${SHY}rate in${SHY}for${SHY}ma${SHY}tion about your health, in${SHY}clud${SHY}ing pre${SHY}vi${SHY}ous medical${NBSP}history and all the med${SHY}i${SHY}ca${SHY}tions you${NBSP}are${NBSP}taking.`,
+  `Give us com${SHY}plete and ac${SHY}cu${SHY}rate in${SHY}for${SHY}ma${SHY}tion about your health, in${SHY}clud${SHY}ing pre${SHY}vi${SHY}ous medical history and all the med${SHY}i${SHY}ca${SHY}tions you are taking.`,
   hyphEn(
     "Submit documents required as per the law/protocol before admission or undergoing specific procedures."
   ),

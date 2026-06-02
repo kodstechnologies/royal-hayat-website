@@ -6,8 +6,8 @@ import { useLanguage } from "@/contexts/LanguageContext";
 
 const voices = [
   {
-    text: "Royale Hayat is more than a workplace — it’s a family. Every day I feel respected, supported and proud of the care we deliver together.",
-    textAr: "رويال حياة أكثر من مجرد مكان عمل — إنها عائلة. كل يوم أشعر بالاحترام والدعم والفخر بالرعاية التي نقدمها معاً.",
+    text: "Royale Hayat is more than a workplace. It is a family. Every day I feel respected, supported, and proud of the care we deliver together.",
+    textAr: "رويال حياة أكثر من مجرد مكان عمل. إنها عائلة. كل يوم أشعر بالاحترام والدعم والفخر بالرعاية التي نقدمها معا.",
     name: "Maria S.", nameAr: "ماريا س.", role: "Senior Nurse", roleAr: "ممرضة أولى",
   },
   {
@@ -16,13 +16,13 @@ const voices = [
     name: "Ahmed K.", nameAr: "أحمد ك.", role: "Clinical Pharmacist", roleAr: "صيدلي إكلينيكي",
   },
   {
-    text: "What makes Royale Hayat special is the people. Multicultural, kind, and united by purpose — I belong here.",
-    textAr: "ما يميز رويال حياة هو الناس. متعددو الثقافات، لطفاء، وموحّدون بهدف واحد — أنتمي إلى هنا.",
+    text: "What makes Royale Hayat special is the people. Multicultural, kind, and united by purpose. I belong here.",
+    textAr: "ما يميز رويال حياة هو الناس. متعددو الثقافات، لطفاء، وموحدون بهدف واحد. أنتمي إلى هنا.",
     name: "Priya R.", nameAr: "بريا ر.", role: "Guest Relations", roleAr: "علاقات الضيوف",
   },
   {
-    text: "Recognition isn’t a slogan here — it’s lived. From Employee of the Month to small daily thank-yous, effort is seen.",
-    textAr: "التقدير ليس شعاراً هنا — بل ممارسة يومية. من موظف الشهر إلى كلمات الشكر اليومية البسيطة، يُرى الجهد.",
+    text: "Recognition is not a slogan here. It is lived daily. From Employee of the Month to small daily thank-yous, effort is seen.",
+    textAr: "التقدير ليس شعارا هنا، بل ممارسة يومية. من موظف الشهر إلى كلمات الشكر اليومية البسيطة، يرى الجهد.",
     name: "Khaled M.", nameAr: "خالد م.", role: "Operations Lead", roleAr: "قائد العمليات",
   },
   {
@@ -31,8 +31,8 @@ const voices = [
     name: "Lina A.", nameAr: "لينا أ.", role: "Quality Coordinator", roleAr: "منسقة الجودة",
   },
   {
-    text: "Professionalism meets kindness here. We deliver world-class medicine with genuine warmth — that’s our promise.",
-    textAr: "تلتقي الاحترافية مع اللطف هنا. نقدم طباً عالمي المستوى بدفء حقيقي — هذا هو وعدنا.",
+    text: "Professionalism meets kindness here. We deliver world-class medicine with genuine warmth. That is our promise.",
+    textAr: "تلتقي الاحترافية مع اللطف هنا. نقدم طبا عالمي المستوى بدفء حقيقي. هذا هو وعدنا.",
     name: "Dr. Hassan T.", nameAr: "د. حسن ت.", role: "Specialist Physician", roleAr: "طبيب اختصاصي",
   },
 ];
@@ -79,7 +79,10 @@ const VoicesFromOurPeople = () => {
               className="bg-background rounded-2xl p-6 md:p-8 border border-border/50 w-[300px] sm:w-[360px] flex-shrink-0"
             >
               <Quote className="w-6 h-6 text-accent mb-4" />
-              <p className="text-foreground font-body leading-relaxed mb-6 text-sm">
+              <p
+                className="text-foreground font-body leading-relaxed mb-6 text-sm !text-left tracking-normal whitespace-normal break-words"
+                style={{ wordSpacing: "normal", textAlign: "left" }}
+              >
                 "{isAr ? item.textAr : item.text}"
               </p>
               <div>

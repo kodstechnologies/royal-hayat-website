@@ -469,7 +469,7 @@ const WorkWithUs = ({
                 <p>
                   {isAr
                     ? "وفي رويال حياة، لا تمر الجهود والإنجازات دون تقدير، لأن الامتنان جزء أساسي من ثقافتنا، والرعاية تستحق أن تُحتفى بها. هنا، العمل ليس مجرد وظيفة، بل مكان تشعر فيه بالتقدير والانتماء."
-                    : "Effort and excellence never go unnoticed here—because appreciation matters, and care deserves to be recognized. At Royale Hayat, it’s more than work. It’s a place to belong and be valued."}
+                    : "Effort and excellence never go unnoticed here because appreciation matters, and care deserves recognition. At Royale Hayat, it is more than work; it is a place to belong and be valued."}
                 </p>
               </div>
             </ScrollAnimationWrapper>

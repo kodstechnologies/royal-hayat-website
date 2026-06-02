@@ -1,14 +1,41 @@
 import { useState, useRef, useMemo } from "react";
 import { ChevronLeft, ChevronRight, ArrowRight, X, Stethoscope, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { motion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { departments as staticDepartments, type Department, MAIN_CATEGORIES } from "@/data/departments";
 import { doctors, type Doctor } from "@/data/doctors";
 import { deptDoctorAliases } from "@/data/departments";
-import { departmentDetails } from "@/data/departmentDetails";
-type DepartmentsSectionProps = {
+import type {
+  DepartmentWithEmbeddedDoctors,
+  MedicalCategoryGroup,
+} from "@/utils/mapMedicalCatalogFromApi";
+import { getSubSlugForDepartment } from "@/utils/departmentSubSlug";
+
+export type FetchDoctorsBySubspecialityFn = (
+  subspecialityId: string,
+  opts?: { page?: number; limit?: number },
+) => Promise<Record<string, unknown>[]>;
+
+export type DepartmentsSectionProps = {
+  /** Flat list from API; ignored when `apiGroupedCatalog` is set. */
+  apiCatalog?: DepartmentWithEmbeddedDoctors[] | null;
+  /** When set, each category is a subheading with only its departments underneath. */
+  apiGroupedCatalog?: MedicalCategoryGroup[] | null;
+  apiCatalogLoading?: boolean;
+  /** When true, never fall back to built-in static departments (use with Medical Services API). */
+  disableStaticFallback?: boolean;
+  /** When true, show a load failure message instead of an empty catalog (requires `disableStaticFallback`). */
+  catalogFetchFailed?: boolean;
+  /** When using `apiGroupedCatalog`, show a compact doctor strip on each collapsed department card. */
+  showDepartmentDoctorsOnCards?: boolean;
+  /**
+   * Loads doctors for a subspeciality pill (defaults to `getDoctorsBySubspeciality` from `@/api/doctors`).
+   * Pass from pages so Medical Services / Departments explicitly use that API.
+   */
+  fetchDoctorsBySubspeciality?: FetchDoctorsBySubspecialityFn;
+  /** When true, show the page-level "Medical Services" heading above the section title. */
   showPageTitle?: boolean;
 };
 
@@ -16,13 +43,14 @@ const isAlSafwaDeptSlug = (slug: string) => slug.includes("al-safwa");
 
 const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) => {
   const navigate = useNavigate();
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
-  const [selectedSubByDept, setSelectedSubByDept] = useState<Record<number, string>>({});
+  const [openSlug, setOpenSlug] = useState<string | null>(null);
+  const [selectedSubByDept, setSelectedSubByDept] = useState<Record<string, string>>({});
   const [departments] = useState<Department[]>(
     staticDepartments.filter((dept) => dept.name !== "Allergy & Immunology")
   );
   const doctorScrollRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef(null);
+  const isInView = useInView(sectionRef, { once: true, margin: "-80px" });
   const { lang, t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -49,42 +77,33 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
     }
   };
 
-  const handleToggle = (index: number) => {
-    setOpenIndex(openIndex === index ? null : index);
+  const handleToggle = (slug: string) => {
+    setOpenSlug((prev) => (prev === slug ? null : slug));
   };
 
-  const slugify = (value: string) =>
-    value
-      .toLowerCase()
-      .replace(/&/g, "and")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "");
-
-  const getSubSlug = (deptSlug: string, subName: string) => {
-    const detail = departmentDetails.find((d) => d.slug === deptSlug);
-    const matched = detail?.subDepartments?.find((s) => s.name.toLowerCase() === subName.toLowerCase());
-    return matched?.slug ?? slugify(subName);
-  };
-
-  const selectedDept = openIndex !== null ? departments[openIndex] : null;
+  const selectedDept =
+    openSlug !== null ? departments.find((d) => d.slug === openSlug) ?? null : null;
   const deptDoctorsMap = useMemo<Record<string, Doctor[]>>(
     () =>
       Object.fromEntries(
         departments.map((dept) => {
+          const withEmb = dept as DepartmentWithEmbeddedDoctors;
+          if (withEmb.embeddedDoctors !== undefined) {
+            return [dept.slug, withEmb.embeddedDoctors];
+          }
           const aliases = deptDoctorAliases[dept.name];
           const matchTerms = aliases && aliases.length > 0 ? aliases : [dept.name];
           const matchedDoctors = doctors.filter((doc) =>
             matchTerms.some((alias) => doc.department.includes(alias) || doc.specialty.includes(alias))
           );
-          return [dept.name, matchedDoctors];
+          return [dept.slug, matchedDoctors];
         })
       ),
     [departments]
   );
   const deptDoctors = useMemo(() => {
     if (!selectedDept) return [];
-    const origIdx = openIndex!;
-    const selectedSubSlug = selectedSubByDept[origIdx];
+    const selectedSubSlug = selectedSubByDept[selectedDept.slug];
 
     // Explicit sub-specialty → doctor name keywords map for reliable filtering
     const subSpecialtyDoctorMap: Record<string, string[]> = {
@@ -144,7 +163,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
 
       // Fallback: keyword match on title/specialty
       const selectedSub = selectedDept.subs.find(
-        (s) => getSubSlug(selectedDept.slug, s.name) === selectedSubSlug
+        (s) => getSubSlugForDepartment(selectedDept.slug, s.name) === selectedSubSlug,
       );
       if (selectedSub) {
         const subKeywords = selectedSub.name.toLowerCase().split(/[\s&,/()+]+/).filter(w => w.length > 3);
@@ -161,22 +180,18 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
     }
 
     // No sub selected or no match — show all dept doctors (excluding Nutricare unless sub selected)
-    const baseDoctors = deptDoctorsMap[selectedDept.name] || [];
+    const baseDoctors = deptDoctorsMap[selectedDept.slug] || [];
     return [...baseDoctors].sort((a, b) =>
-      (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en")
+      (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en"),
     );
-  }, [deptDoctorsMap, selectedDept, openIndex, selectedSubByDept, lang]);
-
-  // Reorder: expanded first, rest after
-  const getOriginalIndex = (dept: Department) =>
-    departments.findIndex((d) => d.name === dept.name);
+  }, [deptDoctorsMap, selectedDept, selectedSubByDept, lang]);
 
   return (
     <section className="py-16 md:py-24 bg-background" ref={sectionRef} id="departments">
       <div className="container mx-auto px-4 md:px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7 }}
           className="text-center mb-10 md:mb-14"
         >
@@ -236,13 +251,12 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
                   {catDepts.map((dept) => {
-                    const origIdx = getOriginalIndex(dept);
-                    const isExpanded = openIndex === origIdx;
-                    const selectedSubSlug = selectedSubByDept[origIdx];
+                    const isExpanded = openSlug === dept.slug;
+                    const selectedSubSlug = selectedSubByDept[dept.slug];
 
                     return (
                       <motion.div
-                        key={dept.name}
+                        key={dept.slug}
                         layout
                         initial={{ opacity: 0, y: 30, scale: 0.97 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -253,7 +267,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                             navigate("/al-safwa");
                             return;
                           }
-                          if (!isExpanded) handleToggle(origIdx);
+                          if (!isExpanded) handleToggle(dept.slug);
                         }}
                       >
                         {!isExpanded ? (
@@ -307,12 +321,19 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                           <button key={sub.name} type="button"
                                             onClick={(e) => {
                                               e.stopPropagation();
-                                              const subSlug = getSubSlug(dept.slug, sub.name);
+                                              const subSlug = getSubSlugForDepartment(dept.slug, sub.name);
                                               const isAlreadySelected = selectedSubSlug === subSlug;
-                                              setSelectedSubByDept((prev) => ({ ...prev, [origIdx]: isAlreadySelected ? "" : subSlug }));
+                                              if (isAlreadySelected) {
+                                                setSelectedSubByDept((prev) => ({ ...prev, [dept.slug]: "" }));
+                                              } else {
+                                                setSelectedSubByDept((prev) => ({
+                                                  ...prev,
+                                                  [dept.slug]: subSlug,
+                                                }));
+                                              }
                                               if (doctorScrollRef.current) doctorScrollRef.current.scrollTo({ left: 0, behavior: "smooth" });
                                             }}
-                                            className={`px-3 py-1.5 rounded-full text-xs font-body border transition-colors ${selectedSubSlug === getSubSlug(dept.slug, sub.name) ? "bg-primary text-primary-foreground border-primary" : "bg-secondary/50 text-foreground border-border/30 hover:bg-secondary"}`}
+                                            className={`px-3 py-1.5 rounded-full text-xs font-body border transition-colors ${selectedSubSlug === getSubSlugForDepartment(dept.slug, sub.name) ? "bg-primary text-primary-foreground border-primary" : "bg-secondary/50 text-foreground border-border/30 hover:bg-secondary"}`}
                                           >
                                             {lang === "ar" ? sub.nameAr : sub.name}
                                           </button>
@@ -321,7 +342,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                     </>
                                   )}
                                 </div>
-                                <button onClick={() => setOpenIndex(null)} className="w-8 h-8 rounded-full bg-secondary/50 flex items-center justify-center hover:bg-primary/20 transition-colors flex-shrink-0 ml-4">
+                                <button onClick={() => setOpenSlug(null)} className="w-8 h-8 rounded-full bg-secondary/50 flex items-center justify-center hover:bg-primary/20 transition-colors flex-shrink-0 ml-4">
                                   <X className="w-4 h-4 text-muted-foreground" />
                                 </button>
                               </div>
@@ -387,7 +408,6 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
             </div>
           )}
         </div>
-
       </div>
 
       <style>{`

@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import StatsRow from "@/components/StatsRow";
@@ -21,6 +20,7 @@ import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import { getFeaturedDoctors } from "@/data/doctors";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useEffect } from "react";
 
 const Index = () => {
   const featuredDoctors = getFeaturedDoctors();
@@ -45,7 +45,7 @@ const Index = () => {
       <HomeBookingBlock />
       <SpecializedCare />
       <InsurancePartners />
-      <DoctorsSection featuredDoctors={featuredDoctors} />
+      <DoctorsSection />
       <WhyRoyaleHayat />
       
       {/* Chairman's Message Section with Heading */}

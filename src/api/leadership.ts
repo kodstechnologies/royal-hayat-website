@@ -1,0 +1,55 @@
+import api from "./axiosInstance";
+
+export type LeadershipItem = {
+  _id?: string;
+  initials: string;
+  initialsArabic: string;
+  name: string;
+  nameArabic: string;
+  title: string;
+  titleArabic: string;
+  description: string;
+  descriptionArabic: string;
+  image: string;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export const getAllLeadership = async (): Promise<LeadershipItem[]> => {
+  const response = await api.get("/api/v1/leadership");
+  const data = response.data?.data;
+  return Array.isArray(data) ? (data as LeadershipItem[]) : [];
+};
+
+/** Split title into one line per role (newline or 2+ spaces between segments). */
+export const titleToLines = (text: string): string[] => {
+  const trimmed = text?.trim() ?? "";
+  if (!trimmed) return [];
+
+  const byNewline = trimmed
+    .split(/\n+/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+  if (byNewline.length > 1) return byNewline;
+
+  const byDoubleSpace = trimmed
+    .split(/\s{2,}/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+  if (byDoubleSpace.length > 1) return byDoubleSpace;
+
+  return [trimmed];
+};
+
+export const descriptionToParagraphs = (text: string): string[] => {
+  const byBlankLine = text
+    .split(/\n\n+/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+  if (byBlankLine.length > 1) return byBlankLine;
+  const byLine = text
+    .split(/\n+/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+  return byLine.length > 0 ? byLine : [text.trim()].filter(Boolean);
+};

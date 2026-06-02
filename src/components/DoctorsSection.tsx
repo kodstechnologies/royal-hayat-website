@@ -1,10 +1,10 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { ChevronLeft, ChevronRight, Stethoscope } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Doctor } from "@/data/doctors";
+import { Doctor, getFeaturedDoctors } from "@/data/doctors";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const DoctorCard = ({ doc }: { doc: Doctor }) => {
@@ -58,13 +58,15 @@ const DoctorCard = ({ doc }: { doc: Doctor }) => {
   );
 };
 
-const DoctorsSection = ({ featuredDoctors }: { featuredDoctors: Doctor[] }) => {
+const DoctorsSection = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
   const { lang, t } = useLanguage();
   const isMobile = useIsMobile();
+
+  const featuredDoctors = useMemo(() => getFeaturedDoctors(12), []);
 
   const checkScroll = useCallback(() => {
     const el = scrollRef.current;
@@ -135,6 +137,7 @@ const DoctorsSection = ({ featuredDoctors }: { featuredDoctors: Doctor[] }) => {
           </ScrollAnimationWrapper>
         </div>
 
+        {featuredDoctors.length > 0 && (
         <div
           className="relative group"
           dir="ltr"
@@ -188,6 +191,7 @@ const DoctorsSection = ({ featuredDoctors }: { featuredDoctors: Doctor[] }) => {
             </div>
           </div>
         </div>
+        )}
       </div>
     </section>
   );

@@ -5,15 +5,21 @@ export type JobPosting = {
   id?: string | number;
   jobId?: string;
   title: string;
+  arabicTitle?: string;
   /** Backend field used for grouping (maps to "category" in UI). */
   department?: string;
   category?: string;
+  classification?: string;
   location?: string;
+  arabicLocation?: string;
   type?: string;
   desc?: string;
   description?: string;
+  arabicDescription?: string;
   responsibilities?: string[];
+  arabicResponsibilities?: string[];
   requirements?: string[];
+  arabicRequirements?: string[];
   postedDate?: string;
   date?: string;
   isActive?: boolean;
@@ -26,7 +32,7 @@ export type JobApplicationPayload = {
   email: string;
   phone: string;
   coverLetter?: string;
-  cv?: File;
+  resume: File;
 };
 
 export type GetJobsParams = {
@@ -52,16 +58,17 @@ export const getJobById = async (id: string) => {
   return response.data?.data ?? response.data?.job ?? response.data;
 };
 
+/** POST /api/v1/job-applications — multipart: jobId, fullName, email, phone, resume, coverLetter? */
 export const applyForJob = async (data: JobApplicationPayload) => {
   const formData = new FormData();
   formData.append("jobId", data.jobId);
   formData.append("fullName", data.fullName);
   formData.append("email", data.email);
   formData.append("phone", data.phone);
+  formData.append("resume", data.resume);
   if (data.coverLetter) formData.append("coverLetter", data.coverLetter);
-  if (data.cv) formData.append("resume", data.cv);
 
-  const response = await api.post("/api/v1/jobs/apply", formData, {
+  const response = await api.post("/api/v1/job-applications", formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
   return response.data;

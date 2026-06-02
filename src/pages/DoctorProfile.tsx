@@ -1,60 +1,131 @@
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft, Stethoscope, Globe, Award, Star, Quote, GraduationCap, CheckCircle2, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { doctors } from "@/data/doctors";
 import { departments, deptDoctorAliases } from "@/data/departments";
 import { getDoctorById, mapApiDoctorRowToDoctor } from "@/api/doctors";
+import {
+  createDoctorFeedback,
+  getAllDoctorFeedbacks,
+  getDoctorFeedbacksByDoctorId,
+  type DoctorFeedbackRecord,
+} from "@/api/feedback";
+import type { Doctor } from "@/data/doctors";
 import { X } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
-const patientFeedback = [
-  {
-    name: "Sara Al-Mutairi", nameAr: "سارة المطيري",
-    rating: 5,
-    comment: "Exceptional care and professionalism. I felt genuinely listened to and my treatment was thoroughly explained at every step.",
-    commentAr: "رعاية استثنائية واحترافية. شعرت بأنه يتم الاستماع إلي حقاً وتم شرح علاجي بدقة في كل خطوة.",
-    date: "March 2025"
-  },
-  {
-    name: "Ahmed Al-Rashidi", nameAr: "أحمد الرشيدي",
-    rating: 5,
-    comment: "One of the best medical experiences I've had. The doctor was incredibly knowledgeable and took the time to answer all my questions.",
-    commentAr: "واحدة من أفضل التجارب الطبية التي مررت بها. كان الطبيب على دراية كبيرة وأخذ الوقت للإجابة على جميع أسئلتي.",
-    date: "February 2025"
-  },
-  {
-    name: "Fatima Hassan", nameAr: "فاطمة حسن",
-    rating: 4,
-    comment: "Very professional and caring. The entire team made me feel comfortable and at ease throughout my visit.",
-    commentAr: "احترافية ورعاية عالية. جعلني الفريق بأكمله أشعر بالراحة والاطمئنان طوال زيارتي.",
-    date: "January 2025"
-  },
-  {
-    name: "Nora Al-Sabah", nameAr: "نورة الصباح",
-    rating: 5,
-    comment: "World-class treatment in a beautiful facility. The doctor's attention to detail was remarkable.",
-    commentAr: "علاج عالمي في منشأة جميلة. كان اهتمام الطبيب بالتفاصيل رائعاً.",
-    date: "December 2024"
-  },
-  {
-    name: "Mohammed Al-Enezi", nameAr: "محمد العنزي",
-    rating: 5,
-    comment: "I traveled from abroad for this doctor and it was absolutely worth it. Truly exceptional medical expertise.",
-    commentAr: "سافرت من الخارج لهذا الطبيب وكان الأمر يستحق تماماً. خبرة طبية استثنائية حقاً.",
-    date: "November 2024"
-  },
-  {
-    name: "Layla Al-Dhafiri", nameAr: "ليلى الظفيري",
-    rating: 4,
-    comment: "The follow-up care was just as impressive as the initial consultation. They truly care about long-term outcomes.",
-    commentAr: "كانت رعاية المتابعة مثيرة للإعجاب تماماً مثل الاستشارة الأولى. إنهم يهتمون حقاً بالنتائج طويلة المدى.",
-    date: "October 2024"
-  },
-];
+type PatientTestimonial = {
+  id: string;
+  name: string;
+  nameAr: string;
+  rating: number;
+  comment: string;
+  commentAr: string;
+  date: string;
+};
+
+const formatFeedbackDate = (iso: string | undefined, language: "en" | "ar") => {
+  const d = iso ? new Date(iso) : new Date();
+  return d.toLocaleDateString(language === "ar" ? "ar-KW" : "en-US", {
+    month: "long",
+    year: "numeric",
+  });
+};
+
+const hasText = (value?: string) => Boolean(value?.trim());
+
+const isShownOnWebsite = (fb: DoctorFeedbackRecord) =>
+  fb.shownOnWebsite === true || (fb.shownOnWebsite as unknown) === "true";
+
+const feedbackHasLanguageContent = (
+  fb: DoctorFeedbackRecord,
+  language: "en" | "ar"
+) => {
+  if (language === "ar") {
+    return hasText(fb.arabicFeedback) || hasText(fb.feedback);
+  }
+  return hasText(fb.feedback) || hasText(fb.arabicFeedback);
+};
+
+const feedbackBelongsToDoctor = (
+  fb: DoctorFeedbackRecord,
+  doctor: Doctor,
+  routeId?: string
+) => {
+  const keys = new Set(
+    [doctor.providerCode, doctor.id, routeId].filter(Boolean) as string[]
+  );
+  if (!keys.size) return false;
+
+  const doc = fb.doctor;
+  if (!doc) return false;
+
+  if (typeof doc === "string") {
+    return keys.has(doc);
+  }
+
+  const populated = doc as { _id?: string; doctorId?: string };
+  if (populated._id && keys.has(String(populated._id))) return true;
+  if (populated.doctorId && keys.has(String(populated.doctorId))) return true;
+  return false;
+};
+
+const mapApiFeedbackToTestimonial = (
+  fb: DoctorFeedbackRecord,
+  language: "en" | "ar"
+): PatientTestimonial => {
+  const text = fb.feedback ?? "";
+  const textAr = fb.arabicFeedback ?? "";
+  const name = fb.userName ?? "";
+  const nameAr = fb.arabicUserName ?? "";
+  const id =
+    String(fb._id ?? (fb as { id?: string }).id ?? "").trim() ||
+    `fb-${name || nameAr}-${text.slice(0, 12) || textAr.slice(0, 12)}`;
+
+  if (language === "ar") {
+    return {
+      id,
+      name: hasText(nameAr) ? nameAr : name,
+      nameAr: hasText(nameAr) ? nameAr : name,
+      rating: fb.stars ?? 5,
+      comment: hasText(text) ? text : textAr,
+      commentAr: hasText(textAr) ? textAr : text,
+      date: formatFeedbackDate(fb.createdAt, language),
+    };
+  }
+
+  return {
+    id,
+    name: hasText(name) ? name : nameAr,
+    nameAr: hasText(nameAr) ? nameAr : name,
+    rating: fb.stars ?? 5,
+    comment: hasText(text) ? text : textAr,
+    commentAr: hasText(textAr) ? textAr : text,
+    date: formatFeedbackDate(fb.createdAt, language),
+  };
+};
+
+const dedupeDoctorFeedbacks = (items: DoctorFeedbackRecord[]) => {
+  const seen = new Set<string>();
+  return items.filter((item) => {
+    const id = String(item._id ?? (item as { id?: string }).id ?? "").trim();
+    if (!id) return true;
+    if (seen.has(id)) return false;
+    seen.add(id);
+    return true;
+  });
+};
+
+const normalizeFeedbackList = (res: unknown): DoctorFeedbackRecord[] => {
+  if (Array.isArray(res)) return res as DoctorFeedbackRecord[];
+  const wrapped = res as { data?: unknown };
+  if (Array.isArray(wrapped?.data)) return wrapped.data as DoctorFeedbackRecord[];
+  return [];
+};
 
 const DoctorProfile = () => {
   const { id } = useParams<{ id: string }>();
@@ -71,41 +142,9 @@ const DoctorProfile = () => {
     comment: "",
     rating: 0,
   });
-
-  const [testimonials, setTestimonials] = useState(patientFeedback);
-const handleAddTestimonial = () => {
-  if (!testimonialForm.name || !testimonialForm.comment) return;
-
-  const newTestimonial = {
-    name: testimonialForm.name,
-    nameAr: testimonialForm.name,
-    rating: testimonialForm.rating,
-    comment: testimonialForm.comment,
-    commentAr: testimonialForm.comment,
-    date: new Date().toLocaleDateString("en-US", {
-      month: "long",
-      year: "numeric",
-    }),
-  };
-
-  setTestimonials((prev) => [newTestimonial, ...prev]);
-
-  setTestimonialForm({
-    name: "",
-    comment: "",
-    rating: 5,
-  });
-
-  // show thank you overlay
-  setShowThankYou(true);
-
-  // close after animation
-  setTimeout(() => {
-    setShowThankYou(false);
-    setIsTestimonialOpen(false);
-  }, 2200);
-};
-
+  const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
   const handleGoBack = () => {
     if (fromBooking) {
@@ -136,6 +175,121 @@ const handleAddTestimonial = () => {
   });
 
   const doctor = localDoctor || apiDoctor;
+
+  const feedbackDoctorId = useMemo(() => {
+    if (!doctor) return null;
+    if (doctor.providerCode) return doctor.providerCode;
+    if (/^[0-9a-fA-F]{24}$/i.test(doctor.id)) return doctor.id;
+    if (id && /^[0-9a-fA-F]{24}$/i.test(id)) return id;
+    return null;
+  }, [doctor, id]);
+
+  const {
+    data: feedbackResponse,
+    isLoading: feedbackLoading,
+  } = useQuery({
+    queryKey: ["doctor-feedback", feedbackDoctorId, doctor?.id, id],
+    queryFn: async () => {
+      if (!doctor) return [];
+
+      const idsToTry = [
+        feedbackDoctorId,
+        doctor.providerCode,
+        /^[0-9a-fA-F]{24}$/i.test(doctor.id) ? doctor.id : null,
+        id && /^[0-9a-fA-F]{24}$/i.test(id) ? id : null,
+      ].filter((value, index, arr) => value && arr.indexOf(value) === index) as string[];
+
+      for (const doctorKey of idsToTry) {
+        try {
+          const res = await getDoctorFeedbacksByDoctorId(doctorKey);
+          const list = normalizeFeedbackList(res);
+          if (list.length) return list;
+        } catch {
+          // try next id variant
+        }
+      }
+
+      try {
+        const res = await getAllDoctorFeedbacks();
+        const all = normalizeFeedbackList(res);
+        return all.filter((fb) => feedbackBelongsToDoctor(fb, doctor, id));
+      } catch {
+        return [];
+      }
+    },
+    enabled: !!doctor,
+  });
+
+  const testimonials = useMemo(() => {
+    const list = feedbackResponse ?? [];
+    return dedupeDoctorFeedbacks(list)
+      .filter(isShownOnWebsite)
+      .filter((fb) => feedbackHasLanguageContent(fb, lang))
+      .map((fb) => mapApiFeedbackToTestimonial(fb, lang));
+  }, [feedbackResponse, lang]);
+
+  const shouldAnimateMarquee = testimonials.length > 1;
+  const marqueeItems = shouldAnimateMarquee
+    ? [...testimonials, ...testimonials]
+    : testimonials;
+
+  const handleAddTestimonial = async () => {
+    if (!testimonialForm.name.trim() || !testimonialForm.comment.trim()) return;
+    if (!testimonialForm.rating) {
+      setSubmitError(
+        lang === "ar" ? "الرجاء اختيار التقييم بالنجوم" : "Please select a star rating"
+      );
+      return;
+    }
+    if (!feedbackDoctorId) {
+      setSubmitError(
+        lang === "ar"
+          ? "لا يمكن إرسال التقييم لهذا الطبيب حالياً"
+          : "Feedback cannot be submitted for this doctor at the moment"
+      );
+      return;
+    }
+
+    setIsSubmittingFeedback(true);
+    setSubmitError(null);
+
+    try {
+      const isArabic = lang === "ar";
+      await createDoctorFeedback(
+        {
+          doctorId: feedbackDoctorId,
+          stars: testimonialForm.rating,
+          userName: isArabic ? undefined : testimonialForm.name.trim(),
+          arabicUserName: isArabic ? testimonialForm.name.trim() : undefined,
+          feedback: isArabic ? undefined : testimonialForm.comment.trim(),
+          arabicFeedback: isArabic ? testimonialForm.comment.trim() : undefined,
+          shownOnWebsite: true,
+        },
+        { addedBy: "patient", language: lang === "ar" ? "arabic" : "english" }
+      );
+
+      await queryClient.invalidateQueries({
+        queryKey: ["doctor-feedback", feedbackDoctorId],
+      });
+
+      setTestimonialForm({ name: "", comment: "", rating: 0 });
+      setShowThankYou(true);
+
+      setTimeout(() => {
+        setShowThankYou(false);
+        setIsTestimonialOpen(false);
+      }, 2200);
+    } catch (err) {
+      console.error("Failed to submit doctor feedback:", err);
+      setSubmitError(
+        lang === "ar"
+          ? "تعذر إرسال التقييم. حاول مرة أخرى."
+          : "Could not submit feedback. Please try again."
+      );
+    } finally {
+      setIsSubmittingFeedback(false);
+    }
+  };
 
   if (apiLoading) {
     return (
@@ -186,7 +340,7 @@ const handleAddTestimonial = () => {
         ...bookingReturnState,
         fromBookAppointment: true,
         bookingPath: bookingReturnState?.bookingPath ?? "primary",
-        selectedDept: bookingReturnState?.selectedDept ?? inferredDept?.id ?? null,
+        selectedDept: bookingReturnState?.selectedDept ?? doctor.departmentId ?? null,
         selectedDoctor: doctor.id,
         isRequestMode: isRequestOnlyDoctor,
         canBookSlot: !isRequestOnlyDoctor,
@@ -380,35 +534,59 @@ const handleAddTestimonial = () => {
           </motion.button>
         </div>
 
-        <div className="relative overflow-hidden">
-          <div className={`flex gap-5 w-max hover:[animation-play-state:paused] ${lang === "ar" ? "animate-[feedbackMarqueeRtl_30s_linear_infinite]" : "animate-[feedbackMarquee_30s_linear_infinite]"}`}>
-            {[...testimonials, ...testimonials].map((fb, i) => (
+        <div className="relative overflow-hidden min-h-[96px] sm:min-h-[120px]">
+          {feedbackLoading && (
+            <div className="flex justify-center py-12">
+              <Loader2 className="w-6 h-6 text-primary animate-spin" />
+            </div>
+          )}
+          {!feedbackLoading && testimonials.length === 0 && (
+            <p className="text-center text-muted-foreground font-body text-sm py-8 px-6">
+              {lang === "ar"
+                ? "لا توجد آراء منشورة بعد. كن أول من يشارك تجربته."
+                : "No published feedback yet. Be the first to share your experience."}
+            </p>
+          )}
+          {!feedbackLoading && testimonials.length > 0 && (
+          <div
+            className={`flex gap-3 sm:gap-5 w-max px-4 sm:px-0 ${
+              shouldAnimateMarquee
+                ? `hover:[animation-play-state:paused] ${
+                    lang === "ar"
+                      ? "animate-[feedbackMarqueeRtl_30s_linear_infinite]"
+                      : "animate-[feedbackMarquee_30s_linear_infinite]"
+                  }`
+                : "mx-auto"
+            }`}
+          >
+            {marqueeItems.map((fb, i) => (
               <div
-                key={i}
-                className="w-[280px] h-[280px] flex-shrink-0 bg-popover rounded-2xl border border-border/40 p-5 flex flex-col justify-between hover:shadow-lg transition-shadow"
+                key={`${fb.id}-${i}`}
+                className="w-[220px] min-h-[200px] sm:w-[280px] sm:h-[280px] sm:min-h-0 flex-shrink-0 bg-popover rounded-xl sm:rounded-2xl border border-border/40 p-3.5 sm:p-5 flex flex-col justify-between hover:shadow-lg transition-shadow"
               >
                 <div>
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                      <span className="text-sm font-serif text-primary">{(lang === "ar" ? fb.nameAr : fb.name).charAt(0)}</span>
+                  <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                      <span className="text-xs sm:text-sm font-serif text-primary">{(lang === "ar" ? fb.nameAr : fb.name).charAt(0)}</span>
                     </div>
-                    <div>
-                      <p className="font-body text-sm font-medium text-foreground">{lang === "ar" ? fb.nameAr : fb.name}</p>
-                      <p className="font-body text-[10px] text-muted-foreground">{fb.date}</p>
+                    <div className="min-w-0">
+                      <p className="font-body text-xs sm:text-sm font-medium text-foreground truncate">{lang === "ar" ? fb.nameAr : fb.name}</p>
+                      <p className="font-body text-[9px] sm:text-[10px] text-muted-foreground">{fb.date}</p>
                     </div>
                   </div>
-                  <p className="text-muted-foreground font-body text-xs leading-relaxed italic line-clamp-5">
+                  <p className="text-muted-foreground font-body text-[11px] sm:text-xs leading-relaxed italic line-clamp-4 sm:line-clamp-5">
                     "{lang === "ar" ? fb.commentAr : fb.comment}"
                   </p>
                 </div>
-                <div className="flex items-center gap-0.5 mt-3">
+                <div className="flex items-center gap-0.5 mt-2 sm:mt-3">
                   {Array.from({ length: 5 }).map((_, s) => (
-                    <Star key={s} className={`w-3.5 h-3.5 ${s < fb.rating ? "text-accent fill-accent" : "text-border"}`} />
+                    <Star key={s} className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${s < fb.rating ? "text-accent fill-accent" : "text-border"}`} />
                   ))}
                 </div>
               </div>
             ))}
           </div>
+          )}
         </div>
       </section>
       {isTestimonialOpen && (
@@ -524,9 +702,15 @@ const handleAddTestimonial = () => {
               </div>
             </div>
 
+            {submitError && (
+              <p className="text-sm text-destructive font-body mb-4 text-center">{submitError}</p>
+            )}
+
             {/* Submit */}
             <button
+              type="button"
               onClick={handleAddTestimonial}
+              disabled={isSubmittingFeedback || !feedbackDoctorId}
               className="
     w-full
     bg-primary
@@ -547,12 +731,25 @@ const handleAddTestimonial = () => {
     active:scale-[0.98]
     transition-all
     duration-300
+    disabled:opacity-60
+    disabled:pointer-events-none
+    disabled:hover:scale-100
   "
             >
-              <Star className="w-4 h-4 fill-current" />
+              {isSubmittingFeedback ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Star className="w-4 h-4 fill-current" />
+              )}
 
               <span className="text-center">
-                {lang === "ar" ? "إرسال التقييم" : "Submit Feedback"}
+                {isSubmittingFeedback
+                  ? lang === "ar"
+                    ? "جاري الإرسال..."
+                    : "Submitting..."
+                  : lang === "ar"
+                    ? "إرسال التقييم"
+                    : "Submit Feedback"}
               </span>
             </button>
             {showThankYou && (

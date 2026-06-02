@@ -33,6 +33,10 @@ import {
 } from "@/api/identity";
 import { subscribeToIdentityVerification } from "@/api/identitySocket";
 import {
+  APPOINTMENT_REQUEST_TYPES,
+  createAppointmentRequest,
+} from "@/api/appointmentRequest";
+import {
   extractPatientId,
   getPatientLookupUserMessage,
 } from "@/utils/patientLookupErrors";
@@ -307,6 +311,7 @@ const BookAppointment = () => {
         return;
       }
 
+      console.log("Fetching availability with:", { specialityCode, providerCode, serviceCode, selectedDate });
       setIsLoadingSlots(true);
       try {
         const res = await getAvailability({
@@ -715,6 +720,14 @@ const BookAppointment = () => {
         ? duplicateBookingMessage
         : normalized;
     };
+    const extractedSymptoms = [
+      ...symptomChips,
+      ...symptomText
+        .split(/[\n,]/)
+        .map((s) => s.trim())
+        .filter(Boolean),
+    ];
+    const symptoms = [...new Set(extractedSymptoms)];
     try {
       if (patientType === "returning" && patientId && selectedSlotId) {
         const res = await bookAppointment({
@@ -732,7 +745,29 @@ const BookAppointment = () => {
         return;
       }
 
-      // For non-returning flow, we intentionally skip enquiry API submission.
+      const departmentName =
+        selectedDeptObj?.name ||
+        selectedDoctorObj?.department ||
+        selectedDoctorObj?.specialty ||
+        "";
+      const doctorName = selectedDoctorObj?.name || "";
+
+      await createAppointmentRequest({
+        fullname: patientName.trim(),
+        phone: `${patientCountryCode}${patientPhone.trim()}`,
+        requestType: isRequestMode
+          ? APPOINTMENT_REQUEST_TYPES.DOCTOR_UNAVAILABILITY
+          : APPOINTMENT_REQUEST_TYPES.FIRST_TIME_VISITOR,
+        dob: patientDob || undefined,
+        // age: calculateAge(patientDob),
+        gender: patientGender as "male" | "female" | "other",
+        preferredDate: selectedDate || undefined,
+        timeSlot: selectedSlot || undefined,
+        symptoms: symptoms.length ? symptoms : undefined,
+        doctor: doctorName || undefined,
+        department: departmentName || undefined,
+      });
+
       setBooked(true);
     } catch (err: any) {
       console.error("Booking failed:", err);

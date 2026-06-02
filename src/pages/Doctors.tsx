@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo, useCallback } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { Search, ChevronLeft, ChevronRight, Stethoscope } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
@@ -6,9 +6,18 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { doctors, type Doctor } from "@/data/doctors";
-import { departments, deptDoctorAliases, MAIN_CATEGORIES, type MainCategory } from "@/data/departments";
+import {
+  getDoctorsByDepartment,
+  searchDoctorsBySymptom,
+  type Doctor,
+} from "@/data/doctors";
 import { Input } from "@/components/ui/input";
+
+type DepartmentDoctorGroup = {
+  department: string;
+  departmentAr: string;
+  doctors: Doctor[];
+};
 
 const DoctorCard = ({ doc }: { doc: Doctor }) => {
   const { lang } = useLanguage();
@@ -87,19 +96,16 @@ const DepartmentRow = ({ department, departmentAr, docs }: { department: string;
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Show arrows if more than 4 on desktop, or more than 1 on mobile
   const showArrows = docs.length > (isMobile ? 1 : 4);
 
   const scroll = (dir: "left" | "right") => {
     if (scrollRef.current) {
-      const isMobile = window.innerWidth < 768;
-      // On mobile, scroll by card width (280) + large gap (80)
-      // On desktop, scroll card width (280) + gap (24)
-      const amount = isMobile ? (280 + 80) : (280 + 24);
+      const mobile = window.innerWidth < 768;
+      const amount = mobile ? (280 + 80) : (280 + 24);
       scrollRef.current.scrollBy({ left: dir === "left" ? -amount : amount, behavior: "smooth" });
     }
   };
@@ -107,11 +113,11 @@ const DepartmentRow = ({ department, departmentAr, docs }: { department: string;
   const deptDesc = departmentDescriptions[department];
 
   return (
-    <div className="mb-14">
-      <div className="max-w-[1192px] mx-auto mb-6">
-        <h3 className="text-2xl font-serif font-bold text-foreground mb-3">
+    <div className="mb-12">
+      <div className="mb-5">
+        <h2 className="text-xl md:text-2xl font-serif text-foreground">
           {lang === "ar" ? departmentAr : department}
-        </h3>
+        </h2>
         {deptDesc && (
           <div className="bg-popover border border-border/50 rounded-2xl p-4 md:p-5 shadow-sm">
             <p className="text-muted-foreground font-body text-base leading-relaxed">
@@ -123,18 +129,23 @@ const DepartmentRow = ({ department, departmentAr, docs }: { department: string;
       <div className="relative group/carousel">
         {showArrows && (
           <>
-            <button onClick={() => scroll("left")}
-              className={`absolute -left-2 md:-left-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon`}>
+            <button
+              type="button"
+              onClick={() => scroll("left")}
+              className="absolute -left-2 md:-left-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon"
+            >
               <ChevronLeft className="w-4 h-4" />
             </button>
-            <button onClick={() => scroll("right")}
-              className={`absolute -right-2 md:-right-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon`}>
+            <button
+              type="button"
+              onClick={() => scroll("right")}
+              className="absolute -right-2 md:-right-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon"
+            >
               <ChevronRight className="w-4 h-4" />
             </button>
           </>
         )}
 
-        {/* Container centered on desktop, full width on mobile */}
         <div className="max-w-[1192px] mx-auto overflow-hidden">
           <div
             ref={scrollRef}
@@ -142,12 +153,10 @@ const DepartmentRow = ({ department, departmentAr, docs }: { department: string;
             style={{
               scrollbarWidth: "none",
               msOverflowStyle: "none",
-              // Precise padding to center 280px card on mobile:
               paddingLeft: "calc((100vw - 280px) / 2)",
               paddingRight: "calc((100vw - 280px) / 2)",
             }}
           >
-            {/* On desktop (md), we don't want the extreme padding, so we reset it via media-query-like logic or just standard classes */}
             <style dangerouslySetInnerHTML={{
               __html: `
               @media (min-width: 768px) {
@@ -168,81 +177,20 @@ const Doctors = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const { lang, t } = useLanguage();
 
-  // Build dept → mainCategory lookup from departments data
-  const deptToMainCategory = useMemo<Record<string, MainCategory>>(() => {
-    const map: Record<string, MainCategory> = {};
-    departments.forEach((d) => {
-      // Map by all alias names too
-      map[d.name] = d.mainCategory;
-    });
-    return map;
+  const groups = useMemo<DepartmentDoctorGroup[]>(() => {
+    const grouped = getDoctorsByDepartment();
+    return Object.entries(grouped).map(([department, deptDoctors]) => ({
+      department,
+      departmentAr: deptDoctors[0]?.departmentAr ?? department,
+      doctors: deptDoctors,
+    }));
   }, []);
-
-  // Same ordering as Departments.tsx / departments.ts (array index within catalog)
-  const doctorDeptOrderIndex = useMemo(() => {
-    const m = new Map<string, number>();
-    departments.forEach((d, i) => {
-      m.set(d.name, i);
-      deptDoctorAliases[d.name]?.forEach((alias) => {
-        m.set(alias, i);
-      });
-    });
-    const pharmacyIdx = departments.findIndex((d) => d.name === "Royale Hayat Pharmacy");
-    if (pharmacyIdx >= 0) m.set("Pharmacy", pharmacyIdx);
-    return m;
-  }, []);
-
-  const DEPT_ORDER_FALLBACK = 100_000;
-
-  // dept name → mainCategory using doctor department field (canonical + deptDoctorAliases, then fuzzy)
-  const getDeptMainCategory = useCallback((dept: string): MainCategory => {
-    if (deptToMainCategory[dept]) return deptToMainCategory[dept];
-    for (const d of departments) {
-      const aliases = deptDoctorAliases[d.name];
-      if (aliases?.includes(dept)) return d.mainCategory;
-    }
-    const clinicalSpeciality: string[] = [
-      "Obstetrics & Gynecology", "Neonatal", "Pediatric", "Pediatrics",
-      "General Surgery", "Anesthesia", "Anesthesia & Intensive Care",
-      "Internal Medicine", "Family Medicine", "ENT (Ear, Nose & Throat)", "ENT",
-      "La Cosmetique", "Plastic Surgery & Cosmetology", "IVF", "Reproductive Medicine",
-      "Dermatology", "Dental", "Dental Clinic", "Pain Management", "Nutricare",
-    ];
-    const clinicalSupport: string[] = [
-      "Laboratory", "Radiology", "Intensive Care", "Clinical Pharmacy",
-      "Pharmacy", "Al Safwa",
-    ];
-    const homeCare: string[] = ["Royale Home Health", "Physiotherapy", "Home Health"];
-
-    if (clinicalSpeciality.some(a => dept.toLowerCase().includes(a.toLowerCase()) || a.toLowerCase().includes(dept.toLowerCase()))) return "Clinical Speciality";
-    if (clinicalSupport.some(a => dept.toLowerCase().includes(a.toLowerCase()) || a.toLowerCase().includes(dept.toLowerCase()))) return "Clinical Support Service";
-    if (homeCare.some(a => dept.toLowerCase().includes(a.toLowerCase()) || a.toLowerCase().includes(dept.toLowerCase()))) return "Home Care Service";
-    return "Clinical Speciality"; // default
-  }, [deptToMainCategory]);
-
-  const grouped = useMemo<Record<string, Doctor[]>>(() => {
-    return doctors.reduce<Record<string, Doctor[]>>((acc, doctor) => {
-      const key = doctor.department || "General";
-      if (!acc[key]) acc[key] = [];
-      acc[key].push(doctor);
-      return acc;
-    }, {});
-  }, []);
-
-  const allDoctors = useMemo(() => Object.values(grouped).flat(), [grouped]);
 
   const searchResults = useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
+    const query = searchQuery.trim();
     if (!query) return [];
-    return allDoctors.filter((doc) => {
-      const searchableFields = [
-        doc.name, doc.nameAr, doc.specialty, doc.specialtyAr,
-        doc.department, doc.departmentAr, doc.title, doc.titleAr,
-        ...(doc.symptoms || []),
-      ];
-      return searchableFields.some((field) => (field || "").toLowerCase().includes(query));
-    });
-  }, [allDoctors, searchQuery]);
+    return searchDoctorsBySymptom(query);
+  }, [searchQuery]);
 
   const isSearching = searchQuery.trim().length > 0;
   const locale = lang === "ar" ? "ar" : "en";
@@ -250,46 +198,28 @@ const Doctors = () => {
   const stripTitlePrefix = (name: string) =>
     name.replace(/^(dr|prof|professor)\.?\s+/i, "").trim();
 
-  const sortedGroupedEntries = useMemo(() => {
-    const sortDocsWithinDept = (dept: string, docs: Doctor[]) =>
-      [...docs].sort((a, b) => {
-        const stripTitles =
-          dept === "Anesthesia" || dept === "Anesthesia & Intensive Care";
-        const aKey = stripTitles
+  const sortedGroups = useMemo(() => {
+    const ordered = [...groups].sort((a, b) =>
+      (lang === "ar" ? a.departmentAr : a.department).localeCompare(
+        lang === "ar" ? b.departmentAr : b.department,
+        locale,
+      ),
+    );
+    return ordered.map((g) => ({
+      ...g,
+      doctors: [...g.doctors].sort((a, b) =>
+        (g.department === "Anesthesia"
           ? stripTitlePrefix(lang === "ar" ? a.nameAr : a.name)
-          : lang === "ar" ? a.nameAr : a.name;
-        const bKey = stripTitles
-          ? stripTitlePrefix(lang === "ar" ? b.nameAr : b.name)
-          : lang === "ar" ? b.nameAr : b.name;
-        return aKey.localeCompare(bKey, locale);
-      });
-
-    const orderOf = (dept: string) => doctorDeptOrderIndex.get(dept) ?? DEPT_ORDER_FALLBACK;
-
-    return Object.entries(grouped)
-      .filter(([, docs]) => Array.isArray(docs) && docs.length > 0)
-      .map(([dept, docs]) => [dept, sortDocsWithinDept(dept, docs)] as const)
-      .sort(([deptA], [deptB]) => {
-        const da = orderOf(deptA);
-        const db = orderOf(deptB);
-        if (da !== db) return da - db;
-        return deptA.localeCompare(deptB, locale);
-      });
-  }, [grouped, lang, locale, doctorDeptOrderIndex]);
-
-  // Group department rows by main category
-  const groupedByMainCategory = useMemo(() => {
-    const result: Record<MainCategory, typeof sortedGroupedEntries> = {
-      "Clinical Speciality": [],
-      "Clinical Support Service": [],
-      "Home Care Service": [],
-    };
-    sortedGroupedEntries.forEach((entry) => {
-      const cat = getDeptMainCategory(entry[0]);
-      result[cat].push(entry);
-    });
-    return result;
-  }, [sortedGroupedEntries, getDeptMainCategory]);
+          : (lang === "ar" ? a.nameAr : a.name)
+        ).localeCompare(
+          g.department === "Anesthesia"
+            ? stripTitlePrefix(lang === "ar" ? b.nameAr : b.name)
+            : (lang === "ar" ? b.nameAr : b.name),
+          locale,
+        ),
+      ),
+    }));
+  }, [groups, lang, locale]);
 
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
@@ -297,14 +227,12 @@ const Doctors = () => {
 
       <section className="py-16 md:py-24">
         <div className="container mx-auto px-4 md:px-6">
-          {/* Header */}
           <div className="text-center mb-12">
             <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-4">{t("ourTeam")}</p>
             <h1 className="text-3xl md:text-5xl font-serif text-foreground mb-4">{t("meetOurDoctors")}</h1>
             <p className="text-muted-foreground font-body max-w-lg mx-auto text-sm md:text-base">{t("findDoctor")}</p>
           </div>
 
-          {/* Search */}
           <div className="max-w-2xl mx-auto mb-14">
             <div className="relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
@@ -317,7 +245,6 @@ const Doctors = () => {
             </div>
           </div>
 
-          {/* Search results */}
           {isSearching ? (
             <div>
               <h3 className="text-lg font-serif text-foreground mb-6">
@@ -338,34 +265,14 @@ const Doctors = () => {
               )}
             </div>
           ) : (
-            /* Main-category grouped departments */
-            <div className="space-y-16">
-              {MAIN_CATEGORIES.map((cat) => {
-                const entries = groupedByMainCategory[cat.key];
-                if (!entries || entries.length === 0) return null;
-                return (
-                  <div key={cat.key}>
-                    {/* Category divider header */}
-                    <div className="flex items-center gap-4 mb-10">
-                      <div className="h-px flex-1 bg-border/50" />
-                      <h2 className="text-base md:text-lg font-body font-bold tracking-[0.2em] md:tracking-[0.25em] uppercase text-accent whitespace-nowrap px-1">
-                        {lang === "ar" ? cat.labelAr : cat.label}
-                      </h2>
-                      <div className="h-px flex-1 bg-border/50" />
-                    </div>
-
-                    {entries.map(([dept, docs]) => (
-                      <DepartmentRow
-                        key={dept}
-                        department={dept}
-                        departmentAr={docs[0]?.departmentAr || dept}
-                        docs={docs}
-                      />
-                    ))}
-                  </div>
-                );
-              })}
-            </div>
+            sortedGroups.map((g) => (
+              <DepartmentRow
+                key={g.department}
+                department={g.department}
+                departmentAr={g.departmentAr}
+                docs={g.doctors}
+              />
+            ))
           )}
         </div>
       </section>

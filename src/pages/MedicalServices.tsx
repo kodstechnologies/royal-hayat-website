@@ -6,7 +6,6 @@ import DoctorsSection from "@/components/DoctorsSection";
 import { Link } from "react-router-dom";
 import { Home } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { getFeaturedDoctors } from "@/data/doctors";
 
 const HomeHealthPreview = () => {
   const { lang } = useLanguage();
@@ -17,7 +16,7 @@ const HomeHealthPreview = () => {
           <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
             <Home className="w-8 h-8 text-primary" />
           </div>
-          <div className="flex-1  md:text-left">
+          <div className="flex-1 md:text-left">
             <h3 className="font-serif text-xl text-foreground mb-2">
               {lang === "ar" ? "رويال هوم هيلث للرعاية المنزلية" : "Royale Home Health"}
             </h3>
@@ -26,7 +25,10 @@ const HomeHealthPreview = () => {
                 ? "نقدم رعاية طبية متميزة في راحة منزلك، تشمل التمريض المنزلي والعلاج الطبيعي والرعاية بعد العمليات الجراحية."
                 : "We deliver premium medical care in the comfort of your home, including home nursing, physiotherapy, and post-surgical recovery care."}
             </p>
-            <Link to="/home-health" className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2 rounded-full font-body text-xs tracking-[0.15em] uppercase hover:bg-primary/90 transition-colors">
+            <Link
+              to="/home-health"
+              className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2 rounded-full font-body text-xs tracking-[0.15em] uppercase hover:bg-primary/90 transition-colors"
+            >
               {lang === "ar" ? "اكتشف المزيد" : "Read More"}
             </Link>
           </div>
@@ -37,13 +39,11 @@ const HomeHealthPreview = () => {
 };
 
 const MedicalServices = () => {
-  const featuredDoctors = getFeaturedDoctors();
-
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107]">
       <Header />
-      <DepartmentsSection showPageTitle={false} />
-      <DoctorsSection featuredDoctors={featuredDoctors} />
+      <DepartmentsSection />
+      <DoctorsSection />
       <HomeHealthPreview />
       <Footer />
       <ScrollToTop />

@@ -6,8 +6,10 @@ import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useState } from "react";
 import axios from "axios";
+// import axios from "axios";
 import { toast } from "sonner";
 import { createInternationalPatientEnquiry } from "@/api/internationalPatient";
+// import { createInternationalPatientEnquiry } from "@/api/internationalPatient";
 
 const InternationalPatient = () => {
   const { lang } = useLanguage();
@@ -29,26 +31,27 @@ const InternationalPatient = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const validateForm = () => {
-    if (!form.firstName.trim() || !form.lastName.trim() || !form.email.trim() || !form.mobile.trim()) {
-      toast.error(isAr ? "يرجى ملء الحقول المطلوبة." : "Please fill in required fields.");
-      return false;
-    }
-    const mobileDigits = form.mobile.replace(/\D/g, "");
-    if (!/^\d{8,10}$/.test(mobileDigits)) {
-      toast.error(
-        isAr
-          ? "يرجى إدخال رقم جوال صحيح (8–10 أرقام)."
-          : "Please enter a valid mobile number (8–10 digits).",
-      );
-      return false;
-    }
-    return true;
+  const handleMobileChange = (value: string) => {
+    const digitsOnly = value.replace(/\D/g, "").slice(0, 10);
+    setForm((prev) => ({ ...prev, mobile: digitsOnly }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    if (!form.firstName.trim() || !form.lastName.trim() || !form.email.trim() || !form.mobile.trim()) {
+      toast.error(isAr ? "يرجى ملء الحقول المطلوبة." : "Please fill in required fields.");
+      return false;
+    }
+
+    const mobileDigits = form.mobile.replace(/\D/g, "");
+    if (mobileDigits.length < 8 || mobileDigits.length > 10) {
+      toast.error(
+        isAr
+          ? "يرجى إدخال رقم هاتف صحيح (من 8 إلى 10 أرقام)."
+          : "Please enter a valid phone number (8 to 10 digits)."
+      );
+      return;
+    }
 
     try {
       setIsSubmitting(true);
@@ -56,24 +59,22 @@ const InternationalPatient = () => {
         firstName: form.firstName,
         lastName: form.lastName,
         email: form.email,
-        mobile: form.mobile.replace(/\D/g, ""),
+        mobile: mobileDigits,
         address: form.address,
         country: form.country,
         comments: form.comments,
       });
-      toast.success(
-        isAr ? "تم إرسال الطلب وسنتواصل معك." : "Request sent and we will get back to you.",
-      );
+      toast.success(isAr ? "تم إرسال الطلب وسنتواصل معك." : "Request sent and we will get back to you.");
       setForm({ firstName: "", lastName: "", mobile: "", email: "", address: "", country: "", comments: "" });
     } catch (error) {
       const backendMessage = axios.isAxiosError(error)
-        ? error.response?.data?.message || error.message
+        ? error.response?.data?.message || error.response?.data?.error || error.message
         : null;
       toast.error(
         backendMessage ||
           (isAr
             ? "تعذر إرسال الطلب. يرجى المحاولة مرة أخرى."
-            : "Failed to send request. Please try again."),
+            : "Failed to submit enquiry. Please try again.")
       );
     } finally {
       setIsSubmitting(false);
@@ -196,6 +197,7 @@ const InternationalPatient = () => {
                 </div>
                 <div>
                   <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "اسم العائلة" : "Last Name"} *</label>
+                  <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "اسم العائلة" : "Last Name"} *</label>
                   <input type="text" value={form.lastName} onChange={e => handleChange("lastName", e.target.value)}
                     className="w-full rounded-lg border border-border bg-background px-4 py-2.5 font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
                 </div>
@@ -203,8 +205,16 @@ const InternationalPatient = () => {
 
               <div>
                 <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "الهاتف المحمول" : "Mobile"} *</label>
-                  <input type="tel" value={form.mobile} onChange={e => handleChange("mobile", e.target.value)}
-                  className="w-full rounded-lg border border-border bg-background px-4 py-2.5 font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                <input
+                  type="tel"
+                  inputMode="numeric"
+                  autoComplete="tel"
+                  maxLength={10}
+                  value={form.mobile}
+                  onChange={(e) => handleMobileChange(e.target.value)}
+                  placeholder={isAr ? "8–10 أرقام" : "8–10 digits"}
+                  className="w-full rounded-lg border border-border bg-background px-4 py-2.5 font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                />
               </div>
 
               <div>
@@ -231,12 +241,10 @@ const InternationalPatient = () => {
                   className="w-full rounded-lg border border-border bg-background px-4 py-2.5 font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none" />
               </div>
 
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg font-body text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
-              >
+              <button type="submit" disabled={isSubmitting}
+                className="w-full inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg font-body text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed">
                 <Send className="w-4 h-4" />
+                {isSubmitting ? (isAr ? "جاري الإرسال..." : "Sending...") : isAr ? "إرسال" : "Send"}
                 {isSubmitting ? (isAr ? "جاري الإرسال..." : "Sending...") : isAr ? "إرسال" : "Send"}
               </button>
             </motion.form>

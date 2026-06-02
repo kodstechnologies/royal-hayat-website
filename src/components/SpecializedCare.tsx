@@ -7,6 +7,11 @@ import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { doctors, Doctor } from "@/data/doctors";
 import { deptDoctorAliases, departments as staticDepartments } from "@/data/departments";
 import { departmentDetails } from "@/data/departmentDetails";
+import { getCatagoriesWithDepartmentsAndDoctors } from "@/api/catagory";
+import {
+  mapCategoriesToGroupedMedicalDepartments,
+  type DepartmentWithEmbeddedDoctors,
+} from "@/utils/mapMedicalCatalogFromApi";
 
 interface ServiceItem {
   num: string;
@@ -15,6 +20,7 @@ interface ServiceItem {
   desc: string;
   descAr: string;
   img: string;
+  slug: string;
   department: string;
   subspecialties: { name: string; nameAr: string }[];
 }
@@ -256,14 +262,40 @@ const SpecializedCare = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const getDeptDoctors = (department: string): Doctor[] => {
-    const aliases = deptDoctorAliases[department] || [department];
-    return doctors.filter((d) =>
-      aliases.some(a => d.department.includes(a) || d.specialty.includes(a))
-    )
-      .sort((a, b) => a.name.localeCompare(b.name))
-      .slice(0, 3);
-  };
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const categories = await getCatagoriesWithDepartmentsAndDoctors();
+        const grouped = mapCategoriesToGroupedMedicalDepartments(categories);
+        const departments: DepartmentWithEmbeddedDoctors[] = grouped.flatMap((g) => g.departments);
+        const mapped: ServiceItem[] = departments.map((dep, index) => {
+          const detail = departmentDetails.find((d) => d.slug === dep.slug);
+          return {
+            num: String(index + 1).padStart(2, "0"),
+            name: dep.name,
+            nameAr: dep.nameAr || dep.name,
+            desc: dep.desc || dep.name,
+            descAr: dep.descAr || dep.desc || dep.name,
+            img: dep.img || "",
+            slug: dep.slug,
+            department: dep.name,
+            subspecialties:
+              dep.subs.length > 0
+                ? dep.subs
+                : (detail?.subDepartments ?? []).map((sub) => ({ name: sub.name, nameAr: sub.nameAr })),
+            doctors: (dep.embeddedDoctors ?? []).slice(0, 3),
+          };
+        });
+        if (!cancelled) setApiServices(mapped);
+      } catch {
+        if (!cancelled) setApiServices([]);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const scrollDoctors = (direction: "left" | "right") => {
     if (scrollRef.current) {
@@ -279,14 +311,15 @@ const SpecializedCare = () => {
   };
 
   const handleExpand = (index: number) => {
+    if (index < 0 || index >= INITIAL_COUNT) return;
     setExpandedIndex(expandedIndex === index ? null : index);
   };
 
   const visibleServices = sortedServices.slice(0, INITIAL_COUNT);
 
   // Reorder: expanded card first, rest below
-  const reorderedServices = (expandedIndex !== null && !isMobile)
-    ? [sortedServices[expandedIndex], ...visibleServices.filter((s) => sortedServices.indexOf(s) !== expandedIndex)]
+  const reorderedServices = (expandedIndex !== null && !isMobile && expandedIndex < visibleServices.length)
+    ? [visibleServices[expandedIndex], ...visibleServices.filter((_, idx) => idx !== expandedIndex)]
     : visibleServices;
 
   const getOriginalIndex = (service: ServiceItem) =>
@@ -302,12 +335,7 @@ const SpecializedCare = () => {
       .replace(/^-+|-+$/g, "");
 
   const getDepartmentSlug = (service: ServiceItem) => {
-    const matchedDept = departmentDetails.find(
-      (d) =>
-        d.name.toLowerCase() === service.name.toLowerCase() ||
-        d.name.toLowerCase() === service.department.toLowerCase()
-    );
-    return matchedDept?.slug;
+    return service.slug;
   };
 
   const getSubSlug = (service: ServiceItem, subName: string) => {
@@ -450,12 +478,18 @@ const SpecializedCare = () => {
                         /* First 6: Image cards */
                         <>
                           <div className="relative h-52 md:h-60 overflow-hidden">
-                            <img
-                              src={s.img}
-                              alt={lang === "ar" ? s.nameAr : s.name}
-                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                              loading="lazy"
-                            />
+                            {s.img ? (
+                              <img
+                                src={s.img}
+                                alt={lang === "ar" ? s.nameAr : s.name}
+                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                loading="lazy"
+                              />
+                            ) : (
+                              <div className="w-full h-full bg-secondary/30 flex items-center justify-center">
+                                <Stethoscope className="w-8 h-8 text-primary/40" />
+                              </div>
+                            )}
                             <div className="absolute inset-0 bg-gradient-to-t from-popover/70 to-transparent" />
                             <span className="absolute top-3 left-3 text-2xl font-serif text-primary-foreground/80 drop-shadow-lg"></span>
                           </div>
@@ -464,7 +498,7 @@ const SpecializedCare = () => {
                               {lang === "ar" ? s.nameAr : s.name}
                             </h3>
                             <p className="text-muted-foreground font-body text-xs leading-relaxed mb-3 line-clamp-2">
-                              {lang === "ar" ? s.descAr : s.desc}
+                              {(lang === "ar" ? s.descAr : s.desc) || (lang === "ar" ? "قسم طبي" : "Medical department")}
                             </p>
                             <span className="inline-flex items-center gap-1.5 text-primary font-body text-xs tracking-wide hover:text-accent transition-colors">
                               {t("learnMore")} <ArrowRight className="w-3.5 h-3.5" />
@@ -499,11 +533,17 @@ const SpecializedCare = () => {
                       {/* Left: Image + Info */}
                       <div className="lg:w-2/5 relative">
                         <div className="relative h-72 lg:h-full min-h-[380px] overflow-hidden">
-                          <img
-                            src={s.img}
-                            alt={lang === "ar" ? s.nameAr : s.name}
-                            className="w-full h-full object-cover"
-                          />
+                          {s.img ? (
+                            <img
+                              src={s.img}
+                              alt={lang === "ar" ? s.nameAr : s.name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-secondary/30 flex items-center justify-center">
+                              <Stethoscope className="w-10 h-10 text-primary/40" />
+                            </div>
+                          )}
                           <div className="absolute inset-0 bg-gradient-to-t from-popover via-popover/40 to-transparent" />
                           <div className="absolute bottom-0 left-0 right-0 p-6">
                             <span className="text-4xl font-serif text-primary/60 mb-2 block"></span>
@@ -511,7 +551,7 @@ const SpecializedCare = () => {
                               {lang === "ar" ? s.nameAr : s.name}
                             </h3>
                             <p className="text-muted-foreground font-body text-sm leading-relaxed">
-                              {lang === "ar" ? s.descAr : s.desc}
+                              {(lang === "ar" ? s.descAr : s.desc) || (lang === "ar" ? "قسم طبي" : "Medical department")}
                             </p>
                             {departmentSlug && (
                               <button

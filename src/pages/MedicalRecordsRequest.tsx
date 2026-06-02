@@ -16,26 +16,119 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
+import { createRequest } from "@/api/MedicalRecordRequest";
 
 const MedicalRecordsRequest = () => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
-  const [dischargeSummaryDate, setDischargeSummaryDate] = useState<Date>();
+
+  // ── Controlled form state ──────────────────────────────────────────────────
+  const [fullName, setFullName] = useState("");
+  const [civilId, setCivilId] = useState("");
+  const [patientFileNo, setPatientFileNo] = useState("");
   const [dob, setDob] = useState<Date>();
-  const [specificDateChecked, setSpecificDateChecked] = useState(false);
-  const [dischargeSummaryChecked, setDischargeSummaryChecked] = useState(false);
-  const [purposeValue, setPurposeValue] = useState("");
-  const [requestedBy, setRequestedBy] = useState("");
-  const [agreeTerms, setAgreeTerms] = useState(false);
   const [govIdFile, setGovIdFile] = useState<File | null>(null);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const [dischargeSummaryChecked, setDischargeSummaryChecked] = useState(false);
+  const [specificDateChecked, setSpecificDateChecked] = useState(false);
+  const [dischargeSummaryDate, setDischargeSummaryDate] = useState<Date>();
+
+  const [recipientName, setRecipientName] = useState("");
+  const [recipientEmail, setRecipientEmail] = useState("");
+  const [recipientPhone, setRecipientPhone] = useState("");
+  const [purposeValue, setPurposeValue] = useState("");
+  const [otherPurpose, setOtherPurpose] = useState("");
+
+  const [requestedBy, setRequestedBy] = useState("");
+  const [eSignature, setESignature] = useState("");
+  const [agreeTerms, setAgreeTerms] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  // ── Submit ─────────────────────────────────────────────────────────────────
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     if (!agreeTerms) {
       toast({ title: isAr ? "الموافقة مطلوبة" : "Agreement Required", description: isAr ? "يرجى الموافقة على الشروط قبل الإرسال." : "Please agree to the terms before submitting.", variant: "destructive" });
       return;
     }
-    toast({ title: isAr ? "تم إرسال النموذج" : "Form Submitted", description: isAr ? "تم إرسال طلب السجلات الطبية بنجاح. سنتواصل معك قريباً." : "Your medical records request has been submitted successfully. We will contact you shortly." });
+    if (!dischargeSummaryChecked && !specificDateChecked) {
+      toast({ title: isAr ? "حقل مطلوب" : "Required", description: isAr ? "يرجى تحديد نوع المعلومات المطلوبة." : "Please select at least one document type.", variant: "destructive" });
+      return;
+    }
+    if (!purposeValue) {
+      toast({ title: isAr ? "حقل مطلوب" : "Required", description: isAr ? "يرجى تحديد الغرض من الإفصاح." : "Please select the purpose of disclosure.", variant: "destructive" });
+      return;
+    }
+    if (!requestedBy) {
+      toast({ title: isAr ? "حقل مطلوب" : "Required", description: isAr ? "يرجى تحديد مقدم الطلب." : "Please select who is requesting.", variant: "destructive" });
+      return;
+    }
+    if (!govIdFile) {
+      toast({ title: isAr ? "حقل مطلوب" : "Required", description: isAr ? "يرجى رفع هوية حكومية سارية." : "Please upload a valid government ID.", variant: "destructive" });
+      return;
+    }
+    if (!dob) {
+      toast({ title: isAr ? "حقل مطلوب" : "Required", description: isAr ? "يرجى تحديد تاريخ الميلاد." : "Please select date of birth.", variant: "destructive" });
+      return;
+    }
+
+    // Map purpose radio value → API enum
+    const purposeMap: Record<string, "Continuing Care" | "Insurance Filing" | "Others"> = {
+      "continuing-care": "Continuing Care",
+      "insurance-filing": "Insurance Filing",
+      "others": "Others",
+    };
+
+    // Map authorization → API enum
+    const specificAuthorization: "Discharge Summary" | "Discharge Summary with a specific date of service" =
+      specificDateChecked
+        ? "Discharge Summary with a specific date of service"
+        : "Discharge Summary";
+
+    setSubmitting(true);
+    try {
+      await createRequest({
+        patientFullName: fullName,
+        civilId,
+        passportOrGovernmentId: govIdFile,
+        patientFileNo,
+        dateOfBirth: format(dob, "yyyy-MM-dd"),
+        specificAuthorization,
+        specificDateOfService: specificDateChecked && dischargeSummaryDate
+          ? format(dischargeSummaryDate, "yyyy-MM-dd")
+          : undefined,
+        recipientName,
+        recipientEmailAddress: recipientEmail,
+        recipientContactNumber: recipientPhone,
+        purposeOfDisclosure: purposeMap[purposeValue],
+        otherPurpose: purposeValue === "others" ? otherPurpose : undefined,
+        requestedBy: requestedBy === "patient" ? "Patient" : "Legal Representative",
+        patientNameConfirmation: requestedBy === "patient" ? eSignature : undefined,
+      });
+
+      toast({
+        title: isAr ? "تم إرسال النموذج" : "Form Submitted",
+        description: isAr
+          ? "تم إرسال طلب السجلات الطبية بنجاح. سنتواصل معك قريباً."
+          : "Your medical records request has been submitted successfully. We will contact you shortly.",
+      });
+
+      // Reset form
+      setFullName(""); setCivilId(""); setPatientFileNo(""); setDob(undefined);
+      setGovIdFile(null); setDischargeSummaryChecked(false); setSpecificDateChecked(false);
+      setDischargeSummaryDate(undefined); setRecipientName(""); setRecipientEmail("");
+      setRecipientPhone(""); setPurposeValue(""); setOtherPurpose(""); setRequestedBy("");
+      setESignature(""); setAgreeTerms(false);
+    } catch {
+      toast({
+        title: isAr ? "حدث خطأ" : "Submission Failed",
+        description: isAr ? "حدث خطأ أثناء الإرسال. يرجى المحاولة مرة أخرى." : "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -83,11 +176,11 @@ const MedicalRecordsRequest = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="fullName">{isAr ? "الاسم الكامل" : "Full Name"} <span className="text-destructive">*</span></Label>
-                    <Input id="fullName" required placeholder={isAr ? "أدخل اسمك الكامل" : "Enter your full name"} />
+                    <Input id="fullName" required value={fullName} onChange={e => setFullName(e.target.value)} placeholder={isAr ? "أدخل اسمك الكامل" : "Enter your full name"} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="civilId">{isAr ? "البطاقة المدنية (رقم البطاقة المدنية)" : "Civil ID (Civil ID Number)"} <span className="text-destructive">*</span></Label>
-                    <Input id="civilId" required placeholder={isAr ? "أدخل رقم البطاقة المدنية" : "Enter Civil ID number"} />
+                    <Input id="civilId" required value={civilId} onChange={e => setCivilId(e.target.value)} placeholder={isAr ? "أدخل رقم البطاقة المدنية" : "Enter Civil ID number"} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="govId">{isAr ? "جواز السفر / هوية حكومية سارية" : "Passport / Valid Government ID"} <span className="text-destructive">*</span></Label>
@@ -98,7 +191,7 @@ const MedicalRecordsRequest = () => {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="fileNo">{isAr ? "رقم ملف المريض (URN)" : "Patient File No. (URN)"} <span className="text-destructive">*</span></Label>
-                    <Input id="fileNo" required placeholder={isAr ? "أدخل رقم ملف المريض" : "Enter patient file number"} />
+                    <Input id="fileNo" required value={patientFileNo} onChange={e => setPatientFileNo(e.target.value)} placeholder={isAr ? "أدخل رقم ملف المريض" : "Enter patient file number"} />
                   </div>
                   <div className="space-y-2">
                     <Label>{isAr ? "تاريخ الميلاد" : "Date of Birth"} <span className="text-destructive">*</span></Label>
@@ -169,15 +262,15 @@ const MedicalRecordsRequest = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="recipientName">{isAr ? "اسم المستلم" : "Recipient Name"} <span className="text-destructive">*</span></Label>
-                    <Input id="recipientName" required placeholder={isAr ? "أدخل اسم المستلم" : "Enter recipient name"} />
+                    <Input id="recipientName" required value={recipientName} onChange={e => setRecipientName(e.target.value)} placeholder={isAr ? "أدخل اسم المستلم" : "Enter recipient name"} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="recipientEmail">{isAr ? "البريد الإلكتروني للمستلم" : "Recipient's Email Address"} <span className="text-destructive">*</span></Label>
-                    <Input id="recipientEmail" type="email" required placeholder={isAr ? "أدخل البريد الإلكتروني للمستلم" : "Enter recipient email"} />
+                    <Input id="recipientEmail" type="email" required value={recipientEmail} onChange={e => setRecipientEmail(e.target.value)} placeholder={isAr ? "أدخل البريد الإلكتروني للمستلم" : "Enter recipient email"} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="recipientPhone">{isAr ? "رقم هاتف المستلم" : "Recipient's Contact Number"} <span className="text-destructive">*</span></Label>
-                    <Input id="recipientPhone" type="tel" required placeholder={isAr ? "أدخل رقم الاتصال" : "Enter contact number"} />
+                    <Input id="recipientPhone" type="tel" required value={recipientPhone} onChange={e => setRecipientPhone(e.target.value)} placeholder={isAr ? "أدخل رقم الاتصال" : "Enter contact number"} />
                   </div>
                 </div>
                 <div className="space-y-3">
@@ -198,7 +291,7 @@ const MedicalRecordsRequest = () => {
                     </div>
                   </RadioGroup>
                   {purposeValue === "others" && (
-                    <Textarea placeholder={isAr ? "يرجى تحديد الغرض..." : "Please specify the purpose..."} className="mt-2" />
+                    <Textarea value={otherPurpose} onChange={e => setOtherPurpose(e.target.value)} placeholder={isAr ? "يرجى تحديد الغرض..." : "Please specify the purpose..."} className="mt-2" />
                   )}
                 </div>
               </div>
@@ -237,7 +330,7 @@ const MedicalRecordsRequest = () => {
                 {requestedBy === "patient" && (
                   <div className="space-y-2">
                     <Label htmlFor="eSignature">{isAr ? "الاسم الكامل للمريض (التوقيع الإلكتروني)" : "Patient Full Name (E-Signature)"} <span className="text-destructive">*</span></Label>
-                    <Input id="eSignature" required placeholder={isAr ? "اكتب اسمك الكامل كتوقيع إلكتروني" : "Type your full name as electronic signature"} className="font-serif italic" />
+                    <Input id="eSignature" required value={eSignature} onChange={e => setESignature(e.target.value)} placeholder={isAr ? "اكتب اسمك الكامل كتوقيع إلكتروني" : "Type your full name as electronic signature"} className="font-serif italic" />
                   </div>
                 )}
               </div>
@@ -250,7 +343,9 @@ const MedicalRecordsRequest = () => {
                     ? "الحقول المميزة بنجمة حمراء (*) إلزامية."
                     : "The fields marked with a red asterisk (*) are mandatory to be filled out."}
                 </p>
-                <Button type="submit" size="lg" className="w-full sm:w-auto">{isAr ? "إرسال" : "Submit"}</Button>
+                <Button type="submit" size="lg" disabled={submitting} className="w-full sm:w-auto">
+                  {submitting ? (isAr ? "جاري الإرسال..." : "Submitting...") : (isAr ? "إرسال" : "Submit")}
+                </Button>
               </div>
             </ScrollAnimationWrapper>
 

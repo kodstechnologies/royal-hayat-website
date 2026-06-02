@@ -8,6 +8,14 @@ import type { LifePhoto } from "@/components/LifePhotoCarousel.tsx";
 import VoicesFromOurPeople from "@/components/VoicesFromOurPeople.tsx";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { getAllJobs, type JobPosting } from "@/api/job";
+import { localizeJobPosting, type LocalizedJob } from "@/lib/jobLocale";
+import { getAllWorkCulture, type WorkCultureItem } from "@/api/workCulture";
+import {
+  getAllEmployeeRecognitions,
+  achievementsTextToLines,
+  type EmployeeRecognition,
+} from "@/api/employeeRecognition";
 import {
   Heart,
   Sparkles,
@@ -21,9 +29,8 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
-import { getAllJobs, type JobPosting } from "@/api/job";
 
 /* ------------------------------------------------------------------ */
 /* OPEN POSITIONS — sourced 1:1 from https://royalehayat.com/careers/ */
@@ -127,18 +134,25 @@ const openPositions = [
 
 type Position = {
   id: string;
-  title: string;
-  category: string;
-  location: string;
-  type: string;
-  desc: string;
+  name: string;
+  nameAr: string;
+  dept: string;
+  deptAr: string;
+  role: string;
+  roleAr: string;
+  image: string;
+  achievements: string[];
+  achievementsAr: string[];
 };
 
-type WorkWithUsProps = {
-  staffActivitiesImages: string[];
-  galaDinnerImages: string[];
-  hospitalityWeekImages: string[];
-  rhhQuizImages: string[];
+type GalleryCarousel = {
+  id: string;
+  titleEn: string;
+  titleAr: string;
+  subtitleEn: string;
+  subtitleAr: string;
+  images: string[];
+  variant?: "muted";
 };
 
 const toCarouselPhotos = (label: string, images: string[]): LifePhoto[] => {
@@ -151,81 +165,204 @@ const toCarouselPhotos = (label: string, images: string[]): LifePhoto[] => {
   }));
 };
 
-const employees = [
+const mapRecognitionToEmployee = (item: EmployeeRecognition): Employee => {
+  const lines = achievementsTextToLines(item.achievements ?? "");
+  const achievements = lines.length > 0 ? lines : [item.achievements].filter(Boolean);
+  const linesAr = achievementsTextToLines(item.arabicAchievements ?? "");
+  const achievementsAr =
+    linesAr.length > 0
+      ? linesAr
+      : [item.arabicAchievements || item.achievements].filter(Boolean);
+  return {
+    id: item._id ?? item.employeeId ?? item.employeeID ?? item.employeeName,
+    name: item.employeeName,
+    nameAr: item.employeeNameArabic || item.employeeName,
+    dept: item.department ?? "",
+    deptAr: item.arabicDepartment ?? item.department ?? "",
+    role: item.title,
+    roleAr: item.arabicTitle || item.title,
+    image: item.image ?? "",
+    achievements,
+    achievementsAr,
+  };
+};
+
+const mapContentToCarousel = (
+  item: WorkCultureItem,
+  variant?: "muted",
+): GalleryCarousel => ({
+  id: item._id ?? item.heading,
+  titleEn: item.heading,
+  titleAr: item.headingArabic,
+  subtitleEn: item.description,
+  subtitleAr: item.descriptionArabic,
+  images: item.images ?? [],
+  variant,
+});
+
+const normalizeHeading = (heading: string) => heading.trim().toLowerCase();
+
+const buildExistingWorkCultureCarousels = (
+  staffActivitiesImages: string[],
+  galaDinnerImages: string[],
+  hospitalityWeekImages: string[],
+  rhhQuizImages: string[],
+): GalleryCarousel[] => [
   {
-    name: "Rangaa Tara Mahawan",
-    nameAr: "رانجا تارا مهاوان",
-    dept: "Guest Relation Department",
-    deptAr: "قطاع الضيافة",
-    role: "Bell Man - Guest Relations",
-    roleAr: "موظف استقبال الضيوف – قسم علاقات الضيوف",
-    image:
-      "/images/ranga-tara.png",
-    achievements: [
-      "Rangaa has earned this recognition through his exceptional helpfulness and a consistently positive attitude. A dependable team member with an exemplary attendance record, he ensures that our guests’ first impression of Royale Hayat is one of comfort and high-standard hospitality.",
-      "Dependable and dedicated team member who works harmoniously with others. He is reliable, always willing to extend his duty when needed, and completes tasks efficiently without complaint. Attentive in the lobby and consistently respectful, he is a valued part of the team.",
-    ],
-    achievementsAr: [
-      "حصل رانجا على هذا التكريم بفضل تعاونه الاستثنائي وروحه الإيجابية الدائمة. ويُعد عضوًا موثوقًا ومتفانيًا في فريق العمل، كما يتمتع بسجل حضور وانضباط مثالي، مما يساهم في منح ضيوف رويال حياة انطباعًا أوليًا يعكس الراحة وأعلى معايير الضيافة.",
-      "يتميز بروح التعاون والعمل الجماعي، ويُعرف باعتماديته واستعداده الدائم لتمديد ساعات العمل عند الحاجة، مع إنجاز المهام بكفاءة عالية ودون تذمر. كما يحرص دائمًا على متابعة احتياجات الضيوف في منطقة الاستقبال بأسلوب مهني ومحترم، مما يجعله عنصرًا قيّمًا ضمن الفريق.",
-    ],
+    id: "staff-activities",
+    titleEn: "Staff Activities — Volley Ball Tournament",
+    titleAr: "أنشطة الموظفين — بطولة الكرة الطائرة",
+    subtitleEn:
+      "Achievements are acknowledged—because effort, excellence, and ethical conduct matter.",
+    subtitleAr:
+      "يُعترف بالإنجازات — لأن الجهد والتميّز والسلوك الأخلاقي أمور تهم.",
+    images: staffActivitiesImages,
   },
   {
-    name: "Mohammad Niyaz Salam",
-    nameAr: "محمد نياز سلام",
-    dept: "Call Center Department",
-    deptAr: "قسم خدمة العملاء",
-    role: "Guest Services Operator - Call Center",
-    roleAr: "موظف خدمات الضيوف – مركز خدمة العملاء",
-    image:
-      "/images/mohammad-niyaz.png",
-    achievements: [
-      "Mohammad distinguishes himself through efficiency and a commitment to service excellence. His professional handling of guest inquiries, combined with his reliable attendance and disciplined work ethic, has been essential to the success of our Guest Services team.",
-      "Highly reliable and flexible team member who always brings positive energy and support to the workplace. He consistently completes tasks on time and never hesitates to step in when needed, even covering shifts at short notice while maintaining excellent performance.",
-    ],
-    achievementsAr: [
-      "يتميّز محمد بالكفاءة العالية والالتزام بتقديم أفضل مستويات الخدمة. وقد كان لتعامله المهني مع استفسارات الضيوف، إلى جانب انضباطه وسجله المتميز في الحضور، دور أساسي في نجاح فريق خدمات الضيوف.",
-      "كما يُعرف بمرونته العالية واعتماديته الكبيرة، حيث يحرص دائمًا على نشر الطاقة الإيجابية وتقديم الدعم لزملائه في بيئة العمل. ويتميز بإنجاز المهام في الوقت المحدد، واستعداده الدائم لتغطية المناوبات عند الحاجة حتى في الإشعارات القصيرة، مع الحفاظ على مستوى أداء متميز باستمرار.",
-    ],
+    id: "gala-dinner",
+    titleEn: "Gala Dinner",
+    titleAr: "حفل العشاء السنوي",
+    subtitleEn: "A night of elegance, gratitude and celebration.",
+    subtitleAr: "ليلة من الأناقة، الامتنان والاحتفال.",
+    images: galaDinnerImages,
+    variant: "muted",
+  },
+  {
+    id: "hospitality-week",
+    titleEn: "Hospitality Week",
+    titleAr: "أسبوع الضيافة",
+    subtitleEn:
+      "A week devoted to the hospitality spirit that defines Royale Hayat.",
+    subtitleAr: "أسبوع مكرّس لروح الضيافة التي تميّز رويال حياة.",
+    images: hospitalityWeekImages,
+  },
+  {
+    id: "rhh-quiz",
+    titleEn: "RHH Quiz",
+    titleAr: "مسابقة RHH",
+    subtitleEn: "Fun, friendly competition across teams.",
+    subtitleAr: "مرح ومنافسة ودي بين الفرق.",
+    images: rhhQuizImages,
+    variant: "muted",
   },
 ];
 
+const mergeApiWorkCulture = (
+  apiItems: WorkCultureItem[],
+  existing: GalleryCarousel[],
+): GalleryCarousel[] => {
+  const existingHeadings = new Set(
+    existing.flatMap((carousel) => [
+      normalizeHeading(carousel.titleEn),
+      normalizeHeading(carousel.titleAr),
+    ]),
+  );
+
+  return apiItems
+    .map((item, index) =>
+      mapContentToCarousel(item, index % 2 === 1 ? "muted" : undefined),
+    )
+    .filter(
+      (carousel) =>
+        !existingHeadings.has(normalizeHeading(carousel.titleEn)) &&
+        !existingHeadings.has(normalizeHeading(carousel.titleAr)),
+    )
+    .map((carousel) => ({ ...carousel, id: `api-${carousel.id}` }));
+};
+
 const WorkWithUs = ({
-  staffActivitiesImages,
-  galaDinnerImages,
-  hospitalityWeekImages,
-  rhhQuizImages,
+  staffActivitiesImages = [],
+  galaDinnerImages = [],
+  hospitalityWeekImages = [],
+  rhhQuizImages = [],
 }: WorkWithUsProps) => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
   const [activeCategory, setActiveCategory] = useState("View All");
-  const positions: Position[] = openPositions.map((p, index) => ({
-    id: String(index),
-    title: p.title,
-    category: p.category,
-    location: p.location,
-    type: p.type,
-    desc: p.desc,
-  }));
+  const [jobPostings, setJobPostings] = useState<JobPosting[]>([]);
+  const [jobsLoading, setJobsLoading] = useState(true);
+  const [jobsError, setJobsError] = useState(false);
+  const [apiEmployees, setApiEmployees] = useState<Employee[]>([]);
+  const [employeesApiLoading, setEmployeesApiLoading] = useState(true);
+
+  const displayEmployees = useMemo(() => apiEmployees, [apiEmployees]);
+  const [apiWorkCultureCarousels, setApiWorkCultureCarousels] = useState<
+    GalleryCarousel[]
+  >([]);
+  const [workCultureApiLoading, setWorkCultureApiLoading] = useState(true);
+
+  const existingWorkCultureCarousels = useMemo(
+    () =>
+      buildExistingWorkCultureCarousels(
+        staffActivitiesImages,
+        galaDinnerImages,
+        hospitalityWeekImages,
+        rhhQuizImages,
+      ),
+    [
+      staffActivitiesImages,
+      galaDinnerImages,
+      hospitalityWeekImages,
+      rhhQuizImages,
+    ],
+  );
   const [empIndex, setEmpIndex] = useState(0);
   const [isEmpPaused, setIsEmpPaused] = useState(false);
 
   useEffect(() => {
-    if (isEmpPaused || employees.length <= 1) return;
+    if (isEmpPaused || displayEmployees.length <= 1) return;
     const timer = setInterval(() => {
-      setEmpIndex((prev) => (prev + 1) % employees.length);
+      setEmpIndex((prev) => (prev + 1) % displayEmployees.length);
     }, 5000);
     return () => clearInterval(timer);
-  }, [isEmpPaused]);
+  }, [isEmpPaused, displayEmployees.length]);
 
   useEffect(() => {
-    if (employees.length <= 1) return;
-    const next = employees[(empIndex + 1) % employees.length]?.image;
-    if (!next) return;
-    const img = new Image();
-    img.src = next;
-  }, [empIndex]);
+    if (empIndex >= displayEmployees.length) {
+      setEmpIndex(0);
+    }
+  }, [displayEmployees.length, empIndex]);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadCultureContent = async () => {
+      setWorkCultureApiLoading(true);
+      setEmployeesApiLoading(true);
+      try {
+        const [workCulture, recognitions] = await Promise.all([
+          getAllWorkCulture(),
+          getAllEmployeeRecognitions(),
+        ]);
+        if (cancelled) return;
+
+        setApiWorkCultureCarousels(
+          mergeApiWorkCulture(workCulture, existingWorkCultureCarousels),
+        );
+
+        setApiEmployees(
+          recognitions
+            .filter((item) => item.visibilityStatus !== "hide")
+            .map(mapRecognitionToEmployee),
+        );
+      } catch {
+        if (!cancelled) {
+          setApiWorkCultureCarousels([]);
+          setApiEmployees([]);
+        }
+      } finally {
+        if (!cancelled) {
+          setWorkCultureApiLoading(false);
+          setEmployeesApiLoading(false);
+        }
+      }
+    };
+
+    void loadCultureContent();
+    return () => {
+      cancelled = true;
+    };
+  }, [existingWorkCultureCarousels]);
   const categoriesScrollRef = useRef<HTMLDivElement | null>(null);
   const [searchParams] = useSearchParams();
   const section = searchParams.get("section");
@@ -236,29 +373,19 @@ const WorkWithUs = ({
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, [section]);
 
-  useEffect(() => {
-    getAllJobs({ isActive: true })
-      .then((jobs) => {
-        if (!jobs.length) return;
-        setPositions(
-          jobs.map((job: JobPosting) => ({
-            id: String(job._id ?? job.id ?? ""),
-            title: job.title,
-            category: job.classification ?? job.category ?? job.department ?? "",
-            location: job.location ?? "",
-            type: job.type ?? "",
-            desc: job.description ?? job.desc ?? "",
-          })),
-        );
-      })
-      .catch(() => {});
-  }, []);
-
   const scrollCategories = (direction: "left" | "right") => {
     if (!categoriesScrollRef.current) return;
     const amount = direction === "left" ? -280 : 280;
     categoriesScrollRef.current.scrollBy({ left: amount, behavior: "smooth" });
   };
+
+  const positions = useMemo(
+    () =>
+      jobPostings
+        .map((job, index) => localizeJobPosting(job, isAr, index))
+        .filter((job): job is LocalizedJob => job !== null),
+    [jobPostings, isAr],
+  );
 
   const categories = [
     "View All",
@@ -480,51 +607,52 @@ const WorkWithUs = ({
             </div>
 
             <div
-              className="relative max-w-5xl mx-auto"
+              className="max-w-5xl mx-auto relative"
               onMouseEnter={() => setIsEmpPaused(true)}
               onMouseLeave={() => setIsEmpPaused(false)}
             >
+              {displayEmployees.length > 0 && (
               <AnimatePresence mode="wait">
                 <motion.div
-                  key={empIndex}
-                  initial={{ opacity: 0, x: isAr ? -30 : 30 }}
+                  key={displayEmployees[empIndex]?.id ?? empIndex}
+                  initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: isAr ? 30 : -30 }}
-                  transition={{ duration: 0.4 }}
-                  className="bg-popover border border-border/50 rounded-2xl overflow-hidden shadow-lg"
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="bg-popover border border-border/50 rounded-2xl overflow-hidden"
                 >
                   <div className="flex flex-col md:flex-row">
                     <div className="md:w-96 flex-shrink-0 bg-primary/5 p-6 flex items-center justify-center">
-                      <img
-                        src={employees[empIndex].image}
-                        alt={
-                          isAr
-                            ? employees[empIndex].nameAr
-                            : employees[empIndex].name
-                        }
-                        className="w-full max-h-[420px] object-contain rounded-2xl"
-                        loading="eager"
-                        decoding="sync"
-                      />
+                      {displayEmployees[empIndex]?.image ? (
+                        <img
+                          src={displayEmployees[empIndex].image}
+                          alt={displayEmployees[empIndex].name}
+                          className="w-full h-[400px] object-cover rounded-2xl"
+                        />
+                      ) : (
+                        <div className="w-full h-[400px] rounded-2xl bg-muted flex items-center justify-center">
+                          <Award className="w-16 h-16 text-muted-foreground/40" />
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex-1 p-6 md:p-8">
                       <h3 className="font-serif text-2xl text-foreground mb-1">
                         {isAr
-                          ? employees[empIndex].nameAr
-                          : employees[empIndex].name}
+                          ? displayEmployees[empIndex].nameAr
+                          : displayEmployees[empIndex].name}
                       </h3>
 
                       <p className="font-body text-xs text-accent uppercase tracking-wide mb-2">
                         {isAr
-                          ? employees[empIndex].deptAr
-                          : employees[empIndex].dept}
+                          ? displayEmployees[empIndex].deptAr
+                          : displayEmployees[empIndex].dept}
                       </p>
 
                       <p className="font-body text-sm text-accent mb-5">
                         {isAr
-                          ? employees[empIndex].roleAr
-                          : employees[empIndex].role}
+                          ? displayEmployees[empIndex].roleAr
+                          : displayEmployees[empIndex].role}
                       </p>
 
                       <div>
@@ -534,8 +662,8 @@ const WorkWithUs = ({
 
                         <div className="space-y-4 text-sm text-muted-foreground leading-relaxed font-body">
                           {(isAr
-                            ? employees[empIndex].achievementsAr
-                            : employees[empIndex].achievements
+                            ? displayEmployees[empIndex].achievementsAr
+                            : displayEmployees[empIndex].achievements
                           ).map((ach, idx) => (
                             <p key={idx}>{ach}</p>
                           ))}
@@ -545,16 +673,24 @@ const WorkWithUs = ({
                   </div>
                 </motion.div>
               </AnimatePresence>
+              )}
+
+              {employeesApiLoading && (
+                <p className="text-center font-body text-xs text-muted-foreground mt-4">
+                  {isAr ? "جاري تحميل المزيد..." : "Loading more recognitions..."}
+                </p>
+              )}
 
               {/* Navigation Arrows */}
-              {employees.length > 1 && (
+              {displayEmployees.length > 1 && (
                 <>
                   <button
                     type="button"
                     onClick={() =>
                       setEmpIndex(
                         (prev) =>
-                          (prev - 1 + employees.length) % employees.length,
+                          (prev - 1 + displayEmployees.length) %
+                          displayEmployees.length,
                       )
                     }
                     aria-label={isAr ? "السابق" : "Previous"}
@@ -565,7 +701,9 @@ const WorkWithUs = ({
                   <button
                     type="button"
                     onClick={() =>
-                      setEmpIndex((prev) => (prev + 1) % employees.length)
+                      setEmpIndex(
+                        (prev) => (prev + 1) % displayEmployees.length,
+                      )
                     }
                     aria-label={isAr ? "التالي" : "Next"}
                     className="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 active:scale-95 [webkit-tap-highlight-color:transparent]"
@@ -576,71 +714,57 @@ const WorkWithUs = ({
               )}
 
               {/* counter */}
-              <div className="flex items-center justify-center gap-3 mt-5">
-                <span className="font-body text-xs text-muted-foreground tracking-widest">
-                  {String(empIndex + 1).padStart(2, "0")} /{" "}
-                  {String(employees.length).padStart(2, "0")}
-                </span>
-              </div>
+              {displayEmployees.length > 0 && (
+                <div className="flex items-center justify-center gap-3 mt-5">
+                  <span className="font-body text-xs text-muted-foreground tracking-widest">
+                    {String(empIndex + 1).padStart(2, "0")} /{" "}
+                    {String(displayEmployees.length).padStart(2, "0")}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </section>
       )}
 
-      {/* Staff Activities (includes Volley Ball Tournament photos) */}
-      {showSection("culture") && (
-        <LifePhotoCarousel
-          title={
-            isAr
-              ? "أنشطة الموظفين — بطولة الكرة الطائرة"
-              : "Staff Activities — Volley Ball Tournament"
-          }
-          subtitle={
-            isAr
-              ? "يتم تقدير الإنجازات والاعتراف بها، لأن الجهد والتميّز والسلوك المهني القائم على القيم يشكّلون أساس نجاحنا."
-              : "Achievements are acknowledged—because effort, excellence, and ethical conduct matter."
-          }
-          photos={toCarouselPhotos(
-            "Staff Activities — Volley Ball Tournament",
-            staffActivitiesImages,
-          )}
-        />
+      {/* Work culture galleries — existing images + API additions */}
+      {showSection("culture") &&
+        existingWorkCultureCarousels.map((carousel) => (
+          <LifePhotoCarousel
+            key={carousel.id}
+            variant={carousel.variant}
+            title={isAr ? carousel.titleAr : carousel.titleEn}
+            subtitle={isAr ? carousel.subtitleAr : carousel.subtitleEn}
+            photos={toCarouselPhotos(
+              isAr ? carousel.titleAr : carousel.titleEn,
+              carousel.images,
+            )}
+          />
+        ))}
+
+      {showSection("culture") && workCultureApiLoading && (
+        <section className="py-16 bg-secondary/10">
+          <div className="container mx-auto px-6 max-w-5xl space-y-6">
+            <Skeleton className="h-8 w-64 mx-auto" />
+            <Skeleton className="h-64 w-full rounded-2xl" />
+          </div>
+        </section>
       )}
 
-      {/* Event Galleries */}
-      {showSection("culture") && (
-        <>
+      {showSection("culture") &&
+        !workCultureApiLoading &&
+        apiWorkCultureCarousels.map((carousel) => (
           <LifePhotoCarousel
-            variant="muted"
-            title={isAr ? "حفل العشاء السنوي" : "Gala Dinner"}
-            subtitle={
-              isAr
-                ? "أمسية استثنائية تجمع بين الأناقة، والامتنان، والاحتفال بإنجازات فريقنا."
-                : "A night of elegance, gratitude and celebration."
-            }
-            photos={toCarouselPhotos("Gala Dinner", galaDinnerImages)}
+            key={carousel.id}
+            variant={carousel.variant}
+            title={isAr ? carousel.titleAr : carousel.titleEn}
+            subtitle={isAr ? carousel.subtitleAr : carousel.subtitleEn}
+            photos={toCarouselPhotos(
+              isAr ? carousel.titleAr : carousel.titleEn,
+              carousel.images,
+            )}
           />
-          <LifePhotoCarousel
-            title={isAr ? "أسبوع الضيافة" : "Hospitality Week"}
-            subtitle={
-              isAr
-                ? "أسبوع مخصص للاحتفاء بروح الضيافة التي تميّز مستشفى رويال حياة وتعكس هويتنا الإنسانية."
-                : "A week devoted to the hospitality spirit that defines Royale Hayat."
-            }
-            photos={toCarouselPhotos("Hospitality Week", hospitalityWeekImages)}
-          />
-          <LifePhotoCarousel
-            variant="muted"
-            title={isAr ? "مسابقة رويال حياة" : "RHH Quiz"}
-            subtitle={
-              isAr
-                ? "أجواء من التفاعل، والمتعة، والمنافسة الودية التي تجمع فرق العمل بروح واحدة."
-                : "Fun, friendly competition across teams."
-            }
-            photos={toCarouselPhotos("RHH Quiz", rhhQuizImages)}
-          />
-        </>
-      )}
+        ))}
 
       {/* Voices from Our People (Testimonials) */}
       {showSection("culture") && <VoicesFromOurPeople />}
@@ -683,52 +807,77 @@ const WorkWithUs = ({
               </div>
             </ScrollAnimationWrapper>
 
-            {/* Category filter tabs */}
-            <div className="flex items-center gap-2 mb-8">
-              <button
-                onClick={() => scrollCategories("left")}
-                aria-label={isAr ? "مرر لليسار" : "Slide left"}
-                className="w-10 h-10 rounded-full border border-border bg-popover flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors flex-shrink-0"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <div
-                ref={categoriesScrollRef}
-                className="flex items-center gap-2 overflow-x-auto pb-4 -mb-4 scrollbar-hide flex-1"
-                style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-              >
-                {categories.map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => setActiveCategory(cat)}
-                    className={`whitespace-nowrap px-5 py-2 rounded-full text-xs font-body tracking-wide border transition-all ${
-                      activeCategory === cat
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "bg-popover text-foreground border-border hover:border-primary/40"
-                    }`}
-                  >
-                    {isAr ? (categoryLabelAr[cat] ?? cat) : cat.toUpperCase()}
-                  </button>
-                ))}
+            {jobsLoading ? (
+              <div className="max-w-5xl mx-auto space-y-4 py-2">
+                <div className="flex gap-2 overflow-hidden">
+                  <Skeleton className="h-10 w-28 rounded-full shrink-0" />
+                  <Skeleton className="h-10 w-36 rounded-full shrink-0" />
+                  <Skeleton className="h-10 w-32 rounded-full shrink-0" />
+                </div>
+                <Skeleton className="h-48 w-full rounded-2xl" />
+                <Skeleton className="h-48 w-full rounded-2xl" />
               </div>
-              <button
-                onClick={() => scrollCategories("right")}
-                aria-label={isAr ? "مرر لليمين" : "Slide right"}
-                className="w-10 h-10 rounded-full border border-border bg-popover flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors flex-shrink-0"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            </div>
+            ) : jobsError ? (
+              <div className="max-w-2xl mx-auto rounded-2xl border border-destructive/30 bg-destructive/5 px-6 py-12 text-center">
+                <p className="font-serif text-lg text-foreground mb-2">
+                  {isAr ? "تعذر تحميل الوظائف" : "Could not load open positions"}
+                </p>
+                <p className="text-muted-foreground font-body text-sm">
+                  {isAr
+                    ? "تحقق من الاتصال أو حاول مرة أخرى لاحقًا."
+                    : "Check your connection or try again later."}
+                </p>
+              </div>
+            ) : (
+              <>
+                {/* Category filter tabs */}
+                <div className="flex items-center gap-2 mb-8">
+                  <button
+                    type="button"
+                    onClick={() => scrollCategories("left")}
+                    aria-label={isAr ? "مرر لليسار" : "Slide left"}
+                    className="w-10 h-10 rounded-full border border-border bg-popover flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors flex-shrink-0"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <div
+                    ref={categoriesScrollRef}
+                    className="flex items-center gap-2 overflow-x-auto pb-4 -mb-4 scrollbar-hide flex-1"
+                    style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+                  >
+                    {categories.map((cat) => (
+                      <button
+                        type="button"
+                        key={cat}
+                        onClick={() => setActiveCategory(cat)}
+                        className={`whitespace-nowrap px-5 py-2 rounded-full text-xs font-body tracking-wide border transition-all ${
+                          activeCategory === cat
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : "bg-popover text-foreground border-border hover:border-primary/40"
+                        }`}
+                      >
+                        {isAr
+                          ? (categoryLabelAr[cat] ?? cat)
+                          : cat.toUpperCase()}
+                      </button>
+                    ))}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => scrollCategories("right")}
+                    aria-label={isAr ? "مرر لليمين" : "Slide right"}
+                    className="w-10 h-10 rounded-full border border-border bg-popover flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors flex-shrink-0"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </div>
 
             {/* Job cards */}
             <div className="max-w-5xl mx-auto space-y-5">
-              {filtered.map((pos) => {
-                const originalIndex = positions.findIndex(
-                  (p) => p.id === pos.id,
-                );
-                return (
+              {filtered.map((pos) => (
                   <motion.div
-                    key={pos.title}
+                    key={pos._id}
+                    dir={isAr ? "rtl" : "ltr"}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
@@ -751,11 +900,7 @@ const WorkWithUs = ({
                       </div>
                       <div className="flex flex-col items-end gap-3 flex-shrink-0">
                         <Link
-                          to={
-                            pos.id && /^[0-9a-fA-F]{24}$/.test(pos.id)
-                              ? `/job-application?jobId=${pos.id}`
-                              : `/job-application?job=${originalIndex}`
-                          }
+                          to={`/job-application?job=${originalIndex}`}
                           className="inline-flex items-center gap-1 text-accent font-body text-sm font-semibold hover:underline"
                         >
                           {isAr ? "تقدم الآن" : "Apply Now"}{" "}
@@ -774,8 +919,7 @@ const WorkWithUs = ({
                       </div>
                     </div>
                   </motion.div>
-                );
-              })}
+                ))}
             </div>
 
             <div className="text-center mt-10">
@@ -791,6 +935,8 @@ const WorkWithUs = ({
                 </a>
               </p>
             </div>
+              </>
+            )}
           </div>
         </section>
       )}

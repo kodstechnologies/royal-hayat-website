@@ -32,7 +32,12 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-y-10 gap-x-12 mb-10">
           <div className="space-y-5 flex flex-col items-center text-center">
             <img src={logo} alt="Royale Hayat Hospital" className="h-20 w-auto brightness-0 invert opacity-90" />
-            <p className="text-primary-foreground/70 font-body text-sm leading-relaxed">{t("footerDesc")}</p>
+            <p
+              className="text-primary-foreground/70 font-body text-sm leading-relaxed !text-center tracking-normal"
+              style={{ wordSpacing: "normal", textAlign: "center" }}
+            >
+              {t("footerDesc")}
+            </p>
             <div className="flex items-center gap-3">
               {[
                 { key: "instagram", icon: Instagram, href: "#", type: "outline" },

@@ -50,8 +50,8 @@ const PatientsVisitors = () => {
   const isAr = lang === "ar";
   /** Justified body copy: full words per line; hyphen only when a word wraps. */
   const patientsProseLine = "patients-prose-line";
-  const bodyProse = `font-body text-sm text-foreground leading-normal md:leading-relaxed text-justify [word-break:normal] ${patientsProseLine}`;
-  const mutedProse = `font-body text-sm text-muted-foreground leading-normal md:leading-relaxed text-justify [word-break:normal] ${patientsProseLine}`;
+  const bodyProse = `font-body text-sm text-foreground leading-normal md:leading-relaxed text-start [word-break:normal] ${patientsProseLine}`;
+  const mutedProse = `font-body text-sm text-muted-foreground leading-normal md:leading-relaxed text-start [word-break:normal] ${patientsProseLine}`;
   const billRightsProse = bodyProse;
   const billRightsIntro = `${mutedProse} mb-6`;
   const cardIntroProse =
@@ -817,8 +817,7 @@ const PatientsVisitors = () => {
         .patients-prose-root .patients-page-content li,
         .patients-prose-root .patients-page-content span.font-body,
         .patients-prose-root .patients-prose-line {
-          text-align: justify;
-          text-justify: inter-word;
+          text-align: start;
           word-spacing: normal;
           letter-spacing: normal;
           word-break: normal;
@@ -851,8 +850,7 @@ const PatientsVisitors = () => {
           .patients-prose-root .patients-page-content span.font-body,
           .patients-prose-root .patients-prose-line {
             line-height: 1.55;
-            text-align: justify;
-            text-justify: inter-word;
+            text-align: start;
             text-align-last: start;
             word-spacing: normal;
             text-wrap: pretty;
@@ -906,8 +904,7 @@ const PatientsVisitors = () => {
           display: block;
           width: 100%;
           margin: 0;
-          text-align: justify !important;
-          text-justify: inter-word !important;
+          text-align: start !important;
           text-align-last: start !important;
           word-spacing: normal !important;
           letter-spacing: normal !important;
@@ -933,8 +930,7 @@ const PatientsVisitors = () => {
         @media (max-width: 767px) {
           .patients-prose-root .patients-page-content .patients-justified-card .patients-card-prose-intro,
           .patients-prose-root .patients-page-content .patients-justified-card .patients-card-prose-list {
-            text-align: justify !important;
-            text-justify: inter-word !important;
+            text-align: start !important;
             text-align-last: start !important;
             word-spacing: normal !important;
             line-height: 1.5;

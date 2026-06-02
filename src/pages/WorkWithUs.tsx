@@ -348,13 +348,13 @@ const WorkWithUs = ({
   ];
 
   const cultureNarrativeClass = isAr
-    ? "culture-narrative space-y-5 font-body text-foreground leading-relaxed text-justify [text-align-last:right]"
-    : "culture-narrative space-y-5 font-body text-foreground leading-relaxed text-justify hyphens-auto break-words [text-align-last:left] [&_p]:hyphens-auto [&_p]:break-words";
+    ? "culture-narrative space-y-5 font-body text-foreground leading-relaxed text-start"
+    : "culture-narrative space-y-5 font-body text-foreground leading-relaxed text-start hyphens-auto break-words [&_p]:hyphens-auto [&_p]:break-words";
 
   return (
     <div
       id="work-culture-page"
-      className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107] [&_p]:text-justify [&_li]:text-justify"
+      className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107] [&_p]:text-start [&_li]:text-start"
     >
       <Header />
 
@@ -389,7 +389,7 @@ const WorkWithUs = ({
                   ? "الحياة في مستشفى رويال حياة"
                   : "Life at Royale Hayat Hospital"}
               </h1>
-              <div className="space-y-4 font-body text-sm text-foreground leading-relaxed text-justify">
+              <div className="space-y-4 font-body text-sm text-foreground leading-relaxed text-start">
                 <p>
                   {isAr
                     ? "في مستشفى رويال حياة، نؤمن بفكرة بسيطة: قد ينسى الناس ما قلناه، لكنهم لن ينسوا أبداً كيف جعلناهم يشعرون كمرضى، أو أفراد عائلة، أو زملاء."

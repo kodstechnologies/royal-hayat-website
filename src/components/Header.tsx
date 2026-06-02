@@ -498,7 +498,13 @@ const Header = () => {
                       <p className="text-xs tracking-[0.2em] uppercase font-body text-accent mb-4 text-start">
                         {item.hasDropdown === "patients" ? t("patientsVisitorsDropdownTitle") : item.label}
                       </p>
-                      <div className={`grid ${item.hasDropdown === "patients" ? "grid-cols-1 xl:grid-cols-2" : "grid-cols-1"} gap-2`}>
+                      <div
+                        className={`grid ${item.hasDropdown === "patients" ? "grid-cols-1 xl:grid-cols-2" : "grid-cols-1"} gap-2 ${
+                          item.hasDropdown === "hospitality"
+                            ? "max-h-[min(70vh,26rem)] overflow-y-auto overscroll-y-contain pr-1"
+                            : ""
+                        }`}
+                      >
                         {getSubLinks(item.hasDropdown).map((sub) => (
                           sub.href.startsWith("/") ? (
                             <Link
@@ -678,7 +684,11 @@ const Header = () => {
                         >
                           <div
                             dir={isAr ? "rtl" : "ltr"}
-                            className="py-2 px-4 flex flex-col gap-1"
+                            className={`py-2 px-4 flex flex-col gap-1 ${
+                              item.hasDropdown === "hospitality"
+                                ? "max-h-[min(55vh,18rem)] overflow-y-auto overscroll-y-contain"
+                                : ""
+                            }`}
                           >
                             {getSubLinks(item.hasDropdown).map((sub) => (
                               sub.href.startsWith("/") ? (

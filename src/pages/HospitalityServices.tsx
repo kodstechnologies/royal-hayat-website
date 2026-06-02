@@ -685,7 +685,7 @@ const HospitalityServices = ({
                     واختتموا تجربتكم بقطعة من الكيك أو المخبوزات الطازجة، إلى جانب تشكيلة من القهوة المختصة وأنواع الشاي الفاخرة.
                   </p>
                 )}
-                <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify">
+                <p className="font-body text-sm text-muted-foreground leading-relaxed text-start md:text-justify">
                   {isAr
                     ? "يفتح الليوان بيسترو أبوابه يوميًا من الساعة 8 صباحًا وحتى 11 مساءً، ليكون وجهتكم المثالية للإفطار، والغداء، والعشاء، أو للاستمتاع بوجبة خفيفة في أي وقت من اليوم."
                     : "Open daily from 8 a.m. to 11 p.m., Al Liwan Bistro is an ideal destination for breakfast, lunch, dinner, or a light bite at any time of day."}
@@ -772,7 +772,7 @@ const HospitalityServices = ({
                       ))}
                   </div>
                 </div>
-                <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify">
+                <p className="font-body tracking-normal [word-spacing:normal] text-sm text-muted-foreground leading-relaxed text-start md:text-justify">
                   {isAr ? "لمزيد من التفاصيل، يرجى زيارة: " : "For more details, please visit: "}
                   <a href="https://www.banyantreespa.com" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline font-semibold">www.banyantreespa.com</a>
                 </p>

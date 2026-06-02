@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Mail, Share2, ChevronRight } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
-import { applyForJob, getJobById, type JobPosting } from "@/api/job";
+import { applyForJob } from "@/api/job";
 const openPositions = [
   { title: "Floor Coordinator only Female, Bilingual (Arabic & English)", category: "Hospitality / Guest Services", location: "Royale Hayat Hospital", type: "Full-time", date: "March 19, 2026", desc: "Royale Hayat Hospital have devoted considerable effort to applying established strategies for quality improvement thus they created a position of Floor coordinator that make patient experience more valuable and focusing on patient satisfaction in the inpatient setting and how to improve it.", responsibilities: ["To ensure a differences and service recovery every day with every patient throughout his or her hospitalization.", "Positive outcomes of stay.", "Improved quality outcomes, and patient satisfaction which may help transform the acute care delivery model toward a more rational and safe approach.", "Coordinate floor operations and ensure smooth patient flow", "Liaise between departments to resolve patient concerns"], requirements: ["Bilingual proficiency in Arabic and English (mandatory)", "Female candidates only", "Minimum 2 years of experience in hospitality or healthcare coordination", "Excellent communication and organizational skills"] },
   { title: "Guest Relations Officer", category: "Hospitality / Guest Services", location: "Royale Hayat Hospital", type: "Full-time", date: "March 15, 2026", desc: "Provide outstanding hospitality and patient experience throughout the hospital premises.", responsibilities: ["Welcome and assist patients and visitors", "Handle complaints and feedback professionally", "Coordinate with departments for patient needs", "Maintain guest satisfaction records"], requirements: ["Experience in hospitality or guest relations", "Excellent interpersonal skills", "Bilingual preferred", "Professional appearance and demeanor"] },
@@ -28,17 +28,6 @@ const openPositions = [
   { title: "Human Resources Coordinator", category: "Administrative", location: "Royale Hayat Hospital", type: "Full-time", date: "February 10, 2026", desc: "Support HR operations including recruitment, onboarding, employee relations, and benefits administration.", responsibilities: ["Coordinate recruitment and onboarding processes", "Manage employee records and documentation", "Assist with benefits administration", "Support employee relations activities"], requirements: ["Bachelor's degree in HR or related field", "2+ years HR experience", "Knowledge of labor laws", "Proficiency in HR information systems"] },
   { title: "Medical Records Specialist", category: "Administrative", location: "Royale Hayat Hospital", type: "Full-time", date: "February 8, 2026", desc: "Manage and maintain accurate medical records, ensuring compliance with healthcare regulations and standards.", responsibilities: ["Maintain and organize medical records", "Ensure compliance with privacy regulations", "Process record requests accurately", "Support audits and quality reviews"], requirements: ["Experience in medical records management", "Knowledge of healthcare regulations", "Attention to detail", "Proficiency in electronic health records"] },
 ];
-
-const mapApiJobToDisplay = (apiJob: JobPosting) => ({
-  title: apiJob.title,
-  category: String(apiJob.classification ?? apiJob.category ?? apiJob.department ?? ""),
-  location: apiJob.location ?? "",
-  type: apiJob.type ?? "",
-  date: apiJob.postedDate ?? apiJob.date ?? "",
-  desc: apiJob.description ?? apiJob.desc ?? "",
-  responsibilities: apiJob.responsibilities ?? [],
-  requirements: apiJob.requirements ?? [],
-});
 
 const JobApplication = () => {
   const { lang } = useLanguage();
@@ -58,25 +47,8 @@ const JobApplication = () => {
   const formRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!jobId) return;
-    let cancelled = false;
-    getJobById(jobId)
-      .then((data) => {
-        if (!cancelled && data) setJob(mapApiJobToDisplay(data as JobPosting));
-      })
-      .catch(() => {
-        if (!cancelled) {
-          toast({
-            title: isAr ? "خطأ" : "Error",
-            description: isAr ? "تعذر تحميل تفاصيل الوظيفة." : "Could not load job details.",
-            variant: "destructive",
-          });
-        }
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [jobId, isAr]);
+    setJob(openPositions[jobIndex] || openPositions[0]);
+  }, [jobIndex]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

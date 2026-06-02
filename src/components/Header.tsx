@@ -40,11 +40,10 @@ const Header = () => {
         return;
       }
 
+      // Keep desktop header stable to avoid flicker during scroll repaints.
+      setHeaderVisible(true);
       if (currentY > lastScrollY.current && currentY > 80) {
-        setHeaderVisible(false); // desktop: scrolling down → hide logo row
         setMenuOpen(false);
-      } else {
-        setHeaderVisible(true);
       }
       lastScrollY.current = currentY;
     };

@@ -34,11 +34,6 @@ const DoctorCard = ({ doc }: { doc: Doctor }) => {
           </p>
           <h3 className="text-base font-serif text-foreground mb-1">{lang === "ar" ? doc.nameAr : doc.name}</h3>
           <p className="text-muted-foreground font-body text-xs mb-3">{lang === "ar" ? doc.titleAr : doc.title}</p>
-          <div className="flex flex-wrap gap-1.5 mb-2">
-            {(lang === "ar" ? doc.languagesAr : doc.languages).map((l) => (
-              <span key={l} className="px-2.5 py-0.5 rounded-full bg-secondary/40 text-[10px] font-body text-foreground">{l}</span>
-            ))}
-          </div>  
           {doc.hideBooking !== true && (
             <div className={`flex items-center gap-1.5 mb-2 ${doc.availableOnline !== false ? "text-green-600" : "text-destructive"}`}>
               <div className={`w-1.5 h-1.5 rounded-full ${doc.availableOnline !== false ? "bg-green-500" : "bg-destructive"}`} />

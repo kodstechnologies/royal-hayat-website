@@ -9,6 +9,16 @@ import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 import { Link, useSearchParams, useLocation } from "react-router-dom";
+import {
+  ADMISSION_HOW_INTRO_EN,
+  ADMISSION_HOW_ITEMS_EN,
+  INSURANCE_ASSISTANCE_EN,
+  PATIENT_RESPONSIBILITIES_EN,
+  ROOM_SERVICE_HOUSEKEEPING_EN,
+  ROOM_SERVICE_LOST_FOUND_EN,
+  ROOM_SERVICE_PRIVATE_DINING_EN,
+} from "@/utils/patientsProseHyph";
+
 const PatientsVisitors = () => {
   const { lang } = useLanguage();
   const [searchParams] = useSearchParams();
@@ -42,20 +52,32 @@ const PatientsVisitors = () => {
   const mutedProse = `font-body text-sm text-muted-foreground leading-normal md:leading-relaxed text-justify [word-break:normal] ${patientsProseLine}`;
   const billRightsProse = bodyProse;
   const billRightsIntro = `${mutedProse} mb-6`;
+  const cardIntroProse =
+    "font-body text-sm text-muted-foreground leading-normal md:leading-relaxed patients-card-prose-intro";
+  const cardListProse =
+    "font-body text-sm text-foreground leading-normal md:leading-relaxed patients-card-prose-list";
 
-  const renderBillRightsList = (items: string[]) => (
-    <ol className="space-y-3" dir={isAr ? "rtl" : "ltr"} lang={isAr ? "ar" : "en"}>
-      {items.map((item, i) => (
-        <li
-          key={i}
-          className="flex items-start gap-2 sm:gap-3"
-        >
-          <span className="font-medium shrink-0 tabular-nums leading-relaxed">
-            {i + 1}.
-          </span>
-          <span className={`min-w-0 flex-1 ${billRightsProse}`}>{item}</span>
-        </li>
-      ))}
+  const renderBillRightsList = (items: string[], justified = false) => (
+    <ol className="space-y-3 list-none m-0 p-0" dir={isAr ? "rtl" : "ltr"} lang={isAr ? "ar" : "en"}>
+      {items.map((item, i) =>
+        justified && !isAr ? (
+          <li key={i} className="relative ps-8">
+            <span className="absolute start-0 top-0 font-medium tabular-nums leading-relaxed" aria-hidden>
+              {i + 1}.
+            </span>
+            <p lang="en" className={cardListProse}>
+              {item}
+            </p>
+          </li>
+        ) : (
+          <li key={i} className="flex items-start gap-2 sm:gap-3">
+            <span className="font-medium shrink-0 tabular-nums leading-relaxed">
+              {i + 1}.
+            </span>
+            <span className={`min-w-0 flex-1 ${billRightsProse}`}>{item}</span>
+          </li>
+        )
+      )}
     </ol>
   );
 
@@ -209,29 +231,33 @@ const PatientsVisitors = () => {
                   </div>
                 </div>
 
-                <div className="bg-popover border border-border/50 rounded-2xl p-6 mb-6">
+                <div
+                  className="patients-justified-card bg-popover border border-border/50 rounded-2xl p-6 mb-6"
+                  lang={isAr ? "ar" : "en"}
+                >
                   <h3 className="font-serif text-lg text-foreground mb-3">{lang === "ar" ? "خدمات دعم التأمين" : "Comprehensive Insurance Assistance"}</h3>
-                  <p className={`${mutedProse} mb-4`}>
+                  <p lang={isAr ? "ar" : "en"} className={`${isAr ? mutedProse : cardIntroProse} mb-2`}>
                     {lang === "ar"
                       ? "فريق التأمين المتخصص لدينا جاهز لمساعدتكم في جميع مراحل الإجراءات، وتشمل الخدمات:"
-                      : "Our experienced insurance team is here to guide you through every step of the process. Services include:"}
+                      : INSURANCE_ASSISTANCE_EN.intro}
                   </p>
-                  <div className="space-y-2">
-                    {(lang === "ar" ? [
-                      "شرح تفاصيل وثيقة التأمين والتغطية",
-                      "المساعدة في التسجيل والتقديرات المالية",
-                      "التنسيق للحصول على الموافقات المسبقة للتنويم والعمليات الجراحية",
-                    ] : [
-                      "Educating patients on insurance policy details",
-                      "Assistance with registration and financial estimates",
-                      "Coordinating pre-approvals for inpatient admissions and surgical procedures",
-                    ]).map((item, i) => (
-                      <div key={i} className="flex items-center gap-3">
-                        <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
-                        <span className={bodyProse}>{item}</span>
-                      </div>
+                  <ul className="space-y-2 list-none m-0 p-0">
+                    {(lang === "ar"
+                      ? [
+                          "شرح تفاصيل وثيقة التأمين والتغطية",
+                          "المساعدة في التسجيل والتقديرات المالية",
+                          "التنسيق للحصول على الموافقات المسبقة للتنويم والعمليات الجراحية",
+                        ]
+                      : INSURANCE_ASSISTANCE_EN.items
+                    ).map((item, i) => (
+                      <li key={i} className="relative ps-7">
+                        <CheckCircle2 className="absolute start-0 top-0.5 w-4 h-4 text-accent shrink-0" aria-hidden />
+                        <p lang={isAr ? "ar" : "en"} className={isAr ? bodyProse : cardListProse}>
+                          {item}
+                        </p>
+                      </li>
                     ))}
-                  </div>
+                  </ul>
                 </div>
 
                 <div
@@ -398,30 +424,35 @@ const PatientsVisitors = () => {
                     : "At Royale Hayat Hospital, your comfort and care begin the moment you're admitted. Whether you're referred by an in-house specialist or an external physician, our streamlined admission process ensures a smooth entry for any planned surgery or medical procedure."}
                 </p>
 
-                <div className="bg-popover border border-border/50 rounded-2xl p-6 mb-6">
+                <div
+                  className="patients-justified-card admission-how-card bg-popover border border-border/50 rounded-2xl p-6 mb-6"
+                  lang={isAr ? "ar" : "en"}
+                >
                   <h3 className="font-serif text-lg text-foreground mb-3">{lang === "ar" ? "كيفية الدخول إلى المستشفى" : "How to Get Admitted"}</h3>
-                  <p
-                    lang={lang === "ar" ? "ar" : "en"}
-                    className={`${mutedProse} mb-4`}
-                  >
+                  <p lang={isAr ? "ar" : "en"} className={`${isAr ? mutedProse : cardIntroProse} mb-4`}>
                     {lang === "ar"
                       ? "يتم ترتيب الدخول مسبقًا بالتنسيق مع فريق المستشفى، وذلك بناءً على:"
-                      : "Admission is arranged in advance through coordination with our hospital team. Patients are admitted based on:"}
+                      : ADMISSION_HOW_INTRO_EN}
                   </p>
-                  <div className="space-y-2">
-                    {(lang === "ar" ? [
-                      "تحويل من طبيب داخل المستشفى أو من خارجها",
-                      "تحديد موعد مؤكد للدخول من خلال فريق خدمات المرضى",
-                    ] : [
-                      "A referral from an in-house or external doctor",
-                      "A confirmed date of admission is scheduled through our patient services team",
-                    ]).map((item, i) => (
-                      <div key={i} className="flex items-center gap-3">
-                        <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
-                        <span className={bodyProse}>{item}</span>
-                      </div>
+                  <ul className="space-y-2 list-none m-0 p-0">
+                    {(lang === "ar"
+                      ? [
+                          "تحويل من طبيب داخل المستشفى أو من خارجها",
+                          "تحديد موعد مؤكد للدخول من خلال فريق خدمات المرضى",
+                        ]
+                      : ADMISSION_HOW_ITEMS_EN
+                    ).map((item, i) => (
+                      <li key={i} className="relative ps-7">
+                        <CheckCircle2
+                          className="absolute start-0 top-0.5 w-4 h-4 text-accent shrink-0"
+                          aria-hidden
+                        />
+                        <p lang={isAr ? "ar" : "en"} className={isAr ? bodyProse : cardListProse}>
+                          {item}
+                        </p>
+                      </li>
                     ))}
-                  </div>
+                  </ul>
                 </div>
 
                 <div className="bg-popover border border-border/50 rounded-2xl p-6 mb-6">
@@ -550,17 +581,23 @@ const PatientsVisitors = () => {
                     { icon: Sparkles, title: "خدمة التدبير المنزلي", desc: "نوفر خدمة تنظيف الغرف على مدار 24 ساعة مع تجديد يومي للغرفة. كما يمكنك تحديد وقت الخدمة بما يناسبك." },
                     { icon: Search, title: "المفقودات", desc: "في حال فقدان أي غرض، فإن فريق خدمات الضيافة جاهز لمساعدتك. يرجى التواصل معنا لتقديم بلاغ إلى قسم الأمن. وعلى الرغم من أننا لا نتحمل مسؤولية المتعلقات الشخصية، إلا أننا نبذل كل الجهود الممكنة للمساعدة في العثور عليها." },
                   ] : [
-                    { icon: UtensilsCrossed, title: "Private Dining", desc: "Savor gourmet dishes from our extensive menu, featuring Continental, Mediterranean, Pan-Asian, and personalized cuisine—all prepared by our award-winning executive chefs." },
-                    { icon: Sparkles, title: "Housekeeping", desc: "Enjoy 24-hour housekeeping service with daily room refresh. You may also schedule service at a time that suits you best." },
-                    { icon: Search, title: "Lost & Found", desc: "If you misplace an item, our Guest Services team is here to help. Please contact us to file a Lost & Found report with the Security Department. While we are not liable for personal items, we will make every effort to assist in locating them." },
+                    { icon: UtensilsCrossed, title: "Private Dining", desc: ROOM_SERVICE_PRIVATE_DINING_EN },
+                    { icon: Sparkles, title: "Housekeeping", desc: ROOM_SERVICE_HOUSEKEEPING_EN },
+                    { icon: Search, title: "Lost & Found", desc: ROOM_SERVICE_LOST_FOUND_EN },
                   ]).map((item, i) => (
-                    <div key={i} className={`bg-popover border border-border/50 rounded-2xl p-5 flex items-start gap-4 ${isAr ? "flex-row-reverse" : ""}`}>
+                    <div
+                      key={i}
+                      className={`patients-justified-card bg-popover border border-border/50 rounded-2xl p-5 flex items-start gap-4 ${isAr ? "flex-row-reverse" : ""}`}
+                      lang={isAr ? "ar" : "en"}
+                    >
                       <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                         <item.icon className="w-5 h-5 text-primary" />
                       </div>
                       <div className="min-w-0 flex-1">
                         <h4 className="font-serif text-base text-foreground mb-1 text-start">{item.title}</h4>
-                        <p className={mutedProse}>{item.desc}</p>
+                        <p lang={isAr ? "ar" : "en"} className={isAr ? mutedProse : cardIntroProse}>
+                          {item.desc as string}
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -654,7 +691,10 @@ const PatientsVisitors = () => {
                     ])}
                 </div>
 
-                <div className="bg-popover border border-border/50 rounded-2xl p-6 mb-6">
+                <div
+                  className={`bg-popover border border-border/50 rounded-2xl p-6 mb-6 ${!isAr ? "patients-justified-card" : ""}`}
+                  lang={isAr ? "ar" : "en"}
+                >
                   <h3 className="font-serif text-lg text-foreground mb-4 text-start">{lang === "ar" ? "ثانياً: مسؤوليات المريض" : "As a patient, it is your responsibility to:"}</h3>
                   {renderBillRightsList(lang === "ar" ? [
                       "الالتزام بالقوانين والأنظمة المعمول بها في مستشفى رويال حياة.",
@@ -673,24 +713,7 @@ const PatientsVisitors = () => {
                       "المحافظة على ممتلكات المستشفى مثل الأجهزة الطبية والأثاث والسجلات الطبية.",
                       "إبلاغ المستشفى في حال الرغبة بتغيير مقدم الخدمة أو المستشفى.",
                       "المشاركة في الحفاظ على سلامة المريض ومنع أي ضرر أو إصابة كما أوضح مقدمو الخدمة.",
-                    ] : [
-                      'Follow the rules and regulations of RHH.',
-                      'Give us complete and accurate information about your health, including previous medical history and all the medications you are taking.',
-                      'Submit documents required as per the law/protocol before admission or undergoing specific procedures.',
-                      'Inform our clinical staff of changes in your condition or symptoms, including pain.',
-                      "Let us know if you don't understand the information we give about your condition or treatment.",
-                      'Pay your bills in full before discharge and meet all financial obligations arising from your care.',
-                      'Keep appointments and notify the hospital or physician when you are unable to do so.',
-                      'Leave your personal belongings at home or have family members take all valuables home while you are hospitalized, or use the safety box available in your room for safe custody.',
-                      'Be considerate towards the rights of other patients and hospital personnel and avoid any sort of inconvenience to others.',
-                      'Actively participate in your care plan and follow the treatment plan established by your physician, including instructions from nurses and other healthcare professionals.',
-                      'Take preventive measures in case of infectious diseases.',
-                      'Treat doctors, nurses, and hospital staff with respect.',
-                      'Realize that priority will be given to emergency cases.',
-                      'Preserve and maintain hospital property like medical equipment, furniture, fittings, etc., including medical records.',
-                      'Keep us informed if you want to change hospital or service provider.',
-                      'Share the responsibility in maintaining the safety of the patient from any harm or injury, as explained by the service providers.',
-                    ])}
+                    ] : PATIENT_RESPONSIBILITIES_EN, !isAr)}
                 </div>
 
                 <div className="bg-accent/10 rounded-2xl p-6">
@@ -884,6 +907,49 @@ const PatientsVisitors = () => {
 
           .patients-page-content .space-y-3 > :not([hidden]) ~ :not([hidden]) {
             margin-top: 0.5rem;
+          }
+
+        }
+
+        .patients-prose-root .patients-page-content .patients-justified-card .patients-card-prose-intro,
+        .patients-prose-root .patients-page-content .patients-justified-card .patients-card-prose-list {
+          display: block;
+          width: 100%;
+          margin: 0;
+          text-align: justify !important;
+          text-justify: inter-word !important;
+          text-align-last: start !important;
+          word-spacing: normal !important;
+          letter-spacing: normal !important;
+          word-break: normal !important;
+          overflow-wrap: normal !important;
+          text-wrap: pretty;
+          hyphenate-character: "-";
+        }
+
+        .patients-prose-root[dir="ltr"] .patients-page-content .patients-justified-card .patients-card-prose-intro,
+        .patients-prose-root[dir="ltr"] .patients-page-content .patients-justified-card .patients-card-prose-list {
+          -webkit-hyphens: manual;
+          hyphens: manual;
+          hyphenate-limit-chars: 4 2 2;
+        }
+
+        .patients-prose-root[dir="rtl"] .patients-page-content .patients-justified-card .patients-card-prose-intro,
+        .patients-prose-root[dir="rtl"] .patients-page-content .patients-justified-card .patients-card-prose-list {
+          -webkit-hyphens: none;
+          hyphens: none;
+        }
+
+        @media (max-width: 767px) {
+          .patients-prose-root .patients-page-content .patients-justified-card .patients-card-prose-intro,
+          .patients-prose-root .patients-page-content .patients-justified-card .patients-card-prose-list {
+            text-align: justify !important;
+            text-justify: inter-word !important;
+            text-align-last: start !important;
+            word-spacing: normal !important;
+            line-height: 1.5;
+            -webkit-hyphens: manual;
+            hyphens: manual;
           }
         }
 

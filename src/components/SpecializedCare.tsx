@@ -324,16 +324,22 @@ const SpecializedCare = () => {
     };
   }, [expandedIndex, sortedServices]);
 
+  const getSpecializedCareReturnState = () => ({
+    fromSpecializedCare: true,
+    returnPath: "/",
+    restoreExpandedIndex: expandedIndex,
+    restoreSelectedSubByService: selectedSubByService,
+    restoreScrollY: window.scrollY,
+  });
+
   const openDoctorProfile = (docId: string) => {
     navigate(`/doctors/${docId}`, {
-      state: {
-        fromSpecializedCare: true,
-        returnPath: "/",
-        restoreExpandedIndex: expandedIndex,
-        restoreSelectedSubByService: selectedSubByService,
-        restoreScrollY: window.scrollY,
-      },
+      state: getSpecializedCareReturnState(),
     });
+  };
+
+  const openMedicalService = (path: string) => {
+    navigate(path, { state: getSpecializedCareReturnState() });
   };
 
   const getDeptDoctors = (department: string): Doctor[] => {
@@ -599,7 +605,7 @@ const SpecializedCare = () => {
                                 type="button"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  navigate(`/medical-services/${departmentSlug}`);
+                                  openMedicalService(`/medical-services/${departmentSlug}`);
                                 }}
                                 className="inline-flex w-full justify-end items-center gap-1.5 text-primary font-body text-xs tracking-wide hover:text-accent transition-colors mt-3"
                               >
@@ -748,7 +754,7 @@ const SpecializedCare = () => {
                             <div className="mt-6 pt-4 border-t border-border/30 flex justify-center">
                               {s.subspecialties.length > 0 && selectedSubSlug && departmentSlug && (
                                 <button
-                                  onClick={() => navigate(`/medical-services/${departmentSlug}/${selectedSubSlug}`)}
+                                  onClick={() => openMedicalService(`/medical-services/${departmentSlug}/${selectedSubSlug}`)}
                                   className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground font-body text-xs tracking-[0.15em] uppercase rounded-full hover:bg-primary/90 transition-colors"
                                 >
                                   {t("learnMore")} <ArrowRight className="w-3.5 h-3.5" />

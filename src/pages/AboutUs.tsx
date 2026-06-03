@@ -30,7 +30,7 @@ const leaders = [
       "بدأ رحلته الأكاديمية في كلية الطب بجامعة الكويت، وهو عضو في البورد الكويتي للجراحة العامة والكلية الملكية للجراحين في إنجلترا، حيث تلقى تدريبه في جراحات السمنة والقولون في لندن، المملكة المتحدة. وخلال هذه المرحلة، طوّر خبراته السريرية واكتسب فهمًا عميقًا للحالات الطبية المعقدة.",
       "ويؤمن د. المزيدي بأهمية تطوير القطاع الصحي في الكويت، حيث قاد العديد من المبادرات التي تهدف إلى دمج أحدث التقنيات في أنظمة الرعاية الصحية، بما يسهم في تحسين نتائج المرضى ورفع كفاءة الخدمات الطبية.",
     ],
-    image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/leadership/sulaiman-web.png",
+    image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/Leadership-photos/sulaiman-web.jpeg",
   },
   {
     initials: "AE",
@@ -144,7 +144,7 @@ const leaders = [
       "وقد ساهمت قيادتها بشكل مباشر في حصول مستشفى رويال حياة على لقب أفضل مستشفى خاص في الكويت لمدة 16 عامًا متتالية، بالإضافة إلى تصنيفه ضمن أفضل 3 علامات تجارية في الكويت لعام 2022، وأفضل 10 علامات تجارية لعام 2025.",
       "وبفضل خبرتها المهنية والمعيشية في أوروبا وآسيا والشرق الأوسط، إلى جانب رحلاتها الواسعة عبر مختلف قارات العالم، تتمتع مارتا برؤية عالمية متكاملة، تنطلق من إيمان راسخ بأن الضيافة الاستثنائية، سواء في منتجع فاخر أو مستشفى عالمي تتمحور دائمًا حول الإنسان أولًا.",
     ],
-    image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/leadership/marta+(2).png",
+    image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/Leadership-photos/marta.jpeg",
   },
 ];
 
@@ -161,9 +161,9 @@ const LeaderCard = ({ leader, lang }: { leader: typeof leaders[0] & { image?: st
   };
   const desktopImageOverride: Record<string, string> = {
     // "Dr. Sulaiman Al Mazeedi": "https://royal-hayat.s3.eu-central-1.amazonaws.com/leadership/sulaiman-web.png",
-    "Prof. Dr. Omar El Khateeb": "https://royal-hayat.s3.eu-central-1.amazonaws.com/leadership/omar-web.png",
-    "Dr. Hamid Ghaderi": "https://royal-hayat.s3.eu-central-1.amazonaws.com/leadership/hamid-web.png",
-    "Shibu Thomas Mathew": "https://royal-hayat.s3.eu-central-1.amazonaws.com/leadership/shibu-web2+(1).png",
+    "Prof. Dr. Omar El Khateeb": "https://royal-hayat.s3.eu-central-1.amazonaws.com/Leadership-photos/omar-we.jpeg",
+    "Dr. Hamid Ghaderi": "https://royal-hayat.s3.eu-central-1.amazonaws.com/Leadership-photos/hamid-we.jpeg",
+    "Shibu Thomas Mathew": "https://royal-hayat.s3.eu-central-1.amazonaws.com/Leadership-photos/shibu-web2.jpeg",
   };
   const mobileOverrideSrc = mobileImageOverride[leader.nameEn];
   const desktopOverrideSrc = desktopImageOverride[leader.nameEn];

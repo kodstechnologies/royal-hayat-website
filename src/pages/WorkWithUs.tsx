@@ -231,16 +231,32 @@ const WorkWithUs = ({
   const { lang } = useLanguage();
   const isAr = lang === "ar";
   const [activeCategory, setActiveCategory] = useState("View All");
-  const [isIOSWebKit, setIsIOSWebKit] = useState(false);
-  const [positions, setPositions] = useState<Position[]>(() =>
-    openPositions.map((p, index) => ({
-      id: String(index),
-      title: p.title,
-      category: p.category,
-      location: p.location,
-      type: p.type,
-      desc: p.desc,
-    })),
+  const [jobPostings, setJobPostings] = useState<JobPosting[]>([]);
+  const [jobsLoading, setJobsLoading] = useState(true);
+  const [jobsError, setJobsError] = useState(false);
+  const [apiEmployees, setApiEmployees] = useState<Employee[]>([]);
+  const [employeesApiLoading, setEmployeesApiLoading] = useState(true);
+
+  const displayEmployees = useMemo(() => apiEmployees, [apiEmployees]);
+  const [apiWorkCultureCarousels, setApiWorkCultureCarousels] = useState<
+    GalleryCarousel[]
+  >([]);
+  const [workCultureApiLoading, setWorkCultureApiLoading] = useState(true);
+
+  const existingWorkCultureCarousels = useMemo(
+    () =>
+      buildExistingWorkCultureCarousels(
+        staffActivitiesImages,
+        galaDinnerImages,
+        hospitalityWeekImages,
+        rhhQuizImages,
+      ),
+    [
+      staffActivitiesImages,
+      galaDinnerImages,
+      hospitalityWeekImages,
+      rhhQuizImages,
+    ],
   );
   const [empIndex, setEmpIndex] = useState(0);
   const [isEmpPaused, setIsEmpPaused] = useState(false);
@@ -254,25 +270,51 @@ const WorkWithUs = ({
   }, [isEmpPaused, displayEmployees.length]);
 
   useEffect(() => {
-    if (employees.length <= 1) return;
-    const next = employees[(empIndex + 1) % employees.length]?.image;
-    if (!next) return;
-    const img = new Image();
-    img.src = next;
-  }, [empIndex]);
+    if (empIndex >= displayEmployees.length) {
+      setEmpIndex(0);
+    }
+  }, [displayEmployees.length, empIndex]);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const ua = window.navigator.userAgent || "";
-    const platform = window.navigator.platform || "";
-    const maxTouchPoints = window.navigator.maxTouchPoints || 0;
-    const isIOSDevice =
-      /iPad|iPhone|iPod/.test(ua) ||
-      (platform === "MacIntel" && maxTouchPoints > 1);
-    const isWebKit = /WebKit/i.test(ua) && !/CriOS|FxiOS|OPiOS|EdgiOS/i.test(ua);
-    setIsIOSWebKit(isIOSDevice && isWebKit);
-  }, []);
+    let cancelled = false;
 
+    const loadCultureContent = async () => {
+      setWorkCultureApiLoading(true);
+      setEmployeesApiLoading(true);
+      try {
+        const [workCulture, recognitions] = await Promise.all([
+          getAllWorkCulture(),
+          getAllEmployeeRecognitions(),
+        ]);
+        if (cancelled) return;
+
+        setApiWorkCultureCarousels(
+          mergeApiWorkCulture(workCulture, existingWorkCultureCarousels),
+        );
+
+        setApiEmployees(
+          recognitions
+            .filter((item) => item.visibilityStatus !== "hide")
+            .map(mapRecognitionToEmployee),
+        );
+      } catch {
+        if (!cancelled) {
+          setApiWorkCultureCarousels([]);
+          setApiEmployees([]);
+        }
+      } finally {
+        if (!cancelled) {
+          setWorkCultureApiLoading(false);
+          setEmployeesApiLoading(false);
+        }
+      }
+    };
+
+    void loadCultureContent();
+    return () => {
+      cancelled = true;
+    };
+  }, [existingWorkCultureCarousels]);
   const categoriesScrollRef = useRef<HTMLDivElement | null>(null);
   const [searchParams] = useSearchParams();
   const section = searchParams.get("section");
@@ -280,27 +322,30 @@ const WorkWithUs = ({
   const showSection = (s: string) => showAll || section === s;
 
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-  }, [section]);
-
-  useEffect(() => {
-    getAllJobs({ isActive: true })
-      .then((jobs) => {
-        if (!jobs.length) return;
-        setPositions(
-          jobs.map((job: JobPosting) => ({
-            id: String(job._id ?? job.id ?? ""),
-            title: job.title,
-            category: String(
-              job.classification ?? job.category ?? job.department ?? "",
-            ),
-            location: job.location ?? "",
-            type: job.type ?? "",
-            desc: job.description ?? job.desc ?? "",
-          })),
+    let cancelled = false;
+    const loadJobs = async () => {
+      setJobsLoading(true);
+      setJobsError(false);
+      try {
+        const jobs = await getAllJobs({ limit: 100, isActive: true });
+        if (cancelled) return;
+        setJobPostings(
+          jobs.filter((job) => job.isActive !== false && isJobNotExpired(job)),
         );
-      })
-      .catch(() => {});
+      } catch {
+        if (!cancelled) {
+          setJobsError(true);
+          setJobPostings([]);
+        }
+      } finally {
+        if (!cancelled) setJobsLoading(false);
+      }
+    };
+
+    void loadJobs();
+    return () => {
+      cancelled = true;
+    };
   }, []);
   const scrollCategories = (direction: "left" | "right") => {
     if (!categoriesScrollRef.current) return;
@@ -543,12 +588,12 @@ const WorkWithUs = ({
               {displayEmployees.length > 0 && (
               <AnimatePresence mode="wait">
                 <motion.div
-                  key={empIndex}
-                  initial={isIOSWebKit ? false : { opacity: 0, x: isAr ? -30 : 30 }}
-                  animate={isIOSWebKit ? { opacity: 1 } : { opacity: 1, x: 0 }}
-                  exit={isIOSWebKit ? { opacity: 0 } : { opacity: 0, x: isAr ? 30 : -30 }}
-                  transition={{ duration: 0.4 }}
-                  className="ios-flicker-fix bg-popover border border-border/50 rounded-2xl overflow-hidden shadow-lg"
+                  key={displayEmployees[empIndex]?.id ?? empIndex}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="ios-flicker-fix bg-popover border border-border/50 rounded-2xl overflow-hidden"
                 >
                   <div className="flex flex-col md:flex-row">
                     <div className="md:w-96 flex-shrink-0 bg-primary/5 p-6 flex items-center justify-center">
@@ -805,9 +850,10 @@ const WorkWithUs = ({
             <div className="max-w-5xl mx-auto space-y-5">
               {filtered.map((pos) => (
                   <motion.div
-                    key={pos.title}
-                    initial={isIOSWebKit ? false : { opacity: 0, y: 20 }}
-                    whileInView={isIOSWebKit ? { opacity: 1 } : { opacity: 1, y: 0 }}
+                    key={pos._id}
+                    dir={isAr ? "rtl" : "ltr"}
+                    initial={false}
+                    whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.4 }}
                     className="ios-flicker-fix bg-popover border border-border/50 rounded-2xl p-6 md:p-8 hover:shadow-lg transition-shadow"
@@ -876,7 +922,7 @@ const WorkWithUs = ({
           -webkit-transform: translateZ(0);
           backface-visibility: hidden;
           -webkit-backface-visibility: hidden;
-          will-change: opacity;
+          will-change: transform, opacity;
         }
 
         #work-culture-page .culture-narrative[dir="rtl"] {

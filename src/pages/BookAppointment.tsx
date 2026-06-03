@@ -1475,47 +1475,37 @@ Clinic Code:`;
 
           <div className="bg-popover rounded-2xl p-8 border border-border shadow-sm">
             <div className="flex flex-wrap gap-2 mb-4">
-              {SYMPTOM_CHIP_OPTIONS.map((chip) => (
+              {chipOptions.map((chip) => (
                 <motion.button key={chip} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
-                  onClick={() => {
-                    const isSelected = symptomChips.includes(chip);
-                    const nextChips = isSelected
-                      ? symptomChips.filter((c) => c !== chip)
-                      : [...symptomChips, chip];
-                    const parts = symptomText
-                      .split(/[,;\n]+/)
-                      .map((s) => s.trim())
-                      .filter(Boolean);
-                    const nextText = isSelected
-                      ? parts.filter((p) => p.toLowerCase() !== chip.toLowerCase()).join(", ")
-                      : parts.some((p) => p.toLowerCase() === chip.toLowerCase())
-                        ? parts.join(", ")
-                        : [...parts, chip].join(", ");
-                    setSymptomChips(nextChips);
-                    setSymptomText(nextText);
-                    persistSymptomsSnapshot(nextChips, nextText);
-                  }}
+                  onClick={() =>
+                    setSymptomChips((prev) => {
+                      const isSelected = prev.includes(chip);
+                      const next = isSelected ? prev.filter((c) => c !== chip) : [...prev, chip];
+
+                      setSymptomText((prevText) => {
+                        const parts = prevText
+                          .split(/[,;\n]+/)
+                          .map((s) => s.trim())
+                          .filter(Boolean);
+
+                        if (isSelected) {
+                          return parts.filter((p) => p.toLowerCase() !== chip.toLowerCase()).join(", ");
+                        }
+
+                        if (parts.some((p) => p.toLowerCase() === chip.toLowerCase())) return parts.join(", ");
+                        return [...parts, chip].join(", ");
+                      });
+
+                      return next;
+                    })
+                  }
                   className={`px-4 py-2 rounded-full text-xs font-body tracking-wide transition-all duration-200 border ${symptomChips.includes(chip)
                     ? "bg-primary text-primary-foreground border-primary shadow-sm"
                     : "bg-background border-border text-muted-foreground hover:border-accent hover:text-accent"
                     }`}>{chip}</motion.button>
               ))}
             </div>
-            <textarea
-              value={symptomText}
-              onChange={(e) => {
-                const value = e.target.value;
-                setSymptomText(value);
-                const parts = value
-                  .split(/[,;\n]+/)
-                  .map((s) => s.trim())
-                  .filter(Boolean);
-                const nextChips = SYMPTOM_CHIP_OPTIONS.filter((chip) =>
-                  parts.some((p) => p.toLowerCase() === chip.toLowerCase()),
-                );
-                setSymptomChips(nextChips);
-                persistSymptomsSnapshot(nextChips, value);
-              }}
+            <textarea value={symptomText} onChange={(e) => setSymptomText(e.target.value)}
               placeholder={t("describeInDetail")}
               className="w-full h-24 bg-muted/20 border border-border rounded-xl p-4 font-body text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-2 focus:ring-accent/30 mb-4" />
 
@@ -1540,13 +1530,7 @@ Clinic Code:`;
 
             <div className="flex flex-nowrap items-center justify-between gap-3 sm:gap-4">
               <button
-                onClick={() => {
-                  setBookingPath(null);
-                  setSymptomChips([]);
-                  setSymptomText("");
-                  setSavedSymptoms([]);
-                  setSymptomResults(null);
-                }}
+                onClick={() => { setBookingPath(null); setSymptomChips([]); setSymptomText(""); }}
                 className="flex shrink-0 items-center gap-1.5 text-muted-foreground font-body text-xs sm:text-sm hover:text-foreground transition-colors"
               >
                 <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
@@ -1594,12 +1578,7 @@ Clinic Code:`;
               if (!dept) return null;
               return (
                 <motion.button key={dept.id} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                  onClick={() => {
-                    persistSymptomsSnapshot(symptomChips, symptomText);
-                    setSelectedDept(dept.id);
-                    setBookingPath("primary");
-                    setStep(1);
-                  }}
+                  onClick={() => { setSelectedDept(dept.id); setBookingPath("primary"); setStep(1); }}
                   className={`flex items-center gap-3 p-4 rounded-xl border transition-all text-left ${selectedDept === dept.id ? "bg-primary text-primary-foreground border-primary" : "bg-popover border-border hover:border-accent text-foreground"
                     }`}>
                   <Stethoscope className="w-5 h-5 flex-shrink-0" />
@@ -1745,16 +1724,7 @@ Clinic Code:`;
                             onClick={() => {
                               const resolvedDeptId = selectedDept ?? resolveDeptIdForDoctor(doc);
                               navigate(`/doctors/${doc.id}`, {
-                                state: {
-                                  fromBookAppointment: true,
-                                  step,
-                                  bookingPath: bookingPath ?? "primary",
-                                  selectedDept: resolvedDeptId,
-                                  selectedDoctor: doc.id,
-                                  isRequestMode: doc.availableOnline === false,
-                                  canBookSlot: doc.availableOnline !== false,
-                                  savedSymptoms: collectedSymptoms,
-                                },
+                                state: { fromBookAppointment: true, step, bookingPath: bookingPath ?? "primary", selectedDept: resolvedDeptId, selectedDoctor: doc.id, isRequestMode: doc.availableOnline === false, canBookSlot: doc.availableOnline !== false }
                               });
                             }}>
                             <div className="bg-white h-64 flex items-center justify-center relative overflow-hidden shrink-0 rounded-t-2xl">
@@ -1777,7 +1747,7 @@ Clinic Code:`;
                                   <span className="font-body text-[10px]">{doc.availableOnline !== false ? (isAr ? "متاح للحجز" : "Book Online") : (isAr ? "غير متاح حالياً" : "Request Appointment")}</span>
                                 </div>
                               )}
-                              <button onClick={(e) => { e.stopPropagation(); const resolvedDeptId = selectedDept ?? resolveDeptIdForDoctor(doc); navigate(`/doctors/${doc.id}`, { state: { fromBookAppointment: true, step, bookingPath: bookingPath ?? "primary", selectedDept: resolvedDeptId, selectedDoctor: doc.id, isRequestMode: doc.availableOnline === false, canBookSlot: doc.availableOnline !== false, savedSymptoms: collectedSymptoms } }); }} className="mt-auto inline-flex items-center gap-1 text-primary font-body text-xs hover:text-accent transition-colors">{isAr ? "عرض الملف الشخصي ←" : "View Profile →"}</button>
+                              <button onClick={(e) => { e.stopPropagation(); const resolvedDeptId = selectedDept ?? resolveDeptIdForDoctor(doc); navigate(`/doctors/${doc.id}`, { state: { fromBookAppointment: true, step, bookingPath: bookingPath ?? "primary", selectedDept: resolvedDeptId, selectedDoctor: doc.id, isRequestMode: doc.availableOnline === false, canBookSlot: doc.availableOnline !== false } }); }} className="mt-auto inline-flex items-center gap-1 text-primary font-body text-xs hover:text-accent transition-colors">{isAr ? "عرض الملف الشخصي ←" : "View Profile →"}</button>
                             </div>
                           </motion.div>
                         ))}

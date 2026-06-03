@@ -20,6 +20,7 @@ import {
   getDoctorsByDepartment,
   mapApiDoctorRowToDoctor,
 } from "@/api/doctors";
+import { createAppointmentRequest } from "@/api/appointmentRequest";
 import {
   getAvailability,
   bookAppointment,
@@ -668,6 +669,18 @@ const BookAppointment = () => {
     ? selectedDate.split("-").reverse().join("/")
     : "";
 
+  const collectedSymptoms = useMemo(
+    () =>
+      [...symptomChips, ...(symptomText.trim() ? [symptomText.trim()] : [])].filter(Boolean),
+    [symptomChips, symptomText],
+  );
+
+  const getSelectedSlotPeriod = (): "morning" | "afternoon" => {
+    if (!selectedSlot?.includes(":")) return "morning";
+    const hour = parseInt(selectedSlot.split(":")[0], 10);
+    return hour < 12 ? "morning" : "afternoon";
+  };
+
   const steps = [
     { label: isAr ? "القسم" : "Department", icon: Building2 },
     { label: isAr ? "الطبيب" : "Doctor", icon: User },
@@ -730,7 +743,29 @@ const BookAppointment = () => {
         return;
       }
 
-      // For non-returning flow, we intentionally skip enquiry API submission.
+      if (patientType === "new") {
+        await createAppointmentRequest({
+          fullname: patientName.trim(),
+          phone: `${patientCountryCode}${patientPhone.trim()}`,
+          dob: patientDob,
+          gender: patientGender,
+          doctor: (isAr ? selectedDoctorObj?.nameAr : selectedDoctorObj?.name) || undefined,
+          department:
+            (isAr
+              ? selectedDeptObj?.nameAr ?? selectedDoctorObj?.specialtyAr
+              : selectedDeptObj?.name ?? selectedDoctorObj?.specialty) || undefined,
+          date: formattedSelectedDate || selectedDate,
+          timeSlot: {
+            period: getSelectedSlotPeriod(),
+            time: formatTimeString(selectedSlot) || selectedSlot || "",
+          },
+          symptoms: collectedSymptoms.length > 0 ? collectedSymptoms : undefined,
+          requestType: "first time visitor request",
+        });
+        setBooked(true);
+        return;
+      }
+
       setBooked(true);
     } catch (err: any) {
       console.error("Booking failed:", err);
@@ -1240,10 +1275,18 @@ Clinic Code:`;
               <CheckCircle2 className="w-10 h-10 text-primary-foreground" />
             </motion.div>
             <h1 className="text-3xl md:text-5xl font-serif text-primary-foreground mb-3">
-              {isRequestMode ? t("requestSubmitted") : t("appointmentConfirmed")}
+              {patientType === "new"
+                ? t("appointmentRequested")
+                : isRequestMode
+                  ? t("requestSubmitted")
+                  : t("appointmentConfirmed")}
             </h1>
             <p className="text-primary-foreground/70 font-body text-sm max-w-md mx-auto">
-              {isRequestMode ? t("requestConfirmMsg") : t("bookingConfirmMsg")}
+              {patientType === "new"
+                ? t("appointmentRequestedMsg")
+                : isRequestMode
+                  ? t("requestConfirmMsg")
+                  : t("bookingConfirmMsg")}
             </p>
           </motion.div>
 
@@ -1284,6 +1327,15 @@ Clinic Code:`;
                     </p>
                   </div>
                 </div>
+                {collectedSymptoms.length > 0 && (
+                  <div className="flex items-start gap-3 sm:col-span-2">
+                    <Activity className="w-5 h-5 text-accent mt-0.5" />
+                    <div>
+                      <p className="text-muted-foreground text-xs uppercase tracking-wider">{t("symptoms")}</p>
+                      <p className="text-foreground font-medium">{collectedSymptoms.join(", ")}</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </motion.div>
 
@@ -1881,11 +1933,16 @@ Clinic Code:`;
             <motion.div key="s4" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.35 }}>
               <div className="max-w-3xl mx-auto">
                 <div className="bg-popover rounded-2xl p-8 md:p-10 border border-border shadow-sm">
-                  <h2 className="font-serif text-xl text-foreground mb-2">{isRequestMode ? t("reviewSubmit") : t("reviewConfirm")}</h2>
+                  <h2 className="font-serif text-xl text-foreground mb-2">
+                    {patientType === "new" ? t("reviewSubmit") : isRequestMode ? t("reviewSubmit") : t("reviewConfirm")}
+                  </h2>
                   <div className="space-y-5">
                     {[
-                      { label: t("department"), value: selectedDeptObj?.name || selectedDoctorObj?.specialty || "", icon: Building2 },
-                      { label: t("doctor"), value: selectedDoctorObj?.name || "", icon: User },
+                      { label: t("department"), value: (isAr ? selectedDeptObj?.nameAr : selectedDeptObj?.name) || selectedDoctorObj?.specialty || "", icon: Building2 },
+                      { label: t("doctor"), value: (isAr ? selectedDoctorObj?.nameAr : selectedDoctorObj?.name) || "", icon: User },
+                      ...(collectedSymptoms.length > 0
+                        ? [{ label: t("symptoms"), value: collectedSymptoms.join(", "), icon: Activity }]
+                        : []),
                       { label: isAr ? "التاريخ والوقت" : "Date & Time", value: selectedDate && selectedSlot ? `${formattedSelectedDate}  •  ${formatTimeString(selectedSlot)}` : "", icon: Clock },
                       { label: t("patient"), value: patientName.trim() || "—", icon: ClipboardList },
                       ...(patientType === "new" ? [{ label: t("phone"), value: `${patientCountryCode} ${patientPhone}`, icon: Stethoscope }, { label: isAr ? "تاريخ الميلاد" : "Date of Birth", value: formattedDob, icon: User }, { label: t("gender"), value: patientGender === "male" ? t("male") : t("female"), icon: User }] : [])
@@ -1896,7 +1953,7 @@ Clinic Code:`;
                   {bookingError && <div className="mt-6 p-4 rounded-xl bg-destructive/10 border border-destructive/20 flex items-center gap-3"><AlertCircle className="w-5 h-5 text-destructive" /><p className="font-body text-sm text-destructive">{bookingError}</p></div>}
                   <div className="mt-8 flex flex-col gap-4">
                     <motion.button whileHover={!isSubmitting ? { scale: 1.02 } : {}} whileTap={!isSubmitting ? { scale: 0.98 } : {}} onClick={handleConfirm} disabled={isSubmitting} className="w-full bg-primary text-primary-foreground py-4 rounded-xl font-body text-sm tracking-widest uppercase hover:bg-primary/90 transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-70">
-                      {isSubmitting ? <><Loader2 className="w-5 h-5 animate-spin" />{isAr ? "جارِ الإرسال..." : "Submitting..."}</> : <>{patientType === "new" ? (isAr ? "تأكيد الطلب" : "Confirm Request") : (isAr ? "تأكيد الحجز" : "Confirm Booking")}</>}
+                      {isSubmitting ? <><Loader2 className="w-5 h-5 animate-spin" />{isAr ? "جارِ الإرسال..." : "Submitting..."}</> : <>{patientType === "new" ? t("confirmRequest") : (isAr ? "تأكيد الحجز" : "Confirm Booking")}</>}
                     </motion.button>
                   </div>
                 </div>

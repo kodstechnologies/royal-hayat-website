@@ -1475,7 +1475,7 @@ Clinic Code:`;
 
           <div className="bg-popover rounded-2xl p-8 border border-border shadow-sm">
             <div className="flex flex-wrap gap-2 mb-4">
-              {chipOptions.map((chip) => (
+              {SYMPTOM_CHIP_OPTIONS.map((chip) => (
                 <motion.button key={chip} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
                   onClick={() =>
                     setSymptomChips((prev) => {

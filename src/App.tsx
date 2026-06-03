@@ -228,18 +228,18 @@ const workWithUsHospitalityWeekImages: string[] = [
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/tf7uuik4lr5m1grkj3db.jpeg"
 ];
 const workWithUsRhhQuizImages: string[] = [
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/rhh-quiz/DSC07156.JPG",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/rhh-quiz/DSC07159.JPG",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/rhh-quiz/DSC07164.JPG",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/rhh-quiz/DSC07198.JPG",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/rhh-quiz/DSC07223.JPG",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/rhh-quiz/DSC07237.JPG",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/rhh-quiz/DSC07245.JPG",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/rhh-quiz/DSC07253.JPG",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/rhh-quiz/DSC07310.JPG",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/rhh-quiz/DSC07357.JPG",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/rhh-quiz/DSC07379.JPG",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/rhh-quiz/DSC07389.JPG"
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/RHH-quiz/DSC07156.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/RHH-quiz/DSC07159.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/RHH-quiz/DSC07164.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/RHH-quiz/DSC07198.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/RHH-quiz/DSC07223.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/RHH-quiz/DSC07237.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/RHH-quiz/DSC07237.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/RHH-quiz/DSC07253.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/RHH-quiz/DSC07310.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/RHH-quiz/DSC07357.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/RHH-quiz/DSC07379.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/RHH-quiz/DSC07389.JPG"
 ];
 
 const App = () => (

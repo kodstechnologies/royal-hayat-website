@@ -65,6 +65,7 @@ export interface PatientLookupResponse {
   };
 }
 
+//HIS API CALL TO LOOKUP PATIENT
 export const getPatient = async (params: {
   nationalid?: string;
   urn?: string;

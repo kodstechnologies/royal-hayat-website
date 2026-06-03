@@ -32,10 +32,7 @@ import {
   type IdentityStatusResponse,
 } from "@/api/identity";
 import { subscribeToIdentityVerification } from "@/api/identitySocket";
-import {
-  extractPatientId,
-  getPatientLookupUserMessage,
-} from "@/utils/patientLookupErrors";
+import { extractPatientId } from "@/utils/patientLookupErrors";
 import { doctorsWithClinicCodes as staticDoctors } from "@/data/doctorsWithClinicCodes";
 import { departments as staticDepts, deptDoctorAliases, MAIN_CATEGORIES } from "@/data/departments";
 import { Calendar as DatePickerCalendar } from "@/components/ui/calendar";
@@ -427,6 +424,7 @@ const BookAppointment = () => {
   const [isWaitingForApproval, setIsWaitingForApproval] = useState(false);
   const [isConfirmingPatientRecord, setIsConfirmingPatientRecord] = useState(false);
   const [patientLookupShowGoBack, setPatientLookupShowGoBack] = useState(false);
+  const [showHisFailureModal, setShowHisFailureModal] = useState(false);
   const verifySocketCleanupRef = useRef<(() => void) | null>(null);
   const verificationDoneRef = useRef(false);
   const [verifiedIdentityDetails, setVerifiedIdentityDetails] = useState<VerifiedIdentityDetails | null>(null);
@@ -868,6 +866,23 @@ const BookAppointment = () => {
     setVerifiedIdentityDetails(null);
   }, []);
 
+  const dismissHisFailureAndGoToRequest = useCallback(() => {
+    setShowHisFailureModal(false);
+    setNationalIdError("");
+    setPatientLookupShowGoBack(false);
+    verifySocketCleanupRef.current?.();
+    verifySocketCleanupRef.current = null;
+    setIsWaitingForApproval(false);
+    setIsConfirmingPatientRecord(false);
+    setVerifyOperationId(null);
+    setShowReturningPatientModal(false);
+    resetPatientLookupFailure();
+    const doctorQuery = selectedDoctor
+      ? `?doctor=${encodeURIComponent(selectedDoctor)}`
+      : "";
+    navigate(`/appointment-request${doctorQuery}`);
+  }, [navigate, resetPatientLookupFailure, selectedDoctor]);
+
   const finalizeRegisteredPatientAfterPaci = useCallback(
     async (params: {
       civilId: string;
@@ -900,16 +915,17 @@ const BookAppointment = () => {
         return true;
       } catch (err) {
         console.error("Hospital patient lookup failed:", err);
-        const { text, showGoBack } = getPatientLookupUserMessage(err, t);
-        setNationalIdError(text);
-        setPatientLookupShowGoBack(showGoBack);
+        setNationalIdError("");
+        setPatientLookupShowGoBack(false);
+        setShowReturningPatientModal(false);
         resetPatientLookupFailure();
+        setShowHisFailureModal(true);
         return false;
       } finally {
         setIsConfirmingPatientRecord(false);
       }
     },
-    [loadVerifiedIdentityDetails, resetPatientLookupFailure, t]
+    [loadVerifiedIdentityDetails, resetPatientLookupFailure]
   );
 
   /** Close Civil ID modal and return to returning / first-time choice (step before national ID). */
@@ -2000,6 +2016,40 @@ Clinic Code:`;
                   </button>
                 </div>
               )}
+            </div>
+          </motion.div>
+        </div>
+      )}
+      {showHisFailureModal && (
+        <div
+          className="fixed inset-0 z-[80] flex items-center justify-center bg-foreground/40 backdrop-blur-sm p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="his-failure-modal-title"
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.97 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="w-full max-w-lg rounded-2xl border border-border/70 bg-popover shadow-2xl p-6 text-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex flex-col items-center gap-3 mb-6">
+              <AlertCircle className="w-8 h-8 text-accent" />
+              <p
+                id="his-failure-modal-title"
+                className="font-body text-sm text-foreground leading-relaxed text-start"
+              >
+                {t("hisFailureCallCenterMessage")}
+              </p>
+            </div>
+            <div className="flex justify-center">
+              <button
+                type="button"
+                onClick={dismissHisFailureAndGoToRequest}
+                className="min-w-28 bg-primary text-primary-foreground px-6 py-2.5 rounded-lg font-body text-xs tracking-widest uppercase hover:bg-primary/90 transition-colors"
+              >
+                OK
+              </button>
             </div>
           </motion.div>
         </div>

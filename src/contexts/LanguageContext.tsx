@@ -564,6 +564,10 @@ const translations: Translations = {
     en: "Go back",
     ar: "رجوع",
   },
+  hisFailureCallCenterMessage: {
+    en: "We are currently experiencing some technical issues. Kindly share your mobile number, and our call center team will contact you to confirm your appointment.",
+    ar: "نعتذر عن الإزعاج. نواجه حاليًا بعض المشاكل التقنية. يرجى مشاركة رقم هاتفكم، وسيتواصل معكم أحد موظفي خدمة العملاء لدينا في أقرب وقت لتأكيد موعدكم.",
+  },
   dontSeeInsurance: { en: "Don't see your insurance provider?", ar: "لا ترى شركة التأمين الخاصة بك؟" },
   dontSeeInsurancePatients: {
     en: "Don't see your insurance provider? please contact us at ",

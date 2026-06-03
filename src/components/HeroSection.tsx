@@ -170,8 +170,10 @@ const HeroSection = () => {
                   initial={{ opacity: 0, y: 14 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.2 }}
-                  className={`text-[#A67C00] font-body leading-relaxed mb-3 max-lg:mb-4 md:mb-5 max-w-xl ${
-                    isAr ? "text-start text-xs md:text-sm" : "text-left text-sm md:text-base"
+                  className={`font-body leading-relaxed mb-3 max-lg:mb-4 md:mb-5 max-w-xl ${
+                    isAr
+                      ? "text-start text-sm sm:text-base md:text-lg text-[#6B5200]"
+                      : "text-left text-sm md:text-base text-[#A67C00]"
                   }`}
                 >
                   {t("heroIntro")}
@@ -181,8 +183,10 @@ const HeroSection = () => {
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.3 }}
-                className={`text-muted-foreground font-body leading-relaxed mb-3 max-lg:mb-4 md:mb-5 max-w-xl whitespace-pre-line ${
-                  isAr ? "text-start text-xs md:text-sm" : "text-left text-sm md:text-base"
+                className={`font-body leading-relaxed mb-3 max-lg:mb-4 md:mb-5 max-w-xl whitespace-pre-line ${
+                  isAr
+                    ? "text-start text-sm sm:text-base md:text-lg text-[hsl(337,30%,26%)]"
+                    : "text-left text-sm md:text-base text-muted-foreground"
                 }`}
               >
                 {t("heroDesc")}
@@ -192,8 +196,10 @@ const HeroSection = () => {
                   initial={{ opacity: 0, y: 14 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.38 }}
-                  className={`text-gray-400 font-serif mb-5 max-lg:mb-6 md:mb-8 max-w-xl ${
-                    isAr ? "text-start text-sm md:text-base" : "text-base md:text-xl"
+                  className={`font-serif mb-5 max-lg:mb-6 md:mb-8 max-w-xl ${
+                    isAr
+                      ? "text-start text-base md:text-lg lg:text-xl text-gray-600"
+                      : "text-base md:text-xl text-gray-400"
                   }`}
                 >
                   {t("heroTagline")}

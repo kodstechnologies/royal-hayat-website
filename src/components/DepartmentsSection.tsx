@@ -1,8 +1,8 @@
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import { ChevronLeft, ChevronRight, ArrowRight, X, Stethoscope, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { departments as staticDepartments, type Department, MAIN_CATEGORIES } from "@/data/departments";
 import { doctors, type Doctor } from "@/data/doctors";
@@ -14,8 +14,15 @@ type DepartmentsSectionProps = {
 
 const isAlSafwaDeptSlug = (slug: string) => slug.includes("al-safwa");
 
+type DeptRestoreState = {
+  restoreDeptOpenIndex?: number;
+  restoreSelectedSubByDept?: Record<number, string>;
+  restoreScrollY?: number;
+};
+
 const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [selectedSubByDept, setSelectedSubByDept] = useState<Record<number, string>>({});
   const [departments] = useState<Department[]>(
@@ -23,8 +30,63 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
   );
   const doctorScrollRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef(null);
+  const restoreScrollYRef = useRef<number | null>(null);
   const { lang, t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    const state = location.state as DeptRestoreState | null;
+    if (state?.restoreDeptOpenIndex == null) return;
+    restoreScrollYRef.current =
+      typeof state.restoreScrollY === "number" ? state.restoreScrollY : null;
+    setOpenIndex(state.restoreDeptOpenIndex);
+    if (state.restoreSelectedSubByDept) {
+      setSelectedSubByDept(state.restoreSelectedSubByDept);
+    }
+  }, [location.state]);
+
+  useEffect(() => {
+    if (openIndex === null || restoreScrollYRef.current == null) return;
+
+    const scrollY = restoreScrollYRef.current;
+    const deptSlug = departments[openIndex]?.slug;
+
+    const scrollToSavedPosition = () => {
+      if (scrollY > 0) {
+        window.scrollTo({ top: scrollY, left: 0, behavior: "auto" });
+        return;
+      }
+      if (deptSlug) {
+        document
+          .getElementById(`dept-card-${deptSlug}`)
+          ?.scrollIntoView({ block: "center", behavior: "auto" });
+      }
+    };
+
+    scrollToSavedPosition();
+    const raf = window.requestAnimationFrame(scrollToSavedPosition);
+    const timer = window.setTimeout(() => {
+      scrollToSavedPosition();
+      restoreScrollYRef.current = null;
+    }, 500);
+
+    return () => {
+      window.cancelAnimationFrame(raf);
+      window.clearTimeout(timer);
+    };
+  }, [openIndex, departments]);
+
+  const openDoctorProfile = (docId: string, origIdx: number) => {
+    navigate(`/doctors/${docId}`, {
+      state: {
+        fromDepartments: true,
+        returnPath: location.pathname,
+        restoreDeptOpenIndex: origIdx,
+        restoreSelectedSubByDept: selectedSubByDept,
+        restoreScrollY: window.scrollY,
+      },
+    });
+  };
 
   const filteredDepts = departments.filter(dept => {
     const query = searchQuery.toLowerCase();
@@ -243,6 +305,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                     return (
                       <motion.div
                         key={dept.name}
+                        id={`dept-card-${dept.slug}`}
                         layout
                         initial={{ opacity: 0, y: 30, scale: 0.97 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -341,7 +404,15 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
                                         <style dangerouslySetInnerHTML={{ __html: `.dept-doctor-carousel{padding-left:calc((100vw - 280px)/2);padding-right:calc((100vw - 280px)/2)}@media(min-width:1024px){.dept-doctor-carousel{padding-left:0!important;padding-right:0!important}}` }} />
                                         {deptDoctors.map((doc) => (
-                                          <Link to={`/doctors/${doc.id}`} key={doc.id} className="flex-shrink-0 w-[280px] snap-center md:snap-start">
+                                          <Link
+                                            to={`/doctors/${doc.id}`}
+                                            key={doc.id}
+                                            onClick={(e) => {
+                                              e.preventDefault();
+                                              openDoctorProfile(doc.id, origIdx);
+                                            }}
+                                            className="flex-shrink-0 w-[280px] snap-center md:snap-start"
+                                          >
                                             <motion.div whileHover={{ y: -6, boxShadow: "0 20px 40px -12px rgba(74,20,35,0.12)" }} className="bg-background rounded-2xl overflow-hidden border border-border/50 group/doc cursor-pointer h-full">
                                               <div className="bg-white h-48 flex items-center justify-center relative overflow-hidden">
                                                 {doc.image ? <img src={doc.image} alt={lang === "ar" ? doc.nameAr : doc.name} className="w-full h-full object-cover object-top" /> : <div className="w-14 h-14 rounded-full bg-popover/20 backdrop-blur-sm flex items-center justify-center border-2 border-popover/30"><span className="text-lg font-serif text-primary-foreground">{doc.initials}</span></div>}

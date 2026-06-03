@@ -110,6 +110,14 @@ const handleAddTestimonial = () => {
   const handleGoBack = () => {
     if (fromBooking) {
       navigate("/book-appointment", { state: bookingReturnState });
+    } else if (bookingReturnState?.fromDepartments && bookingReturnState?.returnPath) {
+      navigate(bookingReturnState.returnPath, {
+        state: {
+          restoreDeptOpenIndex: bookingReturnState.restoreDeptOpenIndex,
+          restoreSelectedSubByDept: bookingReturnState.restoreSelectedSubByDept,
+          restoreScrollY: bookingReturnState.restoreScrollY,
+        },
+      });
     } else {
       navigate(-1);
     }

@@ -10,9 +10,7 @@ import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
 import { Crown, Star, Target, Stethoscope, ClipboardList, Briefcase, UserPlus, CheckCircle2, X, ChevronDown, ArrowLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { toast } from "@/hooks/use-toast";
-import { createAlSafwaEnrollment } from "../api/alSafwa";
-import axios from "axios";
+
 
 const EnrollmentModal = ({ isOpen, onClose, t, isAr, onSuccess }: { isOpen: boolean; onClose: () => void; t: any; isAr: boolean; onSuccess: () => void }) => {
   const [formData, setFormData] = useState({
@@ -60,12 +58,22 @@ const EnrollmentModal = ({ isOpen, onClose, t, isAr, onSuccess }: { isOpen: bool
       setIsSubmitting(false);
       setIsSuccess(true);
       setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        age: "",
+        firstName: "",
+        familyName: "",
         gender: "",
-        notes: "",
+        dateOfBirth: "",
+        mobile: "",
+        email: "",
+        preferredAppointmentDate: "",
+        previousMedicalCheckup: "",
+        diabetes: "",
+        highCholesterol: "",
+        bronchialAsthma: "",
+        hypertension: "",
+        heartDisease: "",
+        overweightObesity: "",
+        smoker: "",
+        alcohol: "",
       });
       setTimeout(() => {
         setIsSuccess(false);
@@ -77,14 +85,12 @@ const EnrollmentModal = ({ isOpen, onClose, t, isAr, onSuccess }: { isOpen: bool
       const backendMessage = axios.isAxiosError(error)
         ? error.response?.data?.message || error.message
         : null;
-      toast({
-        title: isAr ? "خطأ" : "Error",
+      toast.error(isAr ? "خطأ" : "Error", {
         description:
           backendMessage ||
           (isAr
             ? "تعذر إرسال نموذج التسجيل. يرجى المحاولة مرة أخرى."
             : "Failed to submit enrollment form. Please try again."),
-        variant: "destructive",
       });
     }
   };

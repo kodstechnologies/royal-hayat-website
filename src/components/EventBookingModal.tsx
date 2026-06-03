@@ -1,6 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { createEventBooking, type CreateEventBookingPayload } from "@/api/event";
 import { toast } from "@/hooks/use-toast";
 import PhoneInput from "react-phone-input-2";
 import type { CountryData } from "react-phone-input-2";
@@ -41,10 +43,16 @@ const initialForm: EventBookingForm = {
 const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) => {
   const [form, setForm] = useState<EventBookingForm>(initialForm);
   const [errors, setErrors] = useState<Partial<Record<keyof EventBookingForm, string>>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [mobileCountry, setMobileCountry] = useState<{ countryCode: string; dialCode: string }>({
     countryCode: "kw",
     dialCode: "965",
   });
+
+  useEffect(() => {
+    if (isOpen) setSubmitError(null);
+  }, [isOpen]);
 
   const hallOptions = [
     { value: "gardenia", labelEn: "Gardenia Banquet Hall", labelAr: "قاعة جاردينيا للاحتفالات" },
@@ -88,6 +96,7 @@ const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) =>
   const updateField = (field: keyof EventBookingForm, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
     setErrors((prev) => ({ ...prev, [field]: undefined }));
+    setSubmitError(null);
   };
 
   const handleMobileChange = (value: string, country: CountryData | {}) => {
@@ -108,22 +117,77 @@ const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) =>
     updateField("mobile", digits);
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const resolveSubmitErrorMessage = (error: unknown) => {
+    const genericEn = "Something went wrong";
+    const genericAr = "حدث خطأ ما. يرجى المحاولة مرة أخرى.";
+
+    if (axios.isAxiosError(error)) {
+      const apiMessage =
+        typeof error.response?.data?.message === "string"
+          ? error.response.data.message.trim()
+          : "";
+      const status = error.response?.status;
+      const isAxiosGenericMessage = /^Request failed with status code/i.test(
+        error.message || "",
+      );
+
+      if (
+        apiMessage &&
+        !/^Request failed with status code/i.test(apiMessage)
+      ) {
+        return apiMessage;
+      }
+
+      if (!status || status >= 500 || isAxiosGenericMessage) {
+        return isAr ? genericAr : genericEn;
+      }
+
+      if (apiMessage) return apiMessage;
+    }
+
+    return isAr ? genericAr : genericEn;
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const nextErrors = validate();
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
 
-    // Placeholder submit until API endpoint is provided.
-    console.log("Event booking submitted", form);
-    toast({
-      title: isAr ? "تم إرسال الطلب" : "Request Submitted",
-      description: isAr
-        ? "تم إرسال نموذج حجز الفعالية بنجاح. سيتواصل معك فريقنا قريباً."
-        : "Your event booking form was submitted successfully. Our team will contact you soon.",
-    });
-    setForm(initialForm);
-    onClose();
+    setIsSubmitting(true);
+    setSubmitError(null);
+    try {
+      await createEventBooking({
+        hall: form.hall as CreateEventBookingPayload["hall"],
+        dueDateOfExpectingMother: form.dueDate,
+        eventType: form.eventType as CreateEventBookingPayload["eventType"],
+        otherEventType: form.eventType === "other" ? form.otherEventType.trim() : undefined,
+        proposedDate: form.proposedDate,
+        numberOfDays: Number(form.numberOfDays),
+        name: form.name.trim(),
+        mobileNumber: form.mobile.trim(),
+        email: form.email.trim(),
+        mrn: form.mrn.trim() || undefined,
+      });
+      toast({
+        title: isAr ? "تم إرسال الطلب" : "Request Submitted",
+        description: isAr
+          ? "تم إرسال نموذج حجز الفعالية بنجاح. سيتواصل معك فريقنا قريباً."
+          : "Your event booking form was submitted successfully. Our team will contact you soon.",
+      });
+      setForm(initialForm);
+      onClose();
+    } catch (error) {
+      const message = resolveSubmitErrorMessage(error);
+      setSubmitError(message);
+      toast({
+        title: isAr ? "خطأ" : "Error",
+        description: message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -157,6 +221,14 @@ const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) =>
             </div>
 
             <form className="grid grid-cols-1 md:grid-cols-2 gap-4" onSubmit={handleSubmit}>
+              {submitError && (
+                <div
+                  role="alert"
+                  className="md:col-span-2 rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+                >
+                  {submitError}
+                </div>
+              )}
               <div>
                 <label className="block text-sm font-body text-foreground mb-1">{isAr ? "اختيار القاعة *" : "Choose your Hall *"}</label>
                 <select
@@ -290,9 +362,10 @@ const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) =>
               <div className="md:col-span-2 pt-2 flex justify-center">
                 <button
                   type="submit"
-                  className="h-11 px-10 rounded-full bg-primary text-primary-foreground font-body text-sm tracking-[0.18em] uppercase hover:bg-primary/90 transition-colors"
+                  disabled={isSubmitting}
+                  className="h-11 px-10 rounded-full bg-primary text-primary-foreground font-body text-sm tracking-[0.18em] uppercase hover:bg-primary/90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  Send
+                  {isSubmitting ? (isAr ? "جاري الإرسال..." : "Sending...") : "Send"}
                 </button>
               </div>
             </form>

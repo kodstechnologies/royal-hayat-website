@@ -63,6 +63,11 @@ type GalleryCarousel = {
   variant?: "muted";
 };
 
+const detectIOSWebKit = () =>
+  typeof navigator !== "undefined" &&
+  /iPad|iPhone|iPod/.test(navigator.userAgent) &&
+  !(typeof window !== "undefined" && "MSStream" in window);
+
 const toCarouselPhotos = (label: string, images: string[]): LifePhoto[] => {
   if (images.length === 0) {
     return [{ alt: `${label} — 1` }];
@@ -230,6 +235,7 @@ const WorkWithUs = ({
 }: WorkWithUsProps) => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
+  const isIOSWebKit = useMemo(() => detectIOSWebKit(), []);
   const [activeCategory, setActiveCategory] = useState("View All");
   const [jobPostings, setJobPostings] = useState<JobPosting[]>([]);
   const [jobsLoading, setJobsLoading] = useState(true);

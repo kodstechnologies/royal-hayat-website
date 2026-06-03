@@ -228,7 +228,9 @@ const DoctorProfile = () => {
       .map((fb) => mapApiFeedbackToTestimonial(fb, lang));
   }, [feedbackResponse, lang]);
 
-  const shouldAnimateMarquee = testimonials.length > 1;
+  // Marquee clones the list for a seamless loop — only do that with 3+ items so
+  // 1–2 reviews are not shown twice side-by-side in the viewport.
+  const shouldAnimateMarquee = testimonials.length >= 3;
   const marqueeItems = shouldAnimateMarquee
     ? [...testimonials, ...testimonials]
     : testimonials;
@@ -269,7 +271,7 @@ const DoctorProfile = () => {
       );
 
       await queryClient.invalidateQueries({
-        queryKey: ["doctor-feedback", feedbackDoctorId],
+        queryKey: ["doctor-feedback", feedbackDoctorId, doctor?.id, id],
       });
 
       setTestimonialForm({ name: "", comment: "", rating: 0 });
@@ -537,19 +539,19 @@ const DoctorProfile = () => {
           )}
           {!feedbackLoading && testimonials.length > 0 && (
           <div
-            className={`flex gap-3 sm:gap-5 w-max px-4 sm:px-0 ${
+            className={`flex gap-3 sm:gap-5 px-4 sm:px-0 ${
               shouldAnimateMarquee
-                ? `hover:[animation-play-state:paused] ${
+                ? `w-max hover:[animation-play-state:paused] ${
                     lang === "ar"
                       ? "animate-[feedbackMarqueeRtl_30s_linear_infinite]"
                       : "animate-[feedbackMarquee_30s_linear_infinite]"
                   }`
-                : "mx-auto"
+                : "w-full max-w-4xl mx-auto justify-center flex-wrap"
             }`}
           >
             {marqueeItems.map((fb, i) => (
               <div
-                key={`${fb.id}-${i}`}
+                key={shouldAnimateMarquee ? `${fb.id}-${i}` : fb.id}
                 className="w-[220px] min-h-[200px] sm:w-[280px] sm:h-[280px] sm:min-h-0 flex-shrink-0 bg-popover rounded-xl sm:rounded-2xl border border-border/40 p-3.5 sm:p-5 flex flex-col justify-between hover:shadow-lg transition-shadow"
               >
                 <div>

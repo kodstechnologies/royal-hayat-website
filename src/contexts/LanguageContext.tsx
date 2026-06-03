@@ -604,7 +604,7 @@ const translations: Translations = {
   chatRoyalHomeHealth: { en: "Royal Home Health", ar: "رويال للرعاية المنزلية" },
   chatGuidedSteps: { en: "Quick steps", ar: "خطوات سريعة" },
   chatNeedHelp: { en: "Need help?", ar: "هل تحتاج مساعدة؟" },
-  chatNeedMoreHelp: { en: "Need more help?", ar: "هل تحتاج مزيداً من المساعدة؟" },
+  chatNeedMoreHelp: { en: "Chat with our agent", ar: "تحدث مع وكيلنا" },
   chatAiHighTraffic: {
     en: "Our AI assistant is experiencing high demand right now. Please **try again in a few minutes**, use the quick topic buttons below, or call **+965 2536 0000** for immediate assistance.",
     ar: "مساعدنا الذكي يشهد ضغطاً عالياً حالياً. يرجى **المحاولة مرة أخرى بعد قليل**، أو استخدام الأزرار السريعة أدناه، أو الاتصال على **+965 2536 0000** للمساعدة الفورية.",

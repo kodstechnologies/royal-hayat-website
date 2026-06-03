@@ -12,7 +12,7 @@ const translations: Translations = {
   about: { en: "About", ar: "عن المستشفى" },
   aboutUsNav: { en: "About Us", ar: "من نحن" },
   medicalServices: { en: "Medical Services", ar: "الخدمات الطبية" },
-  royaleHomeHealth: { en: "Royale Home Health", ar: "رويال للرعاية المنزلية" },
+  royaleHomeHealth: { en: "Royale Home Health", ar: "رويال هوم هيلث" },
   hospitalityServices: { en: "Hospitality Services", ar: "خدمات الضيافة" },
   patientsVisitors: { en: "Patients Info", ar: "معلومات للمرضى والزوار" },
   patientsVisitorsDropdownTitle: { en: "Information For Patients and Visitors", ar: "معلومات للمرضى والزوار" },
@@ -190,7 +190,7 @@ const translations: Translations = {
   },
 
   // Home Health
-  careAtHome: { en: "Care at Home", ar: "الرعاية في المنزل" },
+  careAtHome: { en: "Care at Home", ar: "خدمات الرعاية المنزلية" },
   homeHealthDesc: { en: "Premium medical care in the comfort of your home", ar: "رعاية طبية متميزة في راحة منزلك" },
   homeHealthFullDesc: { en: "Royale Home Health brings the excellence of hospital care to your doorstep. Our certified medical professionals provide comprehensive healthcare services including nursing, post-operative care, physiotherapy, and elder care — all within the comfort and privacy of your home.", ar: "يقدم رويال للرعاية المنزلية تميز الرعاية الصحية إلى عتبة بابك. يقدم المتخصصون الطبيون المعتمدون لدينا خدمات رعاية صحية شاملة تشمل التمريض والرعاية بعد العمليات والعلاج الطبيعي ورعاية كبار السن." },
   homeNursing: { en: "Home Nursing", ar: "التمريض المنزلي" },
@@ -217,8 +217,11 @@ const translations: Translations = {
   luxuryHallsDesc: { en: "Elegant event spaces for celebrations and gatherings.", ar: "مساحات أنيقة للمناسبات والاحتفالات." },
   birthCelebrationHalls: { en: "Birth Celebration Halls", ar: "قاعات احتفالات الولادة" },
   exclusiveSuites: { en: "Exclusive Suites", ar: "الأجنحة الحصرية" },
-  inRoomEvents: { en: "In-Suite Celebration Experiences", ar: "تجارب الاحتفال داخل الجناح" },
-  inRoomEventsDesc: { en: "Create meaningful celebrations in the comfort and privacy of your own suite.", ar: "احتفل بلحظاتك الخاصة في راحة وخصوصية جناحك." },
+  inRoomEvents: { en: "In-Suite Celebration Experiences", ar: "تجارب الاحتفال داخل الأجنحة" },
+  inRoomEventsDesc: {
+    en: "Create meaningful celebrations in the comfort and privacy of your own suite.",
+    ar: "اصنعوا لحظات لا تُنسى واحتفلوا بمناسباتكم الخاصة بكل خصوصية وراحة داخل أجنحتكم الفاخرة، حيث تلتقي الأجواء الدافئة بالضيافة الراقية لتمنحكم تجربة استثنائية مليئة بالذكريات الجميلة.",
+  },
   elementsSpa: { en: "Elements Spa", ar: "سبا إليمنتس" },
   elementsSpaByBanyanTree: { en: "Elements Spa (by Banyan Tree)", ar: "سبا إليمنتس (بانيان تري)" },
   fifthFloorCafe: { en: "The 5th Floor Café", ar: "مقهى الطابق الخامس" },
@@ -289,7 +292,7 @@ const translations: Translations = {
   everyStage: { en: "Every Stage,", ar: "في كل مرحلة." },
   everyAge: { en: "Every Age.", ar: "في كل عمر." },
   heroIntro: {
-    en: "",
+    en: "At life's most meaningful moments, healthcare should feel deeply human.",
     ar: "في أكثر لحظات الحياة عمقاً ومعنى، ينبغي للرعاية الصحية أن تكون إنسانية حقاً.",
   },
   heroDesc: {
@@ -377,6 +380,12 @@ const translations: Translations = {
   changeSelection: { en: "Change selection", ar: "تغيير الاختيار" },
   reviewConfirm: { en: "Review & Confirm", ar: "مراجعة وتأكيد الحجز" },
   reviewSubmit: { en: "Review & Submit Request", ar: "مراجعة وتأكيد الحجز" },
+  confirmRequest: { en: "Confirm Request", ar: "تأكيد الطلب" },
+  appointmentRequested: { en: "Appointment Requested", ar: "تم طلب الموعد" },
+  appointmentRequestedMsg: {
+    en: "Thank you for your request. Our call center team will contact you within 6-12 hours to confirm your appointment.",
+    ar: "شكراً لطلبكم. سيتواصل معكم فريق خدمة العملاء خلال 6-12 ساعة لتأكيد موعدكم.",
+  },
   appointmentRequest: { en: "Appointment Request", ar: "طلب موعد" },
   requestNote: { en: "The selected doctor is currently not available. We will get back to you within 6-12 hours.", ar: "الطبيب المختار غير متاح حالياً. سنتواصل معك خلال 6-12 ساعة." },
   patient: { en: "Patient", ar: "معلومات المريض" },
@@ -388,7 +397,7 @@ const translations: Translations = {
   previous: { en: "Previous", ar: "السابق" },
   backToHome: { en: "Back to Home", ar: "العودة إلى الصفحة الرئيسية" },
   // Confirmation
-  requestSubmitted: { en: "Appointment Confirmed", ar: "تم استلام طلب الموعد!" },
+  requestSubmitted: { en: "Request Submitted", ar: "تم إرسال الطلب" },
   appointmentConfirmed: { en: "Appointment Confirmed", ar: "تم استلام طلب الموعد!" },
   requestConfirmMsg: { en: "Thank you for your request, we will contact you soon", ar: "شكراً لطلبك، سنتواصل معك قريباً." },
   bookingConfirmMsg: { en: "Thank you for your request, we will contact you soon", ar: "شكراً لطلبك، سنتواصل معك قريباً." },
@@ -470,7 +479,7 @@ const translations: Translations = {
   patientSatisfaction: { en: "Patient Satisfaction", ar: "رضا المرضى" },
 
   // Stats
-  yearsOfExcellence: { en: "/* Years of Excellence */", ar: "سنوات من التميز" },
+  yearsOfExcellence: { en: " Years of Excellence ", ar: "سنوات من التميز" },
   specialistDoctors: { en: "Healthcare Professionals", ar: "متخصصون في الرعاية الصحية" },
   departmentsLabel: { en: "Departments", ar: "الأقسام" },
 
@@ -561,7 +570,15 @@ const translations: Translations = {
     en: "Go back",
     ar: "رجوع",
   },
+  hisFailureCallCenterMessage: {
+    en: "We are currently experiencing some technical issues. Kindly share your mobile number, and our call center team will contact you to confirm your appointment.",
+    ar: "نعتذر عن الإزعاج. نواجه حاليًا بعض المشاكل التقنية. يرجى مشاركة رقم هاتفكم، وسيتواصل معكم أحد موظفي خدمة العملاء لدينا في أقرب وقت لتأكيد موعدكم.",
+  },
   dontSeeInsurance: { en: "Don't see your insurance provider?", ar: "لا ترى شركة التأمين الخاصة بك؟" },
+  dontSeeInsurancePatients: {
+    en: "Don't see your insurance provider? please contact us at ",
+    ar: "لا ترى شركة التأمين الخاصة بك؟ يرجى التواصل معنا على ",
+  },
   contactUs: { en: "Contact us", ar: "اتصل بنا" },
   toVerifyCoverage: { en: "to verify your coverage.", ar: "للتحقق من تغطيتك." },
 
@@ -584,7 +601,7 @@ const translations: Translations = {
   ourServices: { en: "Our Services", ar: "خدماتنا" },
   findADoctor: { en: "Find a Doctor", ar: "ابحث عن طبيب" },
   contactUsFooter: { en: "Contact Us", ar: "اتصل بنا" },
-  footerDesc: { en: "Celebrating Life. Kuwait's premier multi-disciplinary healthcare provider since 2006.", ar: "نحتفي بالحياة. المزود الرائد للرعاية الصحية متعددة التخصصات في الكويت منذ 2006." },
+  footerDesc: { en: "Celebrating Life. Premier multidisciplinary healthcare provider in Kuwait since 2006.", ar: "نحتفي بالحياة. المزود الرائد للرعاية الصحية متعددة التخصصات في الكويت منذ 2006." },
   hotline247: { en: "24/7 Hotline", ar: "خط ساخن على مدار الساعة" },
   emergencyServices247: { en: "Emergency Services", ar: "خدمات الطوارئ على مدار الساعة" },
   callAmbulance: { en: "Call Ambulance", ar: "اتصل بالإسعاف" },

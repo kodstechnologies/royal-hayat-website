@@ -4,6 +4,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Brain, Sparkles, ShieldCheck, ArrowRight, ArrowLeft, Stethoscope, Building2, Shield, ClipboardList, User, CheckCircle2, Star, UserCheck } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
+import { createAppointmentRequest } from "@/api/appointmentRequest";
+import { toast } from "@/hooks/use-toast";
+import axios from "axios";
 
 const chipSuggestions = ["Headache", "Chest Pain", "Fever", "Dizziness", "Back Pain", "Fatigue", "Nausea", "Cough", "Joint Pain", "Shortness of Breath"];
 
@@ -101,6 +104,7 @@ const IntelligentBooking = () => {
   const [patientAge, setPatientAge] = useState("");
   const [patientGender, setPatientGender] = useState("");
   const [patientErrors, setPatientErrors] = useState<Record<string, string>>({});
+  const [submitting, setSubmitting] = useState(false);
 
   const toggleChip = (chip: string) => {
     setSelectedChips((prev) =>
@@ -165,8 +169,38 @@ const IntelligentBooking = () => {
     setBookingStep("confirm");
   };
 
-  const handleConfirmBooking = () => {
-    setBookingStep("success");
+  const handleConfirmBooking = async () => {
+    setSubmitting(true);
+    try {
+      await createAppointmentRequest({
+        fullname: patientName.trim(),
+        phone: `${patientCountryCode}${patientPhone.trim()}`,
+        age: Number(patientAge),
+        gender: patientGender,
+        doctor: selectedDoctor?.name,
+        department: selectedDept ?? undefined,
+        symptoms: allSymptoms.length ? allSymptoms : undefined,
+        requestType: isRequestMode
+          ? "doctor unavailability request"
+          : "first time visitor request",
+      });
+      setBookingStep("success");
+    } catch (error) {
+      const message = axios.isAxiosError(error)
+        ? error.response?.data?.message || error.message
+        : null;
+      toast({
+        title: lang === "ar" ? "خطأ" : "Error",
+        description:
+          message ||
+          (lang === "ar"
+            ? "تعذر إرسال طلب الموعد. يرجى المحاولة مرة أخرى."
+            : "Could not submit your appointment request. Please try again."),
+        variant: "destructive",
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleReset = () => {
@@ -575,9 +609,16 @@ const IntelligentBooking = () => {
                       <ArrowLeft className="w-3 h-3" /> {t("previous")}
                     </button>
                     <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={handleConfirmBooking}
-                      className="px-6 py-2.5 rounded-lg font-body text-xs tracking-widest uppercase bg-primary text-primary-foreground hover:bg-primary/90 transition-all flex items-center gap-2">
+                      disabled={submitting}
+                      className="px-6 py-2.5 rounded-lg font-body text-xs tracking-widest uppercase bg-primary text-primary-foreground hover:bg-primary/90 transition-all flex items-center gap-2 disabled:opacity-60">
                       <CheckCircle2 className="w-3.5 h-3.5" />
-                      {isRequestMode ? t("submitRequest") : t("confirmBooking")}
+                      {submitting
+                        ? lang === "ar"
+                          ? "جاري الإرسال..."
+                          : "Submitting..."
+                        : isRequestMode
+                          ? t("submitRequest")
+                          : t("confirmBooking")}
                     </motion.button>
                   </div>
                 </motion.div>

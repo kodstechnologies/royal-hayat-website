@@ -8,17 +8,37 @@ import { Stethoscope, Shield, Bed, ClipboardList, Scale, Globe, CheckCircle2, Ph
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams, useLocation } from "react-router-dom";
+import {
+  ADMISSION_HOW_INTRO_EN,
+  ADMISSION_HOW_ITEMS_EN,
+  INSURANCE_ASSISTANCE_EN,
+  INSURED_PATIENTS_EN,
+  PATIENT_RIGHTS_EN,
+  PATIENT_RESPONSIBILITIES_EN,
+  ROOM_SERVICE_HOUSEKEEPING_EN,
+  ROOM_SERVICE_LOST_FOUND_EN,
+  ROOM_SERVICE_PRIVATE_DINING_EN,
+} from "@/utils/patientsProseHyph";
+
 const PatientsVisitors = () => {
   const { lang } = useLanguage();
   const [searchParams] = useSearchParams();
+  const location = useLocation();
   const tab = searchParams.get("tab");
   const showAll = !tab;
   const show = (s: string) => showAll || tab === s;
 
   useEffect(() => {
+    const hash = location.hash.replace("#", "");
+    if (hash) {
+      const timer = window.setTimeout(() => {
+        document.getElementById(hash)?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 150);
+      return () => window.clearTimeout(timer);
+    }
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-  }, [tab]);
+  }, [tab, location.hash]);
 
   // ─── ROOMS PACKAGE PDF LINKS ───────────────────────────────────────────
   // Using local PDF files from /public/images/doctors/
@@ -28,36 +48,52 @@ const PatientsVisitors = () => {
 
   const sectionClass = "scroll-mt-[calc(var(--header-height,76px)+2rem)]";
   const isAr = lang === "ar";
-  /** Justified body copy: full words per line; hyphen only when a word wraps. */
+  /** Body copy tuned for readable mobile line flow. */
   const patientsProseLine = "patients-prose-line";
-  const bodyProse = `font-body text-sm text-foreground leading-relaxed text-justify [word-break:normal] ${patientsProseLine}`;
-  const mutedProse = `font-body text-sm text-muted-foreground leading-relaxed text-justify [word-break:normal] ${patientsProseLine}`;
+  const bodyProse = `font-body tracking-normal text-[13px] sm:text-sm text-foreground leading-normal md:leading-relaxed text-start [word-break:normal] ${patientsProseLine}`;
+  const mutedProse = `font-body tracking-normal text-[13px] sm:text-sm text-muted-foreground leading-normal md:leading-relaxed text-start [word-break:normal] ${patientsProseLine}`;
   const billRightsProse = bodyProse;
   const billRightsIntro = `${mutedProse} mb-6`;
+  const cardIntroProse =
+    "font-body tracking-normal text-[13px] sm:text-sm text-muted-foreground leading-normal md:leading-relaxed patients-card-prose-intro";
+  const cardListProse =
+    "font-body tracking-normal text-[13px] sm:text-sm text-foreground leading-normal md:leading-relaxed patients-card-prose-list";
 
-  const renderBillRightsList = (items: string[]) => (
-    <ol className="space-y-3" dir={isAr ? "rtl" : "ltr"} lang={isAr ? "ar" : "en"}>
-      {items.map((item, i) => (
-        <li
-          key={i}
-          className={`flex items-start gap-2 sm:gap-3 ${isAr ? "flex-row-reverse" : ""}`}
-        >
-          <span className="font-medium shrink-0 tabular-nums leading-relaxed">
-            {i + 1}.
-          </span>
-          <span className={`min-w-0 flex-1 ${billRightsProse}`}>{item}</span>
-        </li>
-      ))}
+  const renderBillRightsList = (items: string[], justified = false) => (
+    <ol className="space-y-3 list-none m-0 p-0" dir={isAr ? "rtl" : "ltr"} lang={isAr ? "ar" : "en"}>
+      {items.map((item, i) =>
+        justified && !isAr ? (
+          <li key={i} className="relative ps-8">
+            <span className="absolute start-0 top-0 font-medium tabular-nums leading-relaxed" aria-hidden>
+              {i + 1}.
+            </span>
+            <p lang="en" className={cardListProse}>
+              {item}
+            </p>
+          </li>
+        ) : (
+          <li key={i} className="flex items-start gap-2 sm:gap-3">
+            <span className="font-medium shrink-0 tabular-nums leading-relaxed">
+              {i + 1}.
+            </span>
+            <span className={`min-w-0 flex-1 ${billRightsProse}`}>{item}</span>
+          </li>
+        )
+      )}
     </ol>
   );
 
   return (
-    <div className="min-h-screen bg-background pt-[var(--header-height,56px)] overflow-x-hidden flex flex-col patients-prose-root [&_.text-accent]:text-[#816107]">
+    <div
+      dir={isAr ? "rtl" : "ltr"}
+      lang={isAr ? "ar" : "en"}
+      className="min-h-screen bg-background pt-[var(--header-height,56px)] overflow-x-hidden flex flex-col patients-prose-root [&_.text-accent]:text-[#816107]"
+    >
       <Header />
 
       {/* Hero */}
-      <section className={`bg-primary/5 ${tab === "rooms-package" ? "py-6 md:py-8" : "py-16 md:py-20"}`}>
-        <div className="container mx-auto px-6 text-center">
+      <section className={`bg-primary/5 ${tab === "rooms-package" ? "py-6 md:py-8" : "py-10 md:py-16 lg:py-20"}`}>
+        <div className="container mx-auto px-3 md:px-6 text-center">
           <ScrollAnimationWrapper>
             <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3 !text-center">
               {lang === "ar" ? (tab === "admission" ? "للمرضى" : "لمرضانا") : "For Our Patients"}
@@ -87,9 +123,15 @@ const PatientsVisitors = () => {
       </section>
 
       {/* All Sections */}
-      <section className={tab === "rooms-package" ? "flex-1 flex flex-col py-0" : "py-12 md:py-16"}>
-        <div className={tab === "rooms-package" ? "w-full flex-1 flex flex-col" : "container mx-auto px-6"}>
-          <div className={tab === "rooms-package" ? "w-full flex-1 flex flex-col" : "max-w-4xl mx-auto space-y-20"}>
+      <section className={tab === "rooms-package" ? "flex-1 flex flex-col py-0" : "py-8 md:py-12 lg:py-16"}>
+        <div className={tab === "rooms-package" ? "w-full flex-1 flex flex-col" : "container mx-auto px-3 md:px-6"}>
+          <div
+            className={
+              tab === "rooms-package"
+                ? "w-full flex-1 flex flex-col"
+                : "max-w-6xl mx-auto space-y-10 md:space-y-16 lg:space-y-20 patients-page-content"
+            }
+          >
           
 
             {/* NURSING */}
@@ -102,15 +144,15 @@ const PatientsVisitors = () => {
                   <h2 className="text-2xl md:text-3xl font-serif text-foreground">{lang === "ar" ? "التمريض" : "Nursing"}</h2>
                 </div>}
 
-                <div className="space-y-4 font-body text-sm text-muted-foreground leading-relaxed">
-                  <p>
+                <div className="space-y-4">
+                  <p className={mutedProse}>
                     {lang === "ar" ? "نفخر في مستشفى رويال حياة بتقديم رعاية تمريضية استثنائية من خلال فريق من الممرضين والممرضات المؤهلين والمعتمدين، المعروفين باحترافيتهم العالية وروحهم الإنسانية." : "At Royale Hayat Hospital, we take pride in delivering exceptional nursing care through a team of highly trained, qualified, and certified professionals. Renowned for their dedication and compassion, our nurses are at the heart of every patient experience, ensuring comfort, safety, and support 24 hours a day."}
                   </p>
-                  <p>
+                  <p className={mutedProse}>
                     {lang === "ar" ? "يشكل فريق التمريض محور تجربة المريض، حيث يعمل على توفير الراحة والأمان والدعم على مدار الساعة، سواء للمرضى المنومين أو المراجعين الخارجيين." : "Whether you're receiving inpatient or outpatient care, you are in capable hands. Each nursing unit is led by an experienced director, supported by a team of registered nurses who uphold the highest standards of clinical excellence."}
                   </p>
                   {lang === "ar" && (
-                    <p>
+                    <p className={mutedProse}>
                       يقود كل قسم تمريضي مدير تمريض ذو خبرة، مدعوم بفريق من الممرضين المسجلين الذين يلتزمون بأعلى معايير الجودة والرعاية السريرية.
                     </p>
                   )}
@@ -128,18 +170,18 @@ const PatientsVisitors = () => {
                     ]).map((item, i) => (
                       <div key={i} className="flex items-start gap-3 bg-popover border border-border/50 rounded-xl px-5 py-4">
                         <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                        <span className="font-body text-sm text-foreground">{item}</span>
+                        <span className={bodyProse}>{item}</span>
                       </div>
                     ))}
                     <div className="bg-popover border border-border/50 rounded-xl px-5 py-4">
                       <div className="flex items-start gap-3">
                         <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                         <div>
-                          <span className="font-body text-sm text-foreground">{lang === "ar" ? "تطوير مهني مستمر من خلال برامج تدريبية متخصصة تشمل:" : "Ongoing professional development through structured training in:"}</span>
+                          <span className={bodyProse}>{lang === "ar" ? "تطوير مهني مستمر من خلال برامج تدريبية متخصصة تشمل:" : "Ongoing professional development through structured training in:"}</span>
                           <ul className="mt-2 ml-4 space-y-1">
-                            <li className="font-body text-sm text-muted-foreground">• {lang === "ar" ? "الإسعافات الأولية" : "First aid"}</li>
-                            <li className="font-body text-sm text-muted-foreground">• {lang === "ar" ? "مكافحة العدوى" : "Infection control"}</li>
-                            <li className="font-body text-sm text-muted-foreground">• {lang === "ar" ? "أحدث ممارسات رعاية المرضى المتقدمة" : "Advanced patient care practices"}</li>
+                            <li className={mutedProse}>• {lang === "ar" ? "الإسعافات الأولية" : "First aid"}</li>
+                            <li className={mutedProse}>• {lang === "ar" ? "مكافحة العدوى" : "Infection control"}</li>
+                            <li className={mutedProse}>• {lang === "ar" ? "أحدث ممارسات رعاية المرضى المتقدمة" : "Advanced patient care practices"}</li>
                           </ul>
                         </div>
                       </div>
@@ -159,7 +201,7 @@ const PatientsVisitors = () => {
                   <h2 className="text-2xl md:text-3xl font-serif text-foreground">{lang === "ar" ? "التأمين الصحي" : "Health Insurance"}</h2>
                 </div>}
 
-                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-8">
+                <p className={`${mutedProse} mb-8`}>
                   {lang === "ar"
                     ? "يحرص قسم التأمين الصحي في مستشفى رويال حياة على جعل تجربتكم العلاجية أكثر سهولة وراحة، من خلال التعاون مع معظم شركات التأمين الطبي الخاصة المعتمدة في الكويت، وتوفير حلول دفع مرنة للمرضى المشمولين بالتغطية التأمينية."
                     : "At Royale Hayat Hospital, our Medical Insurance Department is dedicated to making your healthcare experience as smooth and stress-free as possible. We have established partnerships with most major private medical insurance companies and offer a tailored payment scheme for patients covered under private insurance programs."}
@@ -169,15 +211,15 @@ const PatientsVisitors = () => {
                   <h3 className="font-serif text-lg text-foreground mb-3">{lang === "ar" ? "خدمة المطالبات المباشرة" : "Direct Billing Support"}</h3>
                   {lang === "ar" ? (
                     <>
-                      <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
+                      <p className={`${mutedProse} mb-4`}>
                         يقوم فريقنا بإدارة جميع معاملات المطالبات والتنسيق المباشر مع شركة التأمين الخاصة بكم لتقليل أي إجراءات إضافية عليكم.
                       </p>
-                      <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
+                      <p className={`${mutedProse} mb-4`}>
                         ولضمان الاستفادة من الخدمة، يرجى التأكد من توفير المعلومات التالية بشكل صحيح:
                       </p>
                     </>
                   ) : (
-                    <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
+                    <p className={`${mutedProse} mb-4`}>
                       We handle all billing submissions and facilitate direct billing to your insurance provider, ensuring minimal hassle for you. To enable this service, please ensure the following information is accurately provided:
                     </p>
                   )}
@@ -185,60 +227,67 @@ const PatientsVisitors = () => {
                     {(lang === "ar" ? ["رقم وثيقة التأمين", "رقم المجموعة", "العنوان البريدي الصحيح"] : ["Insurance policy number", "Group number", "Correct mailing address"]).map((item, i) => (
                       <div key={i} className="flex items-center gap-3">
                         <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
-                        <span className="font-body text-sm text-foreground">{item}</span>
+                        <span className={bodyProse}>{item}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                <div className="bg-popover border border-border/50 rounded-2xl p-6 mb-6">
+                <div
+                  className="patients-justified-card bg-popover border border-border/50 rounded-2xl p-6 mb-6"
+                  lang={isAr ? "ar" : "en"}
+                >
                   <h3 className="font-serif text-lg text-foreground mb-3">{lang === "ar" ? "خدمات دعم التأمين" : "Comprehensive Insurance Assistance"}</h3>
-                  <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
+                  <p lang={isAr ? "ar" : "en"} className={`${isAr ? mutedProse : cardIntroProse} mb-2`}>
                     {lang === "ar"
                       ? "فريق التأمين المتخصص لدينا جاهز لمساعدتكم في جميع مراحل الإجراءات، وتشمل الخدمات:"
-                      : "Our experienced insurance team is here to guide you through every step of the process. Services include:"}
+                      : INSURANCE_ASSISTANCE_EN.intro}
                   </p>
-                  <div className="space-y-2">
-                    {(lang === "ar" ? [
-                      "شرح تفاصيل وثيقة التأمين والتغطية",
-                      "المساعدة في التسجيل والتقديرات المالية",
-                      "التنسيق للحصول على الموافقات المسبقة للتنويم والعمليات الجراحية",
-                    ] : [
-                      "Educating patients on insurance policy details",
-                      "Assistance with registration and financial estimates",
-                      "Coordinating pre-approvals for inpatient admissions and surgical procedures",
-                    ]).map((item, i) => (
-                      <div key={i} className="flex items-center gap-3">
-                        <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
-                        <span className="font-body text-sm text-foreground">{item}</span>
-                      </div>
+                  <ul className="space-y-2 list-none m-0 p-0">
+                    {(lang === "ar"
+                      ? [
+                          "شرح تفاصيل وثيقة التأمين والتغطية",
+                          "المساعدة في التسجيل والتقديرات المالية",
+                          "التنسيق للحصول على الموافقات المسبقة للتنويم والعمليات الجراحية",
+                        ]
+                      : INSURANCE_ASSISTANCE_EN.items
+                    ).map((item, i) => (
+                      <li key={i} className="relative ps-7">
+                        <CheckCircle2 className="absolute start-0 top-0.5 w-4 h-4 text-accent shrink-0" aria-hidden />
+                        <p lang={isAr ? "ar" : "en"} className={isAr ? bodyProse : cardListProse}>
+                          {item}
+                        </p>
+                      </li>
                     ))}
-                  </div>
+                  </ul>
                 </div>
 
-                <div className="bg-primary/5 rounded-2xl p-6">
+                <div
+                  id="insurance-operating-hours"
+                  className="bg-primary/5 rounded-2xl p-6 scroll-mt-[calc(var(--header-height,76px)+2rem)]"
+                >
                   <div className="flex items-center gap-3 mb-3">
                     <Clock className="w-5 h-5 text-primary" />
                     <h3 className="font-serif text-lg text-foreground">{lang === "ar" ? "ساعات العمل" : "Operating Hours"}</h3>
                   </div>
                   {lang === "ar" ? (
                     <>
-                      <p className="font-body text-sm text-muted-foreground mb-3">يفتح مكتب التأمين أبوابه خلال الأوقات التالية:</p>
-                      <p className="font-body text-sm text-foreground mb-1">الأحد إلى الخميس:</p>
-                      <p className="font-body text-sm text-foreground mb-3">8:00 صباحًا – 8:00 مساءً</p>
-                      <p className="font-body text-sm text-foreground mb-1">السبت:</p>
-                      <p className="font-body text-sm text-foreground">8:00 صباحًا – 4:00 مساءً</p>
+                      <p className={`${mutedProse} mb-3`}>يفتح مكتب التأمين أبوابه خلال الأوقات التالية:</p>
+                      <p className={`${bodyProse} mb-1`}>الأحد إلى الخميس:</p>
+                      <p className={`${bodyProse} mb-3`}>8:00 صباحًا – 8:00 مساءً</p>
+                      <p className={`${bodyProse} mb-1`}>السبت:</p>
+                      <p className={bodyProse}>8:00 صباحًا – 4:00 مساءً</p>
                     </>
                   ) : (
                     <>
-                      <p className="font-body text-sm text-muted-foreground mb-1">Our insurance office is open:</p>
-                      <p className="font-body text-sm text-foreground">Sunday – Thursday: 8:00 AM – 8:00 PM</p>
-                      <p className="font-body text-sm text-foreground">Saturday: 8:00 AM – 4:00 PM</p>
+                      <p className={`${mutedProse} mb-1`}>Our insurance office is open:</p>
+                      <p className={bodyProse}>Sunday – Thursday: 8:00 AM – 8:00 PM</p>
+                      <p className={bodyProse}>Saturday: 8:00 AM – 4:00 PM</p>
                     </>
                   )}
                   <div className="flex items-center gap-2 mt-4">
                     <Phone className="w-4 h-4 text-accent" />
-                    <p className="font-body text-sm text-foreground">
+                    <p className={bodyProse}>
                       {lang === "ar"
                         ? "للاستفسارات أو للتأكد من قبول شركة التأمين الخاصة بكم:"
                         : "For inquiries or to verify if your insurance plan is accepted, please contact us at "}
@@ -247,12 +296,12 @@ const PatientsVisitors = () => {
                     </p>
                   </div>
                 </div>
-
-                <div className="mt-10 relative left-1/2 right-1/2 -mx-[50vw] w-screen">
-                  <InsurancePartners />
-                </div>
               </ScrollAnimationWrapper>
             </div>}
+
+            {show("insurance") && (
+              <InsurancePartners variant="patients-insurance" />
+            )}
 
             {/* BIRTHING SUITES PACKAGES */}
             {show("rooms-package") && <div id="section-rooms-package" className={tab === "rooms-package" ? "flex-1 flex flex-col" : sectionClass}>
@@ -302,7 +351,7 @@ const PatientsVisitors = () => {
                       <h2 className="text-2xl md:text-3xl font-serif text-foreground">{lang === "ar" ? "باقات أجنحة الولادة" : "Birthing Suites Packages"}</h2>
                     </div>}
                     {/* 
-                    <p className="font-body text-sm text-muted-foreground leading-relaxed mb-6">
+                    <p className={`${mutedProse} mb-6`}>
                       {lang === "ar"
                         ? "يوفر مستشفى رويال حياة مجموعة من الأجنحة الفاخرة. يمكنك استعراض كافة التفاصيل والباقات."
                         : "Royale Hayat Hospital offers a range of luxurious birthing suites. Explore all details and packages."}
@@ -345,7 +394,7 @@ const PatientsVisitors = () => {
                   <h2 className="text-2xl md:text-3xl font-serif text-foreground">{lang === "ar" ? "مركز المرضى الدوليين" : "International Patient Center"}</h2>
                 </div>
 
-                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
+                <p className={`${mutedProse} mb-4`}>
                   {lang === "ar"
                     ? "يقدّم مركز المرضى الدوليين الدعم الكامل للمرضى من خارج الكويت، من خلال المساعدة في الإجراءات الإدارية، وحجز المواعيد، وترتيبات النقل، والتنسيق المالي، بالإضافة إلى توفير خدمات الترجمة بعدة لغات لضمان تجربة مريحة وسلسة. تبدأ رعاية المرضى الدوليين قبل وصولكم إلى المستشفى، وتستمر طوال فترة إقامتكم. كما يوفّر المركز خدمات متكاملة للمرضى والأطباء المحوِّلين الراغبين في الحصول على استشارة طبية، أو رأي طبي ثانٍ، أو علاج للحالات المعقدة."
                     : "For detailed information about our International Patient Center services, enquiry form, and contact details, please visit the dedicated page."}
@@ -371,41 +420,46 @@ const PatientsVisitors = () => {
                   <h2 className="text-2xl md:text-3xl font-serif text-foreground">{lang === "ar" ? "معلومات الدخول إلى المستشفى" : "Admission Information"}</h2>
                 </div>}
 
-                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-8">
+                <p className={`${mutedProse} mb-8`}>
                   {lang === "ar"
                     ? "في مستشفى رويال حياة، تبدأ راحتكم ورعايتكم منذ لحظة الدخول. سواء تم تحويلكم من طبيب داخل المستشفى أو من جهة خارجية، فإن إجراءات الدخول لدينا تتم بسلاسة لضمان تجربة مريحة لأي عملية جراحية أو إجراء طبي مجدول."
                     : "At Royale Hayat Hospital, your comfort and care begin the moment you're admitted. Whether you're referred by an in-house specialist or an external physician, our streamlined admission process ensures a smooth entry for any planned surgery or medical procedure."}
                 </p>
 
-                <div className="bg-popover border border-border/50 rounded-2xl p-6 mb-6">
+                <div
+                  className="patients-justified-card admission-how-card bg-popover border border-border/50 rounded-2xl p-6 mb-6"
+                  lang={isAr ? "ar" : "en"}
+                >
                   <h3 className="font-serif text-lg text-foreground mb-3">{lang === "ar" ? "كيفية الدخول إلى المستشفى" : "How to Get Admitted"}</h3>
-                  <p
-                    lang={lang === "ar" ? "ar" : "en"}
-                    className="font-body text-sm text-muted-foreground leading-relaxed mb-4 max-md:hyphens-auto max-md:break-words max-md:[text-justify:inter-word] max-md:[text-align-last:left]"
-                  >
+                  <p lang={isAr ? "ar" : "en"} className={`${isAr ? mutedProse : cardIntroProse} mb-4`}>
                     {lang === "ar"
                       ? "يتم ترتيب الدخول مسبقًا بالتنسيق مع فريق المستشفى، وذلك بناءً على:"
-                      : "Admission is arranged in advance through coordination with our hospital team. Patients are admitted based on:"}
+                      : ADMISSION_HOW_INTRO_EN}
                   </p>
-                  <div className="space-y-2">
-                    {(lang === "ar" ? [
-                      "تحويل من طبيب داخل المستشفى أو من خارجها",
-                      "تحديد موعد مؤكد للدخول من خلال فريق خدمات المرضى",
-                    ] : [
-                      "A referral from an in-house or external doctor",
-                      "A confirmed date of admission is scheduled through our patient services team",
-                    ]).map((item, i) => (
-                      <div key={i} className="flex items-center gap-3">
-                        <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
-                        <span className="font-body text-sm text-foreground">{item}</span>
-                      </div>
+                  <ul className="space-y-2 list-none m-0 p-0">
+                    {(lang === "ar"
+                      ? [
+                          "تحويل من طبيب داخل المستشفى أو من خارجها",
+                          "تحديد موعد مؤكد للدخول من خلال فريق خدمات المرضى",
+                        ]
+                      : ADMISSION_HOW_ITEMS_EN
+                    ).map((item, i) => (
+                      <li key={i} className="relative ps-7">
+                        <CheckCircle2
+                          className="absolute start-0 top-0.5 w-4 h-4 text-accent shrink-0"
+                          aria-hidden
+                        />
+                        <p lang={isAr ? "ar" : "en"} className={isAr ? bodyProse : cardListProse}>
+                          {item}
+                        </p>
+                      </li>
                     ))}
-                  </div>
+                  </ul>
                 </div>
 
                 <div className="bg-popover border border-border/50 rounded-2xl p-6 mb-6">
                   <h3 className="font-serif text-lg text-foreground mb-3">{lang === "ar" ? "المستندات المطلوبة للتسجيل" : "What You'll Need for Registration"}</h3>
-                  <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
+                  <p className={`${mutedProse} mb-4`}>
                     {lang === "ar"
                       ? "يرجى تجهيز المستندات التالية لإتمام إجراءات الدخول:"
                       : "To complete your admission, please prepare the following documents:"}
@@ -422,14 +476,14 @@ const PatientsVisitors = () => {
                     ]).map((item, i) => (
                       <div key={i} className="flex items-center gap-3">
                         <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
-                        <span className="font-body text-sm text-foreground">{item}</span>
+                        <span className={bodyProse}>{item}</span>
                       </div>
                     ))}
                     <div className="ml-7 space-y-1">
-                      <p className="font-body text-sm text-foreground">{lang === "ar" ? "المستندات الرسمية وتشمل:" : "Official documents, including:"}</p>
+                      <p className={bodyProse}>{lang === "ar" ? "المستندات الرسمية وتشمل:" : "Official documents, including:"}</p>
                       <ul className="ml-4 space-y-1">
-                        <li className="font-body text-sm text-muted-foreground">• {lang === "ar" ? "البطاقة المدنية" : "Civil ID"}</li>
-                        <li className="font-body text-sm text-muted-foreground">• {lang === "ar" ? "عقد الزواج (لخدمات الولادة أو الخدمات ذات الصلة)" : "Marriage certificate (for maternity or related services)"}</li>
+                        <li className={mutedProse}>• {lang === "ar" ? "البطاقة المدنية" : "Civil ID"}</li>
+                        <li className={mutedProse}>• {lang === "ar" ? "عقد الزواج (لخدمات الولادة أو الخدمات ذات الصلة)" : "Marriage certificate (for maternity or related services)"}</li>
                       </ul>
                     </div>
                     {(lang === "ar" ? [
@@ -441,20 +495,23 @@ const PatientsVisitors = () => {
                     ]).map((item, i) => (
                       <div key={i} className="flex items-center gap-3">
                         <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
-                        <span className="font-body text-sm text-foreground">{item}</span>
+                        <span className={bodyProse}>{item}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                <div className="bg-primary/5 rounded-2xl p-6">
+                <div
+                  className={`bg-primary/5 rounded-2xl p-6 ${!isAr ? "patients-justified-card" : ""}`}
+                  lang={isAr ? "ar" : "en"}
+                >
                   <h3 className="font-serif text-lg text-foreground mb-3">{lang === "ar" ? "للمرضى الذين لديهم تأمين" : "For Insured Patients"}</h3>
-                  <p className="font-body text-sm text-muted-foreground leading-relaxed">
+                  <p lang={isAr ? "ar" : "en"} className={isAr ? mutedProse : cardIntroProse}>
                     {lang === "ar"
                       ? "إذا كنتم مشمولين بتأمين صحي خاص، سيقوم قسم التأمين الطبي بمساعدتكم في الحصول على الموافقات المسبقة وتسهيل إجراءات الفوترة المباشرة."
-                      : "If you are covered by a private health insurance provider, our Medical Insurance Department will support you in securing pre-approval and facilitating direct billing."}
+                      : INSURED_PATIENTS_EN.intro}
                   </p>
-                  <p className="font-body text-sm text-muted-foreground leading-relaxed mt-2">
+                  <p lang={isAr ? "ar" : "en"} className={`${isAr ? mutedProse : cardIntroProse} mt-2`}>
                     {lang === "ar" ? (
                       <>
                         يرجى مراجعة{" "}
@@ -465,11 +522,11 @@ const PatientsVisitors = () => {
                       </>
                     ) : (
                       <>
-                        Be sure to review the{" "}
+                        {INSURED_PATIENTS_EN.detailPrefix}{" "}
                         <Link to="/patients-visitors?tab=insurance" className="text-accent hover:underline font-semibold">
                           Health Insurance section
                         </Link>{" "}
-                        for more detailed information and contact points.
+                        {INSURED_PATIENTS_EN.detailSuffix}
                       </>
                     )}
                   </p>
@@ -529,17 +586,23 @@ const PatientsVisitors = () => {
                     { icon: Sparkles, title: "خدمة التدبير المنزلي", desc: "نوفر خدمة تنظيف الغرف على مدار 24 ساعة مع تجديد يومي للغرفة. كما يمكنك تحديد وقت الخدمة بما يناسبك." },
                     { icon: Search, title: "المفقودات", desc: "في حال فقدان أي غرض، فإن فريق خدمات الضيافة جاهز لمساعدتك. يرجى التواصل معنا لتقديم بلاغ إلى قسم الأمن. وعلى الرغم من أننا لا نتحمل مسؤولية المتعلقات الشخصية، إلا أننا نبذل كل الجهود الممكنة للمساعدة في العثور عليها." },
                   ] : [
-                    { icon: UtensilsCrossed, title: "Private Dining", desc: "Savor gourmet dishes from our extensive menu, featuring Continental, Mediterranean, Pan-Asian, and personalized cuisine—all prepared by our award-winning executive chefs." },
-                    { icon: Sparkles, title: "Housekeeping", desc: "Enjoy 24-hour housekeeping service with daily room refresh. You may also schedule service at a time that suits you best." },
-                    { icon: Search, title: "Lost & Found", desc: "If you misplace an item, our Guest Services team is here to help. Please contact us to file a Lost & Found report with the Security Department. While we are not liable for personal items, we will make every effort to assist in locating them." },
+                    { icon: UtensilsCrossed, title: "Private Dining", desc: ROOM_SERVICE_PRIVATE_DINING_EN },
+                    { icon: Sparkles, title: "Housekeeping", desc: ROOM_SERVICE_HOUSEKEEPING_EN },
+                    { icon: Search, title: "Lost & Found", desc: ROOM_SERVICE_LOST_FOUND_EN },
                   ]).map((item, i) => (
-                    <div key={i} className={`bg-popover border border-border/50 rounded-2xl p-5 flex items-start gap-4 ${isAr ? "flex-row-reverse" : ""}`}>
+                    <div
+                      key={i}
+                      className={`patients-justified-card bg-popover border border-border/50 rounded-2xl p-5 flex items-start gap-4 ${isAr ? "flex-row-reverse" : ""}`}
+                      lang={isAr ? "ar" : "en"}
+                    >
                       <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                         <item.icon className="w-5 h-5 text-primary" />
                       </div>
                       <div className="min-w-0 flex-1">
                         <h4 className="font-serif text-base text-foreground mb-1 text-start">{item.title}</h4>
-                        <p className={mutedProse}>{item.desc}</p>
+                        <p lang={isAr ? "ar" : "en"} className={isAr ? mutedProse : cardIntroProse}>
+                          {item.desc as string}
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -592,7 +655,10 @@ const PatientsVisitors = () => {
                   </p>
                 )}
 
-                <div className="bg-popover border border-border/50 rounded-2xl p-6 mb-6">
+                <div
+                  className={`bg-popover border border-border/50 rounded-2xl p-6 mb-6 ${!isAr ? "patients-justified-card" : ""}`}
+                  lang={isAr ? "ar" : "en"}
+                >
                   <h3 className="font-serif text-lg text-foreground mb-4 text-start">{lang === "ar" ? "أولاً: حقوق المريض" : "You have the right to:"}</h3>
                   {renderBillRightsList(lang === "ar" ? [
                       "معرفة جميع المعلومات المتعلقة بحالتك الصحية، ورعايتك، وأسباب جميع الفحوصات والإجراءات التشخيصية، وكذلك الرسوم المفروضة على حسابك، وذلك بلغة تفهمها.",
@@ -612,28 +678,13 @@ const PatientsVisitors = () => {
                       "معرفة إجراءات السلامة التي يتم اتخاذها بعد التقييم، بما في ذلك المخاطر السريرية والجسدية والنفسية مثل خطر السقوط، والأدوية، والتفاعلات الدوائية، والعدوى.",
                       "الإبلاغ عن أي نتائج سلبية غير متوقعة.",
                       "الموافقة أو رفض الموافقة على التصوير أو التسجيل المرئي.",
-                    ] : [
-                      'Know, in a language you understand, all information about your condition, your care, and the reasons for all investigations, diagnostic procedures, and the charges made to your account.',
-                      'Accept or refuse to sign a consent for any operative or diagnostic procedure.',
-                      'Receive compassionate and respectful care at all times regardless of age, gender, ethnicity, culture, national origin, language, sexual orientation, socioeconomic status, physical or mental ability, religion, or diagnosis.',
-                      'Have a comfortable stay in a clean, safe environment, free from verbal or physical abuse, and enjoy personal privacy.',
-                      'Be informed of the process to raise complaints appropriately, either verbally or in writing, to the Manager on Duty (Mob: 66321214) or Patient Advocate (Mob: 67051626).',
-                      'Privacy and confidentiality of information regarding your condition.',
-                      'Obtain any information or documents, such as Medical Report, Sick Leave, Discharge Summary, etc.',
-                      'Expect continuity of care till discharge and follow-up.',
-                      'Obtain a second opinion from a physician holding a valid license, whether working in Royale Hayat Hospital or any other medical facility, either private or public, provided that you meet the additional expenses, if any.',
-                      'Be referred to another healthcare organization if the medical condition warrants, and/or on the request of the patient/legal guardian.',
-                      'Leave the hospital even against the advice of the physician after signing the "Discharge Against Medical Advice (DAMA)" form.',
-                      'Know the names and professional titles of your caregivers and be called by your proper name.',
-                      'Receive well-explained information about charges that you may be responsible for, and any potential limitations to your insurance coverage.',
-                      'Involve you and your family or legal representative in your treatment, expected as well as unexpected outcomes, risk & service decisions.',
-                      'Know the safety measures to be taken after the assessment that include clinical, physical, and psychological status, i.e., risk of fall, medications, drug reaction, cross-infection, etc.',
-                      'Be informed about any unanticipated adverse outcomes.',
-                      'Give or refuse consent before filming or recording images.',
-                    ])}
+                    ] : PATIENT_RIGHTS_EN, !isAr)}
                 </div>
 
-                <div className="bg-popover border border-border/50 rounded-2xl p-6 mb-6">
+                <div
+                  className={`bg-popover border border-border/50 rounded-2xl p-6 mb-6 ${!isAr ? "patients-justified-card" : ""}`}
+                  lang={isAr ? "ar" : "en"}
+                >
                   <h3 className="font-serif text-lg text-foreground mb-4 text-start">{lang === "ar" ? "ثانياً: مسؤوليات المريض" : "As a patient, it is your responsibility to:"}</h3>
                   {renderBillRightsList(lang === "ar" ? [
                       "الالتزام بالقوانين والأنظمة المعمول بها في مستشفى رويال حياة.",
@@ -652,24 +703,7 @@ const PatientsVisitors = () => {
                       "المحافظة على ممتلكات المستشفى مثل الأجهزة الطبية والأثاث والسجلات الطبية.",
                       "إبلاغ المستشفى في حال الرغبة بتغيير مقدم الخدمة أو المستشفى.",
                       "المشاركة في الحفاظ على سلامة المريض ومنع أي ضرر أو إصابة كما أوضح مقدمو الخدمة.",
-                    ] : [
-                      'Follow the rules and regulations of RHH.',
-                      'Give us complete and accurate information about your health, including previous medical history and all the medications you are taking.',
-                      'Submit documents required as per the law/protocol before admission or undergoing specific procedures.',
-                      'Inform our clinical staff of changes in your condition or symptoms, including pain.',
-                      "Let us know if you don't understand the information we give about your condition or treatment.",
-                      'Pay your bills in full before discharge and meet all financial obligations arising from your care.',
-                      'Keep appointments and notify the hospital or physician when you are unable to do so.',
-                      'Leave your personal belongings at home or have family members take all valuables home while you are hospitalized, or use the safety box available in your room for safe custody.',
-                      'Be considerate towards the rights of other patients and hospital personnel and avoid any sort of inconvenience to others.',
-                      'Actively participate in your care plan and follow the treatment plan established by your physician, including instructions from nurses and other healthcare professionals.',
-                      'Take preventive measures in case of infectious diseases.',
-                      'Treat doctors, nurses, and hospital staff with respect.',
-                      'Realize that priority will be given to emergency cases.',
-                      'Preserve and maintain hospital property like medical equipment, furniture, fittings, etc., including medical records.',
-                      'Keep us informed if you want to change hospital or service provider.',
-                      'Share the responsibility in maintaining the safety of the patient from any harm or injury, as explained by the service providers.',
-                    ])}
+                    ] : PATIENT_RESPONSIBILITIES_EN, !isAr)}
                 </div>
 
                 <div className="bg-accent/10 rounded-2xl p-6">
@@ -691,10 +725,10 @@ const PatientsVisitors = () => {
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                     <Baby className="w-6 h-6 text-primary" />
                   </div>
-                  <h2 className="text-2xl md:text-3xl font-serif text-foreground">{lang === "ar" ? "نظام أمان الرضّع" : "Infant Security System"}</h2>
+                  <h2 className="text-2xl md:text-3xl font-serif text-foreground">{lang === "ar" ? "نظام الحماية المتقدم لحديثي الولادة" : "Infant Security System"}</h2>
                 </div>
 
-                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-8">
+                <p className={`${mutedProse} mb-8`}>
                   {lang === "ar" ? "في مستشفى رويال حياة، سلامة كل مولود هي أولويتنا القصوى. نستخدم نظام RTLS، وهو نظام مراقبة متطور يعمل في الوقت الفعلي مصمم لتوفير حماية شاملة على مدار الساعة لكل رضيع في رعايتنا." : "At Royale Hayat Hospital, the safety of every newborn is our highest priority. We utilize the RTLS, a sophisticated real-time monitoring system designed to provide comprehensive, 24/7 protection for every infant in our care."}
                 </p>
 
@@ -714,7 +748,7 @@ const PatientsVisitors = () => {
 
                 <div className="bg-popover border border-border/50 rounded-2xl p-6 mb-6">
                   <h3 className="font-serif text-lg text-foreground mb-4">{lang === "ar" ? "أمان متقدم للرضّع" : "Advanced Infant Security"}</h3>
-                  <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
+                  <p className={`${mutedProse} mb-4`}>
                     {lang === "ar" ? "يتم تزويد كل رضيع بعلامة إلكترونية خفيفة الوزن وآمنة على البشرة تتكامل بسلاسة مع البنية التحتية الأمنية على مستوى المستشفى:" : "Every infant is equipped with a lightweight, skin-safe electronic tag that integrates seamlessly with our hospital-wide security infrastructure:"}
                   </p>
                   <div className="space-y-4">
@@ -724,7 +758,7 @@ const PatientsVisitors = () => {
                       </div>
                       <div>
                         <h4 className="font-serif text-sm text-foreground mb-1">{lang === "ar" ? "حماية محيطية نشطة" : "Active Perimeter Protection"}</h4>
-                        <p className="font-body text-xs text-muted-foreground leading-relaxed">
+                        <p className={`${mutedProse} text-xs`}>
                           {lang === "ar" ? "يراقب النظام جميع المخارج ونقاط العبور. أي حركة غير مصرح بها نحو المصاعد أو السلالم تؤدي إلى قفل الأبواب فوراً وتنبيهات أمنية عالية الأولوية." : "The system monitors all exits and transit points. Any unauthorized movement toward elevators or stairwells triggers immediate door locks and high-priority security alerts."}
                         </p>
                       </div>
@@ -735,7 +769,7 @@ const PatientsVisitors = () => {
                       </div>
                       <div>
                         <h4 className="font-serif text-sm text-foreground mb-1">{lang === "ar" ? "تقنية استشعار العبث" : "Tamper-Sensing Technology"}</h4>
-                        <p className="font-body text-xs text-muted-foreground leading-relaxed">
+                        <p className={`${mutedProse} text-xs`}>
                           {lang === "ar" ? "توفر علاماتنا الذكية إشعاراً فورياً لمحطة التمريض إذا تم فك أو إزالة السوار دون إذن." : "Our smart tags provide instant notification to the nursing station if a band is loosened or removed without authorization."}
                         </p>
                       </div>
@@ -746,7 +780,7 @@ const PatientsVisitors = () => {
                       </div>
                       <div>
                         <h4 className="font-serif text-sm text-foreground mb-1">{lang === "ar" ? "خدمات تحديد الموقع في الوقت الفعلي" : "Real-Time Location Services"}</h4>
-                        <p className="font-body text-xs text-muted-foreground leading-relaxed">
+                        <p className={`${mutedProse} text-xs`}>
                           {lang === "ar" ? "تحافظ الفرق السريرية والأمنية على رؤية مستمرة لموقع كل رضيع من خلال واجهة مراقبة رقمية مركزية." : "Clinical and security teams maintain constant visibility of every infant's location through a centralized digital monitoring interface."}
                         </p>
                       </div>
@@ -756,7 +790,7 @@ const PatientsVisitors = () => {
 
                 <div className="bg-popover border border-border/50 rounded-2xl p-6">
                   <h3 className="font-serif text-lg text-foreground mb-4">{lang === "ar" ? "مطابقة الأم والرضيع الآلية" : "Automated Mother-Infant Matching"}</h3>
-                  <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
+                  <p className={`${mutedProse} mb-4`}>
                     {lang === "ar" ? "لضمان سلامة الرابطة بين الأم والطفل بشكل مطلق، يستخدم نظامنا الاقتران الرقمي المشفر:" : "To ensure the absolute integrity of the mother-child bond, our system utilizes encrypted digital pairing:"}
                   </p>
                   <div className="flex items-start gap-3">
@@ -765,7 +799,7 @@ const PatientsVisitors = () => {
                     </div>
                     <div>
                       <h4 className="font-serif text-sm text-foreground mb-1">{lang === "ar" ? "التحقق الدقيق" : "Precision Verification"}</h4>
-                      <p className="font-body text-xs text-muted-foreground leading-relaxed">
+                      <p className={`${mutedProse} text-xs`}>
                         {lang === "ar" ? "يتم ربط الأمهات والرضّع إلكترونياً لضمان أعلى مستويات الدقة والأمان." : "Mothers and infants are electronically linked to ensure the highest levels of accuracy and security."}
                       </p>
                     </div>
@@ -779,31 +813,163 @@ const PatientsVisitors = () => {
       </section>
 
       <style>{`
+        .patients-prose-root .patients-page-content p,
+        .patients-prose-root .patients-page-content li,
+        .patients-prose-root .patients-page-content span.font-body,
         .patients-prose-root .patients-prose-line {
-          word-spacing: normal !important;
-          letter-spacing: normal;
+          text-align: start;
+          word-spacing: normal;
+          letter-spacing: normal !important;
+          font-kerning: normal;
           word-break: normal;
           overflow-wrap: normal;
+          max-width: 100%;
         }
 
-        .patients-prose-root .bill-of-rights-prose[dir="ltr"] .patients-prose-line,
-        .patients-prose-root .during-stay-prose[dir="ltr"] .patients-prose-line {
+        .patients-prose-root[dir="ltr"] .patients-page-content p,
+        .patients-prose-root[dir="ltr"] .patients-page-content li,
+        .patients-prose-root[dir="ltr"] .patients-page-content span.font-body,
+        .patients-prose-root[dir="ltr"] .patients-prose-line {
+          text-align: justify;
+          text-justify: inter-word;
+          text-align-last: auto;
           -webkit-hyphens: auto;
           hyphens: auto;
-          hyphenate-limit-chars: 6 4 2;
-          text-align: justify;
-          text-align-last: left;
-          text-justify: inter-word;
-          text-wrap: pretty;
+          hyphenate-limit-chars: 6 3 3;
+          text-wrap: auto;
         }
 
-        .patients-prose-root .bill-of-rights-prose[dir="rtl"] .patients-prose-line,
-        .patients-prose-root .during-stay-prose[dir="rtl"] .patients-prose-line {
+        .patients-prose-root[dir="rtl"] .patients-page-content p,
+        .patients-prose-root[dir="rtl"] .patients-page-content li,
+        .patients-prose-root[dir="rtl"] .patients-page-content span.font-body,
+        .patients-prose-root[dir="rtl"] .patients-prose-line {
           -webkit-hyphens: none;
           hyphens: none;
-          text-align: justify;
           text-align-last: right;
+        }
+
+        @media (max-width: 767px) {
+          .patients-prose-root > section .container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+          }
+
+          .patients-prose-root .patients-page-content {
+            max-width: 100%;
+          }
+
+          .patients-prose-root .patients-page-content p,
+          .patients-prose-root .patients-page-content li,
+          .patients-prose-root .patients-page-content span.font-body,
+          .patients-prose-root .patients-prose-line {
+            line-height: 1.55;
+            text-align: start;
+            text-align-last: start;
+            word-spacing: normal;
+            text-wrap: auto;
+            text-justify: auto;
+            word-break: normal;
+            overflow-wrap: break-word;
+            white-space: normal;
+          }
+
+          .patients-prose-root[dir="ltr"] .patients-page-content p,
+          .patients-prose-root[dir="ltr"] .patients-page-content li,
+          .patients-prose-root[dir="ltr"] .patients-page-content span.font-body,
+          .patients-prose-root[dir="ltr"] .patients-prose-line {
+            text-align: justify;
+            text-justify: inter-word;
+            text-align-last: auto;
+            -webkit-hyphens: auto;
+            hyphens: auto;
+            hyphenate-limit-chars: 6 3 3;
+          }
+
+          .patients-prose-root[dir="rtl"] .patients-page-content p,
+          .patients-prose-root[dir="rtl"] .patients-page-content li,
+          .patients-prose-root[dir="rtl"] .patients-page-content span.font-body,
+          .patients-prose-root[dir="rtl"] .patients-prose-line {
+            text-align-last: start;
+          }
+
+          .patients-page-content .rounded-2xl.p-6,
+          .patients-page-content .rounded-2xl.p-5 {
+            padding: 1rem;
+          }
+
+          .patients-page-content .mb-8 {
+            margin-bottom: 1.25rem;
+          }
+
+          .patients-page-content .mb-6 {
+            margin-bottom: 1rem;
+          }
+
+          .patients-page-content .mb-10 {
+            margin-bottom: 1.5rem;
+          }
+
+          .patients-page-content .space-y-4 > :not([hidden]) ~ :not([hidden]) {
+            margin-top: 0.625rem;
+          }
+
+          .patients-page-content .space-y-3 > :not([hidden]) ~ :not([hidden]) {
+            margin-top: 0.5rem;
+          }
+
+        }
+
+        .patients-prose-root .patients-page-content .patients-justified-card .patients-card-prose-intro,
+        .patients-prose-root .patients-page-content .patients-justified-card .patients-card-prose-list {
+          display: block;
+          width: 100%;
+          margin: 0;
+          text-align: start !important;
+          text-align-last: start !important;
+          word-spacing: normal !important;
+          letter-spacing: normal !important;
+          word-break: normal !important;
+          overflow-wrap: normal !important;
+          text-wrap: auto;
+          hyphenate-character: "-";
+        }
+
+        .patients-prose-root[dir="ltr"] .patients-page-content .patients-justified-card .patients-card-prose-intro,
+        .patients-prose-root[dir="ltr"] .patients-page-content .patients-justified-card .patients-card-prose-list {
+          text-align: justify !important;
           text-justify: inter-word;
+          text-align-last: auto !important;
+          -webkit-hyphens: auto;
+          hyphens: auto;
+          hyphenate-limit-chars: 6 3 3;
+        }
+
+        .patients-prose-root[dir="rtl"] .patients-page-content .patients-justified-card .patients-card-prose-intro,
+        .patients-prose-root[dir="rtl"] .patients-page-content .patients-justified-card .patients-card-prose-list {
+          -webkit-hyphens: none;
+          hyphens: none;
+        }
+
+        @media (max-width: 767px) {
+          .patients-prose-root .patients-page-content .patients-justified-card .patients-card-prose-intro,
+          .patients-prose-root .patients-page-content .patients-justified-card .patients-card-prose-list {
+            text-align: justify !important;
+            text-align-last: auto !important;
+            text-justify: inter-word;
+            word-spacing: normal !important;
+            line-height: 1.5;
+            -webkit-hyphens: auto;
+            hyphens: auto;
+            hyphenate-limit-chars: 6 3 3;
+          }
+        }
+
+        .patients-prose-root .patients-page-content .insurance-partners-section p,
+        .patients-prose-root .patients-page-content .insurance-partners-section .insurance-partners-title {
+          text-align: center !important;
+          text-align-last: center !important;
+          -webkit-hyphens: none;
+          hyphens: none;
         }
       `}</style>
 

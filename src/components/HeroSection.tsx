@@ -90,8 +90,7 @@ const HeroSection = () => {
       <div className="absolute inset-0 z-0 overflow-hidden">
         <video
           ref={videoRef}
-          // src="https://royal-hayat.s3.eu-central-1.amazonaws.com/static/RHH+VIDEO+(1).mp4"
-          // src="https://res.cloudinary.com/dwhc8kzpv/video/upload/v1777986296/RHH_SH_16_Website_1_h7dabt.mp4"
+         
           src="https://royal-hayat.s3.eu-central-1.amazonaws.com/static/RHH+SH+16+Website+(1).mp4"
           autoPlay
           loop
@@ -154,8 +153,10 @@ const HeroSection = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
-                className={`text-2xl sm:text-3xl md:text-5xl lg:text-6xl xl:text-7xl font-serif leading-[1.2] tracking-tight mb-3 max-lg:mb-4 md:mb-6 ${
-                  isAr ? "text-start" : ""
+                className={`font-serif leading-[1.2] tracking-tight mb-3 max-lg:mb-4 md:mb-6 ${
+                  isAr
+                    ? "text-start text-xl sm:text-2xl md:text-3xl lg:text-4xl"
+                    : "text-2xl sm:text-3xl md:text-5xl lg:text-6xl xl:text-7xl"
                 }`}
               >
                 <span className="text-foreground block">{t("exceptionalCare")}</span>
@@ -164,13 +165,16 @@ const HeroSection = () => {
                   <span className="max-lg:block md:inline">{t("everyAge")}</span>
                 </span>
               </motion.h1>
-              {isAr && t("heroIntro") ? (
+              {t("heroIntro") ? (
                 <motion.p
                   initial={{ opacity: 0, y: 14 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.2 }}
-                  className="text-[#A67C00] font-body text-sm md:text-base leading-relaxed mb-3 max-lg:mb-4 md:mb-5 max-w-xl text-start"
-                  style={{ fontSize: "calc(0.875rem + 2px)" }}
+                  className={`font-body leading-relaxed mb-3 max-lg:mb-4 md:mb-5 max-w-xl ${
+                    isAr
+                      ? "text-start text-sm sm:text-base md:text-lg text-[#6B5200]"
+                      : "text-left text-sm md:text-base text-[#A67C00]"
+                  }`}
                 >
                   {t("heroIntro")}
                 </motion.p>
@@ -179,24 +183,28 @@ const HeroSection = () => {
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.3 }}
-                className={`text-muted-foreground font-body text-sm md:text-base leading-relaxed mb-3 max-lg:mb-4 md:mb-5 max-w-xl whitespace-pre-line ${
-                  isAr ? "text-start" : "text-left"
+                className={`font-body leading-relaxed mb-3 max-lg:mb-4 md:mb-5 max-w-xl whitespace-pre-line ${
+                  isAr
+                    ? "text-start text-sm sm:text-base md:text-lg text-[hsl(337,30%,26%)]"
+                    : "text-left text-sm md:text-base text-muted-foreground"
                 }`}
-                style={isAr ? { fontSize: "calc(0.875rem + 2px)" } : undefined}
               >
                 {t("heroDesc")}
               </motion.p>
-              <motion.p
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.38 }}
-                className={`text-gray-400 font-serif text-base md:text-xl mb-5 max-lg:mb-6 md:mb-8 max-w-xl ${
-                  isAr ? "text-start" : ""
-                }`}
-                style={isAr ? { fontSize: "calc(1.125rem + 2px)" } : undefined}
-              >
-                {t("heroTagline")}
-              </motion.p>
+              {t("heroTagline") ? (
+                <motion.p
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.38 }}
+                  className={`font-serif mb-5 max-lg:mb-6 md:mb-8 max-w-xl ${
+                    isAr
+                      ? "text-start text-base md:text-lg lg:text-xl text-gray-600"
+                      : "text-base md:text-xl text-gray-400"
+                  }`}
+                >
+                  {t("heroTagline")}
+                </motion.p>
+              ) : null}
               <motion.div
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}

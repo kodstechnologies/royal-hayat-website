@@ -1,19 +1,32 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
+const DEPT_LIST_PATHS = new Set(["/departments", "/medical-services"]);
+
 const ScrollToTopOnNav = () => {
-  const { pathname } = useLocation();
+  const location = useLocation();
 
   useEffect(() => {
+    const state = location.state as {
+      restoreDeptOpenIndex?: number;
+      restoreExpandedIndex?: number;
+      restoreScrollY?: number;
+      fromDepartments?: boolean;
+    } | null;
+
+    const isRestoringDeptCard =
+      state?.restoreDeptOpenIndex != null &&
+      !state?.fromDepartments &&
+      DEPT_LIST_PATHS.has(location.pathname);
+
+    const isRestoringSpecializedCare =
+      location.pathname === "/" &&
+      (state?.restoreExpandedIndex != null || typeof state?.restoreScrollY === "number");
+
+    if (isRestoringDeptCard || isRestoringSpecializedCare) return;
     window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
-  }, [pathname]);
-
-  // Also scroll to top on initial page load / refresh
-  useEffect(() => {
-    window.scrollTo({ top: 0, left: 0 });
-  }, []);
+  }, [location.pathname, location.key, location.state]);
 
   return null;
 };
-
 export default ScrollToTopOnNav;

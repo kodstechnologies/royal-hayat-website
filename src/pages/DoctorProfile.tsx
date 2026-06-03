@@ -1,5 +1,5 @@
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeft, Stethoscope, Globe, Award, Star, Quote, GraduationCap, CheckCircle2, Loader2 } from "lucide-react";
+import { ArrowLeft, Stethoscope, Star, Quote, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
@@ -110,6 +110,22 @@ const handleAddTestimonial = () => {
   const handleGoBack = () => {
     if (fromBooking) {
       navigate("/book-appointment", { state: bookingReturnState });
+    } else if (bookingReturnState?.fromDepartments && bookingReturnState?.returnPath) {
+      navigate(bookingReturnState.returnPath, {
+        state: {
+          restoreDeptOpenIndex: bookingReturnState.restoreDeptOpenIndex,
+          restoreSelectedSubByDept: bookingReturnState.restoreSelectedSubByDept,
+          restoreScrollY: bookingReturnState.restoreScrollY,
+        },
+      });
+    } else if (bookingReturnState?.fromSpecializedCare && bookingReturnState?.returnPath) {
+      navigate(bookingReturnState.returnPath, {
+        state: {
+          restoreExpandedIndex: bookingReturnState.restoreExpandedIndex,
+          restoreSelectedSubByService: bookingReturnState.restoreSelectedSubByService,
+          restoreScrollY: bookingReturnState.restoreScrollY,
+        },
+      });
     } else {
       navigate(-1);
     }
@@ -285,18 +301,6 @@ const handleAddTestimonial = () => {
                       {lang === "ar" ? "طلب موعد" : "Request Appointment"}
                     </motion.button>
                   )}
-
-                  {/* Languages */}
-                  <div className="mt-5 pt-4 border-t border-border/40">
-                    <p className="text-accent text-[10px] tracking-[0.2em] uppercase font-body mb-2">
-                      {lang === "ar" ? "اللغات" : "Languages"}
-                    </p>
-                    <div className="flex flex-wrap gap-1.5 justify-center">
-                      {(lang === "ar" ? doctor.languagesAr : doctor.languages).map((l) => (
-                        <span key={l} className="px-3 py-1 rounded-full bg-secondary/40 text-xs font-body text-foreground">{l}</span>
-                      ))}
-                    </div>
-                  </div>
 
                 </div>
               </motion.div>

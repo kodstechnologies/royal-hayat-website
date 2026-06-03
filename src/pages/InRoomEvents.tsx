@@ -15,6 +15,7 @@ type InRoomEventsProps = {
 const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
+  const ltrPhoneClass = "inline-block [direction:ltr] [unicode-bidi:isolate]";
   const [activeSlide, setActiveSlide] = useState(0);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 
@@ -31,7 +32,7 @@ const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) =
     if (topCarouselImages.length <= 1) return;
     const timer = window.setInterval(() => {
       setActiveSlide((prev) => (prev + 1) % topCarouselImages.length);
-    }, 4500);
+    }, 5000);
     return () => window.clearInterval(timer);
   }, [topCarouselImages.length]);
 
@@ -54,11 +55,11 @@ const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) =
               {isAr ? "خدمات الضيافة" : "Hospitality Services"}
             </p>
             <h1 className="text-4xl md:text-5xl font-serif text-foreground mb-4">
-              {isAr ? "تجارب الاحتفال داخل الجناح" : "In-Suite Celebration Experiences"}
+              {isAr ? "تجارب الاحتفال داخل الأجنحة" : "In-Suite Celebration Experiences"}
             </h1>
-            <p className="text-muted-foreground font-body text-sm max-w-2xl mx-auto">
+            <p className="text-muted-foreground font-body text-sm max-w-3xl mx-auto leading-relaxed text-justify">
               {isAr
-                ? "احتفل بلحظاتك الخاصة في راحة وخصوصية جناحك."
+                ? "اصنعوا لحظات لا تُنسى واحتفلوا بمناسباتكم الخاصة بكل خصوصية وراحة داخل أجنحتكم الفاخرة، حيث تلتقي الأجواء الدافئة بالضيافة الراقية لتمنحكم تجربة استثنائية مليئة بالذكريات الجميلة."
                 : "Create meaningful celebrations in the comfort and privacy of your own suite."}
             </p>
           </ScrollAnimationWrapper>
@@ -156,9 +157,9 @@ const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) =
               <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-3 text-center">
                 {isAr ? "خدماتنا" : "Our Services"}
               </h2>
-              <p className="font-body text-sm text-muted-foreground text-center max-w-2xl mx-auto mb-10">
+              <p className="font-body text-sm text-muted-foreground text-center max-w-3xl mx-auto mb-10 leading-relaxed text-justify">
                 {isAr
-                  ? "نقدم مجموعة شاملة من الخدمات لجعل مناسبتك لا تُنسى"
+                  ? "نقدم مجموعة متكاملة من الخدمات المصممة بعناية لتحويل مناسبتكم إلى تجربة استثنائية لا تُنسى."
                   : "We offer a comprehensive range of services to make your occasion truly unforgettable"}
               </p>
             </ScrollAnimationWrapper>
@@ -167,23 +168,23 @@ const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) =
               {[
                 {
                   icon: Gift,
-                  title: isAr ? "التصميم والديكور المخصص" : "Custom Design & Décor",
+                  title: isAr ? "تصميم وديكور مخصص" : "Custom Design & Décor",
                   desc: isAr
-                    ? "سنحوّل جناحك ليعكس الطابع والأسلوب الفريد لمناسبتك. من البالونات والزهور إلى الإضاءة والأقمشة، كل التفاصيل مصممة خصيصاً لتناسب رؤيتك."
+                    ? "نقوم بتنسيق وتجهيز الجناح بما يتناسب مع طابع مناسبتكم الخاصة وأسلوبكم الفريد. من تنسيقات الورود والبالونات إلى الإضاءة والأقمشة الفاخرة، حيث يتم تصميم كل تفصيل بعناية ليعكس رؤيتكم ويمنحكم أجواءً مميزة."
                     : "We will transform your suite to reflect the unique theme and style of your occasion. From balloons and flowers to lighting and fabrics, every detail is custom-designed to match your vision.",
                 },
                 {
                   icon: UtensilsCrossed,
-                  title: isAr ? "المأكولات الراقية" : "Gourmet Catering",
+                  title: isAr ? "ضيافة ومأكولات فاخرة" : "Gourmet Catering",
                   desc: isAr
-                    ? "استمتع بمجموعة من الأطباق المعدة خصيصاً من مطبخنا الراقي. من المقبلات الفاخرة إلى الحلويات الشهية، نقدم تجربة طعام استثنائية."
+                    ? "استمتعوا بتجربة طعام راقية تضم تشكيلة مختارة من الأطباق المُعدة بعناية من مطابخنا المتخصصة. من المقبلات الفاخرة إلى الحلويات الراقية، نحرص على تقديم تجربة ضيافة استثنائية ترضي جميع الأذواق."
                     : "Enjoy a selection of specially crafted dishes from our top-tier kitchen. From exquisite appetizers to delectable desserts, we deliver an exceptional dining experience.",
                 },
                 {
                   icon: UserCheck,
-                  title: isAr ? "خدمة الخادم الشخصي" : "Butler Service",
+                  title: isAr ? "خدمة كبير الخدم" : "Butler Service",
                   desc: isAr
-                    ? "سيكون خدمنا المحترفون في خدمتك لتلبية كل احتياجاتك. من الاستقبال إلى التنظيف، نضمن تجربة سلسة ومريحة."
+                    ? "يتواجد فريقنا المتخصص لخدمتكم والاهتمام بجميع التفاصيل طوال المناسبة، من استقبال الضيوف وحتى ترتيب وتنظيم الأجواء، نضمن لكم تجربة سلسة ومريحة بكل احترافية وخصوصية."
                     : "Our professional butlers will be on hand to assist with every need. From reception to cleanup, we ensure a seamless and comfortable experience.",
                 },
               ].map((item, i) => (
@@ -210,12 +211,24 @@ const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) =
               <div className="w-full">
                 <div className="w-full">
                   <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-4">
-                    {isAr ? "مناسبات نخدمها" : "Occasions We Serve"}
+                    {isAr ? "المناسبات التي نقوم بتنسيقها" : "Occasions We Serve:"}
                   </h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
                     {(isAr
-                      ? ["احتفالات المواليد الجدد", "أعياد الميلاد والذكرى السنوية", "حفلات الاستقبال والتجمعات العائلية", "مفاجآت شخصية للمرضى والضيوف", "أي مناسبة خاصة تستحق الاحتفال"]
-                      : ["Newborn celebrations", "Birthdays and anniversaries", "Reception parties and family gatherings", "Personalized surprises for patients and guests", "Any special occasion worth celebrating"]
+                      ? [
+                          "احتفالات استقبال المواليد",
+                          "أعياد الميلاد والذكرى السنوية",
+                          "حفلات الاستقبال والتجمعات العائلية",
+                          "المفاجآت الخاصة للمرضى والضيوف",
+                          "جميع المناسبات المميزة التي تستحق الاحتفال",
+                        ]
+                      : [
+                          "Newborn celebrations",
+                          "Birthdays and anniversaries",
+                          "Reception parties and family gatherings",
+                          "Personalized surprises for patients and guests",
+                          "Any special occasion worth celebrating",
+                        ]
                     ).map((item, i) => (
                       <div key={i} className="flex items-start gap-3 bg-popover border border-border/50 rounded-xl px-5 py-4 h-full min-w-0 w-full">
                         <CheckCircle2 className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
@@ -261,16 +274,16 @@ const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) =
         <div className="container mx-auto px-6 text-center">
           <ScrollAnimationWrapper>
             <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-4">
-              {isAr ? "احجز فعاليتك اليوم" : "Book Your Event Today"}
+              {isAr ? "احجز مناسبتك اليوم" : "Book Your Event Today"}
             </h2>
-            <p className="font-body text-sm text-muted-foreground mb-6 max-w-lg mx-auto">
+            <p className="font-body text-sm text-muted-foreground mb-6 max-w-2xl mx-auto leading-relaxed text-justify">
               {isAr
-                ? "فريقنا المتخصص جاهز لمساعدتك في التخطيط لمناسبة لا تُنسى."
+                ? "فريقنا المتخصص على أتم الاستعداد لمساعدتكم في تنظيم مناسبة استثنائية تبقى في الذاكرة"
                 : "Our dedicated team is ready to help you plan an unforgettable occasion."}
             </p>
             <a href="tel:+96525360573" className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-full font-body text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-colors">
               <Phone className="w-4 h-4" />
-              +965 2536 0573
+              <span className={ltrPhoneClass}>+965 2536 0573</span>
             </a>
           </ScrollAnimationWrapper>
         </div>

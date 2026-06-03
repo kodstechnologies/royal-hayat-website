@@ -17,6 +17,8 @@ const Header = () => {
   const [headerVisible, setHeaderVisible] = useState(true);
   const [showMedRecordsModal, setShowMedRecordsModal] = useState(false);
   const { lang, setLang, t } = useLanguage();
+  const phoneDisplay = "+965 2536 0000";
+  const phoneTextClass = "inline-block [direction:ltr] [unicode-bidi:isolate]";
   const navigate = useNavigate();
   const location = useLocation();
   const dropdownTimeout = useRef<NodeJS.Timeout | null>(null);
@@ -38,11 +40,10 @@ const Header = () => {
         return;
       }
 
+      // Keep desktop header stable to avoid flicker during scroll repaints.
+      setHeaderVisible(true);
       if (currentY > lastScrollY.current && currentY > 80) {
-        setHeaderVisible(false); // desktop: scrolling down → hide logo row
         setMenuOpen(false);
-      } else {
-        setHeaderVisible(true);
       }
       lastScrollY.current = currentY;
     };
@@ -135,7 +136,7 @@ const Header = () => {
   const contactSubLinks = [
     { label: t("bookAppointment"), href: "/book-appointment", icon: Phone, desc: lang === "ar" ? "احجز موعدك مع أطبائنا" : "Schedule your visit with our doctors" },
     { label: lang === "ar" ? "المرضى الدوليون" : "International Patient", href: "/international-patient", icon: MapPin, desc: lang === "ar" ? "دعم مخصص للمرضى الدوليين" : "Dedicated support for international patients" },
-    { label: lang === "ar" ? "اتصل بنا" : "Call Us", href: "tel:+96525360000", icon: Phone, desc: "+965 2536 0000" },
+    { label: lang === "ar" ? "اتصل بنا" : "Call Us", href: "tel:+96525360000", icon: Phone, desc: phoneDisplay },
   ];
 
   const handleDropdownEnter = (key: string) => {
@@ -424,7 +425,7 @@ const Header = () => {
             <div className="flex-1 flex items-center justify-end">
               <div className="flex flex-col lg:flex-row items-end justify-end gap-y-1 lg:gap-y-0 lg:gap-x-4 font-body text-xs lg:text-sm text-muted-foreground">
                 <a href="tel:+96525360000" className="inline-flex items-center gap-1 hover:text-primary transition-colors whitespace-nowrap">
-                  <Phone className="w-3.5 h-3.5 lg:w-4 lg:h-4" /> +965 2536 0000
+                  <Phone className="w-3.5 h-3.5 lg:w-4 lg:h-4" /> <span className={phoneTextClass}>{phoneDisplay}</span>
                 </a>
                 <a href="mailto:info@royalehayat.com" className="inline-flex items-center gap-1 hover:text-primary transition-colors whitespace-nowrap">
                   <Mail className="w-3.5 h-3.5 lg:w-4 lg:h-4" /> info@royalehayat.com
@@ -497,7 +498,13 @@ const Header = () => {
                       <p className="text-xs tracking-[0.2em] uppercase font-body text-accent mb-4 text-start">
                         {item.hasDropdown === "patients" ? t("patientsVisitorsDropdownTitle") : item.label}
                       </p>
-                      <div className={`grid ${item.hasDropdown === "patients" ? "grid-cols-1 xl:grid-cols-2" : "grid-cols-1"} gap-2`}>
+                      <div
+                        className={`grid ${item.hasDropdown === "patients" ? "grid-cols-1 xl:grid-cols-2" : "grid-cols-1"} gap-2 ${
+                          item.hasDropdown === "hospitality"
+                            ? "max-h-[min(70vh,26rem)] overflow-y-auto overscroll-y-contain pr-1"
+                            : ""
+                        }`}
+                      >
                         {getSubLinks(item.hasDropdown).map((sub) => (
                           sub.href.startsWith("/") ? (
                             <Link
@@ -518,7 +525,13 @@ const Header = () => {
                               </div>
                               <div className="min-w-0 flex-1">
                                 <p className={dropdownSubTextClass}>{sub.label}</p>
-                                <p className={dropdownSubDescClass}>{sub.desc}</p>
+                                <p className={dropdownSubDescClass}>
+                                  {sub.href.startsWith("tel:") ? (
+                                    <span className={phoneTextClass}>{sub.desc}</span>
+                                  ) : (
+                                    sub.desc
+                                  )}
+                                </p>
                               </div>
                             </Link>
                           ) : (
@@ -532,7 +545,13 @@ const Header = () => {
                               </div>
                               <div className="min-w-0 flex-1">
                                 <p className={dropdownSubTextClass}>{sub.label}</p>
-                                <p className={dropdownSubDescClass}>{sub.desc}</p>
+                                <p className={dropdownSubDescClass}>
+                                  {sub.href.startsWith("tel:") ? (
+                                    <span className={phoneTextClass}>{sub.desc}</span>
+                                  ) : (
+                                    sub.desc
+                                  )}
+                                </p>
                               </div>
                             </a>
                           )
@@ -665,7 +684,11 @@ const Header = () => {
                         >
                           <div
                             dir={isAr ? "rtl" : "ltr"}
-                            className="py-2 px-4 flex flex-col gap-1"
+                            className={`py-2 px-4 flex flex-col gap-1 ${
+                              item.hasDropdown === "hospitality"
+                                ? "max-h-[min(55vh,18rem)] overflow-y-auto overscroll-y-contain"
+                                : ""
+                            }`}
                           >
                             {getSubLinks(item.hasDropdown).map((sub) => (
                               sub.href.startsWith("/") ? (
@@ -777,12 +800,12 @@ const Header = () => {
                     <>
                       في حال لم يتم تسجيلكم مسبقًا، يرجى التواصل مع المستشفى على الرقم:
                       <br />
-                      <strong className="text-foreground">+965 2536 0000</strong>
+                      <strong className={`text-foreground ${phoneTextClass}`}>{phoneDisplay}</strong>
                       <br />
                       لاستكمال إجراءات التسجيل.
                     </>
                   )
-                  : "If you are not yet registered, please call the hospital at +965 2536 0000 to complete your registration."}
+                  : `If you are not yet registered, please call the hospital at ${phoneDisplay} to complete your registration.`}
               </p>
             </div>
             <button onClick={() => setShowMedRecordsModal(false)} className="mt-4 w-full text-center font-body text-xs text-muted-foreground hover:text-foreground transition-colors">

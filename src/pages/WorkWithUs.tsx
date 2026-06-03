@@ -23,22 +23,11 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
+import { getAllJobs, type JobPosting } from "@/api/job";
 
 /* ------------------------------------------------------------------ */
 /* OPEN POSITIONS — sourced 1:1 from https://royalehayat.com/careers/ */
 /* ------------------------------------------------------------------ */
-const categories = [
-  "View All",
-  "Hospitality / Guest Services",
-  "La Cosmetique Royale",
-  "Marketing & Communications",
-  "Nursing Support",
-  "Quality & Patient Safety",
-  "Royale Home Health",
-  "Specialist Doctors",
-  "Surgical Services",
-];
-
 const openPositions = [
   {
     title: "Registrar – Plastic Surgeon",
@@ -210,7 +199,8 @@ const WorkWithUs = ({
   const { lang } = useLanguage();
   const isAr = lang === "ar";
   const [activeCategory, setActiveCategory] = useState("View All");
-  const [positions, setPositions] = useState<Position[]>(
+  const [isIOSWebKit, setIsIOSWebKit] = useState(false);
+  const [positions, setPositions] = useState<Position[]>(() =>
     openPositions.map((p, index) => ({
       id: String(index),
       title: p.title,
@@ -239,6 +229,18 @@ const WorkWithUs = ({
     img.src = next;
   }, [empIndex]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const ua = window.navigator.userAgent || "";
+    const platform = window.navigator.platform || "";
+    const maxTouchPoints = window.navigator.maxTouchPoints || 0;
+    const isIOSDevice =
+      /iPad|iPhone|iPod/.test(ua) ||
+      (platform === "MacIntel" && maxTouchPoints > 1);
+    const isWebKit = /WebKit/i.test(ua) && !/CriOS|FxiOS|OPiOS|EdgiOS/i.test(ua);
+    setIsIOSWebKit(isIOSDevice && isWebKit);
+  }, []);
+
   const categoriesScrollRef = useRef<HTMLDivElement | null>(null);
   const [searchParams] = useSearchParams();
   const section = searchParams.get("section");
@@ -248,6 +250,26 @@ const WorkWithUs = ({
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, [section]);
+
+  useEffect(() => {
+    getAllJobs({ isActive: true })
+      .then((jobs) => {
+        if (!jobs.length) return;
+        setPositions(
+          jobs.map((job: JobPosting) => ({
+            id: String(job._id ?? job.id ?? ""),
+            title: job.title,
+            category: String(
+              job.classification ?? job.category ?? job.department ?? "",
+            ),
+            location: job.location ?? "",
+            type: job.type ?? "",
+            desc: job.description ?? job.desc ?? "",
+          })),
+        );
+      })
+      .catch(() => {});
+  }, []);
 
   const scrollCategories = (direction: "left" | "right") => {
     if (!categoriesScrollRef.current) return;
@@ -326,24 +348,24 @@ const WorkWithUs = ({
   ];
 
   const cultureNarrativeClass = isAr
-    ? "culture-narrative space-y-5 font-body text-foreground leading-relaxed text-justify [text-align-last:right]"
-    : "culture-narrative space-y-5 font-body text-foreground leading-relaxed text-justify hyphens-auto break-words [text-align-last:left] [&_p]:hyphens-auto [&_p]:break-words";
+    ? "culture-narrative space-y-5 font-body tracking-normal text-foreground leading-relaxed text-start"
+    : "culture-narrative space-y-5 font-body tracking-normal text-foreground leading-relaxed text-start";
 
   return (
     <div
       id="work-culture-page"
-      className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107] [&_p]:text-justify [&_li]:text-justify"
+      className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107] [&_p]:text-start [&_li]:text-start"
     >
       <Header />
 
       {/* Hero */}
       {showSection("culture") && (
-        <section className="py-0 bg-primary/5 overflow-hidden">
-          <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_0.7fr] gap-0 items-stretch lg:min-h-[480px] 2xl:min-h-[620px]">
-            {/* LEFT — phone: natural height; tablet: bg cover; 2xl+ desktop: img cover */}
+        <section className="py-0 bg-primary/5 overflow-x-clip">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_0.7fr] gap-0 items-stretch lg:items-start">
+            {/* LEFT — height follows image (no extra space below) */}
             <div
               dir="ltr"
-              className="work-culture-hero-wrap relative w-full overflow-hidden bg-primary/5 lg:min-h-[480px] lg:h-full 2xl:min-h-[620px]"
+              className="work-culture-hero-wrap relative w-full min-w-0 bg-background lg:h-auto"
             >
               <WorkCultureHeroImage
                 key={lang}
@@ -352,18 +374,22 @@ const WorkWithUs = ({
                     ? "الحياة في رويال حياة"
                     : "Life at Royale Hayat Hospital"
                 }
-                className="work-culture-hero-img block w-full h-auto max-w-none object-contain object-left 2xl:absolute 2xl:inset-0 2xl:h-full 2xl:w-full 2xl:object-cover 2xl:object-left"
               />
             </div>
 
             {/* RIGHT — content */}
-            <ScrollAnimationWrapper className="flex h-full flex-col justify-center py-16 md:py-24 px-8 md:px-14 lg:px-16">
+            <ScrollAnimationWrapper className="flex w-full flex-col justify-center px-4 py-10 sm:px-6 md:px-14 md:py-12 lg:px-16 lg:self-center lg:py-12 2xl:py-16">
+              <div
+                dir={isAr ? "rtl" : "ltr"}
+                lang={isAr ? "ar" : "en"}
+                className={isAr ? "text-right" : "text-left"}
+              >
               <h1 className="text-4xl md:text-5xl font-serif text-primary mb-6 leading-tight">
                 {isAr
                   ? "الحياة في مستشفى رويال حياة"
                   : "Life at Royale Hayat Hospital"}
               </h1>
-              <div className="space-y-4 font-body text-sm text-foreground leading-relaxed text-justify">
+              <div className="work-body-copy space-y-4 font-body tracking-normal text-[13px] sm:text-sm text-foreground leading-relaxed text-start">
                 <p>
                   {isAr
                     ? "في مستشفى رويال حياة، نؤمن بفكرة بسيطة: قد ينسى الناس ما قلناه، لكنهم لن ينسوا أبداً كيف جعلناهم يشعرون كمرضى، أو أفراد عائلة، أو زملاء."
@@ -380,6 +406,7 @@ const WorkWithUs = ({
                     : "Here, professionalism meets kindness. Standards meet empathy. And work carries purpose. If this belief resonates with you, you already belong here."}
                 </p>
               </div>
+              </div>
             </ScrollAnimationWrapper>
           </div>
         </section>
@@ -388,12 +415,12 @@ const WorkWithUs = ({
       {/* Our People Promise — narrative from document */}
       {showSection("culture") && (
         <section className="py-14 bg-background">
-          <div className="container mx-auto px-6 max-w-3xl">
+          <div className="container mx-auto px-3 md:px-6 max-w-none md:max-w-5xl lg:max-w-6xl">
             <ScrollAnimationWrapper>
-              <h2 className="text-2xl md:text-3xl font-serif text-foreground text-center mb-3 hyphens-auto break-words text-pretty px-1">
+              <h2 className="text-2xl md:text-3xl font-serif text-foreground text-center mb-3 text-pretty px-1">
                 {isAr ? "وعدنا لموظفينا" : "‘Our People Promise’"}
               </h2>
-              <p className="text-center !text-center text-accent font-body text-sm mb-8 italic hyphens-auto break-words text-pretty px-1">
+              <p className="text-center !text-center text-accent font-body text-sm mb-8 italic text-pretty px-1">
                 {isAr
                   ? "إن وعدنا لمرضانا يبدأ أولًا من وعدنا لموظفينا."
                   : "Our promise to patients begins with our promise to our people"}
@@ -423,9 +450,9 @@ const WorkWithUs = ({
       {/* Where We Belong Together */}
       {showSection("culture") && (
         <section className="py-14 bg-secondary/10">
-          <div className="container mx-auto px-6 max-w-3xl">
+          <div className="container mx-auto px-3 md:px-6 max-w-none md:max-w-5xl lg:max-w-6xl">
             <ScrollAnimationWrapper>
-              <h2 className="text-2xl md:text-3xl font-serif text-foreground text-center mb-8 hyphens-auto break-words text-pretty px-1">
+              <h2 className="text-2xl md:text-3xl font-serif text-foreground text-center mb-8 text-pretty px-1">
                 {isAr ? "معًا… حيث ننتمي" : "‘Where We Belong Together.’"}
               </h2>
               <div dir={isAr ? "rtl" : "ltr"} lang={isAr ? "ar" : "en"} className={cultureNarrativeClass}>
@@ -442,7 +469,7 @@ const WorkWithUs = ({
                 <p>
                   {isAr
                     ? "وفي رويال حياة، لا تمر الجهود والإنجازات دون تقدير، لأن الامتنان جزء أساسي من ثقافتنا، والرعاية تستحق أن تُحتفى بها. هنا، العمل ليس مجرد وظيفة، بل مكان تشعر فيه بالتقدير والانتماء."
-                    : "Effort and excellence never go unnoticed here—because appreciation matters, and care deserves to be recognized. At Royale Hayat, it’s more than work. It’s a place to belong and be valued."}
+                    : "Effort and excellence never go unnoticed here because appreciation matters, and care deserves recognition. At Royale Hayat, it is more than work; it is a place to belong and be valued."}
                 </p>
               </div>
             </ScrollAnimationWrapper>
@@ -453,7 +480,7 @@ const WorkWithUs = ({
       {/* Recognition & Appreciation gallery */}
       {showSection("culture") && (
         <section className="py-16 bg-secondary/10">
-          <div className="container mx-auto px-6">
+          <div className="container mx-auto px-3 md:px-6">
             <div className="text-center mb-8">
               <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3 !text-center">
                 {isAr ? "التكريم والتقدير" : "Life at Royale Hayat"}
@@ -477,11 +504,11 @@ const WorkWithUs = ({
               <AnimatePresence mode="wait">
                 <motion.div
                   key={empIndex}
-                  initial={{ opacity: 0, x: isAr ? -30 : 30 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: isAr ? 30 : -30 }}
+                  initial={isIOSWebKit ? false : { opacity: 0, x: isAr ? -30 : 30 }}
+                  animate={isIOSWebKit ? { opacity: 1 } : { opacity: 1, x: 0 }}
+                  exit={isIOSWebKit ? { opacity: 0 } : { opacity: 0, x: isAr ? 30 : -30 }}
                   transition={{ duration: 0.4 }}
-                  className="bg-popover border border-border/50 rounded-2xl overflow-hidden shadow-lg"
+                  className="ios-flicker-fix bg-popover border border-border/50 rounded-2xl overflow-hidden shadow-lg"
                 >
                   <div className="flex flex-col md:flex-row">
                     <div className="md:w-96 flex-shrink-0 bg-primary/5 p-6 flex items-center justify-center">
@@ -511,7 +538,10 @@ const WorkWithUs = ({
                           : employees[empIndex].dept}
                       </p>
 
-                      <p className="font-body text-sm text-accent mb-5">
+                      <p
+                        className={`font-body text-sm text-accent mb-5 ${isAr ? "" : "justified-body-en"}`}
+                        lang={isAr ? "ar" : "en"}
+                      >
                         {isAr
                           ? employees[empIndex].roleAr
                           : employees[empIndex].role}
@@ -527,7 +557,9 @@ const WorkWithUs = ({
                             ? employees[empIndex].achievementsAr
                             : employees[empIndex].achievements
                           ).map((ach, idx) => (
-                            <p key={idx}>{ach}</p>
+                            <p key={idx} className={isAr ? "" : "justified-body-en"} lang={isAr ? "ar" : "en"}>
+                              {ach}
+                            </p>
                           ))}
                         </div>
                       </div>
@@ -638,7 +670,7 @@ const WorkWithUs = ({
       {/* Explore Careers heading */}
       {showSection("culture") && (
         <section className="py-12 bg-background text-center">
-          <div className="container mx-auto px-6">
+          <div className="container mx-auto px-3 md:px-6">
             <Link
               to="/work-with-us?section=positions"
               className="inline-block group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded-sm"
@@ -656,7 +688,7 @@ const WorkWithUs = ({
       {/* Open Positions */}
       {showSection("positions") && (
         <section className="py-16 bg-secondary/10" id="open-positions">
-          <div className="container mx-auto px-6">
+          <div className="container mx-auto px-3 md:px-6">
             <ScrollAnimationWrapper>
               <div className="text-center mb-8">
                 <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3 !text-center">
@@ -665,7 +697,10 @@ const WorkWithUs = ({
                 <h2 className="text-2xl md:text-3xl font-serif text-foreground">
                   {isAr ? "الوظائف الشاغرة" : "Open Positions"}
                 </h2>
-                <p className="text-muted-foreground font-body text-sm max-w-xl mx-auto mt-3">
+                <p
+                  className={`text-muted-foreground font-body text-sm max-w-xl mx-auto mt-3 ${isAr ? "" : "justified-body-en"}`}
+                  lang={isAr ? "ar" : "en"}
+                >
                   {isAr
                     ? "اكتشف الفرص المهنية المتاحة وابدأ رحلتك المهنية معنا اليوم، ضمن بيئة عمل تجمع بين التميّز، التطوير، والرعاية الإنسانية الراقية."
                     : "Explore current opportunities and launch your career with us today."}
@@ -719,11 +754,11 @@ const WorkWithUs = ({
                 return (
                   <motion.div
                     key={pos.title}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
+                    initial={isIOSWebKit ? false : { opacity: 0, y: 20 }}
+                    whileInView={isIOSWebKit ? { opacity: 1 } : { opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.4 }}
-                    className="bg-popover border border-border/50 rounded-2xl p-6 md:p-8 hover:shadow-lg transition-shadow"
+                    className="ios-flicker-fix bg-popover border border-border/50 rounded-2xl p-6 md:p-8 hover:shadow-lg transition-shadow"
                   >
                     <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                       <div className="flex-1">
@@ -735,13 +770,20 @@ const WorkWithUs = ({
                             {pos.category.toUpperCase()}
                           </span>
                         </div>
-                        <p className="font-body text-sm text-muted-foreground leading-relaxed">
+                        <p
+                          className={`font-body text-sm text-muted-foreground leading-relaxed ${isAr ? "" : "justified-body-en"}`}
+                          lang={isAr ? "ar" : "en"}
+                        >
                           {pos.desc}
                         </p>
                       </div>
                       <div className="flex flex-col items-end gap-3 flex-shrink-0">
                         <Link
-                          to={`/job-application?job=${originalIndex}`}
+                          to={
+                            pos.id && /^[0-9a-fA-F]{24}$/.test(pos.id)
+                              ? `/job-application?jobId=${pos.id}`
+                              : `/job-application?job=${originalIndex}`
+                          }
                           className="inline-flex items-center gap-1 text-accent font-body text-sm font-semibold hover:underline"
                         >
                           {isAr ? "تقدم الآن" : "Apply Now"}{" "}
@@ -782,16 +824,81 @@ const WorkWithUs = ({
       )}
 
       <style>{`
-        #work-culture-page .culture-narrative[dir="rtl"] {
+        #work-culture-page .ios-flicker-fix {
+          transform: translateZ(0);
+          -webkit-transform: translateZ(0);
+          backface-visibility: hidden;
+          -webkit-backface-visibility: hidden;
+          will-change: opacity;
+        }
+
+        #work-culture-page .culture-narrative[dir="rtl"],
+        #work-culture-page .work-body-copy[dir="rtl"] {
           -webkit-hyphens: none;
           hyphens: none;
         }
-        #work-culture-page .culture-narrative[dir="ltr"] p {
+
+        #work-culture-page .culture-narrative[lang="en"] p,
+        #work-culture-page .work-body-copy[lang="en"] p {
+          text-align: justify;
+          text-justify: inter-word;
+          text-align-last: auto;
           -webkit-hyphens: auto;
           hyphens: auto;
-          text-wrap: pretty;
+          hyphenate-limit-chars: 6 3 3;
+          text-wrap: auto;
           word-break: normal;
-          overflow-wrap: break-word;
+          overflow-wrap: normal;
+          max-width: 100%;
+          letter-spacing: normal !important;
+          font-kerning: normal;
+        }
+
+        #work-culture-page .justified-body-en {
+          text-align: justify;
+          text-justify: inter-word;
+          text-align-last: auto;
+          -webkit-hyphens: auto;
+          hyphens: auto;
+          hyphenate-limit-chars: 6 3 3;
+          word-break: normal;
+          overflow-wrap: normal;
+          letter-spacing: normal !important;
+          font-kerning: normal;
+        }
+
+        @media (max-width: 767px) {
+          #work-culture-page section .container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+          }
+
+          #work-culture-page .culture-narrative[lang="en"] p,
+          #work-culture-page .work-body-copy[lang="en"] p {
+            text-align: justify !important;
+            text-align-last: auto !important;
+            text-justify: inter-word;
+            -webkit-hyphens: auto !important;
+            hyphens: auto !important;
+            hyphenate-limit-chars: 6 3 3;
+            word-spacing: normal;
+            letter-spacing: normal;
+            word-break: normal;
+            overflow-wrap: normal;
+            white-space: normal;
+            text-wrap: auto;
+            letter-spacing: normal !important;
+            font-kerning: normal;
+          }
+
+          #work-culture-page .justified-body-en {
+            text-align: justify !important;
+            text-align-last: auto !important;
+            text-justify: inter-word;
+            -webkit-hyphens: auto !important;
+            hyphens: auto !important;
+            hyphenate-limit-chars: 6 3 3;
+          }
         }
       `}</style>
 

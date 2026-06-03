@@ -183,6 +183,15 @@
   animation: marquee-reverse-rtl 30s linear infinite;
 }
 
+/* Insurance partners — same LTR scroll on Arabic pages as English (homepage / patients) */
+.insurance-marquee-ltr .animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+.insurance-marquee-ltr .animate-marquee-reverse {
+  animation: marquee-reverse 30s linear infinite;
+}
+
 /* Feedback marquee */
 @keyframes feedbackMarquee {
   0% { transform: translateX(0); }
@@ -283,6 +292,12 @@ article p,
   -ms-hyphens: auto;
 }
 
+.patients-prose-root .patients-card-prose-intro,
+.patients-prose-root .patients-card-prose-list {
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+}
+
 h1, h2, h3, h4, h5, h6, button, a, label, span, .text-center p {
   text-align: inherit;
 }
@@ -303,19 +318,34 @@ h1, h2, h3, h4, h5, h6, button, a, label, span, .text-center p {
 .work-culture-hero-wrap {
   direction: ltr;
   isolation: isolate;
+  overflow: visible;
+  min-width: 0;
 }
 
 .work-culture-hero-img {
   image-orientation: none !important;
 }
 
+@media (min-width: 1024px) {
+  .work-culture-hero-wrap .work-culture-hero-img {
+    position: relative !important;
+    display: block !important;
+    height: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    object-fit: contain !important;
+    object-position: left top !important;
+  }
+}
+
 /*
- * iPad Pro, Nest Hub, Zenbook Fold (1024–1535px): WebKit mirrors this hero;
- * horizontal flip correction only in this band — phone & 2xl+ unchanged.
+ * Touch tablets only (1024–1535px): WebKit mirror fix.
+ * Excludes desktop browser zoom (pointer: fine) so zoom > 110% does not flip the image.
  */
-@media (min-width: 1024px) and (max-width: 1535px) {
-  .work-culture-hero-wrap .work-culture-hero-img--tablet {
+@media (min-width: 1024px) and (max-width: 1535px) and (pointer: coarse) {
+  .work-culture-hero-wrap .work-culture-hero-img:not(.work-culture-hero-img--ar) {
     transform: scaleX(-1) !important;
     -webkit-transform: scaleX(-1) !important;
+    transform-origin: center center !important;
   }
 }

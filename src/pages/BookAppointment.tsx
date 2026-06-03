@@ -20,6 +20,7 @@ import {
   getDoctorsByDepartment,
   mapApiDoctorRowToDoctor,
 } from "@/api/doctors";
+import { createAppointmentRequest } from "@/api/appointmentRequest";
 import {
   getAvailability,
   bookAppointment,
@@ -32,10 +33,7 @@ import {
   type IdentityStatusResponse,
 } from "@/api/identity";
 import { subscribeToIdentityVerification } from "@/api/identitySocket";
-import {
-  extractPatientId,
-  getPatientLookupUserMessage,
-} from "@/utils/patientLookupErrors";
+import { extractPatientId } from "@/utils/patientLookupErrors";
 import { doctorsWithClinicCodes as staticDoctors } from "@/data/doctorsWithClinicCodes";
 import { departments as staticDepts, deptDoctorAliases, MAIN_CATEGORIES } from "@/data/departments";
 import { Calendar as DatePickerCalendar } from "@/components/ui/calendar";
@@ -71,6 +69,34 @@ type VerifiedIdentityDetails = {
 const OID = /^[0-9a-fA-F]{24}$/i;
 const GEMINI_TRIAGE_MODEL = "gemini-flash-latest";
 const GEMINI_TRIAGE_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_TRIAGE_MODEL}:generateContent`;
+
+const SYMPTOM_CHIP_OPTIONS = [
+  "Headache",
+  "Chest Pain",
+  "Fever",
+  "Cough",
+  "Fatigue",
+  "Dizziness",
+  "Nausea",
+  "Back Pain",
+  "Joint Pain",
+  "Shortness of Breath",
+];
+
+/** Merge chip selections and free-text/textarea tokens into a deduped symptom list. */
+function buildCollectedSymptoms(chips: string[], text: string): string[] {
+  const fromText = text
+    .split(/[,;\n]+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const seen = new Set<string>();
+  return [...chips, ...fromText].filter((item) => {
+    const key = item.toLowerCase();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
 
 function departmentSlug(name: string, mongoId: string): string {
   const base = name
@@ -427,6 +453,7 @@ const BookAppointment = () => {
   const [isWaitingForApproval, setIsWaitingForApproval] = useState(false);
   const [isConfirmingPatientRecord, setIsConfirmingPatientRecord] = useState(false);
   const [patientLookupShowGoBack, setPatientLookupShowGoBack] = useState(false);
+  const [showHisFailureModal, setShowHisFailureModal] = useState(false);
   const verifySocketCleanupRef = useRef<(() => void) | null>(null);
   const verificationDoneRef = useRef(false);
   const [verifiedIdentityDetails, setVerifiedIdentityDetails] = useState<VerifiedIdentityDetails | null>(null);
@@ -434,6 +461,9 @@ const BookAppointment = () => {
   // Symptom path
   const [symptomText, setSymptomText] = useState("");
   const [symptomChips, setSymptomChips] = useState<string[]>([]);
+  const [savedSymptoms, setSavedSymptoms] = useState<string[]>(
+    Array.isArray(locState.savedSymptoms) ? locState.savedSymptoms : [],
+  );
   const [symptomAnalyzing, setSymptomAnalyzing] = useState(false);
   const [symptomResults, setSymptomResults] = useState<string[] | null>(null);
 
@@ -594,6 +624,7 @@ const BookAppointment = () => {
     setShowAllDoctors(false);
     setSymptomChips([]);
     setSymptomText("");
+    setSavedSymptoms([]);
     setSymptomResults(null);
     setNationalId("");
     setNationalIdError("");
@@ -670,6 +701,23 @@ const BookAppointment = () => {
     ? selectedDate.split("-").reverse().join("/")
     : "";
 
+  const collectedSymptoms = useMemo(() => {
+    const live = buildCollectedSymptoms(symptomChips, symptomText);
+    return live.length > 0 ? live : savedSymptoms;
+  }, [symptomChips, symptomText, savedSymptoms]);
+
+  const persistSymptomsSnapshot = useCallback((chips: string[], text: string) => {
+    const snapshot = buildCollectedSymptoms(chips, text);
+    if (snapshot.length > 0) setSavedSymptoms(snapshot);
+    return snapshot;
+  }, []);
+
+  const getSelectedSlotPeriod = (): "morning" | "afternoon" => {
+    if (!selectedSlot?.includes(":")) return "morning";
+    const hour = parseInt(selectedSlot.split(":")[0], 10);
+    return hour < 12 ? "morning" : "afternoon";
+  };
+
   const steps = [
     { label: isAr ? "القسم" : "Department", icon: Building2 },
     { label: isAr ? "الطبيب" : "Doctor", icon: User },
@@ -732,7 +780,29 @@ const BookAppointment = () => {
         return;
       }
 
-      // For non-returning flow, we intentionally skip enquiry API submission.
+      if (patientType === "new") {
+        await createAppointmentRequest({
+          fullname: patientName.trim(),
+          phone: `${patientCountryCode}${patientPhone.trim()}`,
+          dob: patientDob,
+          gender: patientGender,
+          doctor: (isAr ? selectedDoctorObj?.nameAr : selectedDoctorObj?.name) || undefined,
+          department:
+            (isAr
+              ? selectedDeptObj?.nameAr ?? selectedDoctorObj?.specialtyAr
+              : selectedDeptObj?.name ?? selectedDoctorObj?.specialty) || undefined,
+          date: formattedSelectedDate || selectedDate,
+          timeSlot: {
+            period: getSelectedSlotPeriod(),
+            time: formatTimeString(selectedSlot) || selectedSlot || "",
+          },
+          symptoms: collectedSymptoms.length > 0 ? collectedSymptoms : undefined,
+          requestType: "first time visitor request",
+        });
+        setBooked(true);
+        return;
+      }
+
       setBooked(true);
     } catch (err: any) {
       console.error("Booking failed:", err);
@@ -868,6 +938,23 @@ const BookAppointment = () => {
     setVerifiedIdentityDetails(null);
   }, []);
 
+  const dismissHisFailureAndGoToRequest = useCallback(() => {
+    setShowHisFailureModal(false);
+    setNationalIdError("");
+    setPatientLookupShowGoBack(false);
+    verifySocketCleanupRef.current?.();
+    verifySocketCleanupRef.current = null;
+    setIsWaitingForApproval(false);
+    setIsConfirmingPatientRecord(false);
+    setVerifyOperationId(null);
+    setShowReturningPatientModal(false);
+    resetPatientLookupFailure();
+    const doctorQuery = selectedDoctor
+      ? `?doctor=${encodeURIComponent(selectedDoctor)}`
+      : "";
+    navigate(`/appointment-request${doctorQuery}`);
+  }, [navigate, resetPatientLookupFailure, selectedDoctor]);
+
   const finalizeRegisteredPatientAfterPaci = useCallback(
     async (params: {
       civilId: string;
@@ -900,16 +987,17 @@ const BookAppointment = () => {
         return true;
       } catch (err) {
         console.error("Hospital patient lookup failed:", err);
-        const { text, showGoBack } = getPatientLookupUserMessage(err, t);
-        setNationalIdError(text);
-        setPatientLookupShowGoBack(showGoBack);
+        setNationalIdError("");
+        setPatientLookupShowGoBack(false);
+        setShowReturningPatientModal(false);
         resetPatientLookupFailure();
+        setShowHisFailureModal(true);
         return false;
       } finally {
         setIsConfirmingPatientRecord(false);
       }
     },
-    [loadVerifiedIdentityDetails, resetPatientLookupFailure, t]
+    [loadVerifiedIdentityDetails, resetPatientLookupFailure]
   );
 
   /** Close Civil ID modal and return to returning / first-time choice (step before national ID). */
@@ -1137,13 +1225,8 @@ const BookAppointment = () => {
   };
 
   const handleSymptomAnalyze = async () => {
-    const tokens = [
-      ...symptomChips.map((c) => c.toLowerCase()),
-      ...symptomText
-        .split(/[,;\n]+/)
-        .map((s) => s.trim().toLowerCase())
-        .filter(Boolean),
-    ];
+    const snapshot = persistSymptomsSnapshot(symptomChips, symptomText);
+    const tokens = snapshot.map((s) => s.toLowerCase());
     if (tokens.length === 0) return;
     setSymptomAnalyzing(true);
 
@@ -1203,8 +1286,6 @@ Clinic Code:`;
     }
   };
 
-  const chipOptions = ["Headache", "Chest Pain", "Fever", "Cough", "Fatigue", "Dizziness", "Nausea", "Back Pain", "Joint Pain", "Shortness of Breath"];
-
   const pageVariants = {
     initial: { opacity: 0, x: 40 },
     animate: { opacity: 1, x: 0 },
@@ -1224,10 +1305,18 @@ Clinic Code:`;
               <CheckCircle2 className="w-10 h-10 text-primary-foreground" />
             </motion.div>
             <h1 className="text-3xl md:text-5xl font-serif text-primary-foreground mb-3">
-              {isRequestMode ? t("requestSubmitted") : t("appointmentConfirmed")}
+              {patientType === "new"
+                ? t("appointmentRequested")
+                : isRequestMode
+                  ? t("requestSubmitted")
+                  : t("appointmentConfirmed")}
             </h1>
             <p className="text-primary-foreground/70 font-body text-sm max-w-md mx-auto">
-              {isRequestMode ? t("requestConfirmMsg") : t("bookingConfirmMsg")}
+              {patientType === "new"
+                ? t("appointmentRequestedMsg")
+                : isRequestMode
+                  ? t("requestConfirmMsg")
+                  : t("bookingConfirmMsg")}
             </p>
           </motion.div>
 
@@ -1268,6 +1357,15 @@ Clinic Code:`;
                     </p>
                   </div>
                 </div>
+                {collectedSymptoms.length > 0 && (
+                  <div className="flex items-start gap-3 sm:col-span-2">
+                    <Activity className="w-5 h-5 text-accent mt-0.5" />
+                    <div>
+                      <p className="text-muted-foreground text-xs uppercase tracking-wider">{t("symptoms")}</p>
+                      <p className="text-foreground font-medium">{collectedSymptoms.join(", ")}</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </motion.div>
 
@@ -1377,7 +1475,7 @@ Clinic Code:`;
 
           <div className="bg-popover rounded-2xl p-8 border border-border shadow-sm">
             <div className="flex flex-wrap gap-2 mb-4">
-              {chipOptions.map((chip) => (
+              {SYMPTOM_CHIP_OPTIONS.map((chip) => (
                 <motion.button key={chip} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
                   onClick={() =>
                     setSymptomChips((prev) => {
@@ -1865,11 +1963,16 @@ Clinic Code:`;
             <motion.div key="s4" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.35 }}>
               <div className="max-w-3xl mx-auto">
                 <div className="bg-popover rounded-2xl p-8 md:p-10 border border-border shadow-sm">
-                  <h2 className="font-serif text-xl text-foreground mb-2">{isRequestMode ? t("reviewSubmit") : t("reviewConfirm")}</h2>
+                  <h2 className="font-serif text-xl text-foreground mb-2">
+                    {patientType === "new" ? t("reviewSubmit") : isRequestMode ? t("reviewSubmit") : t("reviewConfirm")}
+                  </h2>
                   <div className="space-y-5">
                     {[
-                      { label: t("department"), value: selectedDeptObj?.name || selectedDoctorObj?.specialty || "", icon: Building2 },
-                      { label: t("doctor"), value: selectedDoctorObj?.name || "", icon: User },
+                      { label: t("department"), value: (isAr ? selectedDeptObj?.nameAr : selectedDeptObj?.name) || selectedDoctorObj?.specialty || "", icon: Building2 },
+                      { label: t("doctor"), value: (isAr ? selectedDoctorObj?.nameAr : selectedDoctorObj?.name) || "", icon: User },
+                      ...(collectedSymptoms.length > 0
+                        ? [{ label: t("symptoms"), value: collectedSymptoms.join(", "), icon: Activity }]
+                        : []),
                       { label: isAr ? "التاريخ والوقت" : "Date & Time", value: selectedDate && selectedSlot ? `${formattedSelectedDate}  •  ${formatTimeString(selectedSlot)}` : "", icon: Clock },
                       { label: t("patient"), value: patientName.trim() || "—", icon: ClipboardList },
                       ...(patientType === "new" ? [{ label: t("phone"), value: `${patientCountryCode} ${patientPhone}`, icon: Stethoscope }, { label: isAr ? "تاريخ الميلاد" : "Date of Birth", value: formattedDob, icon: User }, { label: t("gender"), value: patientGender === "male" ? t("male") : t("female"), icon: User }] : [])
@@ -1880,7 +1983,7 @@ Clinic Code:`;
                   {bookingError && <div className="mt-6 p-4 rounded-xl bg-destructive/10 border border-destructive/20 flex items-center gap-3"><AlertCircle className="w-5 h-5 text-destructive" /><p className="font-body text-sm text-destructive">{bookingError}</p></div>}
                   <div className="mt-8 flex flex-col gap-4">
                     <motion.button whileHover={!isSubmitting ? { scale: 1.02 } : {}} whileTap={!isSubmitting ? { scale: 0.98 } : {}} onClick={handleConfirm} disabled={isSubmitting} className="w-full bg-primary text-primary-foreground py-4 rounded-xl font-body text-sm tracking-widest uppercase hover:bg-primary/90 transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-70">
-                      {isSubmitting ? <><Loader2 className="w-5 h-5 animate-spin" />{isAr ? "جارِ الإرسال..." : "Submitting..."}</> : <>{patientType === "new" ? (isAr ? "تأكيد الطلب" : "Confirm Request") : (isAr ? "تأكيد الحجز" : "Confirm Booking")}</>}
+                      {isSubmitting ? <><Loader2 className="w-5 h-5 animate-spin" />{isAr ? "جارِ الإرسال..." : "Submitting..."}</> : <>{patientType === "new" ? t("confirmRequest") : (isAr ? "تأكيد الحجز" : "Confirm Booking")}</>}
                     </motion.button>
                   </div>
                 </div>
@@ -2000,6 +2103,40 @@ Clinic Code:`;
                   </button>
                 </div>
               )}
+            </div>
+          </motion.div>
+        </div>
+      )}
+      {showHisFailureModal && (
+        <div
+          className="fixed inset-0 z-[80] flex items-center justify-center bg-foreground/40 backdrop-blur-sm p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="his-failure-modal-title"
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.97 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="w-full max-w-lg rounded-2xl border border-border/70 bg-popover shadow-2xl p-6 text-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex flex-col items-center gap-3 mb-6">
+              <AlertCircle className="w-8 h-8 text-accent" />
+              <p
+                id="his-failure-modal-title"
+                className="font-body text-sm text-foreground leading-relaxed text-start"
+              >
+                {t("hisFailureCallCenterMessage")}
+              </p>
+            </div>
+            <div className="flex justify-center">
+              <button
+                type="button"
+                onClick={dismissHisFailureAndGoToRequest}
+                className="min-w-28 bg-primary text-primary-foreground px-6 py-2.5 rounded-lg font-body text-xs tracking-widest uppercase hover:bg-primary/90 transition-colors"
+              >
+                OK
+              </button>
             </div>
           </motion.div>
         </div>

@@ -15,6 +15,9 @@ import { resolveDepartmentBySlug } from "@/utils/resolveDepartmentSlug";
 
 const pickDeptText = (lang: string, en: string, ar?: string) => (lang === "ar" && ar ? ar : en);
 
+const isAlSafwaDepartment = (slug: string, name: string) =>
+  slug.includes("al-safwa") || name.toLowerCase().includes("safwa");
+
 const DepartmentDoctors = ({ doctors, lang }: { doctors: typeof allDoctors; lang: string }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const autoSlideRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -162,14 +165,42 @@ const DepartmentDetail = () => {
   const { slug, subSlug } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const fromBookAppointment = Boolean(
-    (location.state as { fromBookAppointment?: boolean } | null)?.fromBookAppointment
-  );
+  const navState = (location.state as {
+    fromBookAppointment?: boolean;
+    fromSpecializedCare?: boolean;
+    returnPath?: string;
+    restoreExpandedIndex?: number | null;
+    restoreSelectedSubByService?: Record<string, string>;
+    restoreScrollY?: number;
+  } | null) ?? {};
+  const fromBookAppointment = Boolean(navState.fromBookAppointment);
+  const fromSpecializedCare = Boolean(navState.fromSpecializedCare);
   const { lang, t } = useLanguage();
   const isAr = lang === "ar";
   const [expandedSub, setExpandedSub] = useState<string | null>(subSlug || null);
 
-  const dept = resolveDepartmentBySlug(slug);
+  const goBackToSpecializedCare = () => {
+    navigate(navState.returnPath || "/", {
+      state: {
+        restoreExpandedIndex: navState.restoreExpandedIndex,
+        restoreSelectedSubByService: navState.restoreSelectedSubByService,
+        restoreScrollY: navState.restoreScrollY,
+      },
+    });
+  };
+
+  const goBackToDepartment = () => {
+    if (fromSpecializedCare) {
+      goBackToSpecializedCare();
+      return;
+    }
+    navigate(`/medical-services/${slug}`);
+  };
+
+  const dept = departmentDetails.find((d) => d.slug === slug);
+  const alSafwaDept = dept ? isAlSafwaDepartment(dept.slug, dept.name) : false;
+
+  const goToAlSafwaProgram = () => navigate("/al-safwa");
 
   if (!dept) {
     return (
@@ -330,6 +361,15 @@ const DepartmentDetail = () => {
         <div className="container mx-auto px-6">
           <ScrollAnimationWrapper>
             <div className="max-w-4xl">
+              {fromSpecializedCare && !activeSub && (
+                <button
+                  onClick={goBackToSpecializedCare}
+                  className="inline-flex items-center gap-2 text-accent font-body text-xs tracking-wide mb-4 hover:underline"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  {isAr ? "رجوع" : "Go Back"}
+                </button>
+              )}
               {fromBookAppointment && (
                 <button
                   onClick={() => navigate("/book-appointment")}
@@ -341,11 +381,11 @@ const DepartmentDetail = () => {
               )}
               {activeSub && (
                 <button
-                  onClick={() => navigate(`/medical-services/${dept.slug}`)}
+                  onClick={goBackToDepartment}
                   className="inline-flex items-center gap-2 text-accent font-body text-xs tracking-wide mb-4 hover:underline"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
-                  Back to {dept.name}
+                  {isAr ? `العودة إلى ${dept.nameAr}` : `Back to ${dept.name}`}
                 </button>
               )}
               <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">
@@ -374,7 +414,26 @@ const DepartmentDetail = () => {
       {/* Show image only for main department */}
       {!activeSub && (
         <section className="container mx-auto px-6 py-8 flex justify-center">
-          <div className="aspect-video w-full max-w-4xl bg-muted/30 rounded-2xl border border-border/50 flex items-center justify-center overflow-hidden">
+          <div
+            role={alSafwaDept ? "link" : undefined}
+            tabIndex={alSafwaDept ? 0 : undefined}
+            onClick={alSafwaDept ? goToAlSafwaProgram : undefined}
+            onKeyDown={
+              alSafwaDept
+                ? (e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      goToAlSafwaProgram();
+                    }
+                  }
+                : undefined
+            }
+            className={`aspect-video w-full max-w-4xl bg-muted/30 rounded-2xl border border-border/50 flex items-center justify-center overflow-hidden ${
+              alSafwaDept
+                ? "cursor-pointer hover:border-primary/40 hover:shadow-md transition-all"
+                : ""
+            }`}
+          >
             {deptImage ? (
               <img
                 src={deptImage}
@@ -409,7 +468,24 @@ const DepartmentDetail = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.05 }}
-                  className="bg-popover border border-border/50 rounded-2xl p-6 md:p-8"
+                  role={alSafwaDept ? "link" : undefined}
+                  tabIndex={alSafwaDept ? 0 : undefined}
+                  onClick={alSafwaDept ? goToAlSafwaProgram : undefined}
+                  onKeyDown={
+                    alSafwaDept
+                      ? (e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            goToAlSafwaProgram();
+                          }
+                        }
+                      : undefined
+                  }
+                  className={`bg-popover border border-border/50 rounded-2xl p-6 md:p-8 ${
+                    alSafwaDept
+                      ? "cursor-pointer hover:border-primary/40 hover:shadow-md transition-all"
+                      : ""
+                  }`}
                 >
                   <h3
                     className={`font-serif text-lg md:text-xl text-foreground mb-4 ${

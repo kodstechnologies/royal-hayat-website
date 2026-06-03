@@ -15,6 +15,7 @@ type InRoomEventsProps = {
 const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
+  const ltrPhoneClass = "inline-block [direction:ltr] [unicode-bidi:isolate]";
   const [activeSlide, setActiveSlide] = useState(0);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 
@@ -31,7 +32,7 @@ const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) =
     if (topCarouselImages.length <= 1) return;
     const timer = window.setInterval(() => {
       setActiveSlide((prev) => (prev + 1) % topCarouselImages.length);
-    }, 4500);
+    }, 5000);
     return () => window.clearInterval(timer);
   }, [topCarouselImages.length]);
 
@@ -282,7 +283,7 @@ const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) =
             </p>
             <a href="tel:+96525360573" className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-full font-body text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-colors">
               <Phone className="w-4 h-4" />
-              +965 2536 0573
+              <span className={ltrPhoneClass}>+965 2536 0573</span>
             </a>
           </ScrollAnimationWrapper>
         </div>

@@ -2,6 +2,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
+import EventBookingModal from "@/components/EventBookingModal";
 import { Crown, Utensils, Sparkles, Flower2, Coffee, Phone, CheckCircle2, Baby, Image, Video, Bed, Star, ChevronLeft, ChevronRight, X, Gift, UtensilsCrossed, UserCheck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -43,9 +44,11 @@ const HospitalityServices = ({
   const [orchidSlide, setOrchidSlide] = useState(0);
   const [spaSlide, setSpaSlide] = useState(0);
   const [cafeSlide, setCafeSlide] = useState(0);
+  const [fifthCafeSlide, setFifthCafeSlide] = useState(0);
   const [inRoomSlide, setInRoomSlide] = useState(0);
   const [babySlide, setBabySlide] = useState(0);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+  const [eventBookingOpen, setEventBookingOpen] = useState(false);
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
@@ -55,13 +58,17 @@ const HospitalityServices = ({
     "https://royal-hayat.s3.eu-central-1.amazonaws.com/baby-images/WhatsApp+Image+2026-05-12+at+2.39.52+PM+(1).jpeg",
     "https://royal-hayat.s3.eu-central-1.amazonaws.com/baby-images/WhatsApp+Image+2026-05-12+at+2.39.52+PM.jpeg",
   ];
+  const fifthFloorCafeImages = [
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/fifth-floor/WhatsApp+Image+2026-06-02+at+2.17.44+PM+(1).jpeg",
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/fifth-floor/WhatsApp+Image+2026-06-02+at+2.17.44+PM.jpeg",
+  ];
   const activeSuiteImages = suiteCarouselImagesByIndex[activeSuite] ?? suiteCarouselImagesByIndex[6];
 
   useEffect(() => {
     if (activeSuite === 0) return;
     const timer = window.setInterval(() => {
       setSuiteSlide((prev) => (prev + 1) % activeSuiteImages.length);
-    }, 4500);
+    }, 5000);
     return () => window.clearInterval(timer);
   }, [activeSuite, activeSuiteImages.length]);
 
@@ -70,10 +77,26 @@ const HospitalityServices = ({
   }, [activeSuite]);
 
   useEffect(() => {
+    if (activeHall !== "gardenia" || gardeniaHallImages.length <= 1) return;
+    const timer = window.setInterval(() => {
+      setGardeniaSlide((prev) => (prev + 1) % gardeniaHallImages.length);
+    }, 5000);
+    return () => window.clearInterval(timer);
+  }, [activeHall, gardeniaHallImages.length]);
+
+  useEffect(() => {
+    if (activeHall !== "aljouri" || alJouriHallImages.length <= 1) return;
+    const timer = window.setInterval(() => {
+      setAlJouriSlide((prev) => (prev + 1) % alJouriHallImages.length);
+    }, 5000);
+    return () => window.clearInterval(timer);
+  }, [activeHall, alJouriHallImages.length]);
+
+  useEffect(() => {
     if (activeSuite !== 0) return;
     const timer = window.setInterval(() => {
       setOrchidSlide((prev) => (prev + 1) % orchidSuiteImages.length);
-    }, 4500);
+    }, 5000);
     return () => window.clearInterval(timer);
   }, [activeSuite, orchidSuiteImages.length]);
 
@@ -81,7 +104,7 @@ const HospitalityServices = ({
     if (spaImages.length <= 1) return;
     const timer = window.setInterval(() => {
       setSpaSlide((prev) => (prev + 1) % spaImages.length);
-    }, 4500);
+    }, 5000);
     return () => window.clearInterval(timer);
   }, [spaImages.length]);
 
@@ -89,15 +112,23 @@ const HospitalityServices = ({
     if (cafeImages.length <= 1) return;
     const timer = window.setInterval(() => {
       setCafeSlide((prev) => (prev + 1) % cafeImages.length);
-    }, 4500);
+    }, 5000);
     return () => window.clearInterval(timer);
   }, [cafeImages.length]);
+
+  useEffect(() => {
+    if (fifthFloorCafeImages.length <= 1) return;
+    const timer = window.setInterval(() => {
+      setFifthCafeSlide((prev) => (prev + 1) % fifthFloorCafeImages.length);
+    }, 5000);
+    return () => window.clearInterval(timer);
+  }, [fifthFloorCafeImages.length]);
 
   useEffect(() => {
     if (babyImages.length <= 1) return;
     const timer = window.setInterval(() => {
       setBabySlide((prev) => (prev + 1) % babyImages.length);
-    }, 4500);
+    }, 5000);
     return () => window.clearInterval(timer);
   }, [babyImages.length]);
 
@@ -375,10 +406,14 @@ const HospitalityServices = ({
           </ScrollAnimationWrapper>
 
           <div className="mt-8 text-center">
-            <a href="tel:+96525360573" className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-full font-body text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-colors">
+            <button
+              type="button"
+              onClick={() => setEventBookingOpen(true)}
+              className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-full font-body text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-colors"
+            >
               <Phone className="w-4 h-4" />
               {isAr ? "اضغط لحجز مناسبتك" : "Book your Event Online"}
-            </a>
+            </button>
           </div>
 
           {/* <div className="mt-10 aspect-video bg-muted/30 rounded-2xl border border-border flex items-center justify-center">
@@ -672,7 +707,7 @@ const HospitalityServices = ({
                     واختتموا تجربتكم بقطعة من الكيك أو المخبوزات الطازجة، إلى جانب تشكيلة من القهوة المختصة وأنواع الشاي الفاخرة.
                   </p>
                 )}
-                <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify">
+                <p className="font-body text-sm text-muted-foreground leading-relaxed text-start md:text-justify">
                   {isAr
                     ? "يفتح الليوان بيسترو أبوابه يوميًا من الساعة 8 صباحًا وحتى 11 مساءً، ليكون وجهتكم المثالية للإفطار، والغداء، والعشاء، أو للاستمتاع بوجبة خفيفة في أي وقت من اليوم."
                     : "Open daily from 8 a.m. to 11 p.m., Al Liwan Bistro is an ideal destination for breakfast, lunch, dinner, or a light bite at any time of day."}
@@ -759,7 +794,7 @@ const HospitalityServices = ({
                       ))}
                   </div>
                 </div>
-                <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify">
+                <p className="font-body tracking-normal [word-spacing:normal] text-sm text-muted-foreground leading-relaxed text-start md:text-justify">
                   {isAr ? "لمزيد من التفاصيل، يرجى زيارة: " : "For more details, please visit: "}
                   <a href="https://www.banyantreespa.com" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline font-semibold">www.banyantreespa.com</a>
                 </p>
@@ -1459,8 +1494,8 @@ const HospitalityServices = ({
       {/* ===== 5TH FLOOR CAFÉ (Show All Order) — layout aligned with FifthFloorCafe page */}
       {showAll && <section className="py-6 bg-muted/10">
         <div className="container mx-auto px-6 max-w-6xl">
-          <div className="w-full">
-            <ScrollAnimationWrapper>
+          <div className="grid lg:grid-cols-2 gap-10 items-start">
+            <ScrollAnimationWrapper className="order-2 lg:order-1">
               <div className="text-justify">
                 <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-2 text-center">
                   {isAr ? "مقهى الطابق الخامس" : "The 5th Floor Café"}
@@ -1499,6 +1534,52 @@ const HospitalityServices = ({
                 </p>
               </div>
             </ScrollAnimationWrapper>
+
+            <div className="relative order-1 lg:order-2">
+              <div className="relative aspect-[5/4] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
+                <AnimatePresence initial={false}>
+                  <motion.div
+                    key={`fifth-cafe-showall-${fifthCafeSlide}`}
+                    initial={{ x: 36 }}
+                    animate={{ x: 0 }}
+                    exit={{ x: -36 }}
+                    transition={{ duration: 0.35, ease: "easeInOut" }}
+                    className="absolute inset-0"
+                  >
+                    <img
+                      src={fifthFloorCafeImages[fifthCafeSlide]}
+                      alt={isAr ? `مقهى الطابق الخامس ${fifthCafeSlide + 1}` : `The 5th Floor Cafe image ${fifthCafeSlide + 1}`}
+                      className="w-full h-full object-cover cursor-zoom-in"
+                      loading="lazy"
+                      onClick={() => setLightboxImage(fifthFloorCafeImages[fifthCafeSlide])}
+                    />
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+              <>
+                <button
+                  onClick={() => setFifthCafeSlide((prev) => (prev - 1 + fifthFloorCafeImages.length) % fifthFloorCafeImages.length)}
+                  aria-label={isAr ? "السابق" : "Previous"}
+                  disabled={fifthFloorCafeImages.length <= 1}
+                  className="absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-background/95 disabled:hover:text-foreground disabled:hover:border-border"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={() => setFifthCafeSlide((prev) => (prev + 1) % fifthFloorCafeImages.length)}
+                  aria-label={isAr ? "التالي" : "Next"}
+                  disabled={fifthFloorCafeImages.length <= 1}
+                  className="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-background/95 disabled:hover:text-foreground disabled:hover:border-border"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </>
+              <div className="flex items-center justify-center gap-3 mt-5">
+                <span className="font-body text-xs text-muted-foreground tracking-widest">
+                  {String(fifthCafeSlide + 1).padStart(2, "0")} / {String(fifthFloorCafeImages.length).padStart(2, "0")}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </section>}
@@ -1591,6 +1672,8 @@ const HospitalityServices = ({
           </div>
         </div>
       </section>}
+      <EventBookingModal isOpen={eventBookingOpen} isAr={isAr} onClose={() => setEventBookingOpen(false)} />
+
       <AnimatePresence>
         {lightboxImage && (
           <motion.div

@@ -63,6 +63,11 @@ type GalleryCarousel = {
   variant?: "muted";
 };
 
+const detectIOSWebKit = () =>
+  typeof navigator !== "undefined" &&
+  /iPad|iPhone|iPod/.test(navigator.userAgent) &&
+  !(typeof window !== "undefined" && "MSStream" in window);
+
 const toCarouselPhotos = (label: string, images: string[]): LifePhoto[] => {
   if (images.length === 0) {
     return [{ alt: `${label} — 1` }];
@@ -230,7 +235,9 @@ const WorkWithUs = ({
 }: WorkWithUsProps) => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
+  const isIOSWebKit = useMemo(() => detectIOSWebKit(), []);
   const [activeCategory, setActiveCategory] = useState("View All");
+<<<<<<<<< Temporary merge branch 1
   const [jobPostings, setJobPostings] = useState<JobPosting[]>([]);
   const [jobsLoading, setJobsLoading] = useState(true);
   const [jobsError, setJobsError] = useState(false);
@@ -433,12 +440,12 @@ const WorkWithUs = ({
 
   const cultureNarrativeClass = isAr
     ? "culture-narrative space-y-5 font-body text-foreground leading-relaxed text-justify [text-align-last:right]"
-    : "culture-narrative space-y-5 font-body text-foreground leading-relaxed text-justify hyphens-auto break-words [text-align-last:left] [&_p]:hyphens-auto [&_p]:break-words";
+    : "culture-narrative space-y-5 font-body text-foreground leading-relaxed text-justify hyphens-auto [text-align-last:left] [&_p]:hyphens-auto";
 
   return (
     <div
       id="work-culture-page"
-      className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107] [&_p]:text-justify [&_li]:text-justify"
+      className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107] [&_p]:text-start [&_li]:text-start"
     >
       <Header />
 
@@ -462,7 +469,7 @@ const WorkWithUs = ({
             </div>
 
             {/* RIGHT — content */}
-            <ScrollAnimationWrapper className="flex w-full flex-col justify-center px-8 py-10 md:px-14 md:py-12 lg:px-16 lg:self-center lg:py-12 2xl:py-16">
+            <ScrollAnimationWrapper className="flex w-full flex-col justify-center px-4 py-10 sm:px-6 md:px-14 md:py-12 lg:px-16 lg:self-center lg:py-12 2xl:py-16">
               <div
                 dir={isAr ? "rtl" : "ltr"}
                 lang={isAr ? "ar" : "en"}
@@ -473,7 +480,7 @@ const WorkWithUs = ({
                   ? "الحياة في مستشفى رويال حياة"
                   : "Life at Royale Hayat Hospital"}
               </h1>
-              <div className="space-y-4 font-body text-sm text-foreground leading-relaxed text-justify">
+              <div className="work-body-copy space-y-4 font-body tracking-normal text-[13px] sm:text-sm text-foreground leading-relaxed text-start">
                 <p>
                   {isAr
                     ? "في مستشفى رويال حياة، نؤمن بفكرة بسيطة: قد ينسى الناس ما قلناه، لكنهم لن ينسوا أبداً كيف جعلناهم يشعرون كمرضى، أو أفراد عائلة، أو زملاء."
@@ -499,12 +506,12 @@ const WorkWithUs = ({
       {/* Our People Promise — narrative from document */}
       {showSection("culture") && (
         <section className="py-14 bg-background">
-          <div className="container mx-auto px-6 max-w-3xl">
+          <div className="container mx-auto px-3 md:px-6 max-w-none md:max-w-5xl lg:max-w-6xl">
             <ScrollAnimationWrapper>
-              <h2 className="text-2xl md:text-3xl font-serif text-foreground text-center mb-3 hyphens-auto break-words text-pretty px-1">
+              <h2 className="text-2xl md:text-3xl font-serif text-foreground text-center mb-3 text-pretty px-1">
                 {isAr ? "وعدنا لموظفينا" : "‘Our People Promise’"}
               </h2>
-              <p className="text-center !text-center text-accent font-body text-sm mb-8 italic hyphens-auto break-words text-pretty px-1">
+              <p className="text-center !text-center text-accent font-body text-sm mb-8 italic text-pretty px-1">
                 {isAr
                   ? "إن وعدنا لمرضانا يبدأ أولًا من وعدنا لموظفينا."
                   : "Our promise to patients begins with our promise to our people"}
@@ -513,17 +520,17 @@ const WorkWithUs = ({
                 <p>
                   {isAr
                     ? "نعد بتوفير بيئة عمل يشعر فيها كل موظف بالاحترام، الثقة، والدعم، حيث لا تُقاس قيمة الإنسان بالمسمى الوظيفي، بل بما يقدمه من احترافية، نزاهة، وإسهام حقيقي."
-                    : "We promise a workplace where employees are respected, trusted, and supported not defined by titles, but valued for their professionalism, integrity, and contribution."}
+                    : "We promise a work\u00ADplace where em\u00ADploy\u00ADees are re\u00ADspect\u00ADed, trust\u00ADed, and sup\u00ADport\u00ADed not de\u00ADfined by ti\u00ADtles, but val\u00ADued for their pro\u00ADfes\u00ADsion\u00ADal\u00ADism, in\u00ADteg\u00ADri\u00ADty, and con\u00ADtri\u00ADbu\u00ADtion."}
                 </p>
                 <p>
                   {isAr
                     ? "نستثمر بوعي في التطوير والتعلم المستمر، من خلال البرامج التدريبية، والتعرّف على المعايير العالمية، والتعاون بين التخصصات، وتوفير الفرص التي تساعد موظفينا على النمو بثقة وتميّز."
-                    : "We invest deliberately in learning and development, through continuous training, exposure to international standards, collaboration across disciplines, and opportunities to grow with confidence."}
+                    : "We in\u00ADvest de\u00ADlib\u00ADer\u00ADate\u00ADly in learn\u00ADing and de\u00ADvel\u00ADop\u00ADment, through con\u00ADtin\u00ADu\u00ADous train\u00ADing, ex\u00ADpo\u00ADsure to in\u00ADter\u00ADna\u00ADtion\u00ADal stan\u00ADdards, col\u00ADlab\u00ADo\u00ADra\u00ADtion across dis\u00ADci\u00ADplines, and op\u00ADpor\u00ADtu\u00ADni\u00ADties to grow with con\u00ADfi\u00ADdence."}
                 </p>
                 <p>
                   {isAr
                     ? "فنحن نؤمن بأن التميّز يُبنى بالتعلم، ويستمر بالثقة. ووعدنا بسيط: سندعم تطوركم، ونقدّر جهودكم، ونرافقكم في بناء مسيرة مهنية تفتخرون بها."
-                    : "We believe excellence is built through learning—and sustained through trust. Our promise is simple: we will help you grow, we will recognize your effort, and we will walk with you as you build a career you can be proud of."}
+                    : "We be\u00ADlieve ex\u00ADcel\u00ADlence is built through learn\u00ADing-and sus\u00ADtained through trust. Our prom\u00ADise is sim\u00ADple: we will help you grow, we will rec\u00ADog\u00ADnize your ef\u00ADfort, and we will walk with you as you build a ca\u00ADreer you can be proud of."}
                 </p>
               </div>
             </ScrollAnimationWrapper>
@@ -534,9 +541,9 @@ const WorkWithUs = ({
       {/* Where We Belong Together */}
       {showSection("culture") && (
         <section className="py-14 bg-secondary/10">
-          <div className="container mx-auto px-6 max-w-3xl">
+          <div className="container mx-auto px-3 md:px-6 max-w-none md:max-w-5xl lg:max-w-6xl">
             <ScrollAnimationWrapper>
-              <h2 className="text-2xl md:text-3xl font-serif text-foreground text-center mb-8 hyphens-auto break-words text-pretty px-1">
+              <h2 className="text-2xl md:text-3xl font-serif text-foreground text-center mb-8 text-pretty px-1">
                 {isAr ? "معًا… حيث ننتمي" : "‘Where We Belong Together.’"}
               </h2>
               <div dir={isAr ? "rtl" : "ltr"} lang={isAr ? "ar" : "en"} className={cultureNarrativeClass}>
@@ -553,7 +560,7 @@ const WorkWithUs = ({
                 <p>
                   {isAr
                     ? "وفي رويال حياة، لا تمر الجهود والإنجازات دون تقدير، لأن الامتنان جزء أساسي من ثقافتنا، والرعاية تستحق أن تُحتفى بها. هنا، العمل ليس مجرد وظيفة، بل مكان تشعر فيه بالتقدير والانتماء."
-                    : "Effort and excellence never go unnoticed here—because appreciation matters, and care deserves to be recognized. At Royale Hayat, it’s more than work. It’s a place to belong and be valued."}
+                    : "Effort and excellence never go unnoticed here because appreciation matters, and care deserves recognition. At Royale Hayat, it is more than work; it is a place to belong and be valued."}
                 </p>
               </div>
             </ScrollAnimationWrapper>
@@ -564,7 +571,7 @@ const WorkWithUs = ({
       {/* Recognition & Appreciation gallery */}
       {showSection("culture") && (
         <section className="py-16 bg-secondary/10">
-          <div className="container mx-auto px-6">
+          <div className="container mx-auto px-3 md:px-6">
             <div className="text-center mb-8">
               <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3 !text-center">
                 {isAr ? "التكريم والتقدير" : "Life at Royale Hayat"}
@@ -589,11 +596,11 @@ const WorkWithUs = ({
               <AnimatePresence mode="wait">
                 <motion.div
                   key={displayEmployees[empIndex]?.id ?? empIndex}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
+                  initial={isIOSWebKit ? false : { opacity: 0, x: 20 }}
+                  animate={isIOSWebKit ? { opacity: 1 } : { opacity: 1, x: 0 }}
+                  exit={isIOSWebKit ? { opacity: 0 } : { opacity: 0, x: -20 }}
                   transition={{ duration: 0.3 }}
-                  className="ios-flicker-fix bg-popover border border-border/50 rounded-2xl overflow-hidden"
+                  className="ios-flicker-fix ios-flicker-fix bg-popover border border-border/50 rounded-2xl overflow-hidden"
                 >
                   <div className="flex flex-col md:flex-row">
                     <div className="md:w-96 flex-shrink-0 bg-primary/5 p-6 flex items-center justify-center">
@@ -623,7 +630,10 @@ const WorkWithUs = ({
                           : displayEmployees[empIndex].dept}
                       </p>
 
-                      <p className="font-body text-sm text-accent mb-5">
+                      <p
+                        className={`font-body text-sm text-accent mb-5 ${isAr ? "" : "justified-body-en"}`}
+                        lang={isAr ? "ar" : "en"}
+                      >
                         {isAr
                           ? displayEmployees[empIndex].roleAr
                           : displayEmployees[empIndex].role}
@@ -639,7 +649,9 @@ const WorkWithUs = ({
                             ? displayEmployees[empIndex].achievementsAr
                             : displayEmployees[empIndex].achievements
                           ).map((ach, idx) => (
-                            <p key={idx}>{ach}</p>
+                            <p key={idx} className={isAr ? "" : "justified-body-en"} lang={isAr ? "ar" : "en"}>
+                              {ach}
+                            </p>
                           ))}
                         </div>
                       </div>
@@ -746,7 +758,7 @@ const WorkWithUs = ({
       {/* Explore Careers heading */}
       {showSection("culture") && (
         <section className="py-12 bg-background text-center">
-          <div className="container mx-auto px-6">
+          <div className="container mx-auto px-3 md:px-6">
             <Link
               to="/work-with-us?section=positions"
               className="inline-block group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded-sm"
@@ -764,7 +776,7 @@ const WorkWithUs = ({
       {/* Open Positions */}
       {showSection("positions") && (
         <section className="py-16 bg-secondary/10" id="open-positions">
-          <div className="container mx-auto px-6">
+          <div className="container mx-auto px-3 md:px-6">
             <ScrollAnimationWrapper>
               <div className="text-center mb-8">
                 <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3 !text-center">
@@ -773,7 +785,10 @@ const WorkWithUs = ({
                 <h2 className="text-2xl md:text-3xl font-serif text-foreground">
                   {isAr ? "الوظائف الشاغرة" : "Open Positions"}
                 </h2>
-                <p className="text-muted-foreground font-body text-sm max-w-xl mx-auto mt-3">
+                <p
+                  className={`text-muted-foreground font-body text-sm max-w-xl mx-auto mt-3 ${isAr ? "" : "justified-body-en"}`}
+                  lang={isAr ? "ar" : "en"}
+                >
                   {isAr
                     ? "اكتشف الفرص المهنية المتاحة وابدأ رحلتك المهنية معنا اليوم، ضمن بيئة عمل تجمع بين التميّز، التطوير، والرعاية الإنسانية الراقية."
                     : "Explore current opportunities and launch your career with us today."}
@@ -852,11 +867,11 @@ const WorkWithUs = ({
                   <motion.div
                     key={pos._id}
                     dir={isAr ? "rtl" : "ltr"}
-                    initial={false}
-                    whileInView={{ opacity: 1, y: 0 }}
+                    initial={isIOSWebKit ? false : false}
+                    whileInView={isIOSWebKit ? { opacity: 1 } : { opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.4 }}
-                    className="ios-flicker-fix bg-popover border border-border/50 rounded-2xl p-6 md:p-8 hover:shadow-lg transition-shadow"
+                    className="ios-flicker-fix ios-flicker-fix bg-popover border border-border/50 rounded-2xl p-6 md:p-8 hover:shadow-lg transition-shadow"
                   >
                     <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                       <div className="flex-1">
@@ -868,7 +883,10 @@ const WorkWithUs = ({
                             {pos.category.toUpperCase()}
                           </span>
                         </div>
-                        <p className="font-body text-sm text-muted-foreground leading-relaxed">
+                        <p
+                          className={`font-body text-sm text-muted-foreground leading-relaxed ${isAr ? "" : "justified-body-en"}`}
+                          lang={isAr ? "ar" : "en"}
+                        >
                           {pos.desc}
                         </p>
                       </div>
@@ -925,16 +943,73 @@ const WorkWithUs = ({
           will-change: transform, opacity;
         }
 
-        #work-culture-page .culture-narrative[dir="rtl"] {
+        #work-culture-page .culture-narrative[dir="rtl"],
+        #work-culture-page .work-body-copy[dir="rtl"] {
           -webkit-hyphens: none;
           hyphens: none;
         }
-        #work-culture-page .culture-narrative[dir="ltr"] p {
+
+        #work-culture-page .culture-narrative[lang="en"] p,
+        #work-culture-page .work-body-copy[lang="en"] p {
+          text-align: justify;
+          text-justify: inter-word;
+          text-align-last: auto;
           -webkit-hyphens: auto;
           hyphens: auto;
-          text-wrap: pretty;
+          hyphenate-limit-chars: 6 3 3;
+          text-wrap: auto;
           word-break: normal;
-          overflow-wrap: break-word;
+          overflow-wrap: normal;
+          max-width: 100%;
+          letter-spacing: normal !important;
+          font-kerning: normal;
+        }
+
+        #work-culture-page .justified-body-en {
+          text-align: justify;
+          text-justify: inter-word;
+          text-align-last: auto;
+          -webkit-hyphens: auto;
+          hyphens: auto;
+          hyphenate-limit-chars: 6 3 3;
+          word-break: normal;
+          overflow-wrap: normal;
+          letter-spacing: normal !important;
+          font-kerning: normal;
+        }
+
+        @media (max-width: 767px) {
+          #work-culture-page section .container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+          }
+
+          #work-culture-page .culture-narrative[lang="en"] p,
+          #work-culture-page .work-body-copy[lang="en"] p {
+            text-align: justify !important;
+            text-align-last: auto !important;
+            text-justify: inter-word;
+            -webkit-hyphens: auto !important;
+            hyphens: auto !important;
+            hyphenate-limit-chars: 6 3 3;
+            word-spacing: normal;
+            letter-spacing: normal;
+            word-break: normal;
+            overflow-wrap: normal;
+            white-space: normal;
+            text-wrap: auto;
+            letter-spacing: normal !important;
+            font-kerning: normal;
+          }
+
+          #work-culture-page .justified-body-en {
+            text-align: justify !important;
+            text-align-last: auto !important;
+            text-justify: inter-word;
+            -webkit-hyphens: auto !important;
+            hyphens: auto !important;
+            hyphenate-limit-chars: 6 3 3;
+          }
         }
       `}</style>
 

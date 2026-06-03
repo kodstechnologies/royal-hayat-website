@@ -11,41 +11,69 @@ import { Crown, Star, Target, Stethoscope, ClipboardList, Briefcase, UserPlus, C
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 
+
 const EnrollmentModal = ({ isOpen, onClose, t, isAr, onSuccess }: { isOpen: boolean; onClose: () => void; t: any; isAr: boolean; onSuccess: () => void }) => {
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    age: "",
+    firstName: "",
+    familyName: "",
     gender: "",
-    notes: ""
+    dateOfBirth: "",
+    mobile: "",
+    email: "",
+    preferredAppointmentDate: "",
+    previousMedicalCheckup: "",
+    diabetes: "",
+    highCholesterol: "",
+    bronchialAsthma: "",
+    hypertension: "",
+    heartDisease: "",
+    overweightObesity: "",
+    smoker: "",
+    alcohol: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!formData.age.trim() || !formData.gender || !formData.notes.trim()) {
-      toast.error(
-        isAr
-          ? "يرجى تعبئة العمر والجنس والملاحظات."
-          : "Please fill in age, gender, and notes."
-      );
-      return;
-    }
+    setIsSubmitting(true);
 
     try {
-      setIsSubmitting(true);
-      await createAlSafwaEnrollment(formData);
+      await createAlSafwaEnrollment({
+        ...formData,
+        gender: formData.gender as "male" | "female",
+        previousMedicalCheckup: formData.previousMedicalCheckup as
+          | "less_than_1_year"
+          | "more_than_1_year"
+          | "never",
+        diabetes: formData.diabetes as "yes" | "no" | "dont_know",
+        highCholesterol: formData.highCholesterol as "yes" | "no" | "dont_know",
+        bronchialAsthma: formData.bronchialAsthma as "yes" | "no" | "dont_know",
+        hypertension: formData.hypertension as "yes" | "no" | "dont_know",
+        heartDisease: formData.heartDisease as "yes" | "no" | "dont_know",
+        overweightObesity: formData.overweightObesity as "yes" | "no" | "dont_know",
+        smoker: formData.smoker as "yes" | "no",
+        alcohol: formData.alcohol as "yes" | "no",
+      });
+      setIsSubmitting(false);
       setIsSuccess(true);
       setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        age: "",
+        firstName: "",
+        familyName: "",
         gender: "",
-        notes: "",
+        dateOfBirth: "",
+        mobile: "",
+        email: "",
+        preferredAppointmentDate: "",
+        previousMedicalCheckup: "",
+        diabetes: "",
+        highCholesterol: "",
+        bronchialAsthma: "",
+        hypertension: "",
+        heartDisease: "",
+        overweightObesity: "",
+        smoker: "",
+        alcohol: "",
       });
       setTimeout(() => {
         setIsSuccess(false);
@@ -53,19 +81,17 @@ const EnrollmentModal = ({ isOpen, onClose, t, isAr, onSuccess }: { isOpen: bool
         onClose();
       }, 1500);
     } catch (error) {
-      const backendMessage =
-        axios.isAxiosError(error)
-          ? error.response?.data?.message || error.response?.data?.error || error.message
-          : null;
-
-      toast.error(
-        backendMessage ||
-          (isAr
-            ? "تعذر إرسال التسجيل. يرجى المحاولة مرة أخرى."
-            : "Failed to submit enrollment. Please try again.")
-      );
-    } finally {
       setIsSubmitting(false);
+      const backendMessage = axios.isAxiosError(error)
+        ? error.response?.data?.message || error.message
+        : null;
+      toast.error(isAr ? "خطأ" : "Error", {
+        description:
+          backendMessage ||
+          (isAr
+            ? "تعذر إرسال نموذج التسجيل. يرجى المحاولة مرة أخرى."
+            : "Failed to submit enrollment form. Please try again."),
+      });
     }
   };
 
@@ -85,10 +111,10 @@ const EnrollmentModal = ({ isOpen, onClose, t, isAr, onSuccess }: { isOpen: bool
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-sm bg-background/95 backdrop-blur-sm rounded-3xl border border-border/50 shadow-2xl shadow-primary/10 overflow-hidden"
+              className="relative w-full max-w-4xl bg-background/95 backdrop-blur-sm rounded-3xl border border-border/50 shadow-2xl shadow-primary/10 overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
-            <div className="p-5 md:p-7">
+            <div className="p-6 md:p-8">
               <div className="flex justify-between items-center mb-5">
                 <h2 className="text-2xl md:text-3xl font-serif text-primary">
                   {isAr ? "نموذج التسجيل" : "Enrollment Form"}
@@ -118,67 +144,40 @@ const EnrollmentModal = ({ isOpen, onClose, t, isAr, onSuccess }: { isOpen: bool
                   </p>
                 </motion.div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-3.5">
-                  <div>
-                    <label className="block text-[11px] font-serif text-primary/70 mb-1 ml-1.5 uppercase tracking-wider">
-                      {isAr ? "الاسم الكامل *" : "Full Name *"}
-                    </label>
-                    <input
-                      required
-                      type="text"
-                      className="w-full px-4 py-2.5 rounded-xl bg-primary/5 border border-primary/10 focus:border-primary/30 focus:bg-background focus:outline-none transition-all font-body text-sm placeholder:text-muted-foreground/40"
-                      placeholder={isAr ? "أدخل اسمك الكامل" : "Enter your full name"}
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-serif text-primary/70 mb-1 ml-1.5 uppercase tracking-wider">
-                      {isAr ? "البريد الإلكتروني *" : "Email *"}
-                    </label>
-                    <input
-                      required
-                      type="email"
-                      className="w-full px-4 py-2.5 rounded-xl bg-primary/5 border border-primary/10 focus:border-primary/30 focus:bg-background focus:outline-none transition-all font-body text-sm placeholder:text-muted-foreground/40"
-                      placeholder={isAr ? "أدخل بريدك الإلكتروني" : "Enter your email"}
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-serif text-primary/70 mb-1 ml-1.5 uppercase tracking-wider">
-                      {isAr ? "رقم الهاتف *" : "Phone Number *"}
-                    </label>
-                    <input
-                      required
-                      type="tel"
-                      className="w-full px-4 py-2.5 rounded-xl bg-primary/5 border border-primary/10 focus:border-primary/30 focus:bg-background focus:outline-none transition-all font-body text-sm placeholder:text-muted-foreground/40"
-                      placeholder={isAr ? "أدخل رقم هاتفك" : "Enter your phone number"}
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-[11px] font-serif text-primary/70 mb-1 ml-1.5 uppercase tracking-wider">
-                        {isAr ? "العمر" : "Age"}
+                        {isAr ? "الاسم *" : "Name *"}
                       </label>
                       <input
                         required
-                        type="number"
-                        min={1}
-                        className="w-full px-4 py-2.5 rounded-xl bg-primary/5 border border-primary/10 focus:border-primary/30 focus:bg-background focus:outline-none transition-all font-body text-sm"
-                        placeholder={isAr ? "العمر" : "Age"}
-                        value={formData.age}
-                        onChange={(e) => setFormData({ ...formData, age: e.target.value })}
+                        type="text"
+                        className="w-full px-4 py-2.5 rounded-xl bg-primary/5 border border-primary/10 focus:border-primary/30 focus:bg-background focus:outline-none transition-all font-body text-sm placeholder:text-muted-foreground/40"
+                        placeholder={isAr ? "الاسم" : "Name"}
+                        value={formData.firstName}
+                        onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                       />
                     </div>
+                    <div>
+                      <label className="block text-[11px] font-serif text-primary/70 mb-1 ml-1.5 uppercase tracking-wider">
+                        {isAr ? "اسم العائلة *" : "Family Name *"}
+                      </label>
+                      <input
+                        required
+                        type="text"
+                        className="w-full px-4 py-2.5 rounded-xl bg-primary/5 border border-primary/10 focus:border-primary/30 focus:bg-background focus:outline-none transition-all font-body text-sm placeholder:text-muted-foreground/40"
+                        placeholder={isAr ? "اسم العائلة" : "Family name"}
+                        value={formData.familyName}
+                        onChange={(e) => setFormData({ ...formData, familyName: e.target.value })}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="relative">
                       <label className="block text-[11px] font-serif text-primary/70 mb-1 ml-1.5 uppercase tracking-wider">
-                        {isAr ? "الجنس" : "Gender"}
+                        {isAr ? "الجنس *" : "Gender *"}
                       </label>
                       <select
                         required
@@ -192,20 +191,174 @@ const EnrollmentModal = ({ isOpen, onClose, t, isAr, onSuccess }: { isOpen: bool
                       </select>
                       <ChevronDown className="absolute right-3 top-[34px] w-3.5 h-3.5 text-muted-foreground/60 pointer-events-none" />
                     </div>
+                    <div>
+                      <label className="block text-[11px] font-serif text-primary/70 mb-1 ml-1.5 uppercase tracking-wider">
+                        {isAr ? "تاريخ الميلاد *" : "Date of Birth *"}
+                      </label>
+                      <input
+                        required
+                        type="date"
+                        className="w-full px-4 py-2.5 rounded-xl bg-primary/5 border border-primary/10 focus:border-primary/30 focus:bg-background focus:outline-none transition-all font-body text-sm"
+                        value={formData.dateOfBirth}
+                        onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[11px] font-serif text-primary/70 mb-1 ml-1.5 uppercase tracking-wider">
+                        {isAr ? "الجوال *" : "Mobile *"}
+                      </label>
+                      <input
+                        required
+                        type="tel"
+                        className="w-full px-4 py-2.5 rounded-xl bg-primary/5 border border-primary/10 focus:border-primary/30 focus:bg-background focus:outline-none transition-all font-body text-sm placeholder:text-muted-foreground/40"
+                        placeholder={isAr ? "الجوال" : "Mobile"}
+                        value={formData.mobile}
+                        onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-serif text-primary/70 mb-1 ml-1.5 uppercase tracking-wider">
+                        {isAr ? "البريد الإلكتروني *" : "Email *"}
+                      </label>
+                      <input
+                        required
+                        type="email"
+                        className="w-full px-4 py-2.5 rounded-xl bg-primary/5 border border-primary/10 focus:border-primary/30 focus:bg-background focus:outline-none transition-all font-body text-sm placeholder:text-muted-foreground/40"
+                        placeholder={isAr ? "البريد الإلكتروني" : "Email"}
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      />
+                    </div>
                   </div>
 
                   <div>
                     <label className="block text-[11px] font-serif text-primary/70 mb-1 ml-1.5 uppercase tracking-wider">
-                      {isAr ? "ملاحظات إضافية" : "Additional Notes"}
+                      {isAr ? "التاريخ المفضل للموعد *" : "Preferred Date of Appointment *"}
                     </label>
-                    <textarea
+                    <input
                       required
-                      rows={2}
-                      className="w-full px-4 py-2.5 rounded-xl bg-primary/5 border border-primary/10 focus:border-primary/30 focus:bg-background focus:outline-none transition-all font-body text-sm resize-none placeholder:text-muted-foreground/40"
-                      placeholder={isAr ? "أي معلومات أو ملاحظات طبية..." : "Any medical information or notes..."}
-                      value={formData.notes}
-                      onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                      type="date"
+                      className="w-full px-4 py-2.5 rounded-xl bg-primary/5 border border-primary/10 focus:border-primary/30 focus:bg-background focus:outline-none transition-all font-body text-sm"
+                      value={formData.preferredAppointmentDate}
+                      onChange={(e) =>
+                        setFormData({ ...formData, preferredAppointmentDate: e.target.value })
+                      }
                     />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-serif text-primary/70 mb-2 ml-1.5 uppercase tracking-wider">
+                      {isAr
+                        ? "هل سبق لك إجراء فحص طبي؟"
+                        : "Have you previously had a medical checkup done?"}
+                    </label>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
+                      {[
+                        { value: "less_than_1_year", label: isAr ? "أقل من سنة" : "Less than 1 yr" },
+                        { value: "more_than_1_year", label: isAr ? "أكثر من سنة" : "More than 1 yr" },
+                        { value: "never", label: isAr ? "أبداً" : "Never" },
+                      ].map((option) => (
+                        <label key={option.value} className="flex items-center gap-1.5">
+                          <input
+                            required
+                            type="radio"
+                            name="previousMedicalCheckup"
+                            value={option.value}
+                            checked={formData.previousMedicalCheckup === option.value}
+                            onChange={(e) =>
+                              setFormData({ ...formData, previousMedicalCheckup: e.target.value })
+                            }
+                          />
+                          <span>{option.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="rounded-xl border border-primary/10 p-3 space-y-2">
+                    <p className="text-[11px] font-serif text-primary/70 uppercase tracking-wider">
+                      {isAr ? "أي من الحالات التالية تعاني منها؟" : "Which of the following do you suffer from?"}
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                      {[
+                        { key: "diabetes", label: isAr ? "السكري" : "Diabetes" },
+                        { key: "hypertension", label: isAr ? "ارتفاع ضغط الدم" : "Hypertension" },
+                        { key: "highCholesterol", label: isAr ? "ارتفاع الكوليسترول" : "High Cholesterol" },
+                        { key: "heartDisease", label: isAr ? "أمراض القلب" : "Heart Disease" },
+                        { key: "bronchialAsthma", label: isAr ? "الربو الشعبي" : "Bronchial Asthma" },
+                        { key: "overweightObesity", label: isAr ? "زيادة الوزن / السمنة" : "Overweight / Obesity" },
+                      ].map((condition) => (
+                        <div key={condition.key} className="rounded-lg border border-primary/10 p-2">
+                          <p className="mb-1.5">{condition.label}</p>
+                          <div className="flex flex-wrap gap-3">
+                            {[
+                              { value: "yes", label: isAr ? "نعم" : "Yes" },
+                              { value: "no", label: isAr ? "لا" : "No" },
+                              { value: "dont_know", label: isAr ? "لا أعرف" : "Don't know" },
+                            ].map((option) => (
+                              <label key={option.value} className="flex items-center gap-1">
+                                <input
+                                  required
+                                  type="radio"
+                                  name={condition.key}
+                                  value={option.value}
+                                  checked={formData[condition.key as keyof typeof formData] === option.value}
+                                  onChange={(e) =>
+                                    setFormData({
+                                      ...formData,
+                                      [condition.key]: e.target.value,
+                                    })
+                                  }
+                                />
+                                <span>{option.label}</span>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="rounded-xl border border-primary/10 p-3 space-y-2">
+                    <p className="text-[11px] font-serif text-primary/70 uppercase tracking-wider">
+                      {isAr ? "العادات الخاصة" : "Special Habits"}
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                      {[
+                        { key: "smoker", label: isAr ? "هل تدخن؟" : "Do you smoke?" },
+                        { key: "alcohol", label: isAr ? "هل تشرب الكحول؟" : "Do you drink alcohol?" },
+                      ].map((habit) => (
+                        <div key={habit.key} className="rounded-lg border border-primary/10 p-2">
+                          <p className="mb-1.5">{habit.label}</p>
+                          <div className="flex gap-3">
+                            {[
+                              { value: "yes", label: isAr ? "نعم" : "Yes" },
+                              { value: "no", label: isAr ? "لا" : "No" },
+                            ].map((option) => (
+                              <label key={option.value} className="flex items-center gap-1">
+                                <input
+                                  required
+                                  type="radio"
+                                  name={habit.key}
+                                  value={option.value}
+                                  checked={formData[habit.key as keyof typeof formData] === option.value}
+                                  onChange={(e) =>
+                                    setFormData({
+                                      ...formData,
+                                      [habit.key]: e.target.value,
+                                    })
+                                  }
+                                />
+                                <span>{option.label}</span>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
 
                   <button

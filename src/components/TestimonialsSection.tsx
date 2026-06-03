@@ -124,24 +124,6 @@ const buildDisplayFromForm = (
   };
 };
 
-const mergeDisplayFeedbacks = (
-  ...groups: DisplayTestimonial[][]
-): DisplayTestimonial[] => {
-  const seen = new Set<string>();
-  const merged: DisplayTestimonial[] = [];
-
-  for (const group of groups) {
-    for (const item of group) {
-      const key = item.id || `${item.name}-${item.text}`;
-      if (seen.has(key)) continue;
-      seen.add(key);
-      merged.push(item);
-    }
-  }
-
-  return merged;
-};
-
 const TestimonialsSection = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
@@ -177,7 +159,8 @@ const TestimonialsSection = () => {
     fetchFeedbacks();
   }, [lang]);
 
-  const shouldAnimateMarquee = hospitalFeedbacks.length > 1;
+  // Clone list only for seamless marquee loop with 3+ items (avoids showing 1–2 twice).
+  const shouldAnimateMarquee = hospitalFeedbacks.length >= 3;
   const marqueeItems = shouldAnimateMarquee
     ? [...hospitalFeedbacks, ...hospitalFeedbacks]
     : hospitalFeedbacks;
@@ -238,16 +221,16 @@ const TestimonialsSection = () => {
           createdRecord?._id ?? `submitted-${Date.now()}`,
         );
 
-      let published: DisplayTestimonial[] = [];
+      let nextFeedbacks: DisplayTestimonial[] = [];
       try {
         const refreshList = await getAllHospitalFeedbacks();
-        published = toDisplayFromApi(refreshList, lang);
+        nextFeedbacks = toDisplayFromApi(refreshList, lang);
       } catch {
         // Keep showing the submission even if refresh fails
       }
 
-      setHospitalFeedbacks((prev) =>
-        mergeDisplayFeedbacks([submittedDisplay], published, prev),
+      setHospitalFeedbacks(
+        nextFeedbacks.length > 0 ? nextFeedbacks : [submittedDisplay],
       );
 
       setFeedbackForm({
@@ -357,7 +340,7 @@ const TestimonialsSection = () => {
           >
             {marqueeItems.map((item, i) => (
               <motion.div
-                key={`${item.id || item.name}-${i}`}
+                key={shouldAnimateMarquee ? `${item.id}-${i}` : item.id}
                 whileHover={{ y: -6, boxShadow: "0 20px 40px -15px rgba(74,20,35,0.1)" }}
                 className="bg-background rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 border border-border/50 w-[220px] sm:w-[300px] md:w-[360px] flex-shrink-0"
               >

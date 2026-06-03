@@ -473,7 +473,7 @@ const translations: Translations = {
   patientSatisfaction: { en: "Patient Satisfaction", ar: "رضا المرضى" },
 
   // Stats
-  yearsOfExcellence: { en: "/* Years of Excellence */", ar: "سنوات من التميز" },
+  yearsOfExcellence: { en: " Years of Excellence ", ar: "سنوات من التميز" },
   specialistDoctors: { en: "Healthcare Professionals", ar: "متخصصون في الرعاية الصحية" },
   departmentsLabel: { en: "Departments", ar: "الأقسام" },
 
@@ -591,7 +591,7 @@ const translations: Translations = {
   ourServices: { en: "Our Services", ar: "خدماتنا" },
   findADoctor: { en: "Find a Doctor", ar: "ابحث عن طبيب" },
   contactUsFooter: { en: "Contact Us", ar: "اتصل بنا" },
-  footerDesc: { en: "Celebrating Life. Kuwait's premier multi-disciplinary healthcare provider since 2006.", ar: "نحتفي بالحياة. المزود الرائد للرعاية الصحية متعددة التخصصات في الكويت منذ 2006." },
+  footerDesc: { en: "Celebrating Life. Premier multidisciplinary healthcare provider in Kuwait since 2006.", ar: "نحتفي بالحياة. المزود الرائد للرعاية الصحية متعددة التخصصات في الكويت منذ 2006." },
   hotline247: { en: "24/7 Hotline", ar: "خط ساخن على مدار الساعة" },
   emergencyServices247: { en: "Emergency Services", ar: "خدمات الطوارئ على مدار الساعة" },
   callAmbulance: { en: "Call Ambulance", ar: "اتصل بالإسعاف" },

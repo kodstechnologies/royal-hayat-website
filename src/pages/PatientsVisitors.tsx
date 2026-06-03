@@ -48,16 +48,16 @@ const PatientsVisitors = () => {
 
   const sectionClass = "scroll-mt-[calc(var(--header-height,76px)+2rem)]";
   const isAr = lang === "ar";
-  /** Justified body copy: full words per line; hyphen only when a word wraps. */
+  /** Body copy tuned for readable mobile line flow. */
   const patientsProseLine = "patients-prose-line";
-  const bodyProse = `font-body text-sm text-foreground leading-normal md:leading-relaxed text-justify [word-break:normal] ${patientsProseLine}`;
-  const mutedProse = `font-body text-sm text-muted-foreground leading-normal md:leading-relaxed text-justify [word-break:normal] ${patientsProseLine}`;
+  const bodyProse = `font-body tracking-normal text-[13px] sm:text-sm text-foreground leading-normal md:leading-relaxed text-start [word-break:normal] ${patientsProseLine}`;
+  const mutedProse = `font-body tracking-normal text-[13px] sm:text-sm text-muted-foreground leading-normal md:leading-relaxed text-start [word-break:normal] ${patientsProseLine}`;
   const billRightsProse = bodyProse;
   const billRightsIntro = `${mutedProse} mb-6`;
   const cardIntroProse =
-    "font-body text-sm text-muted-foreground leading-normal md:leading-relaxed patients-card-prose-intro";
+    "font-body tracking-normal text-[13px] sm:text-sm text-muted-foreground leading-normal md:leading-relaxed patients-card-prose-intro";
   const cardListProse =
-    "font-body text-sm text-foreground leading-normal md:leading-relaxed patients-card-prose-list";
+    "font-body tracking-normal text-[13px] sm:text-sm text-foreground leading-normal md:leading-relaxed patients-card-prose-list";
 
   const renderBillRightsList = (items: string[], justified = false) => (
     <ol className="space-y-3 list-none m-0 p-0" dir={isAr ? "rtl" : "ltr"} lang={isAr ? "ar" : "en"}>
@@ -93,7 +93,7 @@ const PatientsVisitors = () => {
 
       {/* Hero */}
       <section className={`bg-primary/5 ${tab === "rooms-package" ? "py-6 md:py-8" : "py-10 md:py-16 lg:py-20"}`}>
-        <div className="container mx-auto px-6 text-center">
+        <div className="container mx-auto px-3 md:px-6 text-center">
           <ScrollAnimationWrapper>
             <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3 !text-center">
               {lang === "ar" ? (tab === "admission" ? "للمرضى" : "لمرضانا") : "For Our Patients"}
@@ -124,12 +124,12 @@ const PatientsVisitors = () => {
 
       {/* All Sections */}
       <section className={tab === "rooms-package" ? "flex-1 flex flex-col py-0" : "py-8 md:py-12 lg:py-16"}>
-        <div className={tab === "rooms-package" ? "w-full flex-1 flex flex-col" : "container mx-auto px-6"}>
+        <div className={tab === "rooms-package" ? "w-full flex-1 flex flex-col" : "container mx-auto px-3 md:px-6"}>
           <div
             className={
               tab === "rooms-package"
                 ? "w-full flex-1 flex flex-col"
-                : "max-w-4xl mx-auto space-y-10 md:space-y-16 lg:space-y-20 patients-page-content"
+                : "max-w-6xl mx-auto space-y-10 md:space-y-16 lg:space-y-20 patients-page-content"
             }
           >
           
@@ -817,23 +817,26 @@ const PatientsVisitors = () => {
         .patients-prose-root .patients-page-content li,
         .patients-prose-root .patients-page-content span.font-body,
         .patients-prose-root .patients-prose-line {
-          text-align: justify;
-          text-justify: inter-word;
+          text-align: start;
           word-spacing: normal;
-          letter-spacing: normal;
+          letter-spacing: normal !important;
+          font-kerning: normal;
           word-break: normal;
           overflow-wrap: normal;
+          max-width: 100%;
         }
 
         .patients-prose-root[dir="ltr"] .patients-page-content p,
         .patients-prose-root[dir="ltr"] .patients-page-content li,
         .patients-prose-root[dir="ltr"] .patients-page-content span.font-body,
         .patients-prose-root[dir="ltr"] .patients-prose-line {
+          text-align: justify;
+          text-justify: inter-word;
+          text-align-last: auto;
           -webkit-hyphens: auto;
           hyphens: auto;
-          hyphenate-limit-chars: 6 4 2;
-          text-align-last: left;
-          text-wrap: pretty;
+          hyphenate-limit-chars: 6 3 3;
+          text-wrap: auto;
         }
 
         .patients-prose-root[dir="rtl"] .patients-page-content p,
@@ -846,25 +849,40 @@ const PatientsVisitors = () => {
         }
 
         @media (max-width: 767px) {
+          .patients-prose-root > section .container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+          }
+
+          .patients-prose-root .patients-page-content {
+            max-width: 100%;
+          }
+
           .patients-prose-root .patients-page-content p,
           .patients-prose-root .patients-page-content li,
           .patients-prose-root .patients-page-content span.font-body,
           .patients-prose-root .patients-prose-line {
             line-height: 1.55;
-            text-align: justify;
-            text-justify: inter-word;
+            text-align: start;
             text-align-last: start;
             word-spacing: normal;
-            text-wrap: pretty;
+            text-wrap: auto;
+            text-justify: auto;
+            word-break: normal;
+            overflow-wrap: break-word;
+            white-space: normal;
           }
 
           .patients-prose-root[dir="ltr"] .patients-page-content p,
           .patients-prose-root[dir="ltr"] .patients-page-content li,
           .patients-prose-root[dir="ltr"] .patients-page-content span.font-body,
           .patients-prose-root[dir="ltr"] .patients-prose-line {
+            text-align: justify;
+            text-justify: inter-word;
+            text-align-last: auto;
             -webkit-hyphens: auto;
             hyphens: auto;
-            text-align-last: start;
+            hyphenate-limit-chars: 6 3 3;
           }
 
           .patients-prose-root[dir="rtl"] .patients-page-content p,
@@ -906,22 +924,24 @@ const PatientsVisitors = () => {
           display: block;
           width: 100%;
           margin: 0;
-          text-align: justify !important;
-          text-justify: inter-word !important;
+          text-align: start !important;
           text-align-last: start !important;
           word-spacing: normal !important;
           letter-spacing: normal !important;
           word-break: normal !important;
           overflow-wrap: normal !important;
-          text-wrap: pretty;
+          text-wrap: auto;
           hyphenate-character: "-";
         }
 
         .patients-prose-root[dir="ltr"] .patients-page-content .patients-justified-card .patients-card-prose-intro,
         .patients-prose-root[dir="ltr"] .patients-page-content .patients-justified-card .patients-card-prose-list {
-          -webkit-hyphens: manual;
-          hyphens: manual;
-          hyphenate-limit-chars: 4 2 2;
+          text-align: justify !important;
+          text-justify: inter-word;
+          text-align-last: auto !important;
+          -webkit-hyphens: auto;
+          hyphens: auto;
+          hyphenate-limit-chars: 6 3 3;
         }
 
         .patients-prose-root[dir="rtl"] .patients-page-content .patients-justified-card .patients-card-prose-intro,
@@ -934,12 +954,13 @@ const PatientsVisitors = () => {
           .patients-prose-root .patients-page-content .patients-justified-card .patients-card-prose-intro,
           .patients-prose-root .patients-page-content .patients-justified-card .patients-card-prose-list {
             text-align: justify !important;
-            text-justify: inter-word !important;
-            text-align-last: start !important;
+            text-align-last: auto !important;
+            text-justify: inter-word;
             word-spacing: normal !important;
             line-height: 1.5;
-            -webkit-hyphens: manual;
-            hyphens: manual;
+            -webkit-hyphens: auto;
+            hyphens: auto;
+            hyphenate-limit-chars: 6 3 3;
           }
         }
 

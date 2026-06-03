@@ -9,6 +9,8 @@ const ScrollToTopOnNav = () => {
   useEffect(() => {
     const state = location.state as {
       restoreDeptOpenIndex?: number;
+      restoreExpandedIndex?: number;
+      restoreScrollY?: number;
       fromDepartments?: boolean;
     } | null;
 
@@ -17,7 +19,11 @@ const ScrollToTopOnNav = () => {
       !state?.fromDepartments &&
       DEPT_LIST_PATHS.has(location.pathname);
 
-    if (isRestoringDeptCard) return;
+    const isRestoringSpecializedCare =
+      location.pathname === "/" &&
+      (state?.restoreExpandedIndex != null || typeof state?.restoreScrollY === "number");
+
+    if (isRestoringDeptCard || isRestoringSpecializedCare) return;
     window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
   }, [location.pathname, location.key, location.state]);
 

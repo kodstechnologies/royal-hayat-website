@@ -1,8 +1,8 @@
 import { ArrowRight, ChevronLeft, ChevronRight, X, Stethoscope } from "lucide-react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { doctors, Doctor } from "@/data/doctors";
 import { deptDoctorAliases, departments as staticDepartments } from "@/data/departments";
@@ -218,43 +218,123 @@ const services: ServiceItem[] = [
   },
 ];
 
+type SpecializedRestoreState = {
+  restoreExpandedIndex?: number;
+  restoreSelectedSubByService?: Record<string, string>;
+  restoreScrollY?: number;
+};
+
 const SpecializedCare = () => {
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-80px" });
   const { t, lang } = useLanguage();
   const navigate = useNavigate();
+  const location = useLocation();
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const [selectedSubByService, setSelectedSubByService] = useState<Record<string, string>>({});
   const scrollRef = useRef<HTMLDivElement>(null);
+  const restoreAppliedKeyRef = useRef<string | null>(null);
+  const restoreScrollYRef = useRef<number | null>(null);
   const INITIAL_COUNT = 6;
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const normalizeDeptName = (value: string) =>
     value.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "");
-  const staticOrderMap = new Map(
-    staticDepartments.map((d, idx) => [normalizeDeptName(d.name), idx]),
+  const staticOrderMap = useMemo(
+    () => new Map(staticDepartments.map((d, idx) => [normalizeDeptName(d.name), idx])),
+    [],
   );
-  const sortedServices = [...services]
-    .filter((service) => service.name !== "Allergy & Immunology")
-    .sort((a, b) => {
-      const aKey = normalizeDeptName(a.name);
-      const bKey = normalizeDeptName(b.name);
-      const aOrder =
-        staticOrderMap.get(aKey) ??
-        staticOrderMap.get(normalizeDeptName(a.department)) ??
-        Number.MAX_SAFE_INTEGER;
-      const bOrder =
-        staticOrderMap.get(bKey) ??
-        staticOrderMap.get(normalizeDeptName(b.department)) ??
-        Number.MAX_SAFE_INTEGER;
-      if (aOrder !== bOrder) return aOrder - bOrder;
-      return Number(a.num) - Number(b.num);
-    });
+  const sortedServices = useMemo(
+    () =>
+      [...services]
+        .filter((service) => service.name !== "Allergy & Immunology")
+        .sort((a, b) => {
+          const aKey = normalizeDeptName(a.name);
+          const bKey = normalizeDeptName(b.name);
+          const aOrder =
+            staticOrderMap.get(aKey) ??
+            staticOrderMap.get(normalizeDeptName(a.department)) ??
+            Number.MAX_SAFE_INTEGER;
+          const bOrder =
+            staticOrderMap.get(bKey) ??
+            staticOrderMap.get(normalizeDeptName(b.department)) ??
+            Number.MAX_SAFE_INTEGER;
+          if (aOrder !== bOrder) return aOrder - bOrder;
+          return Number(a.num) - Number(b.num);
+        }),
+    [staticOrderMap],
+  );
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  useEffect(() => {
+    const state = location.state as SpecializedRestoreState | null;
+    const hasRestore =
+      typeof state?.restoreScrollY === "number" || state?.restoreExpandedIndex != null;
+    if (!hasRestore || restoreAppliedKeyRef.current === location.key) return;
+
+    restoreAppliedKeyRef.current = location.key;
+    restoreScrollYRef.current =
+      typeof state.restoreScrollY === "number" ? state.restoreScrollY : 0;
+
+    if (state.restoreExpandedIndex != null) {
+      setExpandedIndex(state.restoreExpandedIndex);
+    }
+    if (state.restoreSelectedSubByService) {
+      setSelectedSubByService(state.restoreSelectedSubByService);
+    }
+  }, [location.key, location.state]);
+
+  useEffect(() => {
+    if (restoreScrollYRef.current == null) return;
+
+    const scrollY = restoreScrollYRef.current;
+    const serviceNum =
+      expandedIndex != null ? sortedServices[expandedIndex]?.num : undefined;
+
+    const scrollToSavedPosition = () => {
+      if (scrollY > 0) {
+        window.scrollTo({ top: scrollY, left: 0, behavior: "auto" });
+        return;
+      }
+      if (serviceNum) {
+        document
+          .getElementById(`specialized-card-${serviceNum}`)
+          ?.scrollIntoView({ block: "center", behavior: "auto" });
+      } else {
+        document.getElementById("services")?.scrollIntoView({ block: "start", behavior: "auto" });
+      }
+    };
+
+    scrollToSavedPosition();
+    const raf = window.requestAnimationFrame(scrollToSavedPosition);
+    const timerMid = window.setTimeout(scrollToSavedPosition, 300);
+    const timerLate = window.setTimeout(() => {
+      scrollToSavedPosition();
+      restoreScrollYRef.current = null;
+    }, 700);
+
+    return () => {
+      window.cancelAnimationFrame(raf);
+      window.clearTimeout(timerMid);
+      window.clearTimeout(timerLate);
+    };
+  }, [expandedIndex, sortedServices]);
+
+  const openDoctorProfile = (docId: string) => {
+    navigate(`/doctors/${docId}`, {
+      state: {
+        fromSpecializedCare: true,
+        returnPath: "/",
+        restoreExpandedIndex: expandedIndex,
+        restoreSelectedSubByService: selectedSubByService,
+        restoreScrollY: window.scrollY,
+      },
+    });
+  };
 
   const getDeptDoctors = (department: string): Doctor[] => {
     const aliases = deptDoctorAliases[department] || [department];
@@ -424,6 +504,7 @@ const SpecializedCare = () => {
             return (
               <motion.div
                 key={s.num}
+                id={`specialized-card-${s.num}`}
                 layout
                 initial={{ opacity: 0, y: 30, scale: 0.97 }}
                 animate={isInView ? { opacity: 1, y: 0, scale: 1 } : {}}
@@ -627,7 +708,7 @@ const SpecializedCare = () => {
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ duration: 0.4 }}
-                                    onClick={() => navigate(`/doctors/${doc.id}`)}
+                                    onClick={() => openDoctorProfile(doc.id)}
                                     className="flex-shrink-0 w-[280px] md:w-[280px] bg-background rounded-2xl border border-border/50 overflow-hidden hover:border-primary/30 transition-all duration-300 cursor-pointer group/doc snap-center md:snap-start h-full"
                                   >
                                     <div className="bg-white h-48 flex items-center justify-center relative overflow-hidden">

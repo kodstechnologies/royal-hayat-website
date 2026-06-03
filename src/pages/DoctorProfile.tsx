@@ -118,6 +118,14 @@ const handleAddTestimonial = () => {
           restoreScrollY: bookingReturnState.restoreScrollY,
         },
       });
+    } else if (bookingReturnState?.fromSpecializedCare && bookingReturnState?.returnPath) {
+      navigate(bookingReturnState.returnPath, {
+        state: {
+          restoreExpandedIndex: bookingReturnState.restoreExpandedIndex,
+          restoreSelectedSubByService: bookingReturnState.restoreSelectedSubByService,
+          restoreScrollY: bookingReturnState.restoreScrollY,
+        },
+      });
     } else {
       navigate(-1);
     }

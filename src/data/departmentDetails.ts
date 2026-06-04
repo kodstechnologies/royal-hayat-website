@@ -7,7 +7,6 @@ export interface DepartmentDetailSection {
   itemsAr?: string[];
   subsections?: { title: string; titleAr?: string; content?: string; contentAr?: string; items?: string[]; itemsAr?: string[] }[];
 }
-
 export interface DepartmentDetail {
   slug: string;
   name: string;
@@ -24,7 +23,6 @@ export interface DepartmentDetail {
     sections: DepartmentDetailSection[];
   }[];
 }
-
 export const departmentDetails: DepartmentDetail[] = [
   {
     slug: "obstetrics-gynecology",

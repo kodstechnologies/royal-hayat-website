@@ -1,11 +1,9 @@
 import { motion } from "framer-motion";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { useLanguage } from "@/contexts/LanguageContext";
-
 const StoryBlock = () => {
   const { t, lang } = useLanguage();
   const isAr = lang === "ar";
-
   return (
     <section className="py-16 bg-background" id="about">
       <div className="container mx-auto px-6">
@@ -46,5 +44,4 @@ const StoryBlock = () => {
     </section>
   );
 };
-
 export default StoryBlock;

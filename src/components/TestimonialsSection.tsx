@@ -41,9 +41,7 @@ const testimonials = [
     name: "Layla Hassan", nameAr: "ليلى حسن",
   },
 ];
-
 const duplicated = [...testimonials, ...testimonials];
-
 const TestimonialsSection = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
@@ -51,17 +49,13 @@ const TestimonialsSection = () => {
   const [hospitalFeedbacks, setHospitalFeedbacks] = useState(testimonials);
   const [showThankYou, setShowThankYou] = useState(false);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
-
   const [feedbackForm, setFeedbackForm] = useState({
     name: "",
     feedback: "",
     stars: 0,
   });
-
-
   const handleAddFeedback = () => {
     if (!feedbackForm.name || !feedbackForm.feedback) return;
-
     const newFeedback = {
       stars: feedbackForm.stars,
       text: feedbackForm.feedback,
@@ -69,19 +63,13 @@ const TestimonialsSection = () => {
       name: feedbackForm.name,
       nameAr: feedbackForm.name,
     };
-
     setHospitalFeedbacks((prev) => [newFeedback, ...prev]);
-
     setFeedbackForm({
       name: "",
       feedback: "",
       stars: 5,
     });
-
-    // show thank you message
     setShowThankYou(true);
-
-    // close modal after 2 sec
     setTimeout(() => {
       setShowThankYou(false);
       setIsFeedbackOpen(false);
@@ -92,7 +80,6 @@ const TestimonialsSection = () => {
       <div className="container mx-auto px-6">
         <ScrollAnimationWrapper>
           <div className="text-center mb-16">
-
             <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-4">{t("testimonials")}</p>
             <h2 className="text-4xl md:text-5xl font-serif text-foreground">{t("patientFeedback")}</h2>
           </div>
@@ -123,7 +110,6 @@ const TestimonialsSection = () => {
     "
         >
           <MessageCircleHeart className="w-5 h-5 text-white drop-shadow-sm" />
-
           {lang === "ar" ? "إضافة تقييم" : "Add Feedback"}
         </motion.button>
       </div>
@@ -168,37 +154,32 @@ const TestimonialsSection = () => {
   overflow-y-auto
 "
           >
-            {/* Close */}
+            {}
             <button
               onClick={() => setIsFeedbackOpen(false)}
               className="absolute top-5 right-5 text-muted-foreground hover:text-foreground transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
-
-            {/* Header */}
+            {}
             <div className="text-center mb-">
               <div className="w-16 h-16 rounded-full bg-primary/15 border border-primary/20 flex items-center justify-center mx-auto mb-4 shadow-sm">
                 <MessageCircleHeart className="w-8 h-8 text-primary drop-shadow-sm" />
               </div>
-
               <h2 className="text-2xl sm:text-3xl font-serif text-foreground mb-1">
                 {lang === "ar" ? "إضافة تقييم" : "Add Feedback"}
               </h2>
-
               <p className="text-muted-foreground text-sm font-body">
                 {lang === "ar"
                   ? "شارك تجربتك مع المستشفى"
                   : "Share your experience with the hospital"}
               </p>
             </div>
-
-            {/* Name */}
+            {}
             <div className="mb-4">
               <label className="block mb-2 text-sm font-medium">
                 {lang === "ar" ? "الاسم" : "Your Name"}
               </label>
-
               <input
                 type="text"
                 value={feedbackForm.name}
@@ -228,13 +209,11 @@ const TestimonialsSection = () => {
           "
               />
             </div>
-
-            {/* Feedback */}
+            {}
             <div className="mb-4">
               <label className="block mb-2 text-sm font-medium">
                 {lang === "ar" ? "التقييم" : "Feedback"}
               </label>
-
               <textarea
                 rows={3}
                 value={feedbackForm.feedback}
@@ -267,13 +246,11 @@ const TestimonialsSection = () => {
           "
               />
             </div>
-
-            {/* Stars */}
+            {}
             <div className="mb-8">
               <label className="block mb-3 text-sm font-medium text-center">
                 {lang === "ar" ? "التقييم بالنجوم" : "Star Rating"}
               </label>
-
               <div className="flex items-center justify-center gap-3">
                 {Array.from({ length: 5 }).map((_, index) => (
                   <motion.button
@@ -298,8 +275,7 @@ const TestimonialsSection = () => {
                 ))}
               </div>
             </div>
-
-            {/* Submit */}
+            {}
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -325,7 +301,6 @@ const TestimonialsSection = () => {
         "
             >
               <Star className="w-4 h-4 fill-current" />
-
               {lang === "ar" ? "إرسال التقييم" : "Submit Feedback"}
             </motion.button>
             {showThankYou && (
@@ -365,7 +340,7 @@ const TestimonialsSection = () => {
         shadow-2xl
       "
                 >
-                  {/* Animated Icon */}
+                  {}
                   <motion.div
                     initial={{ scale: 0, rotate: -180 }}
                     animate={{ scale: 1, rotate: 0 }}
@@ -388,8 +363,7 @@ const TestimonialsSection = () => {
                   >
                     <MessageCircleHeart className="w-6 h-6 text-primary" />
                   </motion.div>
-
-                  {/* Text */}
+                  {}
                   <div>
                     <motion.p
                       initial={{ opacity: 0, x: 10 }}
@@ -401,7 +375,6 @@ const TestimonialsSection = () => {
                         ? "شكراً لك على ملاحظاتك"
                         : "Thank you for your feedback"}
                     </motion.p>
-
                     <motion.p
                       initial={{ opacity: 0, x: 10 }}
                       animate={{ opacity: 1, x: 0 }}
@@ -416,17 +389,10 @@ const TestimonialsSection = () => {
                 </div>
               </motion.div>
             )}
-
           </motion.div>
-
-
-
         </div>
-
       )}
     </section>
-
   );
 };
-
 export default TestimonialsSection;

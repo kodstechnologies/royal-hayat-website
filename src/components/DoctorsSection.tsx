@@ -6,7 +6,6 @@ import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Doctor } from "@/data/doctors";
 import { useIsMobile } from "@/hooks/use-mobile";
-
 const DoctorCard = ({ doc }: { doc: Doctor }) => {
   const { lang } = useLanguage();
   return (
@@ -52,7 +51,6 @@ const DoctorCard = ({ doc }: { doc: Doctor }) => {
     </Link>
   );
 };
-
 const DoctorsSection = ({ featuredDoctors }: { featuredDoctors: Doctor[] }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
@@ -60,7 +58,6 @@ const DoctorsSection = ({ featuredDoctors }: { featuredDoctors: Doctor[] }) => {
   const [canScrollRight, setCanScrollRight] = useState(true);
   const { lang, t } = useLanguage();
   const isMobile = useIsMobile();
-
   const checkScroll = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
@@ -69,7 +66,6 @@ const DoctorsSection = ({ featuredDoctors }: { featuredDoctors: Doctor[] }) => {
     setCanScrollLeft(scrollLeft > 10);
     setCanScrollRight(scrollLeft < maxScroll - 10);
   }, []);
-
   useEffect(() => {
     checkScroll();
     window.addEventListener("resize", checkScroll);
@@ -80,7 +76,6 @@ const DoctorsSection = ({ featuredDoctors }: { featuredDoctors: Doctor[] }) => {
       el?.removeEventListener("scroll", checkScroll);
     };
   }, [checkScroll, featuredDoctors]);
-
   const scroll = useCallback((dir: "left" | "right") => {
     if (!scrollRef.current) return;
     const amount = isMobile ? 280 + 80 : (280 + 24) * 2;
@@ -90,12 +85,10 @@ const DoctorsSection = ({ featuredDoctors }: { featuredDoctors: Doctor[] }) => {
     });
     setTimeout(checkScroll, 400);
   }, [isMobile, checkScroll]);
-
   const handleManualInteraction = (dir: "left" | "right") => {
     setIsPaused(true);
     scroll(dir);
   };
-
   useEffect(() => {
     if (isPaused || featuredDoctors.length <= 1) return;
     const timer = setInterval(() => {
@@ -111,7 +104,6 @@ const DoctorsSection = ({ featuredDoctors }: { featuredDoctors: Doctor[] }) => {
     }, 5000);
     return () => clearInterval(timer);
   }, [isPaused, scroll, checkScroll, featuredDoctors.length]);
-
   return (
     <section className="py-20 bg-background" id="our-doctors">
       <div className="container mx-auto px-6">
@@ -129,7 +121,6 @@ const DoctorsSection = ({ featuredDoctors }: { featuredDoctors: Doctor[] }) => {
             </Link>
           </ScrollAnimationWrapper>
         </div>
-
         <div
           className="relative group"
           dir="ltr"
@@ -145,7 +136,6 @@ const DoctorsSection = ({ featuredDoctors }: { featuredDoctors: Doctor[] }) => {
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
-
           <button
             type="button"
             onClick={() => handleManualInteraction("right")}
@@ -155,7 +145,6 @@ const DoctorsSection = ({ featuredDoctors }: { featuredDoctors: Doctor[] }) => {
           >
             <ChevronRight className="w-5 h-5" />
           </button>
-
           <div className="max-w-[1192px] mx-auto overflow-hidden">
             <div
               ref={scrollRef}
@@ -165,12 +154,11 @@ const DoctorsSection = ({ featuredDoctors }: { featuredDoctors: Doctor[] }) => {
               style={{
                 scrollbarWidth: "none",
                 msOverflowStyle: "none",
-                // Precise padding to center 280px card on mobile:
                 paddingLeft: "calc((100vw - 280px) / 2)",
                 paddingRight: "calc((100vw - 280px) / 2)",
               }}
             >
-              {/* On desktop (md), we don't want the extreme padding, so we reset it via media-query-like logic or just standard classes */}
+              {}
               <style dangerouslySetInnerHTML={{
                 __html: `
                 @media (min-width: 768px) {
@@ -187,5 +175,4 @@ const DoctorsSection = ({ featuredDoctors }: { featuredDoctors: Doctor[] }) => {
     </section>
   );
 };
-
 export default DoctorsSection;

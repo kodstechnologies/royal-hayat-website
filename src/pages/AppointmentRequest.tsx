@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { createAppointmentRequest } from "@/api/appointmentRequest";
 import { toast } from "@/hooks/use-toast";
@@ -9,8 +9,7 @@ import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
-import { doctors as allDoctors } from "@/data/doctors";
-
+import { loadDoctorById, type Doctor } from "@/data/loadDoctors";
 const AppointmentRequest = () => {
   const { lang, t } = useLanguage();
   const navigate = useNavigate();
@@ -18,19 +17,27 @@ const AppointmentRequest = () => {
   const [searchParams] = useSearchParams();
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-
   const returnState = (location.state as any) ?? {};
-
-  // Pre-fill doctor info from query param
   const doctorId = searchParams.get("doctor");
-  const prefilledDoctor = doctorId ? allDoctors.find(d => d.id === doctorId) : null;
-
+  const [prefilledDoctor, setPrefilledDoctor] = useState<Doctor | null>(null);
+  useEffect(() => {
+    if (!doctorId) {
+      setPrefilledDoctor(null);
+      return;
+    }
+    let cancelled = false;
+    void loadDoctorById(doctorId).then((doc) => {
+      if (!cancelled) setPrefilledDoctor(doc ?? null);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [doctorId]);
   const [form, setForm] = useState({
     fullName: "", phone: "", countryCode: "+965", dateOfBirth: "", gender: "",
     department: "", preferredDate: "", message: ""
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
-
   const validate = () => {
     const e: Record<string, string> = {};
     if (!form.fullName.trim()) e.fullName = lang === "ar" ? "الاسم مطلوب" : "Full name is required";
@@ -38,14 +45,11 @@ const AppointmentRequest = () => {
     else if (!/^\d{8}$/.test(form.phone.trim())) e.phone = lang === "ar" ? "أدخل رقم هاتف مكون من 8 أرقام" : "Enter an 8-digit phone number";
     if (!form.dateOfBirth) e.dateOfBirth = lang === "ar" ? "تاريخ الميلاد مطلوب" : "Date of birth is required";
     if (!form.gender) e.gender = lang === "ar" ? "الجنس مطلوب" : "Gender is required";
-    // department validation removed
     setErrors(e);
     return Object.keys(e).length === 0;
   };
-
   const handleSubmit = async () => {
     if (!validate()) return;
-
     setSubmitting(true);
     try {
       await createAppointmentRequest({
@@ -85,12 +89,10 @@ const AppointmentRequest = () => {
       setSubmitting(false);
     }
   };
-
   const updateField = (field: string, value: string) => {
     setForm(prev => ({ ...prev, [field]: value }));
     setErrors(prev => ({ ...prev, [field]: "" }));
   };
-
   const formattedDob = form.dateOfBirth ? form.dateOfBirth.split("-").reverse().join("/") : "";
   const genderLabel =
     form.gender === "male"
@@ -98,7 +100,6 @@ const AppointmentRequest = () => {
       : form.gender === "female"
         ? t("female")
         : (lang === "ar" ? "غير محدد" : "Not specified");
-
   if (submitted) {
     return (
       <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
@@ -150,11 +151,9 @@ const AppointmentRequest = () => {
       </div>
     );
   }
-
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
       <Header />
-
       <div className="bg-primary py-12 text-center">
         <h1 className="text-3xl md:text-4xl font-serif text-primary-foreground mb-2">
           {lang === "ar" ? "نموذج طلب موعد" : "Appointment Request Form"}
@@ -163,16 +162,15 @@ const AppointmentRequest = () => {
           {lang === "ar" ? "املأ التفاصيل أدناه وسنتواصل معك قريباً" : "Fill in the details below and we'll get back to you shortly"}
         </p>
       </div>
-
       <div className="container mx-auto px-6 py-8 max-w-2xl">
-        <button 
+        <button
           onClick={() => navigate("/book-appointment", { state: returnState })}
           className="inline-flex items-center gap-2 text-accent hover:text-accent/80 transition-colors font-body text-sm mb-6 px-0"
         >
           <ArrowLeft className={`w-4 h-4 ${lang === 'ar' ? 'rotate-180' : ''}`} />
           {lang === "ar" ? "العودة" : "Back"}
         </button>
-        {/* Pre-filled Doctor Info */}
+        {}
         {prefilledDoctor && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
             className="bg-popover rounded-2xl p-5 border border-border shadow-sm mb-6 flex items-center gap-4">
@@ -205,9 +203,8 @@ const AppointmentRequest = () => {
               <p className="text-muted-foreground font-body text-xs">{t("provideInfo")}</p>
             </div>
           </div>
-
           <div className="space-y-5">
-            {/* Full Name */}
+            {}
             <div>
               <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
                 {t("fullName")} <span className="text-destructive">*</span>
@@ -217,8 +214,7 @@ const AppointmentRequest = () => {
                 className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 ${errors.fullName ? "border-destructive" : "border-border"}`} />
               {errors.fullName && <p className="font-body text-xs text-destructive mt-1">{errors.fullName}</p>}
             </div>
-
-            {/* Phone */}
+            {}
             <div>
               <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
                 {t("phoneNumber")} <span className="text-destructive">*</span>
@@ -239,8 +235,7 @@ const AppointmentRequest = () => {
               </div>
               {errors.phone && <p className="font-body text-xs text-destructive mt-1">{errors.phone}</p>}
             </div>
-
-            {/* Date of Birth & Gender */}
+            {}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
@@ -268,9 +263,7 @@ const AppointmentRequest = () => {
                 {errors.gender && <p className="font-body text-xs text-destructive mt-1">{errors.gender}</p>}
               </div>
             </div>
-
-
-            {/* Message */}
+            {}
             <div>
               <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
                 {lang === "ar" ? "ملاحظات إضافية" : "Additional Notes"} ({lang === "ar" ? "اختياري" : "Optional"})
@@ -280,7 +273,6 @@ const AppointmentRequest = () => {
                 className="w-full h-24 px-4 py-3 rounded-xl border border-border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-2 focus:ring-accent/30" />
             </div>
           </div>
-
           <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} onClick={handleSubmit}
             disabled={submitting}
             className="w-full mt-6 bg-primary text-primary-foreground py-3.5 rounded-xl font-body text-sm tracking-widest uppercase hover:bg-primary/90 transition-all flex items-center justify-center gap-2 disabled:opacity-60">
@@ -295,11 +287,9 @@ const AppointmentRequest = () => {
           </motion.button>
         </motion.div>
       </div>
-
       <Footer />
       <ScrollToTop />
     </div>
   );
 };
-
 export default AppointmentRequest;

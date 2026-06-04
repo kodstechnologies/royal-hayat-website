@@ -8,14 +8,11 @@ import {
   type ReactNode,
 } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-
 export interface ChatMessage {
   role: "user" | "assistant";
   content: string;
 }
-
 export type ChatHelpStage = "topics" | "guided" | "whatsapp";
-
 interface ChatContextValue {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
@@ -32,9 +29,7 @@ interface ChatContextValue {
   resetChat: () => void;
   closeChat: () => void;
 }
-
 const ChatContext = createContext<ChatContextValue | null>(null);
-
 export function ChatProvider({ children }: { children: ReactNode }) {
   const { t, lang } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
@@ -45,7 +40,6 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   const [selectedTopicId, setSelectedTopicId] = useState<string | null>(null);
   const wasOpenRef = useRef(false);
   const prevLangRef = useRef(lang);
-
   const resetChat = useCallback(() => {
     setHelpStage("topics");
     setSelectedTopicId(null);
@@ -53,25 +47,21 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     setInput("");
     setIsTyping(false);
   }, [t]);
-
   const closeChat = useCallback(() => {
     setIsOpen(false);
     resetChat();
   }, [resetChat]);
-
   useEffect(() => {
     if (isOpen && !wasOpenRef.current) {
       resetChat();
     }
     wasOpenRef.current = isOpen;
   }, [isOpen, resetChat]);
-
   useEffect(() => {
     if (prevLangRef.current === lang) return;
     prevLangRef.current = lang;
     if (isOpen) resetChat();
   }, [lang, isOpen, resetChat]);
-
   return (
     <ChatContext.Provider
       value={{
@@ -95,7 +85,6 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     </ChatContext.Provider>
   );
 }
-
 export function useChat() {
   const ctx = useContext(ChatContext);
   if (!ctx) {

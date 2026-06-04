@@ -1,16 +1,13 @@
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { useLanguage } from "@/contexts/LanguageContext";
-
 const StatsRow = () => {
   const { t } = useLanguage();
-
   const stats = [
     { value: "19+", labelKey: "yearsOfExcellence" },
     { value: "86%", labelKey: "patientSatisfaction" },
     { value: "600+", labelKey: "specialistDoctors" },
     { value: "25+", labelKey: "departmentsLabel" },
   ];
-
   return (
     <section id="stats-row" className="py-16 bg-popover border-b border-border">
       <div className="container mx-auto px-6">
@@ -28,5 +25,4 @@ const StatsRow = () => {
     </section>
   );
 };
-
 export default StatsRow;

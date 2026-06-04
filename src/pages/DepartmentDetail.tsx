@@ -3,45 +3,40 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
-import { departmentDetails } from "@/data/departmentDetails";
+import {
+  loadDepartmentDetails,
+  type DepartmentDetail as DepartmentDetailData,
+  type DepartmentDetailSection,
+} from "@/data/loadDepartmentDetails";
 import { departments as staticDepartments } from "@/data/departments";
-import { doctors as allDoctors } from "@/data/doctors";
+import { loadDoctors, type Doctor } from "@/data/loadDoctors";
 import { motion } from "framer-motion";
-import { ChevronRight, ChevronLeft, ArrowLeft, CheckCircle2, ChevronDown, Stethoscope, MessageCircle, Phone } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { ChevronRight, ChevronLeft, ArrowLeft, CheckCircle2, ChevronDown, Stethoscope, MessageCircle, Phone, Loader2 } from "lucide-react";
+import { useState, useRef, useEffect, memo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import type { DepartmentDetailSection } from "@/data/departmentDetails";
 import { resolveDepartmentBySlug } from "@/utils/resolveDepartmentSlug";
-
 const pickDeptText = (lang: string, en: string, ar?: string) => (lang === "ar" && ar ? ar : en);
-
 const isAlSafwaDepartment = (slug: string, name: string) =>
   slug.includes("al-safwa") || name.toLowerCase().includes("safwa");
-
-const DepartmentDoctors = ({ doctors, lang }: { doctors: typeof allDoctors; lang: string }) => {
+const DepartmentDoctors = memo(({ doctors, lang }: { doctors: Doctor[]; lang: string }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const autoSlideRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const isPausedRef = useRef(false);
-
   const scroll = (dir: "left" | "right") => {
     if (scrollRef.current) {
       const isMobile = window.innerWidth < 768;
       const amount = isMobile ? (280 + 80) : (280 + 24);
       scrollRef.current.scrollBy({ left: dir === "left" ? -amount : amount, behavior: "smooth" });
-      // Pause auto-slide for 5 s after manual interaction
       isPausedRef.current = true;
       setTimeout(() => { isPausedRef.current = false; }, 5000);
     }
   };
-
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-
-  // Auto-slide
   useEffect(() => {
     if (doctors.length <= 1) return;
     autoSlideRef.current = setInterval(() => {
@@ -59,9 +54,7 @@ const DepartmentDoctors = ({ doctors, lang }: { doctors: typeof allDoctors; lang
       if (autoSlideRef.current) clearInterval(autoSlideRef.current);
     };
   }, [doctors.length]);
-
   const showArrows = doctors.length > (isMobile ? 1 : 4);
-
   return (
     <section className="py-12">
       <div className="container mx-auto px-6">
@@ -109,9 +102,9 @@ const DepartmentDoctors = ({ doctors, lang }: { doctors: typeof allDoctors; lang
                 padding-right: calc((100vw - 280px) / 2);
               }
               @media (min-width: 768px) {
-                .detail-doctor-carousel { 
-                  padding-left: 0 !important; 
-                  padding-right: 0 !important; 
+                .detail-doctor-carousel {
+                  padding-left: 0 !important;
+                  padding-right: 0 !important;
                 }
               }
             `}} />
@@ -160,7 +153,8 @@ const DepartmentDoctors = ({ doctors, lang }: { doctors: typeof allDoctors; lang
       </div>
     </section>
   );
-};
+});
+DepartmentDoctors.displayName = "DepartmentDoctors";
 const DepartmentDetail = () => {
   const { slug, subSlug } = useParams();
   const navigate = useNavigate();
@@ -178,7 +172,27 @@ const DepartmentDetail = () => {
   const { lang, t } = useLanguage();
   const isAr = lang === "ar";
   const [expandedSub, setExpandedSub] = useState<string | null>(subSlug || null);
-
+  const [dept, setDept] = useState<DepartmentDetailData | null | undefined>(undefined);
+  const [allDoctors, setAllDoctors] = useState<Doctor[]>([]);
+  useEffect(() => {
+    let cancelled = false;
+    void loadDepartmentDetails().then((details) => {
+      if (cancelled) return;
+      setDept(resolveDepartmentBySlug(slug, details) ?? null);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [slug]);
+  useEffect(() => {
+    let cancelled = false;
+    void loadDoctors().then((list) => {
+      if (!cancelled) setAllDoctors(list);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
   const goBackToSpecializedCare = () => {
     navigate(navState.returnPath || "/", {
       state: {
@@ -188,7 +202,6 @@ const DepartmentDetail = () => {
       },
     });
   };
-
   const goBackToDepartment = () => {
     if (fromSpecializedCare) {
       goBackToSpecializedCare();
@@ -196,12 +209,20 @@ const DepartmentDetail = () => {
     }
     navigate(`/medical-services/${slug}`);
   };
-
-  const dept = departmentDetails.find((d) => d.slug === slug);
-  const alSafwaDept = dept ? isAlSafwaDepartment(dept.slug, dept.name) : false;
-
   const goToAlSafwaProgram = () => navigate("/al-safwa");
-
+  if (dept === undefined) {
+    return (
+      <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
+        <Header />
+        <div className="flex min-h-[40vh] items-center justify-center text-muted-foreground">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" aria-hidden />
+          <span className="sr-only">Loading department...</span>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+  const alSafwaDept = dept ? isAlSafwaDepartment(dept.slug, dept.name) : false;
   if (!dept) {
     return (
       <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
@@ -216,16 +237,10 @@ const DepartmentDetail = () => {
       </div>
     );
   }
-
-  // If subSlug, find it
   const activeSub = subSlug ? dept.subDepartments?.find((s) => s.slug === subSlug) : null;
   const displayDept = activeSub || dept;
-
-  // Get the department image from static departments data (matched by slug)
   const staticDept = staticDepartments.find((d) => d.slug === dept.slug);
   const deptImage = staticDept?.img || "";
-
-  // Map department detail names to doctor data department values
   const deptNameToDoctorDept: Record<string, string[]> = {
     "Obstetrics & Gynecology": ["Obstetrics & Gynecology"],
     "Reproductive Medicine & IVF": ["IVF"],
@@ -246,7 +261,6 @@ const DepartmentDetail = () => {
     "Clinical Nutrition & Dietetics": ["Nutricare"],
     "Physiotherapy": ["Physiotherapy"],
   };
-
   const matchingDepts = deptNameToDoctorDept[displayDept.name] || deptNameToDoctorDept[dept.name] || [];
   const baseDeptDoctors = matchingDepts.length > 0
     ? allDoctors.filter((doc) => matchingDepts.includes(doc.department))
@@ -254,16 +268,13 @@ const DepartmentDetail = () => {
       doc.department.toLowerCase().includes(dept.name.toLowerCase().split(" ")[0]) ||
       dept.name.toLowerCase().includes(doc.department.toLowerCase().split(" ")[0])
     );
-
   const deptDoctors = (() => {
     if (!subSlug) {
       return baseDeptDoctors.sort((a, b) =>
         (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en")
       );
     }
-
     const subSpecialtyDoctorMap: Record<string, string[]> = {
-      // Internal Medicine subs
       "cardiology": ["alturki", "turki"],
       "nephrology": ["qallaf"],
       "gastroenterology": ["swait", "jaser"],
@@ -272,25 +283,20 @@ const DepartmentDetail = () => {
       "clinical-nutrition-and-dietetics": ["hachem", "khreis", "salamah"],
       "respiratory-clinic-pulmonology": ["alia", "ibrahim"],
       "allergy-and-immunology": ["othman", "yassmin"],
-      // OB/GYN subs
       "cosmetic-gynecology": ["abubakr", "elmardi", "nada", "samar", "nagaty"],
       "gynecologic-oncology": ["nourah-al-ibrahim"],
       "urogynecology": ["abubakr", "elmardi", "nada"],
-      "women-s-health": [], // All OBGYN doctors
+      "women-s-health": [],
       "physiotherapy": [],
       "parent-and-childbirth-education": [],
-      // General & Laparoscopic Surgery subs
       "obesity-bariatric-surgery": ["ahmed-al-mulla", "mulla", "humoud", "alrasheedi", "hussein", "faour", "sulaiman", "almazeedi"],
       "breast-surgical-oncology": ["noha", "alsaleh"],
       "abdominal-wall-reconstruction": ["humoud", "alrasheedi", "sarah", "youha"],
       "nutrition-and-diet-surgery": ["hachem", "khreis", "salamah"],
     };
-
-    // Try explicit map first
     const mapKey = Object.keys(subSpecialtyDoctorMap).find(
       (k) => subSlug.includes(k) || k.includes(subSlug)
     );
-
     if (mapKey && subSpecialtyDoctorMap[mapKey].length > 0) {
       const keywords = subSpecialtyDoctorMap[mapKey];
       const filtered = baseDeptDoctors.filter((doc) =>
@@ -302,8 +308,6 @@ const DepartmentDetail = () => {
         );
       }
     }
-
-    // Fallback: keyword match on title/specialty
     if (activeSub) {
       const subKeywords = activeSub.name
         .toLowerCase()
@@ -319,17 +323,14 @@ const DepartmentDetail = () => {
         );
       }
     }
-
     return baseDeptDoctors.sort((a, b) =>
       (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en")
     );
   })();
-
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
       <Header />
-
-      {/* Breadcrumb */}
+      {}
       <div className="bg-muted/30 border-b border-border/50">
         <div className="container mx-auto px-6 py-3">
           <nav className="flex items-center gap-2 font-body text-xs text-muted-foreground">
@@ -355,8 +356,7 @@ const DepartmentDetail = () => {
           </nav>
         </div>
       </div>
-
-      {/* Hero */}
+      {}
       <section className="py-12 md:py-16 bg-primary/5">
         <div className="container mx-auto px-6">
           <ScrollAnimationWrapper>
@@ -409,9 +409,8 @@ const DepartmentDetail = () => {
           </ScrollAnimationWrapper>
         </div>
       </section>
-
-      {/* Image/Video Placeholder */}
-      {/* Show image only for main department */}
+      {}
+      {}
       {!activeSub && (
         <section className="container mx-auto px-6 py-8 flex justify-center">
           <div
@@ -448,8 +447,7 @@ const DepartmentDetail = () => {
           </div>
         </section>
       )}
-
-      {/* Content Sections */}
+      {}
       <section className="py-8 md:py-12">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto space-y-8">
@@ -460,7 +458,6 @@ const DepartmentDetail = () => {
                 : undefined;
               const sectionItems =
                 lang === "ar" && section.itemsAr?.length ? section.itemsAr : section.items;
-
               return (
                 <motion.div
                   key={i}
@@ -543,17 +540,10 @@ const DepartmentDetail = () => {
           </div>
         </div>
       </section>
-
-      {/* Image/Video Placeholder 2 */}
-      {/* {displayDept.sections.length > 2 && (
-        <section className="container mx-auto px-6 py-4">
-          <div className="aspect-[4/3] md:aspect-video max-w-3xl mx-auto bg-muted/30 rounded-2xl border border-border/50 flex items-center justify-center">
-            <p className="text-muted-foreground font-body text-sm">Gallery / Video Content</p>
-          </div>
-        </section>
-      )} */}
-
-      {/* Sub-Departments */}
+      {}
+      {
+}
+      {}
       {!activeSub && dept.subDepartments && dept.subDepartments.length > 0 && (
         <section className="py-12 bg-secondary/10">
           <div className="container mx-auto px-6">
@@ -624,12 +614,8 @@ const DepartmentDetail = () => {
                             )}
                           </div>
                         ))}
-                        {/* <Link
-                          to={`/medical-services/${dept.slug}/${sub.slug}`}
-                          className="inline-flex items-center gap-2 text-accent font-body text-xs tracking-wide hover:underline mt-2"
-                        >
-                          View Full Details <ChevronRight className="w-3.5 h-3.5" />
-                        </Link> */}
+                        {
+}
                       </motion.div>
                     )}
                   </div>
@@ -639,13 +625,11 @@ const DepartmentDetail = () => {
           </div>
         </section>
       )}
-
-      {/* Doctors */}
+      {}
       {deptDoctors.length > 0 && (
         <DepartmentDoctors doctors={deptDoctors} lang={lang} />
       )}
-
-      {/* Home Health contact card */}
+      {}
       {dept.slug === "home-health" && !activeSub && (
         <section className="pb-12">
           <div className="container mx-auto px-6">
@@ -675,18 +659,15 @@ const DepartmentDetail = () => {
           </div>
         </section>
       )}
-
       <style>{`
         .dept-detail-rtl {
           direction: rtl;
           text-align: right;
         }
       `}</style>
-
       <Footer />
       <ScrollToTop />
     </div>
   );
 };
-
 export default DepartmentDetail;

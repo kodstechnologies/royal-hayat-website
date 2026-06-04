@@ -1,5 +1,4 @@
 import type { LucideIcon } from "lucide-react";
-
 export type BookingDeptRow = {
   id: string;
   name: string;
@@ -10,7 +9,6 @@ export type BookingDeptRow = {
   mainCategory: string;
   icon: LucideIcon;
 };
-
 export type VerifiedIdentityDetails = {
   name: string;
   dateOfBirth: string;
@@ -19,7 +17,6 @@ export type VerifiedIdentityDetails = {
   gender: string;
   passportNumber: string;
 };
-
 export const pageVariants = {
   initial: { opacity: 0, x: 40 },
   animate: { opacity: 1, x: 0 },

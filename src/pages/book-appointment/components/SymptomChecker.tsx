@@ -3,7 +3,6 @@ import { AlertCircle, ArrowLeft, Brain, Sparkles } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
-
 type SymptomCheckerProps = {
   lang: string;
   isAr: boolean;
@@ -17,7 +16,6 @@ type SymptomCheckerProps = {
   onAnalyze: () => void;
   onBack: () => void;
 };
-
 const SymptomChecker = ({
   lang,
   isAr,
@@ -43,7 +41,6 @@ const SymptomChecker = ({
         </div>
         <h1 className="text-2xl md:text-3xl font-serif text-foreground mb-2">{t("tellUsSymptoms")}</h1>
       </motion.div>
-
       <div className="bg-popover rounded-2xl p-8 border border-border shadow-sm">
         <div className="flex flex-wrap gap-2 mb-4">
           {chipOptions.map((chip) => (
@@ -55,21 +52,17 @@ const SymptomChecker = ({
                 setSymptomChips((prev) => {
                   const isSelected = prev.includes(chip);
                   const next = isSelected ? prev.filter((c) => c !== chip) : [...prev, chip];
-
                   setSymptomText((prevText) => {
                     const parts = prevText
                       .split(/[,;\n]+/)
                       .map((s) => s.trim())
                       .filter(Boolean);
-
                     if (isSelected) {
                       return parts.filter((p) => p.toLowerCase() !== chip.toLowerCase()).join(", ");
                     }
-
                     if (parts.some((p) => p.toLowerCase() === chip.toLowerCase())) return parts.join(", ");
                     return [...parts, chip].join(", ");
                   });
-
                   return next;
                 })
               }
@@ -89,7 +82,6 @@ const SymptomChecker = ({
           placeholder={t("describeInDetail")}
           className="w-full h-24 bg-muted/20 border border-border rounded-xl p-4 font-body text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-2 focus:ring-accent/30 mb-4"
         />
-
         <div className="bg-destructive/10 rounded-xl p-4 border-2 border-destructive/30 mb-4">
           <p className="font-body text-sm text-foreground leading-relaxed font-medium">
             <AlertCircle className="w-4 h-4 inline mr-2 text-destructive" />
@@ -98,7 +90,6 @@ const SymptomChecker = ({
               : "⚠️ Important Disclaimer: This tool provides general suggestions only and is NOT a substitute for professional medical advice. Please consult a doctor for accurate diagnosis and appropriate treatment."}
           </p>
         </div>
-
         <AnimatePresence>
           {symptomAnalyzing && (
             <motion.div
@@ -116,7 +107,6 @@ const SymptomChecker = ({
             </motion.div>
           )}
         </AnimatePresence>
-
         <div className="flex flex-nowrap items-center justify-between gap-3 sm:gap-4">
           <button
             type="button"
@@ -147,5 +137,4 @@ const SymptomChecker = ({
     <ScrollToTop />
   </div>
 );
-
 export default SymptomChecker;

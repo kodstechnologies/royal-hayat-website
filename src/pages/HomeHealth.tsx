@@ -5,12 +5,10 @@ import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
 import { Home, Heart, Activity, Baby, Syringe, Stethoscope, CheckCircle2, Phone, MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
-
 const HomeHealth = () => {
   const { t, lang } = useLanguage();
   const isAr = lang === "ar";
   const ltrPhoneClass = "inline-block [direction:ltr] [unicode-bidi:isolate]";
-
   const rehabServices = isAr ? [
     "صحة المرأة والتعافي بعد الولادة",
     "التأهيل القلبي",
@@ -30,7 +28,6 @@ const HomeHealth = () => {
     "Therapeutic massage",
     "Pediatric rehabilitation",
   ];
-
   const shortTermServices = isAr ? [
     "الحقن والرعاية المتعلقة بأطفال الأنابيب",
     "العلاج الوريدي (تعويض السوائل، المضادات الحيوية)",
@@ -60,7 +57,6 @@ const HomeHealth = () => {
     "Nebulization",
     "Blood sugar and vital signs monitoring",
   ];
-
   const longTermServices = isAr ? [
     "رعاية الأطفال وحديثي الولادة",
     "رعاية كبار السن",
@@ -68,12 +64,10 @@ const HomeHealth = () => {
     "Baby care and newborn monitoring",
     "Senior (geriatric) care",
   ];
-
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
       <Header />
-
-      {/* Hero */}
+      {}
       <section className="py-16 md:py-20 bg-primary/5">
         <div className="container mx-auto px-6 text-center">
           <ScrollAnimationWrapper>
@@ -85,8 +79,7 @@ const HomeHealth = () => {
           </ScrollAnimationWrapper>
         </div>
       </section>
-
-      {/* About Us */}
+      {}
       <section className="py-16">
         <div className="container mx-auto px-6 max-w-4xl">
           <ScrollAnimationWrapper>
@@ -101,8 +94,7 @@ const HomeHealth = () => {
           </ScrollAnimationWrapper>
         </div>
       </section>
-
-      {/* Rehabilitation Services */}
+      {}
       <section className="py-16 bg-primary/5">
         <div className="container mx-auto px-6 max-w-4xl">
           <ScrollAnimationWrapper>
@@ -129,8 +121,7 @@ const HomeHealth = () => {
           </div>
         </div>
       </section>
-
-      {/* Specialized Nursing Services */}
+      {}
       <section className="py-16">
         <div className="container mx-auto px-6 max-w-4xl">
           <ScrollAnimationWrapper>
@@ -146,8 +137,7 @@ const HomeHealth = () => {
                 : "Our specialized nursing team offers comprehensive medical services in the comfort of your home, including:"}
             </p>
           </ScrollAnimationWrapper>
-
-          {/* Short-Term Visits */}
+          {}
           <div className="mb-10">
             <div className="flex items-center gap-2 mb-4">
               <Syringe className="w-5 h-5 text-primary" />
@@ -163,8 +153,7 @@ const HomeHealth = () => {
               ))}
             </div>
           </div>
-
-          {/* Long-Term Visits */}
+          {}
           <div>
             <div className="flex items-center gap-2 mb-4">
               <Heart className="w-5 h-5 text-accent" />
@@ -180,8 +169,6 @@ const HomeHealth = () => {
               ))}
             </div>
           </div>
-
-
           <div>
             <section className="pb-12 mt-10">
               <div className="container mx-auto px-6">
@@ -225,14 +212,11 @@ const HomeHealth = () => {
               </div>
             </section>
           </div>
-
         </div>
       </section>
-
       <Footer />
       <ScrollToTop />
     </div>
   );
 };
-
 export default HomeHealth;

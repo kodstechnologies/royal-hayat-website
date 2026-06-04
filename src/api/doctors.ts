@@ -1,22 +1,16 @@
 import api from "./axiosInstance";
 import type { Doctor } from "@/data/doctors";
-
-/** Distinct department ObjectIds that have at least one active doctor. */
 export async function getDoctorDepartmentIds(): Promise<string[]> {
   const res = await api.get("/api/v1/doctors/departments");
   const raw = res?.data?.data;
   if (!Array.isArray(raw)) return [];
   return raw.map((x) => String(x));
 }
-
-/** Active doctors for a single department (Mongo department `_id`). */
 export async function getDoctorsByDepartment(department: string): Promise<Record<string, unknown>[]> {
   const res = await api.get(`/api/v1/doctors/department/${encodeURIComponent(department)}`);
   const raw = res?.data?.data;
   return Array.isArray(raw) ? (raw as Record<string, unknown>[]) : [];
 }
-
-/** Active doctors assigned this subspeciality on their profile (Mongo subspeciality `_id`). */
 export async function getDoctorsBySubspeciality(
   subspecialityId: string,
   opts?: { page?: number; limit?: number },
@@ -29,7 +23,6 @@ export async function getDoctorsBySubspeciality(
   const raw = res?.data?.data;
   return Array.isArray(raw) ? (raw as Record<string, unknown>[]) : [];
 }
-
 export function mapApiDoctorRowToDoctor(
   row: Record<string, unknown>,
   departmentNameEn: string,
@@ -38,12 +31,10 @@ export function mapApiDoctorRowToDoctor(
   const id = String(row._id ?? row.doctorId ?? "");
   const name = String(row.name ?? "");
   const nameAr = String(row.nameAr ?? name);
-
   const depRaw = row.department;
   let resolvedDeptEn = departmentNameEn;
   let resolvedDeptAr = departmentNameAr;
   let departmentId: string | undefined;
-
   if (depRaw && typeof depRaw === "object" && depRaw !== null) {
     const d = depRaw as { _id?: unknown; name?: string; nameAr?: string };
     if (d._id != null) departmentId = String(d._id);
@@ -56,15 +47,11 @@ export function mapApiDoctorRowToDoctor(
   } else if (typeof depRaw === "string" && /^[0-9a-fA-F]{24}$/i.test(depRaw)) {
     departmentId = depRaw;
   }
-
-  // Fallback specialty to department name if missing
   const specialty = String(row.specialty ?? resolvedDeptEn ?? "");
   const specialtyAr = String(row.specialtyAr ?? resolvedDeptAr ?? specialty);
-
   const title = String(row.title ?? "");
   const titleAr = String(row.titleAr ?? title);
   const initialsRaw = String(row.initials ?? (name.replace(/^Dr\.?\s*/i, "").slice(0, 2) || "DR")).toUpperCase();
-
   const quals = Array.isArray(row.qualifications) ? (row.qualifications as string[]) : [];
   const qualsAr = Array.isArray(row.qualificationsAr) ? (row.qualificationsAr as string[]) : quals;
   const exp = Array.isArray(row.expertise) ? (row.expertise as string[]) : [];
@@ -76,7 +63,6 @@ export function mapApiDoctorRowToDoctor(
   const bioAr = String(row.bioAr ?? bio);
   const image = typeof row.image === "string" ? row.image : "";
   const isActive = row.isActive !== false;
-
   return {
     id,
     name,
@@ -105,8 +91,6 @@ export function mapApiDoctorRowToDoctor(
     providerCode: typeof row.doctorId === "string" ? row.doctorId : undefined,
   };
 }
-
-/** All active doctors (paginates until complete). List endpoint populates `department`. */
 export async function fetchAllActiveDoctors(): Promise<Doctor[]> {
   const out: Doctor[] = [];
   let page = 1;
@@ -134,7 +118,6 @@ export async function fetchAllActiveDoctors(): Promise<Doctor[]> {
   }
   return out;
 }
-
 export const getDoctorById = async (id: string) => {
   const response = await api.get(`/api/v1/doctors/${id}`);
   return response.data;

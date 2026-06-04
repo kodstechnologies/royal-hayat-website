@@ -1,5 +1,4 @@
 import api from "./axiosInstance";
-
 export type CreateInternationalPatientEnquiryPayload = {
   firstName: string;
   lastName: string;
@@ -9,13 +8,11 @@ export type CreateInternationalPatientEnquiryPayload = {
   address?: string;
   comments?: string;
 };
-
 type ApiResponse<T> = {
   success: boolean;
   message: string;
   data: T;
 };
-
 export const createInternationalPatientEnquiry = async (
   data: CreateInternationalPatientEnquiryPayload,
 ) => {

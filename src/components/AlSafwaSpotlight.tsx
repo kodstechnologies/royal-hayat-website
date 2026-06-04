@@ -3,10 +3,8 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { useLanguage } from "@/contexts/LanguageContext";
-
 const AlSafwaSpotlight = () => {
   const { t } = useLanguage();
-
   return (
     <section className="py-16 bg-primary/5">
       <div className="container mx-auto px-6">
@@ -38,5 +36,4 @@ const AlSafwaSpotlight = () => {
     </section>
   );
 };
-
 export default AlSafwaSpotlight;

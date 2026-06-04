@@ -9,7 +9,6 @@ import { Heart, Star, Sparkles, Shield, Target, BookOpen, Users, ChevronDown, Ch
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Link } from "react-router-dom";
-
 const leaders = [
   {
     initials: "SA",
@@ -147,7 +146,6 @@ const leaders = [
     image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/Leadership-photos/marta.jpeg",
   },
 ];
-
 const LeaderCard = ({ leader, lang }: { leader: typeof leaders[0] & { image?: string }; lang: string }) => {
   const [expanded, setExpanded] = useState(false);
   const name = lang === "ar" ? leader.nameAr : leader.nameEn;
@@ -160,14 +158,12 @@ const LeaderCard = ({ leader, lang }: { leader: typeof leaders[0] & { image?: st
     "Dr. Sulaiman Al Mazeedi": "https://royal-hayat.s3.eu-central-1.amazonaws.com/leadership/sulaiman-mobile123.png",
   };
   const desktopImageOverride: Record<string, string> = {
-    // "Dr. Sulaiman Al Mazeedi": "https://royal-hayat.s3.eu-central-1.amazonaws.com/leadership/sulaiman-web.png",
     "Prof. Dr. Omar El Khateeb": "https://royal-hayat.s3.eu-central-1.amazonaws.com/Leadership-photos/omar-we.jpeg",
     "Dr. Hamid Ghaderi": "https://royal-hayat.s3.eu-central-1.amazonaws.com/Leadership-photos/hamid-we.jpeg",
     "Shibu Thomas Mathew": "https://royal-hayat.s3.eu-central-1.amazonaws.com/Leadership-photos/shibu-web2.jpeg",
   };
   const mobileOverrideSrc = mobileImageOverride[leader.nameEn];
   const desktopOverrideSrc = desktopImageOverride[leader.nameEn];
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -176,7 +172,6 @@ const LeaderCard = ({ leader, lang }: { leader: typeof leaders[0] & { image?: st
       className="bg-popover border border-border/50 rounded-2xl overflow-hidden"
     >
       <div className="flex flex-col md:flex-row">
-        {/* Photo / Avatar side */}
         <div className="md:w-64 flex-shrink-0 bg-primary/5 flex items-center justify-center p-8 md:p-10">
           <div className={`w-44 h-44 md:w-60 md:h-60 rounded-2xl flex items-center justify-center border-4 border-primary/20 overflow-hidden ${leader.nameEn === "Shibu Thomas Mathew" ? "bg-white" : "bg-primary/10"}`}>
             {leader.image ? (
@@ -202,7 +197,7 @@ const LeaderCard = ({ leader, lang }: { leader: typeof leaders[0] & { image?: st
             )}
           </div>
         </div>
-        {/* Info side */}
+        {}
         <div className="flex-1 p-6 md:p-8">
           <h3 className={`font-serif text-xl text-foreground mb-1 ${lang === "ar" ? "rtl-text" : ""}`}>{name}</h3>
           {(() => {
@@ -262,18 +257,15 @@ const LeaderCard = ({ leader, lang }: { leader: typeof leaders[0] & { image?: st
     </motion.div>
   );
 };
-
 const AboutUs = () => {
   const { t, lang } = useLanguage();
   const [searchParams] = useSearchParams();
   const section = searchParams.get("section");
   const showAll = !section;
   const show = (s: string) => showAll || section === s;
-
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, [section]);
-
   const values = [
     { icon: Heart, titleKey: "patientCenteredCare", descKey: "patientCenteredCareDesc" },
     { icon: Heart, titleKey: "compassion", descKey: "compassionDesc" },
@@ -281,12 +273,10 @@ const AboutUs = () => {
     { icon: Sparkles, titleKey: "innovation", descKey: "innovationDesc" },
     { icon: Shield, titleKey: "integrityProfessionalism", descKey: "integrityProfessionalismDesc" },
   ];
-
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107]">
       <Header />
-
-      {/* Hero */}
+      {}
       {section !== "chairman" && (
         <section className="pt-12 pb-6 md:pt-16 md:pb-8 bg-primary/5">
           <div className="container mx-auto px-6 text-center">
@@ -330,8 +320,7 @@ const AboutUs = () => {
           </div>
         </section>
       )}
-
-      {/* Our History - FULL content from doc */}
+      {}
       {show("history") && (
         <section className="pb-16 pt-2 bg-background" id="history">
           <div className="container mx-auto px-6">
@@ -375,11 +364,7 @@ const AboutUs = () => {
           </div>
         </section>
       )}
-
-
-
-
-      {/* Mission & Values */}
+      {}
       {show("mission") && (
         <section className="pb-16 pt-2 bg-secondary/10" id="mission">
           <div className="container mx-auto px-6">
@@ -399,13 +384,11 @@ const AboutUs = () => {
                 </p>
               </div>
             </ScrollAnimationWrapper>
-
             <ScrollAnimationWrapper>
               <div className="text-center mb-8 mt-12">
                 <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">{t("ourValues")}</p>
               </div>
             </ScrollAnimationWrapper>
-
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto">
               {values.map((v, i) => (
                 <motion.div
@@ -435,9 +418,7 @@ const AboutUs = () => {
           </div>
         </section>
       )}
-
-
-      {/* Chairman's Message */}
+      {}
       {show("chairman") && (
         <>
           <section className="pt-12 pb-0 bg-background">
@@ -458,8 +439,7 @@ const AboutUs = () => {
           <ChairmanMessage />
         </>
       )}
-
-      {/* Leadership Team */}
+      {}
       {show("leadership") && <section className="pb-16 pt-16 bg-muted/20" id="leadership">
         <div className="container mx-auto px-6">
           <ScrollAnimationWrapper>
@@ -478,7 +458,6 @@ const AboutUs = () => {
               </p>
             </div>
           </ScrollAnimationWrapper>
-
           <div className="max-w-5xl mx-auto space-y-6">
             {leaders.map((leader) => (
               <LeaderCard key={leader.nameEn} leader={leader} lang={lang} />
@@ -486,9 +465,7 @@ const AboutUs = () => {
           </div>
         </div>
       </section>}
-
-
-      {/* CSR */}
+      {}
       {show("csr") && (
         <Link to="/csr" className="block">
           <section className="pb-16 pt-2 bg-background cursor-pointer hover:bg-primary/5 transition">
@@ -520,8 +497,6 @@ const AboutUs = () => {
           </section>
         </Link>
       )}
-
-
       <style>{`
         .rtl-text {
           direction: rtl;
@@ -552,11 +527,9 @@ const AboutUs = () => {
           }
         }
       `}</style>
-
       <Footer />
       <ScrollToTop />
     </div>
   );
 };
-
 export default AboutUs;

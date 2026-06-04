@@ -6,19 +6,16 @@ import { Sparkles, Phone, CheckCircle2, Gift, UtensilsCrossed, UserCheck, Chevro
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-
 type InRoomEventsProps = {
   topCarouselImages: string[];
   galleryImages: string[];
 };
-
 const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
   const ltrPhoneClass = "inline-block [direction:ltr] [unicode-bidi:isolate]";
   const [activeSlide, setActiveSlide] = useState(0);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
-
   useEffect(() => {
     if (!lightboxImage) return;
     const onKey = (e: KeyboardEvent) => {
@@ -27,7 +24,6 @@ const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) =
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [lightboxImage]);
-
   useEffect(() => {
     if (topCarouselImages.length <= 1) return;
     const timer = window.setInterval(() => {
@@ -35,16 +31,13 @@ const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) =
     }, 5000);
     return () => window.clearInterval(timer);
   }, [topCarouselImages.length]);
-
   useEffect(() => {
     setActiveSlide(0);
   }, [topCarouselImages]);
-
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
       <Header />
-
-      {/* Hero */}
+      {}
       <section className="py-16 md:py-20 bg-primary/5">
         <div className="container mx-auto px-6 text-center">
           <ScrollAnimationWrapper>
@@ -65,8 +58,7 @@ const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) =
           </ScrollAnimationWrapper>
         </div>
       </section>
-
-      {/* Gallery Carousel */}
+      {}
       <section className="py-12 md:py-16">
         <div className="container mx-auto px-6">
           <div className="max-w-5xl mx-auto">
@@ -115,7 +107,6 @@ const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) =
                   )}
                 </AnimatePresence>
               </div>
-
               {topCarouselImages.length > 1 && (
                 <>
                   <button
@@ -136,7 +127,6 @@ const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) =
                   </button>
                 </>
               )}
-
               {topCarouselImages.length > 1 && (
                 <div className="flex items-center justify-center gap-3 mt-5">
                   <span className="font-body text-xs text-muted-foreground tracking-widest">
@@ -148,8 +138,7 @@ const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) =
           </div>
         </div>
       </section>
-
-      {/* Services */}
+      {}
       <section className="py-12 md:py-16 bg-secondary/10">
         <div className="container mx-auto px-6">
           <div className="max-w-5xl mx-auto">
@@ -163,7 +152,6 @@ const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) =
                   : "We offer a comprehensive range of services to make your occasion truly unforgettable"}
               </p>
             </ScrollAnimationWrapper>
-
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[
                 {
@@ -202,8 +190,7 @@ const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) =
           </div>
         </div>
       </section>
-
-      {/* What We Offer */}
+      {}
       <section className="py-12 md:py-16">
         <div className="container mx-auto px-6">
           <div className="max-w-6xl mx-auto w-full">
@@ -242,8 +229,7 @@ const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) =
           </div>
         </div>
       </section>
-
-      {/* Gallery Placeholder */}
+      {}
       <section className="py-12 md:py-16 bg-primary/5">
         <div className="container mx-auto px-6">
           <div className="max-w-5xl mx-auto">
@@ -268,8 +254,7 @@ const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) =
           </div>
         </div>
       </section>
-
-      {/* Contact CTA */}
+      {}
       <section className="py-12 md:py-16">
         <div className="container mx-auto px-6 text-center">
           <ScrollAnimationWrapper>
@@ -288,7 +273,6 @@ const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) =
           </ScrollAnimationWrapper>
         </div>
       </section>
-
       <AnimatePresence>
         {lightboxImage && (
           <motion.div
@@ -315,11 +299,9 @@ const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) =
           </motion.div>
         )}
       </AnimatePresence>
-
       <Footer />
       <ScrollToTop />
     </div>
   );
 };
-
 export default InRoomEvents;

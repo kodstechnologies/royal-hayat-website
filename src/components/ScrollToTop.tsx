@@ -2,17 +2,14 @@ import { ArrowUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
-
 const ScrollToTop = () => {
   const [visible, setVisible] = useState(false);
   const { lang } = useLanguage();
-
   useEffect(() => {
     const onScroll = () => setVisible(window.scrollY > 400);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
   return (
     <AnimatePresence>
       {visible && (
@@ -32,5 +29,4 @@ const ScrollToTop = () => {
     </AnimatePresence>
   );
 };
-
 export default ScrollToTop;

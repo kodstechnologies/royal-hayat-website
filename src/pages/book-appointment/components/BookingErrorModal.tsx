@@ -1,13 +1,11 @@
 import { motion } from "framer-motion";
 import { AlertCircle } from "lucide-react";
-
 type BookingErrorModalProps = {
   isAr: boolean;
   message: string;
   onDismiss: () => void;
   onConfirm: () => void;
 };
-
 const BookingErrorModal = ({ isAr, message, onDismiss, onConfirm }: BookingErrorModalProps) => (
   <div
     className="fixed inset-0 z-[75] flex items-center justify-center bg-foreground/40 backdrop-blur-sm p-4"
@@ -35,5 +33,4 @@ const BookingErrorModal = ({ isAr, message, onDismiss, onConfirm }: BookingError
     </motion.div>
   </div>
 );
-
 export default BookingErrorModal;

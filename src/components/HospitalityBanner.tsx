@@ -3,10 +3,8 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { useLanguage } from "@/contexts/LanguageContext";
-
 const HospitalityBanner = () => {
   const { t } = useLanguage();
-
   const features = [
     { icon: Crown, label: t("birthCelebrationHalls") },
     { icon: Bed, label: t("exclusiveSuites") },
@@ -16,7 +14,6 @@ const HospitalityBanner = () => {
     { icon: Coffee, label: t("fifthFloorCafe") },
     { icon: Baby, label: t("newbornPhotography") },
   ];
-
   return (
     <section className="py-16 bg-primary/5">
       <div className="container mx-auto px-6">
@@ -63,5 +60,4 @@ const HospitalityBanner = () => {
     </section>
   );
 };
-
 export default HospitalityBanner;

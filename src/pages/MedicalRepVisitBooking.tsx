@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -7,21 +7,13 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { CalendarCheck, ListChecks, Stethoscope } from "lucide-react";
-import { doctors, type Doctor } from "@/data/doctors";
+import { loadDoctors, type Doctor } from "@/data/loadDoctors";
 import { departments, deptDoctorAliases } from "@/data/departments";
-
 const getCleanCalendlySlug = (name: string) => {
-  // Remove "Dr." prefix and trim
   let clean = name.replace(/^Dr\.?\s+/i, '').trim();
-  
-  // Remove any special characters except spaces and hyphens
   clean = clean.replace(/[^\w\s-]/g, '');
-  
   const parts = clean.split(/\s+/);
-  
-  // Special case mappings for specific doctors
   const specialCases: Record<string, string> = {
-    // OB/GYN Department
     'Abubakr Elmardi': 'dr-abubakr-elmardi',
     'Abubakar Elmardi': 'dr-abubakr-elmardi',
     'Essam Sakr': 'dr-essam-sakr',
@@ -36,75 +28,60 @@ const getCleanCalendlySlug = (name: string) => {
     'Mayada Al Qadi': 'dr-mayada-al-qadi-ob-gyn-clone',
     'Salma Ibrahim': 'dr-salma-ibrahim',
     'Hafsah Hussain': 'dr-hafsah-hussain',
-    
-    // Surgical Department
     'Hussein Faour': 'dr-hussein-faour',
     'Ahmed Al Mulla': 'dr-ahmed-almulla',
     'Sulaiman Almazeedi': 'drsulaiman-almazeedi',
     'Sulaiman AlMazeedi': 'drsulaiman-almazeedi',
     'Humoud Alrasheedi': 'dr-hamoud-alrasheedi',
     'Humoud AlRasheedi': 'dr-hamoud-alrasheedi',
-    
-    // Royale Nutricare
     'Heba Ben Salama': 'hebah-bensalama',
     'Heba Ben Salamah': 'hebah-bensalama',
     'Fatima Khreis': 'fatima-khreis',
     'Fatme Khreis': 'fatima-khreis',
     'Farah Hashem': 'farah-hashem',
     'Farah Hachem': 'farah-hashem',
-    
-    // Gastroenterology
     'Wadha Al-Jaser': 'dr-wadha-aljasser',
     'Wadha Abdulaziz Al-jaser': 'dr-wadha-aljasser',
     'Wadha Al Jaser': 'dr-wadha-aljasser',
-    
-    // ENT Department
     'Hanafi Abdulsalam': 'dr-hanafi-abdulsalam',
     'Hamoud Alarouj': 'dr-hamoud-alarouj',
     'Abdullah AlBader': 'drabdullah-albader',
     'Abdullah Al Bader': 'drabdullah-albader',
-    
-    // Oncology Department
     'Noha Alsaleh': 'dr-noha-alsaleh',
     'Noha Al Saleh': 'dr-noha-alsaleh',
-    
-    // Rheumatology Department
     'Ali Ibrahim Aldei': 'dr-alialdei',
     'Ali Aldei': 'dr-alialdei',
-    
-    // Pain Management
     'Hamid Ghaderi': 'dr-hamid-ghaderi',
   };
-  
-  // Check for special cases first
   const cleanName = clean.replace(/\s+/g, ' ');
   if (specialCases[cleanName]) {
     return specialCases[cleanName];
   }
-  
-  // For names with 2 or fewer parts, join them all
   if (parts.length <= 2) {
     return `dr-${parts.join('-').toLowerCase()}`;
   }
-  
-  // For names with 3+ parts, check if there's a prefix like "Al", "El", "Abou", etc.
   const first = parts[0];
   let last = parts[parts.length - 1];
-  
-  // Check if second-to-last is a prefix
   const secondToLast = parts[parts.length - 2].toLowerCase();
   if (['al', 'el', 'abou', 'abu', 'abd', 'bin', 'ben'].includes(secondToLast)) {
     last = `${secondToLast}${last.toLowerCase()}`;
   }
-  
   return `dr-${first.toLowerCase()}-${last.toLowerCase()}`;
 };
-
 const MedicalRepVisitBooking = () => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
   const locale = isAr ? "ar" : "en";
-
+  const [doctorCatalog, setDoctorCatalog] = useState<Doctor[]>([]);
+  useEffect(() => {
+    let cancelled = false;
+    void loadDoctors().then((list) => {
+      if (!cancelled) setDoctorCatalog(list);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
   const steps = isAr ? [
     'انقر على زر "تسجيل".',
     "اختر الطبيب أو القسم المطلوب.",
@@ -118,30 +95,26 @@ const MedicalRepVisitBooking = () => {
     'Enter your full name, email address, and mobile number. Click on "Scheduled Event" to proceed.',
     "A confirmation page will appear, and a confirmation email will be sent to your registered email address.",
   ];
-
   const doctorsByDepartment = useMemo(() => {
     return departments
       .map((dept) => {
         const aliases = deptDoctorAliases[dept.name] || [dept.name];
-        const deptDoctors = doctors
+        const deptDoctors = doctorCatalog
           .filter((doc) => aliases.some((alias) => doc.department.includes(alias) || doc.specialty.includes(alias)))
           .sort((a, b) =>
             (isAr ? a.nameAr : a.name).localeCompare(isAr ? b.nameAr : b.name, locale)
           );
-
         return { dept, deptDoctors };
       })
       .filter(({ deptDoctors }) => deptDoctors.length > 0)
       .sort((a, b) =>
         (isAr ? a.dept.nameAr : a.dept.name).localeCompare(isAr ? b.dept.nameAr : b.dept.name, locale)
       );
-  }, [isAr, locale]);
-
+  }, [isAr, locale, doctorCatalog]);
   return (
     <div className="min-h-screen bg-background">
       <Header />
-
-      {/* Hero */}
+      {}
       <section className="pt-40 pb-16 bg-primary">
         <div className="container mx-auto px-6 text-center">
           <ScrollAnimationWrapper>
@@ -150,8 +123,7 @@ const MedicalRepVisitBooking = () => {
           </ScrollAnimationWrapper>
         </div>
       </section>
-
-      {/* Intro */}
+      {}
       <section className="py-20">
         <div className="container mx-auto px-6 max-w-3xl">
           <ScrollAnimationWrapper>
@@ -165,8 +137,7 @@ const MedicalRepVisitBooking = () => {
           </ScrollAnimationWrapper>
         </div>
       </section>
-
-      {/* Steps */}
+      {}
       <section className="py-16 bg-secondary/10">
         <div className="container mx-auto px-6 max-w-3xl">
           <ScrollAnimationWrapper>
@@ -182,8 +153,7 @@ const MedicalRepVisitBooking = () => {
           </ScrollAnimationWrapper>
         </div>
       </section>
-
-      {/* Doctors by Department */}
+      {}
       <section className="pt-10 pb-20">
         <div className="container mx-auto px-6 max-w-7xl">
           <ScrollAnimationWrapper>
@@ -196,12 +166,10 @@ const MedicalRepVisitBooking = () => {
                 </Button>
               </Link>
             </div>
-
             <h2 className="text-2xl font-serif text-foreground mb-6">
               {isAr ? "الأطباء حسب القسم" : "Doctors by Department"}
             </h2>
           </ScrollAnimationWrapper>
-
           <div className="space-y-12">
             {doctorsByDepartment.map(({ dept, deptDoctors }) => {
               const isPediatrics = dept.name === "Pediatrics";
@@ -209,8 +177,6 @@ const MedicalRepVisitBooking = () => {
               const isInternalMedicine = dept.name === "Internal Medicine";
               const isDermatology = dept.name === "Dermatology";
               const isDepartmentBooking = isPediatrics || isFamilyMedicine || isInternalMedicine || isDermatology;
-              
-              // Get department booking URL
               const getDepartmentBookingUrl = () => {
                 if (isPediatrics) return "https://calendly.com/rhhmedrep/pediatric-department";
                 if (isFamilyMedicine) return "https://calendly.com/rhhmedrep/family-internal-medicine";
@@ -218,7 +184,6 @@ const MedicalRepVisitBooking = () => {
                 if (isDermatology) return "https://calendly.com/rhhmedrep/pediatric-department-clone";
                 return "";
               };
-              
               return (
                 <ScrollAnimationWrapper key={dept.id}>
                   <div>
@@ -238,11 +203,9 @@ const MedicalRepVisitBooking = () => {
                     <p className="text-muted-foreground font-body text-sm text-justify mt-1 mb-5">
                       {isAr ? dept.descAr : dept.desc}
                     </p>
-
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                       {deptDoctors.map((doc: Doctor) => (
                         isDepartmentBooking ? (
-                          // For departments with department-level booking, show card without link and without Book Now button
                           <div key={doc.id} className="block">
                             <div className="bg-popover rounded-2xl border border-border/50 h-full flex flex-col">
                               <div className="bg-white h-64 flex items-center justify-center relative overflow-hidden rounded-t-2xl shrink-0">
@@ -257,14 +220,12 @@ const MedicalRepVisitBooking = () => {
                                   <Stethoscope className="w-3.5 h-3.5 text-primary-foreground" />
                                 </div>
                               </div>
-
                               <div className="p-5 flex flex-col flex-grow">
                                 <p className="text-accent text-[10px] tracking-[0.2em] uppercase font-body mb-1.5">
                                   {isAr ? doc.specialtyAr : doc.specialty}
                                 </p>
                                 <h4 className="text-base font-serif text-foreground mb-1">{isAr ? doc.nameAr : doc.name}</h4>
                                 <p className="text-muted-foreground font-body text-xs mb-3">{isAr ? doc.titleAr : doc.title}</p>
-
                                 <div className="flex flex-wrap gap-1.5 mb-4">
                                   {(isAr ? doc.languagesAr : doc.languages).map((l) => (
                                     <span key={l} className="px-2.5 py-0.5 rounded-full bg-secondary/40 text-[10px] font-body text-foreground">
@@ -272,7 +233,6 @@ const MedicalRepVisitBooking = () => {
                                     </span>
                                   ))}
                                 </div>
-
                                 {doc.hideBooking !== true && (
                                   <div className={`flex items-center gap-1.5 mb-4 ${doc.availableOnline !== false ? "text-green-600" : "text-destructive"}`}>
                                     <div className={`w-1.5 h-1.5 rounded-full ${doc.availableOnline !== false ? "bg-green-500" : "bg-destructive"}`} />
@@ -287,7 +247,6 @@ const MedicalRepVisitBooking = () => {
                             </div>
                           </div>
                         ) : (
-                          // For other departments, keep the original link and button
                           <Link key={doc.id} to={`https://calendly.com/rhhmedrep/${getCleanCalendlySlug(doc.name)}`} target="_blank" className="block">
                             <div className="bg-popover rounded-2xl border border-border/50 group cursor-pointer h-full flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
                               <div className="bg-white h-64 flex items-center justify-center relative overflow-hidden rounded-t-2xl shrink-0">
@@ -302,14 +261,12 @@ const MedicalRepVisitBooking = () => {
                                   <Stethoscope className="w-3.5 h-3.5 text-primary-foreground" />
                                 </div>
                               </div>
-
                               <div className="p-5 flex flex-col flex-grow">
                                 <p className="text-accent text-[10px] tracking-[0.2em] uppercase font-body mb-1.5">
                                   {isAr ? doc.specialtyAr : doc.specialty}
                                 </p>
                                 <h4 className="text-base font-serif text-foreground mb-1">{isAr ? doc.nameAr : doc.name}</h4>
                                 <p className="text-muted-foreground font-body text-xs mb-3">{isAr ? doc.titleAr : doc.title}</p>
-
                                 <div className="flex flex-wrap gap-1.5 mb-4">
                                   {(isAr ? doc.languagesAr : doc.languages).map((l) => (
                                     <span key={l} className="px-2.5 py-0.5 rounded-full bg-secondary/40 text-[10px] font-body text-foreground">
@@ -317,7 +274,6 @@ const MedicalRepVisitBooking = () => {
                                     </span>
                                   ))}
                                 </div>
-
                                 {doc.hideBooking !== true && (
                                   <div className={`flex items-center gap-1.5 mb-4 ${doc.availableOnline !== false ? "text-green-600" : "text-destructive"}`}>
                                     <div className={`w-1.5 h-1.5 rounded-full ${doc.availableOnline !== false ? "bg-green-500" : "bg-destructive"}`} />
@@ -328,7 +284,6 @@ const MedicalRepVisitBooking = () => {
                                     </span>
                                   </div>
                                 )}
-
                                 <div className="mt-auto pt-2">
                                   <Button className="w-full gap-2 transition-transform group-hover:scale-[1.02]">
                                     <CalendarCheck className="w-4 h-4" />
@@ -348,13 +303,9 @@ const MedicalRepVisitBooking = () => {
           </div>
         </div>
       </section>
-
-
-
       <Footer />
       <ScrollToTop />
     </div>
   );
 };
-
 export default MedicalRepVisitBooking;

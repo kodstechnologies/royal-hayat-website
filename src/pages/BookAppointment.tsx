@@ -11,15 +11,8 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
-
 import type { DoctorWithClinicCode as Doctor } from "@/data/doctorsWithClinicCodes";
-import { fetchAllDepartmentsPages } from "@/api/department";
 import { departmentsWithDoctors, getDepartmentsWithClinicCodes } from "@/data/departmentWithDoctors";
-import {
-  fetchAllActiveDoctors,
-  getDoctorsByDepartment,
-  mapApiDoctorRowToDoctor,
-} from "@/api/doctors";
 import { createAppointmentRequest } from "@/api/appointmentRequest";
 import {
   getAvailability,
@@ -42,13 +35,8 @@ import { departments as staticDepts, deptDoctorAliases, MAIN_CATEGORIES } from "
 import { Calendar as DatePickerCalendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-
-/** Hidden on "I know my doctor" only — incomplete static data. */
 const DOCTOR_PATH_EXCLUDED_IDS = new Set<string>(["dr-madiha-khisaf", "dr-wael-ibrahim", "dr-fatima-alazemi"]);
-
 const SKIP_CIVIL_ID_VERIFICATION = false;
-
-// Helper types and functions for dynamic API data
 type BookingDeptRow = {
   id: string;
   name: string;
@@ -59,7 +47,6 @@ type BookingDeptRow = {
   mainCategory: string;
   icon: any;
 };
-
 type VerifiedIdentityDetails = {
   name: string;
   dateOfBirth: string;
@@ -68,11 +55,9 @@ type VerifiedIdentityDetails = {
   gender: string;
   passportNumber: string;
 };
-
 const OID = /^[0-9a-fA-F]{24}$/i;
 const GEMINI_TRIAGE_MODEL = "gemini-flash-latest";
 const GEMINI_TRIAGE_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_TRIAGE_MODEL}:generateContent`;
-
 const SYMPTOM_CHIP_OPTIONS = [
   "Headache",
   "Chest Pain",
@@ -85,8 +70,6 @@ const SYMPTOM_CHIP_OPTIONS = [
   "Joint Pain",
   "Shortness of Breath",
 ];
-
-/** Merge chip selections and free-text/textarea tokens into a deduped symptom list. */
 function buildCollectedSymptoms(chips: string[], text: string): string[] {
   const fromText = text
     .split(/[,;\n]+/)
@@ -100,7 +83,6 @@ function buildCollectedSymptoms(chips: string[], text: string): string[] {
     return true;
   });
 }
-
 function departmentSlug(name: string, mongoId: string): string {
   const base = name
     .toLowerCase()
@@ -109,7 +91,6 @@ function departmentSlug(name: string, mongoId: string): string {
     .replace(/^-+|-+$/g, "");
   return `${base}-${mongoId.slice(-6)}`;
 }
-
 function apiRowToBookingDept(row: Record<string, unknown>): BookingDeptRow | null {
   const id = String(row._id ?? "");
   if (!OID.test(id)) return null;
@@ -121,10 +102,7 @@ function apiRowToBookingDept(row: Record<string, unknown>): BookingDeptRow | nul
   if (cat && typeof cat === "object" && cat !== null && "name" in cat) {
     category = String((cat as { name?: string }).name ?? "").trim();
   }
-
   const mainCategory = category || "Others";
-
-  // Assign icons based on name or category
   let icon = Stethoscope;
   const lowerName = name.toLowerCase();
   if (lowerName.includes("dental")) icon = Smile;
@@ -135,7 +113,6 @@ function apiRowToBookingDept(row: Record<string, unknown>): BookingDeptRow | nul
   else if (lowerName.includes("surgery")) icon = Scissors;
   else if (lowerName.includes("home health")) icon = Building2;
   else if (lowerName.includes("physio")) icon = Activity;
-
   return {
     id,
     name,
@@ -147,29 +124,23 @@ function apiRowToBookingDept(row: Record<string, unknown>): BookingDeptRow | nul
     icon
   };
 }
-
 function normalizeRestoredDeptId(v: unknown): string | null {
   if (typeof v !== "string" || !v.trim()) return null;
   const s = v.trim();
-  /** API departments use Mongo ids; static booking uses numeric string ids. */
   if (OID.test(s) || /^\d+$/.test(s)) return s;
   return null;
 }
-
 function isHomeHealthDept(d: BookingDeptRow): boolean {
   const n = d.name.toLowerCase();
   return n.includes("home health") || d.slug === "home-health";
 }
-
 function isAlSafwaDept(d: BookingDeptRow): boolean {
   const n = d.name.toLowerCase();
   return n.includes("safwa") || n.includes("al-safwa") || d.slug.includes("safwa");
 }
-
 function normalizeClinicCode(value: string): string {
   return value.toUpperCase().replace(/[^A-Z0-9]/g, "");
 }
-
 function heuristicDepartmentIdsFromTokens(tokens: string[], departments: BookingDeptRow[]): string[] {
   const symptomKeywords: Record<string, string[]> = {
     headache: ["neuro", "neurology", "brain", "internal", "medicine"],
@@ -183,7 +154,6 @@ function heuristicDepartmentIdsFromTokens(tokens: string[], departments: Booking
     "joint pain": ["ortho", "rheum", "physio"],
     "shortness of breath": ["pulmo", "cardio", "internal"],
   };
-
   const hints = new Set<string>();
   for (const t of tokens) {
     const direct = symptomKeywords[t];
@@ -197,76 +167,55 @@ function heuristicDepartmentIdsFromTokens(tokens: string[], departments: Booking
     const dc = d.category.toLowerCase();
     return [...hints].some((h) => dn.includes(h) || dc.includes(h));
   });
-
   return matched.length > 0
     ? matched.map((d) => d.id)
     : departments.slice(0, Math.min(3, departments.length)).map((d) => d.id);
 }
-
 function mapAiClinicCodeToDepartmentIds(aiText: string, departments: BookingDeptRow[]): string[] {
   const firstLine = aiText
     .split(/\r?\n/)
     .map((line) => line.trim())
     .find(Boolean) ?? "";
-
   const candidate = firstLine
     .replace(/^clinic\s*code\s*:\s*/i, "")
     .replace(/^[-*]\s*/, "")
     .replace(/^["'`]|["'`]$/g, "")
     .trim();
-
   if (!candidate || /^no clinic found$/i.test(candidate)) return [];
-
   const normalizedCandidate = normalizeClinicCode(candidate);
   if (!normalizedCandidate) return [];
-
   const exact = departments.find(
     (d) => d.specialityCode && normalizeClinicCode(d.specialityCode) === normalizedCandidate
   );
   return exact ? [exact.id] : [];
 }
-
-// ─── COMPONENT ───────────────────────────────────────────────────────────────
-
 const BookAppointment = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const { t, lang } = useLanguage();
   const isAr = lang === "ar";
-
   const locState = (location.state as any) ?? {};
-
   const [step, setStep] = useState<number>(locState.step ?? 0);
   const [bookingPath, setBookingPath] = useState<"primary" | "doctor" | "symptoms" | null>(locState.bookingPath ?? null);
-
   const [departmentsList, setDepartmentsList] = useState<BookingDeptRow[]>([]);
   const [allApiDoctors, setAllApiDoctors] = useState<Doctor[]>([]);
   const [catalogLoading, setCatalogLoading] = useState(true);
   const [catalogError, setCatalogError] = useState("");
-
   const [deptDoctorList, setDeptDoctorList] = useState<Doctor[]>([]);
   const [deptDoctorLoading, setDeptDoctorLoading] = useState(false);
-
-  // Step 0: Department
   const [deptSearch, setDeptSearch] = useState("");
   const [selectedDept, setSelectedDept] = useState<string | null>(normalizeRestoredDeptId(locState.selectedDept));
   const [showAllDepts, setShowAllDepts] = useState(false);
-
-  // Step 1: Doctor
   const [selectedDoctor, setSelectedDoctor] = useState<string | null>(
     typeof locState.selectedDoctor === "string" ? locState.selectedDoctor : null,
   );
   const [doctorSearch, setDoctorSearch] = useState("");
   const [isRequestMode, setIsRequestMode] = useState(locState.isRequestMode ?? false);
   const [showAllDoctors, setShowAllDoctors] = useState(false);
-
-  // Step 2: Time Slots
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [showSlotSelection, setShowSlotSelection] = useState(false);
-
-  // Dynamic Availability State
   const [specialityCode, setSpecialityCode] = useState<string | null>(null);
   const [providerCode, setProviderCode] = useState<string | null>(null);
   const [serviceCode, setServiceCode] = useState<string>("R01-FMC001-F010");
@@ -277,27 +226,19 @@ const BookAppointment = () => {
   const [bookingError, setBookingError] = useState<string | null>(null);
   const [bookingPopupMessage, setBookingPopupMessage] = useState<string | null>(null);
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
-
-  // Sync specialityCode with selectedDept (uses departmentId from department object)
-  // Sync providerCode and specialityCode with selectedDoctor
   useEffect(() => {
     if (selectedDoctor) {
       const doc =
         allApiDoctors.find((d) => d.id === selectedDoctor) ||
-        deptDoctorList.find((d) => d.id === selectedDoctor) ||
-        staticDoctors.find((d) => d.id === selectedDoctor);
-
+        deptDoctorList.find((d) => d.id === selectedDoctor);
       if (doc) {
         if (doc.providerCode) {
           setProviderCode(doc.providerCode);
         }
-
         const clinicOverride = doc.clinicCode || doc.departmentClinicCode;
         if (clinicOverride) {
           setSpecialityCode(clinicOverride);
         }
-
-        // 3. If department is not selected, try to find it from the doctor
         if (!selectedDept && doc.departmentId) {
           setSelectedDept(doc.departmentId);
         } else if (!selectedDept && doc.department) {
@@ -307,16 +248,13 @@ const BookAppointment = () => {
       }
     }
   }, [selectedDoctor, allApiDoctors, deptDoctorList, departmentsList, selectedDept]);
-
-  // Sync specialityCode from selectedDept
   useEffect(() => {
     if (selectedDept) {
       const dept = departmentsList.find((d) => d.id === selectedDept);
       if (dept?.specialityCode) {
         const doc =
           allApiDoctors.find((d) => d.id === selectedDoctor) ||
-          deptDoctorList.find((d) => d.id === selectedDoctor) ||
-          staticDoctors.find((d) => d.id === selectedDoctor);
+          deptDoctorList.find((d) => d.id === selectedDoctor);
         const finalCode = doc?.clinicCode || doc?.departmentClinicCode || dept.specialityCode;
         setSpecialityCode(finalCode);
       } else if (dept) {
@@ -327,15 +265,12 @@ const BookAppointment = () => {
       }
     }
   }, [selectedDept, departmentsList, selectedDoctor]);
-
-  // Fetch availability when all params are ready
   useEffect(() => {
     const fetchSlots = async () => {
       if (!serviceCode || !selectedDate || !specialityCode || !providerCode) {
         setFetchedSlots([]);
         return;
       }
-
       setIsLoadingSlots(true);
       try {
         const res = await getAvailability({
@@ -359,35 +294,27 @@ const BookAppointment = () => {
     };
     fetchSlots();
   }, [specialityCode, providerCode, serviceCode, selectedDate]);
-
-
   const formatSlotRange = (slot: Slot) => {
     if (!slot.slot_from_time || !slot.slot_from_time.includes(":")) return "";
-
     const parseTime = (t: string) => {
       const [hStr, mStr] = t.split(":");
       return { h: parseInt(hStr), m: parseInt(mStr) };
     };
-
     const fmt = (hh: number, mm: number) => {
       const suffix = hh < 12 ? "AM" : "PM";
       const hh12 = hh % 12 === 0 ? 12 : hh % 12;
       return `${hh12}:${String(mm).padStart(2, "0")} ${suffix}`;
     };
-
     const start = parseTime(slot.slot_from_time);
     let end;
     if (slot.slot_to_time && slot.slot_to_time.includes(":")) {
       end = parseTime(slot.slot_to_time);
     } else {
-      // Fallback: +30 min
       const m = start.m + 30;
       end = { h: m >= 60 ? start.h + 1 : start.h, m: m >= 60 ? m - 60 : m };
     }
-
     return `${fmt(start.h, start.m)}-${fmt(end.h, end.m)}`;
   };
-
   const formatTimeString = (time: string | null) => {
     if (!time || !time.includes(":")) return time || "";
     const [hStr, mStr] = time.split(":");
@@ -397,7 +324,6 @@ const BookAppointment = () => {
     const h12 = h % 12 === 0 ? 12 : h % 12;
     return `${h12}:${String(m).padStart(2, "0")} ${suffix}`;
   };
-
   const slotsByPeriod = {
     morning: fetchedSlots.filter((s) => {
       if (!s.slot_from_time || !s.slot_from_time.includes(":")) return false;
@@ -413,24 +339,20 @@ const BookAppointment = () => {
       return parseInt(s.slot_from_time.split(":")[0]) >= 17;
     }),
   };
-
   const todayStart = useMemo(() => {
     const d = new Date();
     d.setHours(0, 0, 0, 0);
     return d;
   }, []);
-
   const selectedCalendarDate = useMemo(
     () => (selectedDate ? new Date(`${selectedDate}T12:00:00`) : undefined),
     [selectedDate],
   );
-
   const isAppointmentDateDisabled = (date: Date) => {
     const d = new Date(date);
     d.setHours(0, 0, 0, 0);
     return d < todayStart;
   };
-
   const handleAppointmentDateSelect = (date: Date | undefined) => {
     if (!date) return;
     setSelectedDate(format(date, "yyyy-MM-dd"));
@@ -438,8 +360,6 @@ const BookAppointment = () => {
     setSelectedSlotId(null);
     setShowSlotSelection(false);
   };
-
-  // Patient Details State
   const [patientType, setPatientType] = useState<"returning" | "new" | null>(null);
   const [patientName, setPatientName] = useState("");
   const [patientPhone, setPatientPhone] = useState("");
@@ -461,8 +381,6 @@ const BookAppointment = () => {
   const verifySocketCleanupRef = useRef<(() => void) | null>(null);
   const verificationDoneRef = useRef(false);
   const [verifiedIdentityDetails, setVerifiedIdentityDetails] = useState<VerifiedIdentityDetails | null>(null);
-
-  // Symptom path
   const [symptomText, setSymptomText] = useState("");
   const [symptomChips, setSymptomChips] = useState<string[]>([]);
   const [savedSymptoms, setSavedSymptoms] = useState<string[]>(
@@ -470,27 +388,14 @@ const BookAppointment = () => {
   );
   const [symptomAnalyzing, setSymptomAnalyzing] = useState(false);
   const [symptomResults, setSymptomResults] = useState<string[] | null>(null);
-
   const [booked, setBooked] = useState(false);
-
-  // Fetch Departments and Doctors from API
   useEffect(() => {
     let cancelled = false;
     (async () => {
       setCatalogLoading(true);
       setCatalogError("");
       try {
-        // Muting API calls as requested, using static data only
-        /*
-        const [deptRows, doctorRows] = await Promise.all([
-          fetchAllDepartmentsPages({ isActive: true }),
-          fetchAllActiveDoctors(),
-        ]);
-        */
-
         if (cancelled) return;
-
-        // 1. Load departments directly from staticDepts
         const combinedDepartments = staticDepts.map(dept => ({
           id: dept.id.toString(),
           name: dept.name,
@@ -501,16 +406,12 @@ const BookAppointment = () => {
           mainCategory: dept.mainCategory || "Others",
           icon: dept.icon || Stethoscope
         }));
-
         setDepartmentsList(combinedDepartments);
-
-        // 2. Load doctors directly from staticDoctors (doctorsWithClinicCodes)
-        const enrichedDoctors = staticDoctors.map(doc => ({
+        const staticDoctors = await loadDoctorsWithClinicCodes();
+        const enrichedDoctors = staticDoctors.map((doc) => ({
           ...doc,
-          // Ensure consistency with the booking logic's expectations
           clinicCode: doc.clinicCode || doc.departmentClinicCode
         }));
-
         setAllApiDoctors(enrichedDoctors.filter((d) => !d.hideBooking));
       } catch (err) {
         console.error("Error in static load:", err);
@@ -525,8 +426,6 @@ const BookAppointment = () => {
       cancelled = true;
     };
   }, [isAr]);
-
-  // Fetch Doctors for selected department
   useEffect(() => {
     if (!selectedDept || bookingPath !== "primary") {
       setDeptDoctorList([]);
@@ -541,10 +440,7 @@ const BookAppointment = () => {
           if (!cancelled) setDeptDoctorList([]);
           return;
         }
-
-        // Filter staticDoctors by department name using aliases
-        const filtered = staticDoctors
-          .filter((doc) => {
+        const filtered = allApiDoctors.filter((doc) => {
             const aliases = deptDoctorAliases[dept.name] || [dept.name];
             return aliases.some((alias) => doc.department.toLowerCase() === alias.toLowerCase());
           })
@@ -552,7 +448,6 @@ const BookAppointment = () => {
             ...doc,
             clinicCode: doc.clinicCode || doc.departmentClinicCode,
           }));
-
         if (!cancelled) {
           setDeptDoctorList(filtered.filter(d => !d.hideBooking));
         }
@@ -566,9 +461,7 @@ const BookAppointment = () => {
     return () => {
       cancelled = true;
     };
-  }, [selectedDept, bookingPath, departmentsList]);
-
-  // Read query param on mount
+  }, [selectedDept, bookingPath, departmentsList, allApiDoctors]);
   useEffect(() => {
     if (locState.step != null) return;
     const pathParam = searchParams.get("path");
@@ -576,9 +469,7 @@ const BookAppointment = () => {
     else if (pathParam === "doctor") { setBookingPath("doctor"); setStep(1); }
     else if (pathParam === "symptoms") { setBookingPath("symptoms"); setStep(0); }
   }, [searchParams, locState.step]);
-
   const symptomResultsTopRef = useRef<HTMLDivElement>(null);
-
   const scrollBookingViewToTop = useCallback(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
     document.documentElement.scrollTop = 0;
@@ -588,34 +479,25 @@ const BookAppointment = () => {
       behavior: "auto",
     });
   }, []);
-
   useEffect(() => {
     if (booked) scrollBookingViewToTop();
   }, [booked, scrollBookingViewToTop]);
-
-  // Scroll to top on every step change so mobile users always start at the top
   useEffect(() => {
     scrollBookingViewToTop();
   }, [step, scrollBookingViewToTop]);
-
-  // Symptom analyze shows a new screen without changing `step` — scroll after results render
   useEffect(() => {
     if (symptomResults === null) return;
-
     scrollBookingViewToTop();
     const t1 = window.setTimeout(scrollBookingViewToTop, 0);
     const t2 = window.setTimeout(scrollBookingViewToTop, 100);
-
     return () => {
       window.clearTimeout(t1);
       window.clearTimeout(t2);
     };
   }, [symptomResults, scrollBookingViewToTop]);
-
   useEffect(() => {
     if (step !== 3) setShowSlotSelection(false);
   }, [step]);
-
   useEffect(() => {
     if (!locState?.resetBookingFlow) return;
     setBookingPath(null);
@@ -639,7 +521,6 @@ const BookAppointment = () => {
     setVerifiedIdentityDetails(null);
     setShowReturningPatientModal(false);
   }, [locState?.resetBookingFlow]);
-
   const filteredDepts = useMemo(() => {
     return departmentsList.filter(
       (d) =>
@@ -647,8 +528,6 @@ const BookAppointment = () => {
         d.category.toLowerCase().includes(deptSearch.toLowerCase())
     );
   }, [departmentsList, deptSearch]);
-
-  /** Keep the chosen department visible when the list is capped at 6 (step back from doctors). */
   const displayDepts = useMemo(() => {
     const expanded = deptSearch.trim() || showAllDepts ? filteredDepts : filteredDepts.slice(0, 6);
     if (!selectedDept) return expanded;
@@ -656,7 +535,6 @@ const BookAppointment = () => {
     if (!sel || expanded.some((d) => d.id === selectedDept)) return expanded;
     return [sel, ...expanded.filter((d) => d.id !== selectedDept)];
   }, [deptSearch, showAllDepts, filteredDepts, selectedDept]);
-
   const groupedDisplayDepts = useMemo(
     () =>
       MAIN_CATEGORIES.map((cat) => ({
@@ -667,19 +545,14 @@ const BookAppointment = () => {
       })).filter((group) => group.depts.length > 0),
     [displayDepts]
   );
-
   const goToStep = (i: number) => {
     if (i > step) return;
     if (i === 1 && step > 1) setShowAllDoctors(true);
     setStep(i);
   };
-
-
-
   const doctors = deptDoctorList.sort((a, b) =>
     (isAr ? a.nameAr : a.name).localeCompare(isAr ? b.nameAr : b.name, isAr ? "ar" : "en"),
   );
-
   const filteredAllDoctors = allApiDoctors
     .filter((d) => !DOCTOR_PATH_EXCLUDED_IDS.has(d.id))
     .filter(
@@ -688,34 +561,28 @@ const BookAppointment = () => {
         d.specialty.toLowerCase().includes(doctorSearch.toLowerCase()),
     )
     .sort((a, b) => (isAr ? a.nameAr : a.name).localeCompare(isAr ? b.nameAr : b.name, isAr ? "ar" : "en"));
-
   const selectedDeptObj = departmentsList.find((d) => d.id === selectedDept);
   const selectedDoctorObj =
     bookingPath === "doctor"
       ? allApiDoctors.find((d) => d.id === selectedDoctor)
       : doctors.find((d) => d.id === selectedDoctor);
-
   const resolveDeptIdForDoctor = (doc: Doctor): string | null =>
     doc.departmentId ?? departmentsList.find((d) => d.name === doc.department)?.id ?? null;
-
   const formattedDob = patientDob
     ? patientDob.split("-").reverse().join("/")
     : "";
   const formattedSelectedDate = selectedDate
     ? selectedDate.split("-").reverse().join("/")
     : "";
-
   const collectedSymptoms = useMemo(() => {
     const live = buildCollectedSymptoms(symptomChips, symptomText);
     return live.length > 0 ? live : savedSymptoms;
   }, [symptomChips, symptomText, savedSymptoms]);
-
   const persistSymptomsSnapshot = useCallback((chips: string[], text: string) => {
     const snapshot = buildCollectedSymptoms(chips, text);
     if (snapshot.length > 0) setSavedSymptoms(snapshot);
     return snapshot;
   }, []);
-
   const getSelectedSlotPeriod = (): "morning" | "afternoon" => {
     if (!selectedSlot?.includes(":")) return "morning";
     const hour = parseInt(selectedSlot.split(":")[0], 10);
@@ -769,7 +636,6 @@ const BookAppointment = () => {
     { label: isAr ? "الوقت" : "Time Slots", icon: Clock },
     { label: isAr ? "تأكيد" : "Confirm", icon: CheckCircle2 },
   ];
-
   const validatePatientDetails = () => {
     const errors: Record<string, string> = {};
     if (!patientName.trim()) errors.name = isAr ? "الاسم الكامل مطلوب" : "Full name is required";
@@ -781,7 +647,6 @@ const BookAppointment = () => {
     setPatientErrors(errors);
     return Object.keys(errors).length === 0;
   };
-
   const canProceed = () => {
     if (!bookingPath) return false;
     switch (step) {
@@ -794,7 +659,6 @@ const BookAppointment = () => {
       default: return true;
     }
   };
-
   const handleConfirm = async () => {
     setIsSubmitting(true);
     setBookingError(null);
@@ -840,7 +704,6 @@ const BookAppointment = () => {
         redirectToBookingFallback(messageToShow);
         return;
       }
-
       if (patientType === "new") {
         await createAppointmentRequest({
           fullname: patientName.trim(),
@@ -863,7 +726,6 @@ const BookAppointment = () => {
         setBooked(true);
         return;
       }
-
       setBooked(true);
     } catch (err: any) {
       console.error("Booking failed:", err);
@@ -883,7 +745,6 @@ const BookAppointment = () => {
       setIsSubmitting(false);
     }
   };
-
   const handleNext = () => {
     if (step === 2) {
       if (patientType === "new" && !validatePatientDetails()) return;
@@ -895,7 +756,6 @@ const BookAppointment = () => {
     }
     setStep((s) => Math.min(s + 1, 4));
   };
-
   const extractVerifiedName = (source: any) => {
     if (source?.personName) {
       return {
@@ -921,7 +781,6 @@ const BookAppointment = () => {
       arabic: payload?.arabicName || payload?.nameAr || payload?.name_ar || payload?.ar_name || "",
     };
   };
-
   const closeReturningPatientModal = () => {
     verifySocketCleanupRef.current?.();
     verifySocketCleanupRef.current = null;
@@ -937,7 +796,6 @@ const BookAppointment = () => {
     }
     setShowReturningPatientModal(false);
   };
-
   const openReturningPatientModal = () => {
     setNationalId("");
     setNationalIdError("");
@@ -951,7 +809,6 @@ const BookAppointment = () => {
     setVerifiedIdentityDetails(null);
     setShowReturningPatientModal(true);
   };
-
   const loadVerifiedIdentityDetails = useCallback(
     async (civilIdForData: string, pickedName: string) => {
       try {
@@ -994,7 +851,6 @@ const BookAppointment = () => {
     },
     [isAr]
   );
-
   const resetPatientLookupFailure = useCallback(() => {
     verificationDoneRef.current = false;
     setIsWaitingForApproval(false);
@@ -1006,7 +862,6 @@ const BookAppointment = () => {
     setVerifiedPersonName(null);
     setVerifiedIdentityDetails(null);
   }, []);
-
   const dismissHisFailureAndGoToRequest = useCallback(() => {
     setShowHisFailureModal(false);
     setNationalIdError("");
@@ -1023,7 +878,6 @@ const BookAppointment = () => {
       : "";
     navigate(`/appointment-request${doctorQuery}`);
   }, [navigate, resetPatientLookupFailure, selectedDoctor]);
-
   const finalizeRegisteredPatientAfterPaci = useCallback(
     async (params: {
       civilId: string;
@@ -1033,21 +887,17 @@ const BookAppointment = () => {
       setIsConfirmingPatientRecord(true);
       setPatientLookupShowGoBack(false);
       setNationalIdError("");
-
       try {
         const pRes = await getPatient({ nationalid: params.civilId });
         const patientId = extractPatientId(pRes?.data?.patient);
         if (!pRes.success || !patientId) {
           throw { response: { data: { meta: { code: "PATIENT_NOT_FOUND" }, message: "Error: Patient not found" } } };
         }
-
         await loadVerifiedIdentityDetails(params.civilId, params.pickedName);
-
         setPatientId(patientId);
         setPatientName(params.pickedName);
         setPatientType("returning");
         setVerifiedPersonName(params.names);
-
         setIsWaitingForApproval(false);
         setVerifyOperationId(null);
         verifySocketCleanupRef.current?.();
@@ -1068,8 +918,6 @@ const BookAppointment = () => {
     },
     [loadVerifiedIdentityDetails, resetPatientLookupFailure]
   );
-
-  /** Close Civil ID modal and return to returning / first-time choice (step before national ID). */
   const goBackFromPatientLookupModal = () => {
     verificationDoneRef.current = false;
     setPatientLookupShowGoBack(false);
@@ -1087,11 +935,9 @@ const BookAppointment = () => {
     setVerifiedIdentityDetails(null);
     setShowReturningPatientModal(false);
   };
-
   const completeVerificationFromStatus = useCallback(
     async (statusData: IdentityStatusResponse) => {
       if (statusData?.status === "pending") return;
-
       if (statusData?.verified === false) {
         setNationalIdError(
           isAr ? "لم يتم التحقق. يرجى المحاولة مرة أخرى." : "Verification was not approved. Please try again."
@@ -1100,7 +946,6 @@ const BookAppointment = () => {
         setVerifyOperationId(null);
         return;
       }
-
       const names = extractVerifiedName(statusData);
       const hasName = Boolean(names.english || names.arabic);
       if (!hasName) {
@@ -1110,7 +955,6 @@ const BookAppointment = () => {
         setIsWaitingForApproval(false);
         return;
       }
-
       const pickedName = isAr ? (names.arabic || names.english) : (names.english || names.arabic);
       const civilId = (statusData?.civilId || nationalId.trim()).trim();
       if (!civilId) {
@@ -1120,12 +964,10 @@ const BookAppointment = () => {
         setIsWaitingForApproval(false);
         return;
       }
-
       await finalizeRegisteredPatientAfterPaci({ civilId, pickedName, names });
     },
     [finalizeRegisteredPatientAfterPaci, isAr, nationalId]
   );
-
   const handleNationalIdVerify = async () => {
     const civilId = nationalId.trim();
     if (!/^\d{12}$/.test(civilId)) {
@@ -1147,7 +989,6 @@ const BookAppointment = () => {
         serviceName: { ar: "تجربة", en: "Service Test" },
         reason: { ar: "تجربة", en: "test" },
       });
-
       if (response?.success === false) {
         const metaType: string = response?.meta?.type ?? "";
         if (metaType.includes("too-many-requests")) {
@@ -1165,13 +1006,11 @@ const BookAppointment = () => {
         );
         return;
       }
-
       if (response?.operationId) {
         setVerifyOperationId(response.operationId);
         setIsWaitingForApproval(true);
         return;
       }
-
       const names = extractVerifiedName(response);
       const hasName = Boolean(names.english || names.arabic);
       if (response?.verified === true && hasName) {
@@ -1183,7 +1022,6 @@ const BookAppointment = () => {
         });
         if (registered) return;
       }
-
       setNationalIdError(
         isAr
           ? "تعذر التحقق حالياً. أكمل التحقق في تطبيق هويتي ثم أعد المحاولة."
@@ -1193,7 +1031,6 @@ const BookAppointment = () => {
       const statusCode = (error as { response?: { status?: number; data?: { message?: string; meta?: { type?: string } } } })
         ?.response?.status;
       const apiType = (error as { response?: { data?: { meta?: { type?: string } } } })?.response?.data?.meta?.type ?? "";
-
       const isTooMany = statusCode === 400 && typeof apiType === "string" && apiType.includes("too-many-requests");
       if (isTooMany) {
         setNationalIdError(
@@ -1203,7 +1040,6 @@ const BookAppointment = () => {
         );
         return;
       }
-
       const isValidation400 = statusCode === 400 && !apiType.includes("too-many-requests");
       if (isValidation400) {
         setNationalIdError(
@@ -1213,7 +1049,6 @@ const BookAppointment = () => {
         );
         return;
       }
-
       const message = error instanceof Error ? error.message : "";
       setNationalIdError(
         message || (isAr ? "فشل التحقق من الرقم المدني" : "Failed to verify Kuwait Civil ID")
@@ -1222,7 +1057,6 @@ const BookAppointment = () => {
       setIsVerifyingNationalId(false);
     }
   };
-
   useEffect(() => {
     if (patientType === "returning" && !patientId) {
       setPatientType(null);
@@ -1231,16 +1065,13 @@ const BookAppointment = () => {
       setVerifiedPersonName(null);
     }
   }, [patientType, patientId]);
-
   useEffect(() => {
     if (!verifyOperationId || !showReturningPatientModal || !isWaitingForApproval) {
       verificationDoneRef.current = false;
       return;
     }
-
     verificationDoneRef.current = false;
     verifySocketCleanupRef.current?.();
-
     const finishIfReady = (statusData: IdentityStatusResponse) => {
       if (verificationDoneRef.current || statusData?.status === "pending") return;
       verificationDoneRef.current = true;
@@ -1250,16 +1081,13 @@ const BookAppointment = () => {
         await completeVerificationFromStatus(statusData);
       })();
     };
-
     const { unsubscribe } = subscribeToIdentityVerification(verifyOperationId, finishIfReady);
     verifySocketCleanupRef.current = unsubscribe;
-
     return () => {
       unsubscribe();
       verifySocketCleanupRef.current = null;
     };
   }, [verifyOperationId, showReturningPatientModal, isWaitingForApproval, completeVerificationFromStatus]);
-
   const goToInitialBookingScreen = () => {
     verifySocketCleanupRef.current?.();
     verifySocketCleanupRef.current = null;
@@ -1279,7 +1107,6 @@ const BookAppointment = () => {
     setVerifiedPersonName(null);
     setVerifiedIdentityDetails(null);
   };
-
   const handleBack = () => {
     if (step === 0 && bookingPath) {
       setBookingPath(null);
@@ -1293,41 +1120,32 @@ const BookAppointment = () => {
     if (step === 2) setShowAllDoctors(true);
     setStep((s) => Math.max(s - 1, 0));
   };
-
   const handleSymptomAnalyze = async () => {
     const snapshot = persistSymptomsSnapshot(symptomChips, symptomText);
     const tokens = snapshot.map((s) => s.toLowerCase());
     if (tokens.length === 0) return;
     setSymptomAnalyzing(true);
-
     const fallbackIds = heuristicDepartmentIdsFromTokens(tokens, departmentsList);
     const geminiApiKey = (import.meta.env.VITE_GEMINI_API_KEY as string | undefined)?.trim();
-
     try {
       if (!geminiApiKey || departmentsList.length === 0) {
         setSymptomResults(fallbackIds);
         return;
       }
-
       const mappingLines = departmentsList
         .filter((d) => Boolean(d.specialityCode))
         .map((d) => `${d.specialityCode} - ${d.name}`)
         .join("\n");
-
       const combinedPrompt = `You are a strict medical triage router.
 Analyze the patient's description of their condition. They may provide long, conversational sentences describing their health issues.
 Extract the core medical symptoms from their description and determine the most appropriate department.
 You MUST output ONLY the exact Clinic Code of that department from the mapping below.
 If the description does not clearly match any department on the list, you MUST output exactly "no clinic found".
 DO NOT provide any explanations, greetings, or the department name. Output ONLY the code itself.
-
 Mapping:
 ${mappingLines}
-
 Patient Description: ${[...symptomChips, symptomText].filter(Boolean).join(", ").trim()}
-
 Clinic Code:`;
-
       const response = await fetch(GEMINI_TRIAGE_API_URL, {
         method: "POST",
         headers: {
@@ -1339,12 +1157,10 @@ Clinic Code:`;
           generationConfig: { temperature: 0.1 },
         }),
       });
-
       if (!response.ok) {
         setSymptomResults(fallbackIds);
         return;
       }
-
       const data = await response.json();
       const aiText = String(data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "").trim();
       const matchedIds = mapAiClinicCodeToDepartmentIds(aiText, departmentsList);
@@ -1355,14 +1171,11 @@ Clinic Code:`;
       setSymptomAnalyzing(false);
     }
   };
-
   const pageVariants = {
     initial: { opacity: 0, x: 40 },
     animate: { opacity: 1, x: 0 },
     exit: { opacity: 0, x: -40 },
   };
-
-  // ─── BOOKED SUCCESS SCREEN ─────────────────────────────────────────────────
   if (booked) {
     return (
       <div className="min-h-screen bg-background pt-[var(--header-height,56px)] overflow-x-hidden">
@@ -1389,7 +1202,6 @@ Clinic Code:`;
                   : t("bookingConfirmMsg")}
             </p>
           </motion.div>
-
           <div className="container mx-auto px-6 py-12 max-w-3xl">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
               className="bg-popover rounded-2xl border border-border p-8 mb-6 shadow-sm -mt-8">
@@ -1438,7 +1250,6 @@ Clinic Code:`;
                 )}
               </div>
             </motion.div>
-
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
               className="bg-popover rounded-2xl border border-border p-8 mb-6">
               <h3 className="font-serif text-lg text-foreground mb-4 flex items-center gap-2">
@@ -1454,7 +1265,6 @@ Clinic Code:`;
                 ))}
               </ul>
             </motion.div>
-
             <div className="text-center">
               <button onClick={() => navigate("/")}
                 className="bg-primary text-primary-foreground px-10 py-3.5 rounded-lg font-body text-sm tracking-widest uppercase hover:bg-primary/90 transition-colors">
@@ -1468,8 +1278,6 @@ Clinic Code:`;
       </div>
     );
   }
-
-  // ─── PATH SELECTION ────────────────────────────────────────────────────────
   if (!bookingPath) {
     return (
       <div className="min-h-screen bg-background pt-[var(--header-height,56px)] overflow-x-hidden">
@@ -1484,7 +1292,6 @@ Clinic Code:`;
               {lang === "ar" ? "اختر الطريقة الأنسب لحجز موعدك حسب القسم الطبي، أو الطبيب، أو من خلال وصف الأعراض" : "Select the method that works best for you to schedule your appointment — by department, doctor, or symptom description."}
             </p>
           </motion.div>
-
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 max-w-4xl mx-auto">
             <motion.button whileHover={{ y: -6, boxShadow: "0 20px 40px -12px rgba(74,20,35,0.12)" }} whileTap={{ scale: 0.98 }}
               onClick={() => { setBookingPath("primary"); setStep(0); }}
@@ -1497,7 +1304,6 @@ Clinic Code:`;
                 {lang === "ar" ? "ابدأ باختيار القسم، ثم الطبيب" : "Start by choosing a department, then a doctor"}
               </p>
             </motion.button>
-
             <motion.button whileHover={{ y: -6, boxShadow: "0 20px 40px -12px rgba(74,20,35,0.12)" }} whileTap={{ scale: 0.98 }}
               onClick={() => { setBookingPath("doctor"); setStep(1); }}
               className="bg-popover rounded-2xl p-5 md:p-8 border border-border text-center transition-all hover:border-accent/40">
@@ -1509,7 +1315,6 @@ Clinic Code:`;
                 {lang === "ar" ? "اضغط هنا إذا كنت تعرف طبيبك" : "Click here if you know your doctor"}
               </p>
             </motion.button>
-
             <motion.button whileHover={{ y: -6, boxShadow: "0 20px 40px -12px rgba(74,20,35,0.12)" }} whileTap={{ scale: 0.98 }}
               onClick={() => { setBookingPath("symptoms"); setStep(0); }}
               className="bg-popover rounded-2xl p-5 md:p-8 border border-border text-center transition-all hover:border-primary/40">
@@ -1528,8 +1333,6 @@ Clinic Code:`;
       </div>
     );
   }
-
-  // ─── SYMPTOM PATH ───────────────
   if (bookingPath === "symptoms" && symptomResults === null) {
     return (
       <div className="min-h-screen bg-background pt-[var(--header-height,56px)] overflow-x-hidden">
@@ -1542,7 +1345,6 @@ Clinic Code:`;
             </div>
             <h1 className="text-2xl md:text-3xl font-serif text-foreground mb-2">{t("tellUsSymptoms")}</h1>
           </motion.div>
-
           <div className="bg-popover rounded-2xl p-8 border border-border shadow-sm">
             <div className="flex flex-wrap gap-2 mb-4">
               {SYMPTOM_CHIP_OPTIONS.map((chip) => (
@@ -1551,21 +1353,17 @@ Clinic Code:`;
                     setSymptomChips((prev) => {
                       const isSelected = prev.includes(chip);
                       const next = isSelected ? prev.filter((c) => c !== chip) : [...prev, chip];
-
                       setSymptomText((prevText) => {
                         const parts = prevText
                           .split(/[,;\n]+/)
                           .map((s) => s.trim())
                           .filter(Boolean);
-
                         if (isSelected) {
                           return parts.filter((p) => p.toLowerCase() !== chip.toLowerCase()).join(", ");
                         }
-
                         if (parts.some((p) => p.toLowerCase() === chip.toLowerCase())) return parts.join(", ");
                         return [...parts, chip].join(", ");
                       });
-
                       return next;
                     })
                   }
@@ -1578,7 +1376,6 @@ Clinic Code:`;
             <textarea value={symptomText} onChange={(e) => setSymptomText(e.target.value)}
               placeholder={t("describeInDetail")}
               className="w-full h-24 bg-muted/20 border border-border rounded-xl p-4 font-body text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-2 focus:ring-accent/30 mb-4" />
-
             <div className="bg-destructive/10 rounded-xl p-4 border-2 border-destructive/30 mb-4">
               <p className="font-body text-sm text-foreground leading-relaxed font-medium">
                 <AlertCircle className="w-4 h-4 inline mr-2 text-destructive" />
@@ -1587,7 +1384,6 @@ Clinic Code:`;
                   : "⚠️ Important Disclaimer: This tool provides general suggestions only and is NOT a substitute for professional medical advice. Please consult a doctor for accurate diagnosis and appropriate treatment."}
               </p>
             </div>
-
             <AnimatePresence>
               {symptomAnalyzing && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex items-center justify-center gap-3 py-6">
@@ -1597,7 +1393,6 @@ Clinic Code:`;
                 </motion.div>
               )}
             </AnimatePresence>
-
             <div className="flex flex-nowrap items-center justify-between gap-3 sm:gap-4">
               <button
                 onClick={() => { setBookingPath(null); setSymptomChips([]); setSymptomText(""); }}
@@ -1627,8 +1422,6 @@ Clinic Code:`;
       </div>
     );
   }
-
-  // After symptoms analyzed
   if (bookingPath === "symptoms" && symptomResults !== null && step === 0) {
     return (
       <div className="min-h-screen bg-background pt-[var(--header-height,56px)] overflow-x-hidden">
@@ -1641,7 +1434,6 @@ Clinic Code:`;
             <h2 className="text-2xl font-serif text-foreground mb-2">{lang === "ar" ? "الأقسام الموصى بها" : "Recommended Departments"}</h2>
             <p className="text-muted-foreground font-body text-xs">{lang === "ar" ? "بناءً على أعراضك، نوصي بالأقسام التالية" : "Based on your symptoms, we recommend these departments"}</p>
           </motion.div>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
             {symptomResults.map((id) => {
               const dept = departmentsList.find((d) => d.id === id);
@@ -1660,9 +1452,7 @@ Clinic Code:`;
               );
             })}
           </div>
-
-          {/* <p className="text-center text-muted-foreground font-body text-xs mb-4">{lang === "ar" ? "أو اختر من جميع الأقسام أدناه" : "Or choose from all departments below"}</p> */}
-
+          {}
           <div className="flex items-center justify-start mt-8">
             <button onClick={() => { setSymptomResults(null); }} className="flex items-center gap-2 text-muted-foreground font-body text-sm hover:text-foreground transition-colors">
               <ArrowLeft className="w-4 h-4" /> {t("previous")}
@@ -1674,8 +1464,6 @@ Clinic Code:`;
       </div>
     );
   }
-
-  // ─── MAIN BOOKING FLOW ─────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)] overflow-x-hidden">
       <Header />
@@ -1683,7 +1471,6 @@ Clinic Code:`;
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
           <h1 className="text-3xl md:text-4xl font-serif text-foreground">{t("bookYourAppointment")}</h1>
         </motion.div>
-
         <div className="flex items-center justify-center gap-1 mb-8 md:mb-12 flex-wrap">
           {steps.map((s, i) => (
             <div key={s.label} className="flex items-center">
@@ -1703,7 +1490,6 @@ Clinic Code:`;
             </div>
           ))}
         </div>
-
         <AnimatePresence mode="wait">
           {step === 0 && (bookingPath === "primary" || bookingPath === "doctor") && (
             <motion.div key="s0" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.35 }}>
@@ -1767,7 +1553,6 @@ Clinic Code:`;
               </div>
             </motion.div>
           )}
-
           {step === 1 && (
             <motion.div key="s1" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.35 }}>
               <div className="max-w-4xl mx-auto">
@@ -1833,7 +1618,6 @@ Clinic Code:`;
               </div>
             </motion.div>
           )}
-
           {step === 2 && (
             <motion.div key="s2" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.35 }}>
               <div className="max-w-3xl mx-auto">
@@ -1877,9 +1661,6 @@ Clinic Code:`;
                 )}
                 {patientType === "returning" && patientId && patientName && verifiedIdentityDetails && (
                   <div className="bg-popover rounded-2xl p-5 sm:p-8 border border-border shadow-sm">
-                    {/* <h2 className="text-xl font-serif text-foreground mb-2">{isAr ? "تأكيد بيانات المريض" : "Confirm Patient Details"}</h2>
-                    <p className="font-body text-xs text-muted-foreground mb-4">{isAr ? "أدخل اسمك الكامل كما هو مسجل في المستشفى." : "Enter your full name as registered with the hospital."}</p> */}
-                    {/* <div><label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{t("fullName")} <span className="text-destructive">*</span></label><input type="text" value={patientName} onChange={(e) => { setPatientName(e.target.value); setPatientErrors((prev) => ({ ...prev, name: "" })); }} placeholder={t("enterFullName")} className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all ${patientErrors.name ? "border-destructive" : "border-border"}`} />{patientErrors.name && <p className="font-body text-xs text-destructive mt-1">{patientErrors.name}</p>}</div> */}
                     {verifiedIdentityDetails && (
                       <div className="mt-5 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 via-background to-accent/5 p-4 sm:p-5">
                         <h4 className="font-body text-[11px] tracking-[0.18em] uppercase text-accent mb-3">
@@ -1923,7 +1704,6 @@ Clinic Code:`;
               </div>
             </motion.div>
           )}
-
           {step === 3 && (
             <motion.div key="s3" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.35 }}>
               <div className="max-w-3xl mx-auto">
@@ -1981,14 +1761,12 @@ Clinic Code:`;
                       </motion.button>
                     </div>
                   )}
-
                   {showSlotSelection && selectedDate && isLoadingSlots && (
                     <div className="flex flex-col items-center justify-center py-12">
                       <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }} className="w-10 h-10 rounded-full border-2 border-accent/20 border-t-accent mb-4" />
                       <p className="font-body text-sm text-muted-foreground">{isAr ? "جارِ جلب المواعيد المتاحة..." : "Fetching available time slots..."}</p>
                     </div>
                   )}
-
                   {showSlotSelection && selectedDate && !isLoadingSlots && fetchedSlots.length > 0 && (
                     <div className="space-y-6">
                       <p className="font-body text-xs text-muted-foreground uppercase tracking-wider">{isAr ? "الفترة المتاحة" : "Available times"}</p>
@@ -2017,7 +1795,6 @@ Clinic Code:`;
                       ))}
                     </div>
                   )}
-
                   {showSlotSelection && selectedDate && !isLoadingSlots && fetchedSlots.length === 0 && (
                     <div className="text-center py-12 text-muted-foreground font-body text-sm bg-muted/20 rounded-2xl border border-dashed border-border">
                       <AlertCircle className="w-8 h-8 mx-auto mb-2 opacity-30" />
@@ -2028,7 +1805,6 @@ Clinic Code:`;
               </div>
             </motion.div>
           )}
-
           {step === 4 && (
             <motion.div key="s4" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.35 }}>
               <div className="max-w-3xl mx-auto">
@@ -2061,7 +1837,6 @@ Clinic Code:`;
             </motion.div>
           )}
         </AnimatePresence>
-
         <div className="max-w-3xl mx-auto flex items-center justify-between mt-6 md:mt-8 gap-3">
           <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={handleBack} className="flex items-center gap-1.5 text-muted-foreground font-body text-xs sm:text-sm hover:text-foreground transition-colors"><ArrowLeft className="w-4 h-4" />{step === 0 ? t("backToHome") : t("previous")}</motion.button>
           {step >= 2 && !(step === 2 && !patientType) && !(step === 2 && patientType === "returning") && step !== 3 && step !== 4 && (
@@ -2120,7 +1895,6 @@ Clinic Code:`;
                   </button>
                 )}
               </div>
-
               {isVerifyingNationalId ? (
                 <div className="mt-6 flex flex-col items-center justify-center py-6 rounded-2xl border border-border/70 bg-muted/20 px-4">
                   <Loader2 className="w-10 h-10 animate-spin text-accent" />
@@ -2153,7 +1927,6 @@ Clinic Code:`;
                         ? "التحقق عبر هويتي"
                         : "Verify with Kuwait Mobile ID"}
                   </button>
-
                   <button
                     onClick={goToInitialBookingScreen}
                     className="w-full bg-secondary/40 text-foreground px-4 py-3 rounded-xl font-body text-xs tracking-widest uppercase hover:bg-secondary/60 transition-colors inline-flex items-center justify-center text-center"
@@ -2162,7 +1935,6 @@ Clinic Code:`;
                   </button>
                 </div>
               )}
-
               {(isWaitingForApproval || isConfirmingPatientRecord) && (
                 <div className="mt-3">
                   <button
@@ -2249,5 +2021,4 @@ Clinic Code:`;
     </div>
   );
 };
-
 export default BookAppointment;

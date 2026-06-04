@@ -6,21 +6,17 @@ import { CheckCircle2, ChevronLeft, ChevronRight } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
-
 const FifthFloorCafe = () => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
   const [activeSlide, setActiveSlide] = useState(0);
-
   const menuItems = isAr
     ? ["قهوة مختصة طازجة", "تشكيلة من الساندويتشات", "سلطات طازجة", "حلويات شهية"]
     : ["Freshly brewed specialty coffee", "A selection of sandwiches", "Fresh salads", "Indulgent desserts"];
   const cafeCarouselImages = [
     "https://royal-hayat.s3.eu-central-1.amazonaws.com/fifth-floor/WhatsApp+Image+2026-06-02+at+2.17.44+PM+(1).jpeg",
     "https://royal-hayat.s3.eu-central-1.amazonaws.com/fifth-floor/WhatsApp+Image+2026-06-02+at+2.17.44+PM.jpeg",
- 
   ];
-
   useEffect(() => {
     if (cafeCarouselImages.length <= 1) return;
     const timer = window.setInterval(() => {
@@ -28,12 +24,10 @@ const FifthFloorCafe = () => {
     }, 4500);
     return () => window.clearInterval(timer);
   }, [cafeCarouselImages.length]);
-
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107]">
       <Header />
-
-      {/* Hero */}
+      {}
       <section className="py-8 md:py-10 bg-primary/5">
         <div className="container mx-auto px-6 text-center">
           <ScrollAnimationWrapper>
@@ -49,8 +43,7 @@ const FifthFloorCafe = () => {
           </ScrollAnimationWrapper>
         </div>
       </section>
-
-      {/* Cafe carousel */}
+      {}
       <section className="py-6 md:py-8 bg-background">
         <div className="container mx-auto px-6">
           <ScrollAnimationWrapper>
@@ -70,7 +63,6 @@ const FifthFloorCafe = () => {
                   />
                 </AnimatePresence>
               </div>
-
               <button
                 type="button"
                 onClick={() => setActiveSlide((prev) => (prev - 1 + cafeCarouselImages.length) % cafeCarouselImages.length)}
@@ -87,7 +79,6 @@ const FifthFloorCafe = () => {
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
-
               <div className="flex items-center justify-center mt-4">
                 <span className="font-body text-xs text-muted-foreground tracking-widest">
                   {String(activeSlide + 1).padStart(2, "0")} / {String(cafeCarouselImages.length).padStart(2, "0")}
@@ -97,8 +88,7 @@ const FifthFloorCafe = () => {
           </ScrollAnimationWrapper>
         </div>
       </section>
-
-      {/* Main content */}
+      {}
       <section className="py-10">
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="w-full">
@@ -109,7 +99,6 @@ const FifthFloorCafe = () => {
                     ? "يقع كافيه الطابق الخامس في الطابق الخامس، ويوفر مساحة مريحة وترحيبية للضيوف للاسترخاء أثناء انتظار المواعيد أو زيارة أحبائهم. مصمم بعناية للعائلات التي تنتظر قدوم مولود جديد أو اكتمال إجراء طبي، يوفر بيئة هادئة ومطمئنة. يمكن للضيوف الاستمتاع بالقهوة المعدة طازجاً، وتشكيلة من الساندويتشات، والسلطات الطازجة، والحلويات الشهية — كل ذلك في أجواء مريحة تجمع بين الراحة والملاءمة."
                     : "The Fifth Café, located on the 5th floor, offers a welcoming and comfortable space for guests to relax while waiting for appointments or visiting loved ones. Thoughtfully designed for families awaiting the arrival of a newborn or the completion of a procedure, it provides a calm and reassuring environment. Guests can enjoy freshly brewed coffee, a selection of sandwiches, fresh salads, and indulgent desserts — all served in a cozy setting that blends comfort with convenience."}
                 </p>
-
                 <h3 className="font-serif text-base text-foreground mb-3 text-left">
                   {isAr ? "ما نقدمه:" : "What We Offer:"}
                 </h3>
@@ -121,7 +110,6 @@ const FifthFloorCafe = () => {
                     </div>
                   ))}
                 </div>
-
                 <p className="font-body text-sm text-muted-foreground">
                   {isAr ? "الطابق الخامس — مستشفى رويال حياة" : "5th Floor — Royale Hayat Hospital"}
                 </p>
@@ -130,11 +118,9 @@ const FifthFloorCafe = () => {
           </div>
         </div>
       </section>
-
       <Footer />
       <ScrollToTop />
     </div>
   );
 };
-
 export default FifthFloorCafe;

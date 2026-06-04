@@ -5,7 +5,6 @@ import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
 import { Download, FileText } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
-
 const files = [
   {
     titleKey: "birthing_packages",
@@ -18,10 +17,8 @@ const files = [
     type: "TXT",
   },
 ];
-
 const Downloads = () => {
   const { t } = useLanguage();
-
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
       <Header />
@@ -34,7 +31,6 @@ const Downloads = () => {
               <p className="text-muted-foreground font-body text-sm max-w-xl mx-auto">{t("downloadsDesc")}</p>
             </div>
           </ScrollAnimationWrapper>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-3xl mx-auto">
             {files.map((f, i) => (
               <motion.a
@@ -67,5 +63,4 @@ const Downloads = () => {
     </div>
   );
 };
-
 export default Downloads;

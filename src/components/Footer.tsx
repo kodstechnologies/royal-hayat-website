@@ -2,21 +2,16 @@ import { Link } from "react-router-dom";
 import { Phone, Mail, MapPin, Clock, Send, Facebook, Instagram, Youtube } from "lucide-react";
 import logo from "@/assets/rhh-logo-full.png";
 import { useLanguage } from "@/contexts/LanguageContext";
-
 const Footer = () => {
   const { lang, t } = useLanguage();
-
   const quickLinks = [
     { labelKey: "faq", href: "/faq", isRoute: true },
     { labelKey: "disclaimer", href: "/faq#disclaimer", isRoute: true },
-    // { labelKey: "exchangeLogin", href: "#", isRoute: false },
-    // { labelKey: "sitemailLogin", href: "#", isRoute: false },
     { labelKey: "internationalPatients", href: "/international-patient", isRoute: false },
     { labelKey: "termsPrivacy", href: "/faq#terms", isRoute: true },
     { labelKey: "medicalRepVisitBooking", href: "/medical-rep-visit-booking", isRoute: true },
     { labelKey: "medicalRecordsRequestForm", href: "/medical-records-request", isRoute: true },
   ];
-
   const deptNames = [
     { en: "Obstetrics & Gynecology", ar: "التوليد وأمراض النساء", slug: "obstetrics-gynecology" },
     { en: "Pediatrics", ar: "طب الأطفال", slug: "pediatrics" },
@@ -25,7 +20,6 @@ const Footer = () => {
     { en: "Royale Hayat Dental", ar: "عيادة رويال حياة للأسنان", slug: "dental-clinic" },
     { en: "Dermatology", ar: "الأمراض الجلدية", slug: "dermatology" },
   ];
-
   return (
     <footer className="bg-primary pt-14 pb-8">
       <div className="container mx-auto px-6">
@@ -69,7 +63,6 @@ const Footer = () => {
               ))}
             </div>
           </div>
-
           <div>
             <h4 className="text-primary-foreground font-body text-xs tracking-[0.3em] uppercase mb-6">{t("quickLinks")}</h4>
             <nav className="flex flex-col gap-3">
@@ -82,7 +75,6 @@ const Footer = () => {
               )}
             </nav>
           </div>
-
           <div>
             <h4 className="text-primary-foreground font-body text-xs tracking-[0.3em] uppercase mb-6">{t("departments")}</h4>
             <nav className="flex flex-col gap-3">
@@ -93,7 +85,6 @@ const Footer = () => {
               ))}
             </nav>
           </div>
-
           <div>
             <h4 className="text-primary-foreground font-body text-xs tracking-[0.3em] uppercase mb-6">{t("contact")}</h4>
             <div className="space-y-4 font-body text-sm">
@@ -136,13 +127,11 @@ const Footer = () => {
             </div>
           </div>
         </div>
-
         <div className="border-t border-secondary/10 pt-5 pb-6 flex flex-col md:flex-row items-center justify-between gap-3">
           <p className="text-primary-foreground/50 font-body text-xs text-center md:text-left">{t("allRightsReserved")}</p>
         </div>
-      </div>  
+      </div>
     </footer>
   );
 };
-
 export default Footer;

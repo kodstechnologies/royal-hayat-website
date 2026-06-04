@@ -16,7 +16,7 @@
     font-family: 'Roboto', sans-serif;
   }
 
-  /* Force Arabic mode to use Roboto stack even when Tailwind font utilities are present */
+  
   html[lang="ar"] body,
   html[lang="ar"] .font-body,
   [dir="rtl"] body,
@@ -61,7 +61,7 @@
 
     --radius: 0.75rem;
 
-    /* Brand colors */
+    
     --burgundy: 337 57% 32%;
     --rose: 359 30% 58%;
     --gold-olive: 43 45% 58%;
@@ -80,7 +80,7 @@
 
   @media (max-width: 1023px) {
     :root {
-      /* Mobile: nav row + Book Appointment / Medical Reports bar (JS overwrites after measure) */
+      
       --header-height: 7.5rem;
     }
   }
@@ -133,7 +133,7 @@
   }
 }
 
-/* Premium micro-interactions */
+
 @layer components {
   .card-hover {
     @apply transition-all duration-300;
@@ -144,7 +144,7 @@
   }
 }
 
-/* Insurance marquee */
+
 @keyframes marquee {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
@@ -183,7 +183,7 @@
   animation: marquee-reverse-rtl 30s linear infinite;
 }
 
-/* Insurance partners — same LTR scroll on Arabic pages as English (homepage / patients) */
+
 .insurance-marquee-ltr .animate-marquee {
   animation: marquee 30s linear infinite;
 }
@@ -192,13 +192,13 @@
   animation: marquee-reverse 30s linear infinite;
 }
 
-/* Feedback marquee */
+
 @keyframes feedbackMarquee {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
 
-/* Arabic text scaling for readability */
+
 [dir="rtl"] {
   font-size: 1.05em;
   letter-spacing: 0.01em;
@@ -223,7 +223,7 @@
   font-size: 0.925rem;
 }
 
-/* Arabic headings should not inherit the global serif heading font */
+
 html[lang="ar"] h1,
 html[lang="ar"] h2,
 html[lang="ar"] h3,
@@ -239,12 +239,12 @@ html[lang="ar"] h6,
   font-family: 'Roboto', sans-serif !important;
 }
 
-/* Prevent RTL from flipping directional icons */
+
 [dir="rtl"] .ltr-icon {
   direction: ltr;
 }
 
-/* Feedback marquee - continuous loop */
+
 @keyframes feedbackMarquee {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
@@ -255,13 +255,13 @@ html[lang="ar"] h6,
   100% { transform: translateX(50%); }
 }
 
-/* Smooth scroll */
+
 html {
   scroll-behavior: smooth;
   overflow-x: hidden;
 }
 
-/* Hide scrollbar on large screens for a cleaner aesthetic */
+
 @media (min-width: 768px) {
   html::-webkit-scrollbar,
   body::-webkit-scrollbar,
@@ -269,8 +269,8 @@ html {
     display: none;
   }
   html, body, * {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none;    /* Firefox */
+    -ms-overflow-style: none; 
+    scrollbar-width: none;    
   }
 }
 
@@ -278,7 +278,7 @@ body {
   overflow-x: hidden;
 }
 
-/* Justify content paragraphs with hyphenation to prevent large word gaps */
+
 .text-justify,
 .whitespace-pre-line,
 article p,
@@ -314,7 +314,7 @@ h1, h2, h3, h4, h5, h6, button, a, label, span, .text-center p {
   text-align: right;
 }
 
-/* Work With Us culture hero — LTR + flat JPEG on desktop/phone */
+
 .work-culture-hero-wrap {
   direction: ltr;
   isolation: isolate;
@@ -338,10 +338,7 @@ h1, h2, h3, h4, h5, h6, button, a, label, span, .text-center p {
   }
 }
 
-/*
- * Touch tablets only (1024–1535px): WebKit mirror fix.
- * Excludes desktop browser zoom (pointer: fine) so zoom > 110% does not flip the image.
- */
+
 @media (min-width: 1024px) and (max-width: 1535px) and (pointer: coarse) {
   .work-culture-hero-wrap .work-culture-hero-img:not(.work-culture-hero-img--ar) {
     transform: scaleX(-1) !important;

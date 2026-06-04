@@ -4,15 +4,12 @@ import ScrollToTop from "@/components/ScrollToTop";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
 import { Baby, Shield, Lock, Search, Users, Radio, CheckCircle2 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-
 const TrackerWaveInfantSecurity = () => {
   const { lang } = useLanguage();
-
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
       <Header />
-
-      {/* Hero */}
+      {}
       <section className="py-16 md:py-20 bg-primary/5">
         <div className="container mx-auto px-6 text-center">
           <ScrollAnimationWrapper>
@@ -33,8 +30,7 @@ const TrackerWaveInfantSecurity = () => {
           </ScrollAnimationWrapper>
         </div>
       </section>
-
-      {/* Video Section */}
+      {}
       <section className="py-12 md:py-16">
         <div className="container mx-auto px-6">
           <div className="max-w-5xl mx-auto">
@@ -54,8 +50,7 @@ const TrackerWaveInfantSecurity = () => {
           </div>
         </div>
       </section>
-
-      {/* Advanced Infant Security */}
+      {}
       <section className="py-12 md:py-16 bg-secondary/10">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto">
@@ -69,7 +64,6 @@ const TrackerWaveInfantSecurity = () => {
                   : "Every infant is equipped with a lightweight, skin-safe electronic tag that integrates seamlessly with our hospital-wide security infrastructure:"}
               </p>
             </ScrollAnimationWrapper>
-
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[
                 {
@@ -108,8 +102,7 @@ const TrackerWaveInfantSecurity = () => {
           </div>
         </div>
       </section>
-
-      {/* Mother-Infant Matching */}
+      {}
       <section className="py-12 md:py-16">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto">
@@ -154,8 +147,7 @@ const TrackerWaveInfantSecurity = () => {
           </div>
         </div>
       </section>
-
-      {/* Key Benefits Summary */}
+      {}
       <section className="py-12 md:py-16 bg-primary/5">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto text-center">
@@ -190,11 +182,9 @@ const TrackerWaveInfantSecurity = () => {
           </div>
         </div>
       </section>
-
       <Footer />
       <ScrollToTop />
     </div>
   );
 };
-
 export default TrackerWaveInfantSecurity;

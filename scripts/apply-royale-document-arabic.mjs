@@ -1,23 +1,16 @@
-/**
- * Applies Arabic fields from royale-hayat-parsed.json to src/data/doctors.ts
- */
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const doctorsPath = path.join(__dirname, '..', 'src', 'data', 'doctors.ts');
 const parsedPath = path.join(__dirname, 'royale-hayat-parsed.json');
-
 const EXCLUDED = new Set([
   'dr-nada-al-ibrahim',
   'dr-nourah-al-ibrahim',
   'dr-ahmed-al-mulla',
-  // Document Arabic is corrupted or has line-break artifacts; keep manual entries in doctors.ts
   'fatme-khreis',
   'heba-ben-salamah',
 ]);
-
 function norm(s) {
   return s
     .toUpperCase()
@@ -28,16 +21,13 @@ function norm(s) {
     .replace(/\s+/g, ' ')
     .trim();
 }
-
 function escapeTs(s) {
   return s.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 }
-
 function formatStringArray(items, indent = '    ') {
   const lines = items.map((item) => `${indent}  '${escapeTs(item)}',`);
   return `[\n${lines.join('\n')}\n${indent}]`;
 }
-
 function extractDoctorBlock(content, id) {
   const marker = `id: '${id}'`;
   const idx = content.indexOf(marker);
@@ -59,26 +49,21 @@ function extractDoctorBlock(content, id) {
   if (end === -1) return null;
   return { start, end, block: content.slice(start, end) };
 }
-
 function replaceStringField(block, field, value) {
   const re = new RegExp(`(${field}:\\s*)'(?:\\\\'|[^'])*'`);
   if (!re.test(block)) return block;
   return block.replace(re, `$1'${escapeTs(value)}'`);
 }
-
 function replaceArrayField(block, field, value) {
   const re = new RegExp(`${field}:\\s*\\[[\\s\\S]*?\\],`);
   if (!re.test(block)) return block;
   return block.replace(re, `${field}: ${formatStringArray(value)},`);
 }
-
-// When document omits Arabic name, use known display names
 const FALLBACK_NAME_AR = {
   'dr-anny-qaisser': 'د. آني قيصر',
   'dr-rabee-harb': 'د. ربيع حرب',
   'dr-mohammad-mohammad-hasan-alkandari': 'الدكتور محمد محمد حسن الكندري',
 };
-
 const MANUAL_OVERRIDES = {
   'dr-husain-alqattan': {
     nameAr: 'د. حسيــن القطــان',
@@ -88,7 +73,6 @@ const MANUAL_OVERRIDES = {
     titleAr: 'استشاري طب الأطفال وحديثي الولادة',
   },
 };
-
 function patchDoctorBlock(block, update) {
   let next = block;
   if (update.nameAr) next = replaceStringField(next, 'nameAr', update.nameAr);
@@ -98,8 +82,6 @@ function patchDoctorBlock(block, update) {
   if (update.expertiseAr?.length) next = replaceArrayField(next, 'expertiseAr', update.expertiseAr);
   return next;
 }
-
-// Manual overrides for headers that do not match doctor.name cleanly
 const HEADER_TO_ID = {
   'MUSTAFA ALFIKI': 'dr-mustafa-alfiki',
   'AHMAD ABDULRAHMAN AL MULLA': 'dr-ahmad-abdulrahman-al-mulla',
@@ -190,43 +172,32 @@ const HEADER_TO_ID = {
   'FARIBA VADOUDI': 'dr-fariba-vadoudi',
   'YASSER HAGGAG': 'dr-yasser-haggag',
 };
-
 const parsed = JSON.parse(fs.readFileSync(parsedPath, 'utf8'));
 let content = fs.readFileSync(doctorsPath, 'utf8');
-
-// Build id index from doctors.ts
 const idIndex = new Map();
 for (const m of content.matchAll(/id: '([^']+)'[\s\S]*?name: '([^']+)'/g)) {
   idIndex.set(m[1], norm(m[2]));
 }
-
 const normToIds = new Map();
 for (const [id, n] of idIndex) {
   if (!normToIds.has(n)) normToIds.set(n, []);
   normToIds.get(n).push(id);
 }
-
 function resolveId(entry) {
   const key = norm(entry.nameEn);
   if (HEADER_TO_ID[key.replace(/\s+/g, ' ')]) return HEADER_TO_ID[key.replace(/\s+/g, ' ')];
-  // try without suffix credentials
   const short = key.split(' BMBCH')[0].split(' MBBS')[0].trim();
   if (HEADER_TO_ID[short]) return HEADER_TO_ID[short];
-
   const ids = normToIds.get(key) || normToIds.get(short);
   if (ids?.length === 1) return ids[0];
-
-  // fuzzy: find id whose norm name is contained in key or vice versa
   for (const [id, n] of idIndex) {
     if (key.includes(n) || n.includes(key)) return id;
   }
   return null;
 }
-
 let updated = 0;
 const unmatched = [];
 const skipped = [];
-
 for (const entry of parsed) {
   const id = resolveId(entry);
   if (!id) {
@@ -256,7 +227,6 @@ for (const entry of parsed) {
     updated++;
   }
 }
-
 fs.writeFileSync(doctorsPath, content, 'utf8');
 console.log(`Updated ${updated} doctors. Skipped excluded: ${skipped.length}`);
 if (unmatched.length) {

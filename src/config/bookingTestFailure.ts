@@ -5,8 +5,8 @@
 export const BOOKING_TEST_FAILURE_SCENARIO = {
   civilId: "286101702331",
   doctorId: "dr-abubakr-elmardi",
-  /** ISO date (matches calendar selection for 05/06/2026 in en-GB display). */
-  date: "2026-06-05",
+  /** ISO date (matches calendar selection for 04/06/2026 in en-GB display). */
+  date: "2026-06-04",
   /** Matches slot_from_time values such as 10:20, 10:20:00 */
   slotTimePrefix: "10:20",
   message:

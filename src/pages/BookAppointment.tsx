@@ -30,7 +30,7 @@ import { extractPatientId } from "@/utils/patientLookupErrors";
 import { identityDateToIso, mapPaciSexToGender } from "@/utils/mapPaciGender";
 import type { AppointmentBookingFallbackState } from "@/types/appointmentBookingFallback";
 import { getBookingTestFailureMessage } from "@/config/bookingTestFailure";
-import { doctorsWithClinicCodes as staticDoctors } from "@/data/doctorsWithClinicCodes";
+import { loadDoctorsWithClinicCodes } from "@/data/loadDoctorsWithClinicCodes";
 import { departments as staticDepts, deptDoctorAliases, MAIN_CATEGORIES } from "@/data/departments";
 import { Calendar as DatePickerCalendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";

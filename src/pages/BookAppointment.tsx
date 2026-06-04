@@ -29,6 +29,7 @@ import { subscribeToIdentityVerification } from "@/api/identitySocket";
 import { extractPatientId } from "@/utils/patientLookupErrors";
 import { identityDateToIso, mapPaciSexToGender } from "@/utils/mapPaciGender";
 import type { AppointmentBookingFallbackState } from "@/types/appointmentBookingFallback";
+import type { AppointmentRequestPrefillState } from "@/types/appointmentRequestPrefill";
 import { departments as staticDepts, deptDoctorAliases, MAIN_CATEGORIES } from "@/data/departments";
 import { Calendar as DatePickerCalendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
@@ -422,6 +423,7 @@ const BookAppointment = () => {
   const [showHisFailureModal, setShowHisFailureModal] = useState(false);
   const verifySocketCleanupRef = useRef<(() => void) | null>(null);
   const verificationDoneRef = useRef(false);
+  const hisFailurePrefillRef = useRef<AppointmentRequestPrefillState | null>(null);
   const [verifiedIdentityDetails, setVerifiedIdentityDetails] = useState<VerifiedIdentityDetails | null>(null);
   const [symptomText, setSymptomText] = useState("");
   const [symptomChips, setSymptomChips] = useState<string[]>([]);
@@ -834,6 +836,41 @@ const BookAppointment = () => {
     setVerifiedIdentityDetails(null);
     setShowReturningPatientModal(true);
   };
+  const buildPaciPrefillFromIdentityApi = useCallback(
+    async (civilIdForData: string, pickedName: string): Promise<AppointmentRequestPrefillState> => {
+      const fallback: AppointmentRequestPrefillState = {
+        fullName: pickedName,
+        civilId: civilIdForData,
+        readOnlyIdentity: true,
+      };
+      try {
+        const identityDataResponse = await getIdentityData(civilIdForData);
+        const rawData = (identityDataResponse?.raw || identityDataResponse?.identityData || {}) as Record<
+          string,
+          unknown
+        >;
+        const rawName = (rawData?.name || {}) as Record<string, unknown>;
+        const nameFromRaw = rawData?.name
+          ? (isAr
+              ? String(rawName.arabic || rawName.ar || rawName.english || rawName.en || "")
+              : String(rawName.english || rawName.en || rawName.arabic || rawName.ar || ""))
+          : pickedName;
+        const dobIso = identityDateToIso(rawData?.dateOfBirth);
+        const gender = mapPaciSexToGender(String(rawData?.sex || ""));
+        return {
+          fullName: nameFromRaw || pickedName,
+          dateOfBirth: dobIso || undefined,
+          gender: gender || undefined,
+          civilId: String(rawData?.civilId || civilIdForData),
+          readOnlyIdentity: true,
+        };
+      } catch (err) {
+        console.error("Failed to load PACI identity for appointment request prefill:", err);
+        return fallback;
+      }
+    },
+    [isAr],
+  );
   const loadVerifiedIdentityDetails = useCallback(
     async (civilIdForData: string, pickedName: string) => {
       try {
@@ -901,7 +938,11 @@ const BookAppointment = () => {
     const doctorQuery = selectedDoctor
       ? `?doctor=${encodeURIComponent(selectedDoctor)}`
       : "";
-    navigate(`/appointment-request${doctorQuery}`);
+    const prefill = hisFailurePrefillRef.current;
+    hisFailurePrefillRef.current = null;
+    navigate(`/appointment-request${doctorQuery}`, {
+      state: prefill ? { appointmentRequestPrefill: prefill } : undefined,
+    });
   }, [navigate, resetPatientLookupFailure, selectedDoctor]);
   const finalizeRegisteredPatientAfterPaci = useCallback(
     async (params: {
@@ -931,6 +972,10 @@ const BookAppointment = () => {
         return true;
       } catch (err) {
         console.error("Hospital patient lookup failed:", err);
+        hisFailurePrefillRef.current = await buildPaciPrefillFromIdentityApi(
+          params.civilId,
+          params.pickedName,
+        );
         setNationalIdError("");
         setPatientLookupShowGoBack(false);
         setShowReturningPatientModal(false);
@@ -941,7 +986,7 @@ const BookAppointment = () => {
         setIsConfirmingPatientRecord(false);
       }
     },
-    [loadVerifiedIdentityDetails, resetPatientLookupFailure],
+    [buildPaciPrefillFromIdentityApi, loadVerifiedIdentityDetails, resetPatientLookupFailure],
   );
   const goBackFromPatientLookupModal = () => {
     verificationDoneRef.current = false;

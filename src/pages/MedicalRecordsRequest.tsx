@@ -2,6 +2,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
+import MedicalRecordDatePicker from "@/components/MedicalRecordDatePicker";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,8 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -18,8 +17,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CalendarIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { useState } from "react";
 import axios from "axios";
@@ -41,12 +38,53 @@ const DOCUMENT_TYPES: SpecificDocumentType[] = [
   "Others",
 ];
 
+const CURRENT_YEAR = new Date().getFullYear();
+const DOB_FROM_YEAR = CURRENT_YEAR - 100;
+const DOB_TO_YEAR = CURRENT_YEAR;
+const SERVICE_FROM_YEAR = 1990;
+const SERVICE_TO_DATE_MAX_YEAR = CURRENT_YEAR + 5;
+
+const isFutureDate = (date: Date) => date > new Date();
+
+const isBeforeDay = (date: Date, min: Date) => {
+  const day = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+  return day(date) < day(min);
+};
+
 const sanitizeCivilIdInput = (raw: string) => {
   const digits = raw.replace(/\D/g, "");
   if (!digits) return "";
   if (digits[0] !== "2" && digits[0] !== "3") return "";
   return digits.slice(0, 12);
 };
+
+type SpecialRequestFieldProps = {
+  id: string;
+  value: string;
+  onChange: (value: string) => void;
+  isAr: boolean;
+};
+
+const SpecialRequestField = ({
+  id,
+  value,
+  onChange,
+  isAr,
+}: SpecialRequestFieldProps) => (
+  <div className="space-y-2">
+    <Label htmlFor={id}>{isAr ? "طلب خاص" : "Special Request"}</Label>
+    <Textarea
+      id={id}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={
+        isAr ? "أدخل الطلب الخاص (اختياري)" : "Enter special request (optional)"
+      }
+      className="min-h-[100px]"
+      dir={isAr ? "rtl" : "ltr"}
+    />
+  </div>
+);
 
 const MedicalRecordsRequest = () => {
   const { lang } = useLanguage();
@@ -413,123 +451,6 @@ const MedicalRecordsRequest = () => {
     }
   };
 
-  const DatePickerField = ({
-    label,
-    value,
-    onChange,
-    id,
-    required = true,
-    showLabel = true,
-    placeholder,
-    ariaLabel,
-  }: {
-    label: string;
-    value?: Date;
-    onChange: (date?: Date) => void;
-    id: string;
-    required?: boolean;
-    showLabel?: boolean;
-    placeholder?: string;
-    ariaLabel?: string;
-  }) => (
-    <div className="space-y-2">
-      {showLabel && (
-        <Label htmlFor={id}>
-          {label} {required && <span className="text-destructive">*</span>}
-        </Label>
-      )}
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button
-            id={id}
-            type="button"
-            variant="outline"
-            aria-label={ariaLabel ?? label}
-            className={cn(
-              "w-full justify-start text-left font-normal",
-              !value && "text-muted-foreground",
-            )}
-          >
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            {value
-              ? format(value, "PPP")
-              : placeholder ?? (isAr ? "اختر التاريخ" : "Select date")}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
-          <Calendar
-            mode="single"
-            selected={value}
-            onSelect={onChange}
-            initialFocus
-            className={cn("p-3 pointer-events-auto")}
-          />
-        </PopoverContent>
-      </Popover>
-    </div>
-  );
-
-  const SpecialRequestField = ({ id }: { id: string }) => (
-    <div className="space-y-2">
-      <Label htmlFor={id}>{isAr ? "طلب خاص" : "Special Request"}</Label>
-      <Textarea
-        id={id}
-        value={specialRequest}
-        onChange={(e) => setSpecialRequest(e.target.value)}
-        placeholder={
-          isAr ? "أدخل الطلب الخاص (اختياري)" : "Enter special request (optional)"
-        }
-        className="pointer-events-auto relative z-10 min-h-[100px]"
-        dir={isAr ? "rtl" : "ltr"}
-      />
-    </div>
-  );
-
-  const DischargeSummaryDateFields = () => (
-    <div className="space-y-4 pt-4 mt-2 border-t border-border">
-      <DatePickerField
-        id="discharge-serviceDate"
-        label={
-          isAr
-            ? "ملخص الخروج مع تواريخ الخدمة المحددة:"
-            : "Discharge summary with specific dates of service:"
-        }
-        value={serviceFromDate}
-        onChange={(date) => {
-          setServiceFromDate(date);
-          setServiceToDate(undefined);
-        }}
-        placeholder={isAr ? "اختر التاريخ" : "Select date"}
-        ariaLabel={
-          isAr
-            ? "تاريخ الخدمة لملخص الخروج"
-            : "Date of service for discharge summary"
-        }
-      />
-      <SpecialRequestField id="discharge-specialRequest" />
-    </div>
-  );
-
-  const SpecificDocumentsServiceDatesFields = ({ idPrefix }: { idPrefix: string }) => (
-    <>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <DatePickerField
-          id={`${idPrefix}-serviceFromDate`}
-          label={isAr ? "من تاريخ" : "From date"}
-          value={serviceFromDate}
-          onChange={setServiceFromDate}
-        />
-        <DatePickerField
-          id={`${idPrefix}-serviceToDate`}
-          label={isAr ? "إلى تاريخ" : "To date"}
-          value={serviceToDate}
-          onChange={setServiceToDate}
-        />
-      </div>
-      <SpecialRequestField id={`${idPrefix}-specialRequest`} />
-    </>
-  );
-
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -706,40 +627,18 @@ const MedicalRecordsRequest = () => {
                       placeholder={isAr ? "أدخل رقم ملف المريض" : "Enter patient file number"}
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label>
-                      {isAr ? "تاريخ الميلاد" : "Date of Birth"}{" "}
-                      <span className="text-destructive">*</span>
-                    </Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-full justify-start text-left font-normal",
-                            !dob && "text-muted-foreground",
-                          )}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {dob
-                            ? format(dob, "PPP")
-                            : isAr
-                              ? "اختر تاريخ الميلاد"
-                              : "Select date of birth"}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={dob}
-                          onSelect={setDob}
-                          disabled={(date) => date > new Date()}
-                          initialFocus
-                          className={cn("p-3 pointer-events-auto")}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
+                  <MedicalRecordDatePicker
+                    id="dateOfBirth"
+                    label={isAr ? "تاريخ الميلاد" : "Date of Birth"}
+                    value={dob}
+                    onChange={setDob}
+                    isAr={isAr}
+                    placeholder={isAr ? "اختر تاريخ الميلاد" : "Select date of birth"}
+                    ariaLabel={isAr ? "تاريخ الميلاد" : "Date of birth"}
+                    fromYear={DOB_FROM_YEAR}
+                    toYear={DOB_TO_YEAR}
+                    disabledDates={isFutureDate}
+                  />
                 </div>
               </div>
             </ScrollAnimationWrapper>
@@ -809,7 +708,38 @@ const MedicalRecordsRequest = () => {
                   </Select>
                 </div>
 
-                {specificAuthorization === "Discharge Summary" && <DischargeSummaryDateFields />}
+                {specificAuthorization === "Discharge Summary" && (
+                  <div className="space-y-4 pt-4 mt-2 border-t border-border">
+                    <MedicalRecordDatePicker
+                      id="discharge-serviceDate"
+                      label={
+                        isAr
+                          ? "ملخص الخروج مع تواريخ الخدمة المحددة:"
+                          : "Discharge summary with specific dates of service:"
+                      }
+                      value={serviceFromDate}
+                      onChange={(date) => {
+                        setServiceFromDate(date);
+                        setServiceToDate(undefined);
+                      }}
+                      isAr={isAr}
+                      placeholder={isAr ? "اختر التاريخ" : "Select date"}
+                      ariaLabel={
+                        isAr
+                          ? "تاريخ الخدمة لملخص الخروج"
+                          : "Date of service for discharge summary"
+                      }
+                      fromYear={SERVICE_FROM_YEAR}
+                      toYear={SERVICE_TO_DATE_MAX_YEAR}
+                    />
+                    <SpecialRequestField
+                      id="discharge-specialRequest"
+                      value={specialRequest}
+                      onChange={setSpecialRequest}
+                      isAr={isAr}
+                    />
+                  </div>
+                )}
 
                 {specificAuthorization === "specific documents" && (
                   <>
@@ -872,7 +802,43 @@ const MedicalRecordsRequest = () => {
                       <h4 className="text-base font-serif text-foreground">
                         {isAr ? "تواريخ الخدمة المحددة" : "Specific dates of service"}
                       </h4>
-                      <SpecificDocumentsServiceDatesFields idPrefix="specific-docs" />
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <MedicalRecordDatePicker
+                          id="specific-docs-serviceFromDate"
+                          label={isAr ? "من تاريخ" : "From date"}
+                          value={serviceFromDate}
+                          onChange={(date) => {
+                            setServiceFromDate(date);
+                            if (
+                              date &&
+                              serviceToDate &&
+                              isBeforeDay(serviceToDate, date)
+                            ) {
+                              setServiceToDate(undefined);
+                            }
+                          }}
+                          isAr={isAr}
+                          fromYear={SERVICE_FROM_YEAR}
+                          toYear={SERVICE_TO_DATE_MAX_YEAR}
+                        />
+                        <MedicalRecordDatePicker
+                          id="specific-docs-serviceToDate"
+                          label={isAr ? "إلى تاريخ" : "To date"}
+                          value={serviceToDate}
+                          onChange={setServiceToDate}
+                          isAr={isAr}
+                          fromYear={SERVICE_FROM_YEAR}
+                          toYear={SERVICE_TO_DATE_MAX_YEAR}
+                          minDate={serviceFromDate}
+                          defaultMonth={serviceToDate ?? serviceFromDate}
+                        />
+                      </div>
+                      <SpecialRequestField
+                        id="specific-docs-specialRequest"
+                        value={specialRequest}
+                        onChange={setSpecialRequest}
+                        isAr={isAr}
+                      />
                     </div>
                   </>
                 )}

@@ -383,15 +383,23 @@ const HospitalityServices = ({
               </>)}
             </div>
           </ScrollAnimationWrapper>
-          <div className="mt-8 text-center">
-            <button
-              type="button"
-              onClick={() => setEventBookingOpen(true)}
-              className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-full font-body text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-colors"
+          <div className="mt-8 text-center space-y-4">
+            <a
+              href="tel:+96525360573"
+              className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-full font-body text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-colors [direction:ltr] [unicode-bidi:isolate]"
             >
               <Phone className="w-4 h-4" />
-              {isAr ? "اضغط لحجز مناسبتك" : "Book your Event Online"}
-            </button>
+              +965 2536 0573
+            </a>
+            <div>
+              <button
+                type="button"
+                onClick={() => setEventBookingOpen(true)}
+                className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-full font-body text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-colors"
+              >
+                {isAr ? "اضغط لحجز مناسبتك" : "Book your Event Online"}
+              </button>
+            </div>
           </div>
           {
 }

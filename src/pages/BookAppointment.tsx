@@ -12,6 +12,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import type { DoctorWithClinicCode as Doctor } from "@/data/doctorsWithClinicCodes";
+import { loadDoctorsWithClinicCodes } from "@/data/loadDoctorsWithClinicCodes";
 import { departmentsWithDoctors, getDepartmentsWithClinicCodes } from "@/data/departmentWithDoctors";
 import { createAppointmentRequest } from "@/api/appointmentRequest";
 import {
@@ -29,7 +30,6 @@ import { extractPatientId } from "@/utils/patientLookupErrors";
 import { identityDateToIso, mapPaciSexToGender } from "@/utils/mapPaciGender";
 import type { AppointmentBookingFallbackState } from "@/types/appointmentBookingFallback";
 import { getBookingTestFailureMessage } from "@/config/bookingTestFailure";
-import { loadDoctorsWithClinicCodes } from "@/data/loadDoctorsWithClinicCodes";
 import { departments as staticDepts, deptDoctorAliases, MAIN_CATEGORIES } from "@/data/departments";
 import { Calendar as DatePickerCalendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
@@ -1635,7 +1635,6 @@ Clinic Code:`;
                               </p>
                               <h4 className="font-serif text-sm text-foreground mb-0.5 leading-snug">{isAr ? doc.nameAr : doc.name}</h4>
                               <p className="text-muted-foreground font-body text-[11px] mb-2 line-clamp-1">{isAr ? doc.specialtyAr : doc.specialty}</p>
-                              <div className="flex flex-wrap gap-1 mb-2">{(isAr ? doc.languagesAr : doc.languages).map((l) => <span key={l} className="px-2 py-0.5 rounded-full bg-secondary/40 text-[10px] font-body text-foreground">{l}</span>)}</div>
                               {doc.hideBooking !== true && (
                                 <div className={`flex items-center gap-1.5 mb-3 ${doc.availableOnline !== false ? "text-green-600" : "text-gray-500"}`}>
                                   <div className={`w-1.5 h-1.5 rounded-full ${doc.availableOnline !== false ? "bg-green-500" : "bg-muted-foreground"}`} />

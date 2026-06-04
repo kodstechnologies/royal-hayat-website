@@ -18,7 +18,6 @@ import {
   getAvailability,
   bookAppointment,
   getPatient,
-  type Slot
 } from "@/api/royalhayat";
 import {
   getIdentityData,
@@ -34,7 +33,7 @@ import { loadDoctorsWithClinicCodes } from "@/data/loadDoctorsWithClinicCodes";
 import { departments as staticDepts, deptDoctorAliases, MAIN_CATEGORIES } from "@/data/departments";
 import { Calendar as DatePickerCalendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
+import type { Slot } from "@/api/royalhayat";
 const DOCTOR_PATH_EXCLUDED_IDS = new Set<string>(["dr-madiha-khisaf", "dr-wael-ibrahim", "dr-fatima-alazemi"]);
 const SKIP_CIVIL_ID_VERIFICATION = false;
 type BookingDeptRow = {
@@ -70,6 +69,25 @@ const SYMPTOM_CHIP_OPTIONS = [
   "Joint Pain",
   "Shortness of Breath",
 ];
+function normalizeSlotDate(value: string): string {
+  const trimmed = value.trim();
+  if (/^\d{4}-\d{2}-\d{2}/.test(trimmed)) return trimmed.slice(0, 10);
+  const dmy = trimmed.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/);
+  if (dmy) {
+    const [, day, month, year] = dmy;
+    return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+  }
+  return trimmed;
+}
+
+function filterSlotsForDate(slots: Slot[], selectedDate: string): Slot[] {
+  if (!selectedDate) return [];
+  return slots.filter((slot) => {
+    if (!slot.slot_date) return true;
+    return normalizeSlotDate(slot.slot_date) === selectedDate;
+  });
+}
+
 function buildCollectedSymptoms(chips: string[], text: string): string[] {
   const fromText = text
     .split(/[,;\n]+/)
@@ -215,7 +233,6 @@ const BookAppointment = () => {
   const [showAllDoctors, setShowAllDoctors] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
-  const [showSlotSelection, setShowSlotSelection] = useState(false);
   const [specialityCode, setSpecialityCode] = useState<string | null>(null);
   const [providerCode, setProviderCode] = useState<string | null>(null);
   const [serviceCode, setServiceCode] = useState<string>("R01-FMC001-F010");
@@ -265,35 +282,47 @@ const BookAppointment = () => {
       }
     }
   }, [selectedDept, departmentsList, selectedDoctor]);
+  const slotsFetchReady = Boolean(serviceCode && specialityCode && providerCode);
+
   useEffect(() => {
+    if (!selectedDate) {
+      setFetchedSlots([]);
+      setIsLoadingSlots(false);
+      return;
+    }
+    if (!slotsFetchReady) {
+      setIsLoadingSlots(true);
+      return;
+    }
+
+    let cancelled = false;
     const fetchSlots = async () => {
-      if (!serviceCode || !selectedDate || !specialityCode || !providerCode) {
-        setFetchedSlots([]);
-        return;
-      }
       setIsLoadingSlots(true);
       try {
         const res = await getAvailability({
-          specialitycode: specialityCode,
-          providercode: providerCode,
+          specialitycode: specialityCode!,
+          providercode: providerCode!,
           servicecode: serviceCode,
           datefrom: selectedDate,
-          dateto: selectedDate
+          dateto: selectedDate,
         });
-        if (res.success && res.data?.slot_list) {
-          setFetchedSlots(res.data.slot_list);
-        } else {
+        if (cancelled) return;
+        const rawList = res.success && res.data?.slot_list ? res.data.slot_list : [];
+        setFetchedSlots(filterSlotsForDate(rawList, selectedDate));
+      } catch (err) {
+        if (!cancelled) {
+          console.error("Failed to fetch availability:", err);
           setFetchedSlots([]);
         }
-      } catch (err) {
-        console.error("Failed to fetch availability:", err);
-        setFetchedSlots([]);
       } finally {
-        setIsLoadingSlots(false);
+        if (!cancelled) setIsLoadingSlots(false);
       }
     };
     fetchSlots();
-  }, [specialityCode, providerCode, serviceCode, selectedDate]);
+    return () => {
+      cancelled = true;
+    };
+  }, [specialityCode, providerCode, serviceCode, selectedDate, slotsFetchReady]);
   const formatSlotRange = (slot: Slot) => {
     if (!slot.slot_from_time || !slot.slot_from_time.includes(":")) return "";
     const parseTime = (t: string) => {
@@ -324,30 +353,40 @@ const BookAppointment = () => {
     const h12 = h % 12 === 0 ? 12 : h % 12;
     return `${h12}:${String(m).padStart(2, "0")} ${suffix}`;
   };
-  const slotsByPeriod = {
-    morning: fetchedSlots.filter((s) => {
-      if (!s.slot_from_time || !s.slot_from_time.includes(":")) return false;
-      return parseInt(s.slot_from_time.split(":")[0]) < 12;
+  const slotsForSelectedDate = useMemo(
+    () => filterSlotsForDate(fetchedSlots, selectedDate),
+    [fetchedSlots, selectedDate],
+  );
+
+  const slotsByPeriod = useMemo(
+    () => ({
+      morning: slotsForSelectedDate.filter((s) => {
+        if (!s.slot_from_time || !s.slot_from_time.includes(":")) return false;
+        return parseInt(s.slot_from_time.split(":")[0], 10) < 12;
+      }),
+      afternoon: slotsForSelectedDate.filter((s) => {
+        if (!s.slot_from_time || !s.slot_from_time.includes(":")) return false;
+        const h = parseInt(s.slot_from_time.split(":")[0], 10);
+        return h >= 12 && h < 17;
+      }),
+      evening: slotsForSelectedDate.filter((s) => {
+        if (!s.slot_from_time || !s.slot_from_time.includes(":")) return false;
+        return parseInt(s.slot_from_time.split(":")[0], 10) >= 17;
+      }),
     }),
-    afternoon: fetchedSlots.filter((s) => {
-      if (!s.slot_from_time || !s.slot_from_time.includes(":")) return false;
-      const h = parseInt(s.slot_from_time.split(":")[0]);
-      return h >= 12 && h < 17;
-    }),
-    evening: fetchedSlots.filter((s) => {
-      if (!s.slot_from_time || !s.slot_from_time.includes(":")) return false;
-      return parseInt(s.slot_from_time.split(":")[0]) >= 17;
-    }),
-  };
+    [slotsForSelectedDate],
+  );
   const todayStart = useMemo(() => {
     const d = new Date();
     d.setHours(0, 0, 0, 0);
     return d;
   }, []);
-  const selectedCalendarDate = useMemo(
-    () => (selectedDate ? new Date(`${selectedDate}T12:00:00`) : undefined),
-    [selectedDate],
-  );
+  const selectedCalendarDate = useMemo(() => {
+    if (!selectedDate) return undefined;
+    const [y, m, d] = selectedDate.split("-").map((part) => parseInt(part, 10));
+    if (!y || !m || !d) return undefined;
+    return new Date(y, m - 1, d);
+  }, [selectedDate]);
   const isAppointmentDateDisabled = (date: Date) => {
     const d = new Date(date);
     d.setHours(0, 0, 0, 0);
@@ -355,10 +394,14 @@ const BookAppointment = () => {
   };
   const handleAppointmentDateSelect = (date: Date | undefined) => {
     if (!date) return;
-    setSelectedDate(format(date, "yyyy-MM-dd"));
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    setSelectedDate(`${y}-${m}-${d}`);
     setSelectedSlot(null);
     setSelectedSlotId(null);
-    setShowSlotSelection(false);
+    setFetchedSlots([]);
+    setIsLoadingSlots(true);
   };
   const [patientType, setPatientType] = useState<"returning" | "new" | null>(null);
   const [patientName, setPatientName] = useState("");
@@ -495,9 +538,6 @@ const BookAppointment = () => {
       window.clearTimeout(t2);
     };
   }, [symptomResults, scrollBookingViewToTop]);
-  useEffect(() => {
-    if (step !== 3) setShowSlotSelection(false);
-  }, [step]);
   useEffect(() => {
     if (!locState?.resetBookingFlow) return;
     setBookingPath(null);
@@ -1747,27 +1787,13 @@ Clinic Code:`;
                       </span>
                     </p>
                   )}
-                  {selectedDate && !showSlotSelection && (
-                    <div className="flex justify-center mb-6">
-                      <motion.button
-                        type="button"
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => setShowSlotSelection(true)}
-                        className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-xl font-body text-xs tracking-widest uppercase hover:bg-primary/90 shadow-md transition-colors"
-                      >
-                        {isAr ? "اختر موعداً" : "Select a slot"}
-                        <ArrowRight className="w-4 h-4" />
-                      </motion.button>
-                    </div>
-                  )}
-                  {showSlotSelection && selectedDate && isLoadingSlots && (
+                  {selectedDate && isLoadingSlots && (
                     <div className="flex flex-col items-center justify-center py-12">
                       <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }} className="w-10 h-10 rounded-full border-2 border-accent/20 border-t-accent mb-4" />
                       <p className="font-body text-sm text-muted-foreground">{isAr ? "جارِ جلب المواعيد المتاحة..." : "Fetching available time slots..."}</p>
                     </div>
                   )}
-                  {showSlotSelection && selectedDate && !isLoadingSlots && fetchedSlots.length > 0 && (
+                  {selectedDate && !isLoadingSlots && slotsForSelectedDate.length > 0 && (
                     <div className="space-y-6">
                       <p className="font-body text-xs text-muted-foreground uppercase tracking-wider">{isAr ? "الفترة المتاحة" : "Available times"}</p>
                       {Object.entries(slotsByPeriod).map(([period, slots]) => slots.length > 0 && (
@@ -1795,7 +1821,7 @@ Clinic Code:`;
                       ))}
                     </div>
                   )}
-                  {showSlotSelection && selectedDate && !isLoadingSlots && fetchedSlots.length === 0 && (
+                  {selectedDate && !isLoadingSlots && slotsForSelectedDate.length === 0 && slotsFetchReady && (
                     <div className="text-center py-12 text-muted-foreground font-body text-sm bg-muted/20 rounded-2xl border border-dashed border-border">
                       <AlertCircle className="w-8 h-8 mx-auto mb-2 opacity-30" />
                       {isAr ? "لا توجد مواعيد متاحة لهذا اليوم" : "No available appointments for this date"}

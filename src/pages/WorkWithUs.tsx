@@ -237,7 +237,7 @@ const WorkWithUs = ({
   const isAr = lang === "ar";
   const isIOSWebKit = useMemo(() => detectIOSWebKit(), []);
   const [activeCategory, setActiveCategory] = useState("View All");
-<<<<<<<<< Temporary merge branch 1
+// <<<<<<<<< Temporary merge branch 1
   const [jobPostings, setJobPostings] = useState<JobPosting[]>([]);
   const [jobsLoading, setJobsLoading] = useState(true);
   const [jobsError, setJobsError] = useState(false);

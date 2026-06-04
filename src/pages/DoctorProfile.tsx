@@ -7,7 +7,12 @@ import Footer from "@/components/Footer";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { doctors } from "@/data/doctors";
 import { departments, deptDoctorAliases } from "@/data/departments";
-import { getDoctorById, mapApiDoctorRowToDoctor } from "@/api/doctors";
+import {
+  getDoctorById,
+  isMongoObjectId,
+  mapApiDoctorRowToDoctor,
+  resolveDoctorMongoId,
+} from "@/api/doctors";
 import {
   createDoctorFeedback,
   getAllDoctorFeedbacks,
@@ -54,10 +59,13 @@ const feedbackHasLanguageContent = (
 const feedbackBelongsToDoctor = (
   fb: DoctorFeedbackRecord,
   doctor: Doctor,
-  routeId?: string
+  routeId?: string,
+  doctorMongoId?: string | null
 ) => {
   const keys = new Set(
-    [doctor.providerCode, doctor.id, routeId].filter(Boolean) as string[]
+    [doctorMongoId, doctor.providerCode, doctor.id, routeId].filter(
+      Boolean
+    ) as string[]
   );
   if (!keys.size) return false;
 
@@ -192,48 +200,62 @@ const DoctorProfile = () => {
 
   const doctor = localDoctor || apiDoctor;
 
-  const feedbackDoctorId = useMemo(() => {
-    if (!doctor) return null;
-    if (doctor.providerCode) return doctor.providerCode;
-    if (/^[0-9a-fA-F]{24}$/i.test(doctor.id)) return doctor.id;
-    if (id && /^[0-9a-fA-F]{24}$/i.test(id)) return id;
+  const directFeedbackMongoId = useMemo(() => {
+    if (id && isMongoObjectId(id)) return id;
+    if (doctor && isMongoObjectId(doctor.id)) return doctor.id;
     return null;
   }, [doctor, id]);
+
+  const { data: resolvedFeedbackMongoId, isLoading: resolvingFeedbackMongoId } =
+    useQuery({
+      queryKey: [
+        "doctor-feedback-mongo-id",
+        directFeedbackMongoId,
+        doctor?.providerCode,
+        doctor?.name,
+      ],
+      queryFn: () =>
+        resolveDoctorMongoId({
+          mongoId: directFeedbackMongoId,
+          providerCode: doctor?.providerCode,
+          name: doctor?.name,
+        }),
+      enabled: !!doctor && !directFeedbackMongoId,
+      staleTime: 5 * 60 * 1000,
+    });
+
+  const feedbackDoctorMongoId =
+    directFeedbackMongoId ?? resolvedFeedbackMongoId ?? null;
 
   const {
     data: feedbackResponse,
     isLoading: feedbackLoading,
   } = useQuery({
-    queryKey: ["doctor-feedback", feedbackDoctorId, doctor?.id, id],
+    queryKey: ["doctor-feedback", feedbackDoctorMongoId, doctor?.id, id],
     queryFn: async () => {
       if (!doctor) return [];
 
-      const idsToTry = [
-        feedbackDoctorId,
-        doctor.providerCode,
-        /^[0-9a-fA-F]{24}$/i.test(doctor.id) ? doctor.id : null,
-        id && /^[0-9a-fA-F]{24}$/i.test(id) ? id : null,
-      ].filter((value, index, arr) => value && arr.indexOf(value) === index) as string[];
-
-      for (const doctorKey of idsToTry) {
+      if (feedbackDoctorMongoId) {
         try {
-          const res = await getDoctorFeedbacksByDoctorId(doctorKey);
+          const res = await getDoctorFeedbacksByDoctorId(feedbackDoctorMongoId);
           const list = normalizeFeedbackList(res);
           if (list.length) return list;
         } catch {
-          // try next id variant
+          // fall through to full list filter
         }
       }
 
       try {
         const res = await getAllDoctorFeedbacks();
         const all = normalizeFeedbackList(res);
-        return all.filter((fb) => feedbackBelongsToDoctor(fb, doctor, id));
+        return all.filter((fb) =>
+          feedbackBelongsToDoctor(fb, doctor, id, feedbackDoctorMongoId)
+        );
       } catch {
         return [];
       }
     },
-    enabled: !!doctor,
+    enabled: !!doctor && (!!feedbackDoctorMongoId || !resolvingFeedbackMongoId),
   });
 
   const testimonials = useMemo(() => {
@@ -259,7 +281,7 @@ const DoctorProfile = () => {
       );
       return;
     }
-    if (!feedbackDoctorId) {
+    if (!feedbackDoctorMongoId) {
       setSubmitError(
         lang === "ar"
           ? "لا يمكن إرسال التقييم لهذا الطبيب حالياً"
@@ -275,7 +297,7 @@ const DoctorProfile = () => {
       const isArabic = lang === "ar";
       await createDoctorFeedback(
         {
-          doctorId: feedbackDoctorId,
+          doctor: feedbackDoctorMongoId,
           stars: testimonialForm.rating,
           userName: isArabic ? undefined : testimonialForm.name.trim(),
           arabicUserName: isArabic ? testimonialForm.name.trim() : undefined,
@@ -287,7 +309,7 @@ const DoctorProfile = () => {
       );
 
       await queryClient.invalidateQueries({
-        queryKey: ["doctor-feedback", feedbackDoctorId, doctor?.id, id],
+        queryKey: ["doctor-feedback", feedbackDoctorMongoId, doctor?.id, id],
       });
 
       setTestimonialForm({ name: "", comment: "", rating: 0 });
@@ -716,7 +738,11 @@ const DoctorProfile = () => {
             <button
               type="button"
               onClick={handleAddTestimonial}
-              disabled={isSubmittingFeedback || !feedbackDoctorId}
+              disabled={
+                isSubmittingFeedback ||
+                resolvingFeedbackMongoId ||
+                !feedbackDoctorMongoId
+              }
               className="
     w-full
     bg-primary

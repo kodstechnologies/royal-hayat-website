@@ -96,7 +96,8 @@ export type DoctorFeedbackRecord = {
 };
 
 export type CreateDoctorFeedbackPayload = {
-  doctorId: string;
+  /** Doctor document MongoDB _id */
+  doctor: string;
   stars: number;
   userName?: string;
   arabicUserName?: string;
@@ -128,10 +129,10 @@ export const getAllDoctorFeedbacks = async () => {
   return response.data;
 };
 
-/** Fetch all feedback for a doctor by business doctorId (or legacy Mongo doctor _id). */
-export const getDoctorFeedbacksByDoctorId = async (doctorId: string) => {
+/** Fetch all feedback for a doctor by MongoDB _id. */
+export const getDoctorFeedbacksByDoctorId = async (doctorMongoId: string) => {
   const response = await api.get(
-    `/api/v1/doctor-feedback/${encodeURIComponent(doctorId)}`
+    `/api/v1/doctor-feedback/${encodeURIComponent(doctorMongoId)}`
   );
 
   return response.data;

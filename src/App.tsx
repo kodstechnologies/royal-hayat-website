@@ -22,6 +22,7 @@ import AboutUs from "./pages/AboutUs.tsx";
 import WorkWithUs from "./pages/WorkWithUs.tsx";
 import InternationalPatient from "./pages/InternationalPatient.tsx";
 import AppointmentRequest from "./pages/AppointmentRequest.tsx";
+import AppointmentBookingFallback from "./pages/AppointmentBookingFallback.tsx";
 import ContactUs from "./pages/ContactUs.tsx";
 import VerifyNationalId from "./pages/VerifyNationalId.tsx";
 import FAQ from "./pages/FAQ.tsx";
@@ -292,6 +293,7 @@ const App = () => (
             />
             <Route path="/international-patient" element={<InternationalPatient />} />
             <Route path="/appointment-request" element={<AppointmentRequest />} />
+            <Route path="/appointment-request/fallback" element={<AppointmentBookingFallback />} />
             <Route path="/contact-us" element={<ContactUs />} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/medical-rep-visit-booking" element={<MedicalRepVisitBooking />} />

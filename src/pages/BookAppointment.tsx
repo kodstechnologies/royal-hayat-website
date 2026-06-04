@@ -34,6 +34,9 @@ import {
 } from "@/api/identity";
 import { subscribeToIdentityVerification } from "@/api/identitySocket";
 import { extractPatientId } from "@/utils/patientLookupErrors";
+import { identityDateToIso, mapPaciSexToGender } from "@/utils/mapPaciGender";
+import type { AppointmentBookingFallbackState } from "@/types/appointmentBookingFallback";
+import { getBookingTestFailureMessage } from "@/config/bookingTestFailure";
 import { doctorsWithClinicCodes as staticDoctors } from "@/data/doctorsWithClinicCodes";
 import { departments as staticDepts, deptDoctorAliases, MAIN_CATEGORIES } from "@/data/departments";
 import { Calendar as DatePickerCalendar } from "@/components/ui/calendar";
@@ -442,6 +445,7 @@ const BookAppointment = () => {
   const [patientPhone, setPatientPhone] = useState("");
   const [patientCountryCode, setPatientCountryCode] = useState("+965");
   const [patientDob, setPatientDob] = useState("");
+  const [patientDobIso, setPatientDobIso] = useState("");
   const [patientGender, setPatientGender] = useState("");
   const [patientErrors, setPatientErrors] = useState<Record<string, string>>({});
   const [showReturningPatientModal, setShowReturningPatientModal] = useState(false);
@@ -718,6 +722,46 @@ const BookAppointment = () => {
     return hour < 12 ? "morning" : "afternoon";
   };
 
+  const redirectToBookingFallback = useCallback(
+    (errorMessage: string) => {
+      const gender = mapPaciSexToGender(verifiedIdentityDetails?.gender || "");
+      const state: AppointmentBookingFallbackState = {
+        fullname: patientName.trim(),
+        gender,
+        genderDisplay: verifiedIdentityDetails?.gender,
+        civilId: verifiedIdentityDetails?.civilIdNumber || nationalId || undefined,
+        patientId: patientId || undefined,
+        doctorName: selectedDoctorObj?.name || "",
+        doctorNameAr: selectedDoctorObj?.nameAr,
+        departmentName: selectedDeptObj?.name || selectedDoctorObj?.specialty || "",
+        departmentNameAr: selectedDeptObj?.nameAr ?? selectedDoctorObj?.specialtyAr,
+        formattedDate: formattedSelectedDate,
+        selectedDate,
+        selectedSlot: selectedSlot || "",
+        formattedTime: formatTimeString(selectedSlot) || selectedSlot || "",
+        slotPeriod: getSelectedSlotPeriod(),
+        symptoms: collectedSymptoms.length > 0 ? collectedSymptoms : undefined,
+        bookingError: errorMessage,
+        suggestedDob: patientDobIso || undefined,
+      };
+      navigate("/appointment-request/fallback", { replace: true, state });
+    },
+    [
+      collectedSymptoms,
+      formattedSelectedDate,
+      nationalId,
+      navigate,
+      patientDobIso,
+      patientId,
+      patientName,
+      selectedDate,
+      selectedDeptObj,
+      selectedDoctorObj,
+      selectedSlot,
+      verifiedIdentityDetails,
+    ],
+  );
+
   const steps = [
     { label: isAr ? "القسم" : "Department", icon: Building2 },
     { label: isAr ? "الطبيب" : "Doctor", icon: User },
@@ -765,9 +809,26 @@ const BookAppointment = () => {
     };
     try {
       if (patientType === "returning" && patientId && selectedSlotId) {
+        const civilIdForTest =
+          nationalId || verifiedIdentityDetails?.civilIdNumber?.replace(/\D/g, "") || "";
+        const testFailureMessage = getBookingTestFailureMessage({
+          civilId: civilIdForTest,
+          doctorId: selectedDoctor,
+          selectedDate,
+          selectedSlot,
+        });
+        if (testFailureMessage) {
+          setBookingError(testFailureMessage);
+          redirectToBookingFallback(testFailureMessage);
+          return;
+        }
+
         const res = await bookAppointment({
           patientId: patientId,
-          slotBookingId: selectedSlotId
+          slotBookingId: selectedSlotId,
+          doctorId: selectedDoctor || undefined,
+          date: selectedDate || undefined,
+          slotTime: selectedSlot || undefined,
         });
         if (res.success) {
           setBooked(true);
@@ -776,7 +837,7 @@ const BookAppointment = () => {
         const rawMessage = res?.message || res?.status || res?.meta?.status;
         const messageToShow = formatBookingErrorMessage(rawMessage);
         setBookingError(messageToShow);
-        setBookingPopupMessage(messageToShow);
+        redirectToBookingFallback(messageToShow);
         return;
       }
 
@@ -813,7 +874,11 @@ const BookAppointment = () => {
         err?.message;
       const finalMessage = formatBookingErrorMessage(apiErrorMessage);
       setBookingError(finalMessage);
-      setBookingPopupMessage(finalMessage);
+      if (patientType === "returning" && patientId && selectedSlotId) {
+        redirectToBookingFallback(finalMessage);
+      } else {
+        setBookingPopupMessage(finalMessage);
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -910,6 +975,9 @@ const BookAppointment = () => {
           : "";
         const registration = (rawData?.registration || {}) as Record<string, unknown>;
 
+        const dobIso = identityDateToIso(rawData?.dateOfBirth);
+        if (dobIso) setPatientDobIso(dobIso);
+
         setVerifiedIdentityDetails({
           name: nameFromRaw || pickedName || "—",
           dateOfBirth: rawData?.dateOfBirth
@@ -934,6 +1002,7 @@ const BookAppointment = () => {
     setPatientName("");
     setPatientType(null);
     setPatientId(null);
+    setPatientDobIso("");
     setVerifiedPersonName(null);
     setVerifiedIdentityDetails(null);
   }, []);
@@ -1204,6 +1273,7 @@ const BookAppointment = () => {
     setPatientType(null);
     setPatientName("");
     setPatientId(null);
+    setPatientDobIso("");
     setNationalId("");
     setNationalIdError("");
     setVerifiedPersonName(null);

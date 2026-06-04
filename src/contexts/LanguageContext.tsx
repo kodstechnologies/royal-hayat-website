@@ -574,6 +574,18 @@ const translations: Translations = {
     en: "We are currently experiencing some technical issues. Kindly share your mobile number, and our call center team will contact you to confirm your appointment.",
     ar: "نعتذر عن الإزعاج. نواجه حاليًا بعض المشاكل التقنية. يرجى مشاركة رقم هاتفكم، وسيتواصل معكم أحد موظفي خدمة العملاء لدينا في أقرب وقت لتأكيد موعدكم.",
   },
+  bookingFallbackTitle: {
+    en: "Complete Your Appointment Request",
+    ar: "أكمل طلب الموعد",
+  },
+  bookingFallbackSubtitle: {
+    en: "We could not confirm your booking online. Please add your phone number and date of birth so our call center can confirm your preferred appointment.",
+    ar: "تعذر تأكيد حجزكم عبر الإنترنت. يرجى إدخال رقم الهاتف وتاريخ الميلاد ليتواصل معكم فريق خدمة العملاء لتأكيد الموعد المفضل.",
+  },
+  bookingFallbackContactFields: {
+    en: "Contact details needed to reach you",
+    ar: "بيانات التواصل المطلوبة للوصول إليكم",
+  },
   dontSeeInsurance: { en: "Don't see your insurance provider?", ar: "لا ترى شركة التأمين الخاصة بك؟" },
   dontSeeInsurancePatients: {
     en: "Don't see your insurance provider? please contact us at ",

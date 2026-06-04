@@ -2,7 +2,8 @@ import api from "./axiosInstance";
 
 export type AppointmentRequestType =
   | "doctor unavailability request"
-  | "first time visitor request";
+  | "first time visitor request"
+  | "registered patient booking fallback";
 
 export type CreateAppointmentRequestPayload = {
   fullname: string;

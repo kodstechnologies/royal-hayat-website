@@ -30,6 +30,10 @@ export interface AvailabilityResponse {
 export interface BookAppointmentPayload {
   patientId: string;
   slotBookingId: string;
+  /** Optional context for QA forced-failure matching on the server. */
+  doctorId?: string;
+  date?: string;
+  slotTime?: string;
 }
 
 export const getAvailability = async (params: AvailabilityParams): Promise<AvailabilityResponse> => {

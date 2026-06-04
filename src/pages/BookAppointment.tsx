@@ -20,7 +20,7 @@ import {
   getDoctorsByDepartment,
   mapApiDoctorRowToDoctor,
 } from "@/api/doctors";
-import { createAppointmentRequest } from "@/api/appointmentRequest";
+// import { createAppointmentRequest } from "@/api/appointmentRequest";
 import {
   getAvailability,
   bookAppointment,
@@ -33,18 +33,15 @@ import {
   type IdentityStatusResponse,
 } from "@/api/identity";
 import { subscribeToIdentityVerification } from "@/api/identitySocket";
-<<<<<<< HEAD
 import {
   APPOINTMENT_REQUEST_TYPES,
   createAppointmentRequest,
 } from "@/api/appointmentRequest";
-import {
-  extractPatientId,
-  getPatientLookupUserMessage,
-} from "@/utils/patientLookupErrors";
-=======
+// import {
+//   extractPatientId,
+//   getPatientLookupUserMessage,
+// } from "@/utils/patientLookupErrors";
 import { extractPatientId } from "@/utils/patientLookupErrors";
->>>>>>> main
 import { doctorsWithClinicCodes as staticDoctors } from "@/data/doctorsWithClinicCodes";
 import { departments as staticDepts, deptDoctorAliases, MAIN_CATEGORIES } from "@/data/departments";
 import { Calendar as DatePickerCalendar } from "@/components/ui/calendar";
@@ -56,7 +53,7 @@ const DOCTOR_PATH_EXCLUDED_IDS = new Set<string>(["dr-madiha-khisaf", "dr-wael-i
 
 const SKIP_CIVIL_ID_VERIFICATION = false;
 
-// Helper types and functions for dynamic API data
+// Helper types and functions for dynamic API data  
 type BookingDeptRow = {
   id: string;
   name: string;
@@ -800,7 +797,6 @@ const BookAppointment = () => {
         return;
       }
 
-<<<<<<< HEAD
       const departmentName =
         selectedDeptObj?.name ||
         selectedDoctorObj?.department ||
@@ -823,13 +819,13 @@ const BookAppointment = () => {
         doctor: doctorName || undefined,
         department: departmentName || undefined,
       });
-=======
+
       if (patientType === "new") {
         await createAppointmentRequest({
           fullname: patientName.trim(),
           phone: `${patientCountryCode}${patientPhone.trim()}`,
           dob: patientDob,
-          gender: patientGender,
+          gender: patientGender as "male" | "female" | "other",
           doctor: (isAr ? selectedDoctorObj?.nameAr : selectedDoctorObj?.name) || undefined,
           department:
             (isAr
@@ -846,7 +842,6 @@ const BookAppointment = () => {
         setBooked(true);
         return;
       }
->>>>>>> main
 
       setBooked(true);
     } catch (err: any) {

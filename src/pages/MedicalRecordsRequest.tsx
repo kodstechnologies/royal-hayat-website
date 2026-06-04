@@ -560,7 +560,7 @@ const MedicalRecordsRequest = () => {
               <p className="font-body text-sm text-muted-foreground leading-relaxed">
                 {isAr
                   ? "باختياري تلقي المعلومات الصحية للمريض إلكترونياً، أتحمل المسؤولية الكاملة عن أمان عنوان البريد الإلكتروني المقدم والأجهزة المستخدمة لتلقي البيانات وتخزينها."
-                  : "By choosing to receive the Patient Health Information electronically, I accept full responsibility for the security of the email address provided and the device(s) used to receive and store the data."}
+                  : "By choosing to receive the Patient Health Information electronically, I accept full responsibility for the security of the email address provided and the device(s) used to receive and store the data. I understand and assume all inherent risks of this electronic transfer, including unauthorized access, accidental forwarding to unintended recipients, and the dangers of unsecured storage once the information is delivered"}
               </p>
             </div>
           </ScrollAnimationWrapper>

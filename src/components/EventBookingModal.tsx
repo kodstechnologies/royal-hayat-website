@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { createEventBooking, type CreateEventBookingPayload } from "@/api/event";
+// import { createEventBooking, type CreateEventBookingPayload } from "@/api/event";
 import { toast } from "@/hooks/use-toast";
 import PhoneInput from "react-phone-input-2";
 import type { CountryData } from "react-phone-input-2";

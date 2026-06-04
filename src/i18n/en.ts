@@ -372,7 +372,7 @@ export const en = {
   "chatRoyalHomeHealth": "Royal Home Health",
   "chatGuidedSteps": "Quick steps",
   "chatNeedHelp": "Need help?",
-  "chatNeedMoreHelp": "Need more help?",
+  "chatNeedMoreHelp": "Chat with our agent",
   "chatAiHighTraffic": "Our AI assistant is experiencing high demand right now. Please **try again in a few minutes**, use the quick topic buttons below, or call **+965 2536 0000** for immediate assistance.",
   "chatAiUnavailable": "The AI assistant is temporarily unavailable. Please try again shortly, use the topic buttons below, or call **+965 2536 0000**.",
   "chatContinueWhatsApp": "Continue on WhatsApp",

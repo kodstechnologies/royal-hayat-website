@@ -1,10 +1,7 @@
 /**
  * QA forced booking failure for the registered-patient fallback flow.
  * Toggle BOOKING_TEST_FAILURE_ENABLED in code. Scenario details below.
- *
- * HMS patient-not-found + PACI mock: see identityMock.ts / identity.mock.json (286101702332).
  */
-export { QA_PACI_ONLY_HIS_NOT_FOUND_CIVIL_ID } from "@/config/identityMock";
 export const BOOKING_TEST_FAILURE_ENABLED = true;
 
 /** slot_from_time values for morning blocks that should trigger fallback (10 Jun 2026). */

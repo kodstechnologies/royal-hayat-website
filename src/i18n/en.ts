@@ -337,8 +337,6 @@ export const en = {
   "bookAsFirstTimePatient": "Book as first-time patient",
   "patientLookupGoBack": "Go back",
   "hisFailureCallCenterMessage": "We are currently experiencing some technical issues. Kindly share your mobile number, and our call center team will contact you to confirm your appointment.",
-  "paciVerifiedNoHisBanner": "Your identity was verified with PACI. We could not find a matching hospital record for this Civil ID. Enter your mobile number below to continue — our call center will confirm your appointment.",
-  "continueBooking": "Continue booking",
   "dontSeeInsurance": "Don't see your insurance provider?",
   "dontSeeInsurancePatients": "Don't see your insurance provider? please contact us at ",
   "contactUs": "Contact us",

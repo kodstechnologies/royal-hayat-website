@@ -29,7 +29,6 @@ import { subscribeToIdentityVerification } from "@/api/identitySocket";
 import { extractPatientId } from "@/utils/patientLookupErrors";
 import { identityDateToIso, mapPaciSexToGender } from "@/utils/mapPaciGender";
 import type { AppointmentBookingFallbackState } from "@/types/appointmentBookingFallback";
-import { getBookingTestFailureMessage } from "@/config/bookingTestFailure";
 import { departments as staticDepts, deptDoctorAliases, MAIN_CATEGORIES } from "@/data/departments";
 import { Calendar as DatePickerCalendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
@@ -713,20 +712,6 @@ const BookAppointment = () => {
     };
     try {
       if (patientType === "returning" && patientId && selectedSlotId) {
-        const civilIdForTest =
-          nationalId || verifiedIdentityDetails?.civilIdNumber?.replace(/\D/g, "") || "";
-        const testFailureMessage = getBookingTestFailureMessage({
-          civilId: civilIdForTest,
-          doctorId: selectedDoctor,
-          selectedDate,
-          selectedSlot,
-        });
-        if (testFailureMessage) {
-          setBookingError(testFailureMessage);
-          redirectToBookingFallback(testFailureMessage);
-          return;
-        }
-
         const res = await bookAppointment({
           patientId: patientId,
           slotBookingId: selectedSlotId,

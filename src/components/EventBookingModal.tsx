@@ -7,6 +7,10 @@ import { toast } from "@/hooks/use-toast";
 import PhoneInput from "react-phone-input-2";
 import type { CountryData } from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
+import {
+  createEventBooking,
+  type CreateEventBookingPayload,
+} from "@/api/event";
 
 type EventBookingForm = {
   hall: string;
@@ -38,6 +42,11 @@ const initialForm: EventBookingForm = {
   mobile: "",
   email: "",
   mrn: "",
+};
+
+const formatMobileNumber = (mobile: string) => {
+  const digits = mobile.replace(/\D/g, "");
+  return digits ? `+${digits}` : "";
 };
 
 const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) => {

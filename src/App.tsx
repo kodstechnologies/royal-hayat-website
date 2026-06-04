@@ -62,10 +62,10 @@ const gardeniaHallImages = [
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/Gardeneria/xwtidtktsnjpk3iahoap.jpeg",
 ];
 const alJouriHallImages = [
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/al-jouri-halls/DSC00056_hjzwvy.jpg.jpeg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/al-jouri-halls/DSC00058_d8vsgp.jpg.jpeg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/al-jouri-halls/DSC08997_okdxrp.jpg.jpeg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/al-jouri-halls/DSC08998_tgjegx.jpg.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/AL-jouri/DSC00056.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/AL-jouri/DSC00058.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/AL-jouri/DSC08997.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/AL-jouri/DSC08998.JPG",
 ];
 const orchidSuiteImages = [
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/royal-orchid/bopzkiyw2loxlj5feqrq.jpeg",
@@ -143,13 +143,13 @@ const suiteCarouselImagesByIndex: Record<number, string[]> = {
     "https://royal-hayat.s3.eu-central-1.amazonaws.com/Jasmine/z4xihlkdwjgsxjjgub3r.jpeg",
   ],
   4: [
-    "https://royal-hayat.s3.eu-central-1.amazonaws.com/camelia/DSC08353.jpg",
-    "https://royal-hayat.s3.eu-central-1.amazonaws.com/camelia/DSC08360.jpg",
-    "https://royal-hayat.s3.eu-central-1.amazonaws.com/camelia/DSC08375.jpg",
-    "https://royal-hayat.s3.eu-central-1.amazonaws.com/camelia/DSC08382.jpg",
-    "https://royal-hayat.s3.eu-central-1.amazonaws.com/camelia/DSC08388.jpg",
-    "https://royal-hayat.s3.eu-central-1.amazonaws.com/camelia/DSC08396.jpg",
-    "https://royal-hayat.s3.eu-central-1.amazonaws.com/camelia/DSC08413.jpg"
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/CAMELIA/dfrnc17tjfiwg63yepus.jpeg",
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/CAMELIA/e2m1pewo9k1rtquc7ouy.jpeg",
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/CAMELIA/gppueg2ql96cktn96rrw.jpeg",
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/CAMELIA/hzyn1ygqydhdsaiugr15.jpeg",
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/CAMELIA/j2wxqczm7enuqdezidhm.jpeg",
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/CAMELIA/qcv8nsui4xqqbuakcbfp.jpeg",
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/CAMELIA/vek4mpusktaqueewcuzu.jpeg"
   ],
   5: [
     "https://royal-hayat.s3.eu-central-1.amazonaws.com/Lily/chpusk9tadupiu2h8hy2.jpeg",
@@ -161,11 +161,11 @@ const suiteCarouselImagesByIndex: Record<number, string[]> = {
 
   ],
   6: [
-    "https://royal-hayat.s3.eu-central-1.amazonaws.com/Daisy-suite/1.JPG",
-    "https://royal-hayat.s3.eu-central-1.amazonaws.com/Daisy-suite/2.JPG",
-    "https://royal-hayat.s3.eu-central-1.amazonaws.com/Daisy-suite/3.JPG",
-    "https://royal-hayat.s3.eu-central-1.amazonaws.com/Daisy-suite/4.JPG",
-    "https://royal-hayat.s3.eu-central-1.amazonaws.com/Daisy-suite/5.JPG",
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/daisysuit/1.JPG",
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/daisysuit/2.JPG",
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/daisysuit/3.JPG",
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/daisysuit/4.JPG",
+    "https://royal-hayat.s3.eu-central-1.amazonaws.com/daisysuit/5.JPG",
   ],
 };
 // Paste your final gallery links here
@@ -228,18 +228,18 @@ const workWithUsHospitalityWeekImages: string[] = [
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/tf7uuik4lr5m1grkj3db.jpeg"
 ];
 const workWithUsRhhQuizImages: string[] = [
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/rhh-quiz/DSC07156.JPG",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/rhh-quiz/DSC07159.JPG",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/rhh-quiz/DSC07164.JPG",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/rhh-quiz/DSC07198.JPG",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/rhh-quiz/DSC07223.JPG",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/rhh-quiz/DSC07237.JPG",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/rhh-quiz/DSC07245.JPG",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/rhh-quiz/DSC07253.JPG",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/rhh-quiz/DSC07310.JPG",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/rhh-quiz/DSC07357.JPG",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/rhh-quiz/DSC07379.JPG",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/rhh-quiz/DSC07389.JPG"
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/RHH-quiz/DSC07156.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/RHH-quiz/DSC07159.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/RHH-quiz/DSC07164.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/RHH-quiz/DSC07198.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/RHH-quiz/DSC07223.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/RHH-quiz/DSC07237.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/RHH-quiz/DSC07237.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/RHH-quiz/DSC07253.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/RHH-quiz/DSC07310.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/RHH-quiz/DSC07357.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/RHH-quiz/DSC07379.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/RHH-quiz/DSC07389.JPG"
 ];
 
 const App = () => (

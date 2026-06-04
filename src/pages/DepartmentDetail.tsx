@@ -165,12 +165,37 @@ const DepartmentDetail = () => {
   const { slug, subSlug } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const fromBookAppointment = Boolean(
-    (location.state as { fromBookAppointment?: boolean } | null)?.fromBookAppointment
-  );
+  const navState = (location.state as {
+    fromBookAppointment?: boolean;
+    fromSpecializedCare?: boolean;
+    returnPath?: string;
+    restoreExpandedIndex?: number | null;
+    restoreSelectedSubByService?: Record<string, string>;
+    restoreScrollY?: number;
+  } | null) ?? {};
+  const fromBookAppointment = Boolean(navState.fromBookAppointment);
+  const fromSpecializedCare = Boolean(navState.fromSpecializedCare);
   const { lang, t } = useLanguage();
   const isAr = lang === "ar";
   const [expandedSub, setExpandedSub] = useState<string | null>(subSlug || null);
+
+  const goBackToSpecializedCare = () => {
+    navigate(navState.returnPath || "/", {
+      state: {
+        restoreExpandedIndex: navState.restoreExpandedIndex,
+        restoreSelectedSubByService: navState.restoreSelectedSubByService,
+        restoreScrollY: navState.restoreScrollY,
+      },
+    });
+  };
+
+  const goBackToDepartment = () => {
+    if (fromSpecializedCare) {
+      goBackToSpecializedCare();
+      return;
+    }
+    navigate(`/medical-services/${slug}`);
+  };
 
   const dept = departmentDetails.find((d) => d.slug === slug);
   const alSafwaDept = dept ? isAlSafwaDepartment(dept.slug, dept.name) : false;
@@ -336,6 +361,15 @@ const DepartmentDetail = () => {
         <div className="container mx-auto px-6">
           <ScrollAnimationWrapper>
             <div className="max-w-4xl">
+              {fromSpecializedCare && !activeSub && (
+                <button
+                  onClick={goBackToSpecializedCare}
+                  className="inline-flex items-center gap-2 text-accent font-body text-xs tracking-wide mb-4 hover:underline"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  {isAr ? "رجوع" : "Go Back"}
+                </button>
+              )}
               {fromBookAppointment && (
                 <button
                   onClick={() => navigate("/book-appointment")}
@@ -347,11 +381,11 @@ const DepartmentDetail = () => {
               )}
               {activeSub && (
                 <button
-                  onClick={() => navigate(`/medical-services/${dept.slug}`)}
+                  onClick={goBackToDepartment}
                   className="inline-flex items-center gap-2 text-accent font-body text-xs tracking-wide mb-4 hover:underline"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
-                  Back to {dept.name}
+                  {isAr ? `العودة إلى ${dept.nameAr}` : `Back to ${dept.name}`}
                 </button>
               )}
               <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">

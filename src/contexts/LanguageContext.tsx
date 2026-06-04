@@ -380,6 +380,12 @@ const translations: Translations = {
   changeSelection: { en: "Change selection", ar: "تغيير الاختيار" },
   reviewConfirm: { en: "Review & Confirm", ar: "مراجعة وتأكيد الحجز" },
   reviewSubmit: { en: "Review & Submit Request", ar: "مراجعة وتأكيد الحجز" },
+  confirmRequest: { en: "Confirm Request", ar: "تأكيد الطلب" },
+  appointmentRequested: { en: "Appointment Requested", ar: "تم طلب الموعد" },
+  appointmentRequestedMsg: {
+    en: "Thank you for your request. Our call center team will contact you within 6-12 hours to confirm your appointment.",
+    ar: "شكراً لطلبكم. سيتواصل معكم فريق خدمة العملاء خلال 6-12 ساعة لتأكيد موعدكم.",
+  },
   appointmentRequest: { en: "Appointment Request", ar: "طلب موعد" },
   requestNote: { en: "The selected doctor is currently not available. We will get back to you within 6-12 hours.", ar: "الطبيب المختار غير متاح حالياً. سنتواصل معك خلال 6-12 ساعة." },
   patient: { en: "Patient", ar: "معلومات المريض" },
@@ -391,7 +397,7 @@ const translations: Translations = {
   previous: { en: "Previous", ar: "السابق" },
   backToHome: { en: "Back to Home", ar: "العودة إلى الصفحة الرئيسية" },
   // Confirmation
-  requestSubmitted: { en: "Appointment Confirmed", ar: "تم استلام طلب الموعد!" },
+  requestSubmitted: { en: "Request Submitted", ar: "تم إرسال الطلب" },
   appointmentConfirmed: { en: "Appointment Confirmed", ar: "تم استلام طلب الموعد!" },
   requestConfirmMsg: { en: "Thank you for your request, we will contact you soon", ar: "شكراً لطلبك، سنتواصل معك قريباً." },
   bookingConfirmMsg: { en: "Thank you for your request, we will contact you soon", ar: "شكراً لطلبك، سنتواصل معك قريباً." },
@@ -563,6 +569,10 @@ const translations: Translations = {
   patientLookupGoBack: {
     en: "Go back",
     ar: "رجوع",
+  },
+  hisFailureCallCenterMessage: {
+    en: "We are currently experiencing some technical issues. Kindly share your mobile number, and our call center team will contact you to confirm your appointment.",
+    ar: "نعتذر عن الإزعاج. نواجه حاليًا بعض المشاكل التقنية. يرجى مشاركة رقم هاتفكم، وسيتواصل معكم أحد موظفي خدمة العملاء لدينا في أقرب وقت لتأكيد موعدكم.",
   },
   dontSeeInsurance: { en: "Don't see your insurance provider?", ar: "لا ترى شركة التأمين الخاصة بك؟" },
   dontSeeInsurancePatients: {

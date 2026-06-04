@@ -1,4 +1,5 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import { en, type TranslationKey } from "@/i18n/en";
 
 type Language = "en" | "ar";
 
@@ -721,17 +722,42 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType>({
   lang: "en",
-  setLang: () => { },
+  setLang: () => {},
   t: (key) => key,
   dir: "ltr",
 });
 
-export const LanguageProvider = ({ children }: { children: ReactNode }) => {
-  const [lang, setLang] = useState<Language>("en");
+let arDictCache: Dict | null = null;
+let arLoadPromise: Promise<Dict> | null = null;
 
-  const t = (key: string) => {
-    return translations[key]?.[lang] || translations[key]?.en || key;
-  };
+function loadArDict(): Promise<Dict> {
+  if (arDictCache) return Promise.resolve(arDictCache);
+  if (!arLoadPromise) {
+    arLoadPromise = import("@/i18n/ar").then((mod) => {
+      arDictCache = mod.ar as Dict;
+      return arDictCache;
+    });
+  }
+  return arLoadPromise;
+}
+
+export const LanguageProvider = ({ children }: { children: ReactNode }) => {
+  const [lang, setLangState] = useState<Language>("en");
+  const [arDict, setArDict] = useState<Dict | null>(null);
+
+  const setLang = useCallback((next: Language) => {
+    setLangState(next);
+    if (next === "ar") {
+      void loadArDict().then(setArDict);
+    }
+  }, []);
+
+  const activeDict = lang === "ar" ? arDict ?? en : en;
+
+  const t = useCallback(
+    (key: string) => activeDict[key] ?? en[key as TranslationKey] ?? key,
+    [activeDict],
+  );
 
   const dir = lang === "ar" ? "rtl" : "ltr";
 
@@ -742,9 +768,7 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <LanguageContext.Provider value={{ lang, setLang, t, dir }}>
-      <div dir={dir}>
-        {children}
-      </div>
+      <div dir={dir}>{children}</div>
     </LanguageContext.Provider>
   );
 };

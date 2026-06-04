@@ -4585,13 +4585,13 @@ export function searchDoctorsBySymptom(query: string): Doctor[] {
   });
 }
 
-/** Featured carousel list (homepage + medical services). */
+/** @deprecated Use `featuredDoctors` from `@/data/featuredDoctors` to avoid loading the full catalog. */
 export function getFeaturedDoctors(limit = 12): Doctor[] {
   return doctors
     .filter(
       (doc) =>
         doc.id !== "dr-mustafa-alfiki" &&
-        doc.specialty?.toLowerCase() !== "clinical pharmacy"
+        doc.specialty?.toLowerCase() !== "clinical pharmacy",
     )
     .slice(0, limit);
 }

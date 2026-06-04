@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { createAppointmentRequest } from "@/api/appointmentRequest";
 import { toast } from "@/hooks/use-toast";
@@ -9,7 +9,7 @@ import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
-import { doctors as allDoctors } from "@/data/doctors";
+import { loadDoctorById, type Doctor } from "@/data/loadDoctors";
 
 const AppointmentRequest = () => {
   const { lang, t } = useLanguage();
@@ -21,9 +21,22 @@ const AppointmentRequest = () => {
 
   const returnState = (location.state as any) ?? {};
 
-  // Pre-fill doctor info from query param
   const doctorId = searchParams.get("doctor");
-  const prefilledDoctor = doctorId ? allDoctors.find(d => d.id === doctorId) : null;
+  const [prefilledDoctor, setPrefilledDoctor] = useState<Doctor | null>(null);
+
+  useEffect(() => {
+    if (!doctorId) {
+      setPrefilledDoctor(null);
+      return;
+    }
+    let cancelled = false;
+    void loadDoctorById(doctorId).then((doc) => {
+      if (!cancelled) setPrefilledDoctor(doc ?? null);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [doctorId]);
 
   const [form, setForm] = useState({
     fullName: "", phone: "", countryCode: "+965", dateOfBirth: "", gender: "",

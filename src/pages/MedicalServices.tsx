@@ -6,7 +6,7 @@ import DoctorsSection from "@/components/DoctorsSection";
 import { Link } from "react-router-dom";
 import { Home } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { getFeaturedDoctors } from "@/data/doctors";
+import { featuredDoctors } from "@/data/featuredDoctors";
 
 const HomeHealthPreview = () => {
   const { lang } = useLanguage();
@@ -37,7 +37,6 @@ const HomeHealthPreview = () => {
 };
 
 const MedicalServices = () => {
-  const featuredDoctors = getFeaturedDoctors();
 
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107]">

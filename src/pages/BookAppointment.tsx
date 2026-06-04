@@ -13,13 +13,7 @@ import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 
 import type { DoctorWithClinicCode as Doctor } from "@/data/doctorsWithClinicCodes";
-import { fetchAllDepartmentsPages } from "@/api/department";
 import { departmentsWithDoctors, getDepartmentsWithClinicCodes } from "@/data/departmentWithDoctors";
-import {
-  fetchAllActiveDoctors,
-  getDoctorsByDepartment,
-  mapApiDoctorRowToDoctor,
-} from "@/api/doctors";
 import { createAppointmentRequest } from "@/api/appointmentRequest";
 import {
   getAvailability,
@@ -34,7 +28,7 @@ import {
 } from "@/api/identity";
 import { subscribeToIdentityVerification } from "@/api/identitySocket";
 import { extractPatientId } from "@/utils/patientLookupErrors";
-import { doctorsWithClinicCodes as staticDoctors } from "@/data/doctorsWithClinicCodes";
+import { loadDoctorsWithClinicCodes } from "@/data/loadDoctorsWithClinicCodes";
 import { departments as staticDepts, deptDoctorAliases, MAIN_CATEGORIES } from "@/data/departments";
 import { Calendar as DatePickerCalendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
@@ -281,8 +275,7 @@ const BookAppointment = () => {
     if (selectedDoctor) {
       const doc =
         allApiDoctors.find((d) => d.id === selectedDoctor) ||
-        deptDoctorList.find((d) => d.id === selectedDoctor) ||
-        staticDoctors.find((d) => d.id === selectedDoctor);
+        deptDoctorList.find((d) => d.id === selectedDoctor);
 
       if (doc) {
         if (doc.providerCode) {
@@ -312,8 +305,7 @@ const BookAppointment = () => {
       if (dept?.specialityCode) {
         const doc =
           allApiDoctors.find((d) => d.id === selectedDoctor) ||
-          deptDoctorList.find((d) => d.id === selectedDoctor) ||
-          staticDoctors.find((d) => d.id === selectedDoctor);
+          deptDoctorList.find((d) => d.id === selectedDoctor);
         const finalCode = doc?.clinicCode || doc?.departmentClinicCode || dept.specialityCode;
         setSpecialityCode(finalCode);
       } else if (dept) {
@@ -476,14 +468,6 @@ const BookAppointment = () => {
       setCatalogLoading(true);
       setCatalogError("");
       try {
-        // Muting API calls as requested, using static data only
-        /*
-        const [deptRows, doctorRows] = await Promise.all([
-          fetchAllDepartmentsPages({ isActive: true }),
-          fetchAllActiveDoctors(),
-        ]);
-        */
-
         if (cancelled) return;
 
         // 1. Load departments directly from staticDepts
@@ -500,8 +484,8 @@ const BookAppointment = () => {
 
         setDepartmentsList(combinedDepartments);
 
-        // 2. Load doctors directly from staticDoctors (doctorsWithClinicCodes)
-        const enrichedDoctors = staticDoctors.map(doc => ({
+        const staticDoctors = await loadDoctorsWithClinicCodes();
+        const enrichedDoctors = staticDoctors.map((doc) => ({
           ...doc,
           // Ensure consistency with the booking logic's expectations
           clinicCode: doc.clinicCode || doc.departmentClinicCode
@@ -538,9 +522,7 @@ const BookAppointment = () => {
           return;
         }
 
-        // Filter staticDoctors by department name using aliases
-        const filtered = staticDoctors
-          .filter((doc) => {
+        const filtered = allApiDoctors.filter((doc) => {
             const aliases = deptDoctorAliases[dept.name] || [dept.name];
             return aliases.some((alias) => doc.department.toLowerCase() === alias.toLowerCase());
           })
@@ -562,7 +544,7 @@ const BookAppointment = () => {
     return () => {
       cancelled = true;
     };
-  }, [selectedDept, bookingPath, departmentsList]);
+  }, [selectedDept, bookingPath, departmentsList, allApiDoctors]);
 
   // Read query param on mount
   useEffect(() => {

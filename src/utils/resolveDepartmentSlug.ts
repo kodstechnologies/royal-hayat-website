@@ -1,4 +1,4 @@
-import { departmentDetails } from "@/data/departmentDetails";
+import type { DepartmentDetail } from "@/data/departmentDetails";
 
 /** CMS / AI slugs that differ from static site slugs */
 const CMS_SLUG_ALIASES: Record<string, string> = {
@@ -10,14 +10,16 @@ const CMS_SLUG_ALIASES: Record<string, string> = {
   "royal-hayat-pharmacy": "royale-hayat-pharmacy",
 };
 
-const KNOWN_SLUGS = new Set(departmentDetails.map((d) => d.slug));
-
 /**
  * Resolve route :slug to a departmentDetails entry (handles legacy CMS/AI links).
  */
-export function resolveDepartmentBySlug(slug: string | undefined) {
+export function resolveDepartmentBySlug(
+  slug: string | undefined,
+  departmentDetails: DepartmentDetail[],
+) {
   if (!slug) return undefined;
 
+  const knownSlugs = new Set(departmentDetails.map((d) => d.slug));
   const exact = departmentDetails.find((d) => d.slug === slug);
   if (exact) return exact;
 
@@ -27,7 +29,7 @@ export function resolveDepartmentBySlug(slug: string | undefined) {
     return departmentDetails.find((d) => d.slug === aliased);
   }
 
-  if (KNOWN_SLUGS.has(withoutMongoSuffix)) {
+  if (knownSlugs.has(withoutMongoSuffix)) {
     return departmentDetails.find((d) => d.slug === withoutMongoSuffix);
   }
 

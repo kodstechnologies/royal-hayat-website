@@ -1,16 +1,16 @@
-import { useState, useRef, useEffect, useMemo, useCallback } from "react";
-import { Search, ChevronLeft, ChevronRight, Stethoscope } from "lucide-react";
+import { useState, useRef, useEffect, useMemo, useCallback, memo } from "react";
+import { Search, ChevronLeft, ChevronRight, Stethoscope, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { doctors, type Doctor } from "@/data/doctors";
+import { loadDoctors, type Doctor } from "@/data/loadDoctors";
 import { departments, deptDoctorAliases, MAIN_CATEGORIES, type MainCategory } from "@/data/departments";
 import { Input } from "@/components/ui/input";
 
-const DoctorCard = ({ doc }: { doc: Doctor }) => {
+const DoctorCard = memo(({ doc }: { doc: Doctor }) => {
   const { lang } = useLanguage();
   return (
     <Link to={`/doctors/${doc.id}`} className="block w-[280px] min-h-[430px] flex-shrink-0 relative z-0 hover:z-10 snap-center md:snap-start">
@@ -53,7 +53,8 @@ const DoctorCard = ({ doc }: { doc: Doctor }) => {
       </motion.div>
     </Link>
   );
-};
+});
+DoctorCard.displayName = "DoctorCard";
 
 const departmentDescriptions: Record<string, { en: string; ar: string }> = {
   "Obstetrics & Gynecology": { en: "Complete maternity care from prenatal through postpartum recovery. Our team provides expert guidance for high-risk pregnancies, minimally invasive gynecological procedures, and comprehensive family planning services.", ar: "رعاية أمومة شاملة من ما قبل الولادة حتى التعافي بعد الولادة. يقدم فريقنا إرشادات متخصصة لحالات الحمل عالية الخطورة وإجراءات نسائية طفيفة التوغل وخدمات تنظيم الأسرة الشاملة." },
@@ -75,7 +76,7 @@ const departmentDescriptions: Record<string, { en: string; ar: string }> = {
   "ENT (Ear, Nose & Throat)": { en: "Expert care for conditions affecting the ear, nose, throat, head, and neck. Our ENT specialists provide surgical and non-surgical treatments for hearing disorders, sinus conditions, voice disorders, and head & neck tumors.", ar: "رعاية متخصصة لأمراض الأنف والأذن والحنجرة والرأس والرقبة. يقدم أخصائيونا علاجات جراحية وغير جراحية لاضطرابات السمع وأمراض الجيوب الأنفية واضطرابات الصوت وأورام الرأس والرقبة." },
 };
 
-const DepartmentRow = ({ department, departmentAr, docs }: { department: string; departmentAr: string; docs: Doctor[] }) => {
+const DepartmentRow = memo(({ department, departmentAr, docs }: { department: string; departmentAr: string; docs: Doctor[] }) => {
   const { lang } = useLanguage();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
@@ -157,11 +158,26 @@ const DepartmentRow = ({ department, departmentAr, docs }: { department: string;
       </div>
     </div>
   );
-};
+});
+DepartmentRow.displayName = "DepartmentRow";
 
 const Doctors = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [doctorCatalog, setDoctorCatalog] = useState<Doctor[]>([]);
+  const [catalogLoading, setCatalogLoading] = useState(true);
   const { lang, t } = useLanguage();
+
+  useEffect(() => {
+    let cancelled = false;
+    void loadDoctors().then((list) => {
+      if (cancelled) return;
+      setDoctorCatalog(list);
+      setCatalogLoading(false);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Build dept → mainCategory lookup from departments data
   const deptToMainCategory = useMemo<Record<string, MainCategory>>(() => {
@@ -216,13 +232,13 @@ const Doctors = () => {
   }, [deptToMainCategory]);
 
   const grouped = useMemo<Record<string, Doctor[]>>(() => {
-    return doctors.reduce<Record<string, Doctor[]>>((acc, doctor) => {
+    return doctorCatalog.reduce<Record<string, Doctor[]>>((acc, doctor) => {
       const key = doctor.department || "General";
       if (!acc[key]) acc[key] = [];
       acc[key].push(doctor);
       return acc;
     }, {});
-  }, []);
+  }, [doctorCatalog]);
 
   const allDoctors = useMemo(() => Object.values(grouped).flat(), [grouped]);
 
@@ -292,6 +308,12 @@ const Doctors = () => {
 
       <section className="py-16 md:py-24">
         <div className="container mx-auto px-4 md:px-6">
+          {catalogLoading && (
+            <div className="flex min-h-[30vh] items-center justify-center text-muted-foreground mb-8">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" aria-hidden />
+              <span className="sr-only">Loading doctors...</span>
+            </div>
+          )}
           {/* Header */}
           <div className="text-center mb-12">
             <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-4">{t("ourTeam")}</p>

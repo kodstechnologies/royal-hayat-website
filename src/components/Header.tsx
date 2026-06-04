@@ -4,8 +4,15 @@ import type { LucideIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { doctors } from "@/data/doctors";
 import logoFull from "@/assets/rhh-logo-full-color.png";
+
+type SearchIndexItem = {
+  label: string;
+  labelAr: string;
+  type: string;
+  typeAr: string;
+  href: string;
+};
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -16,6 +23,7 @@ const Header = () => {
   const [showLogo] = useState(true);
   const [headerVisible, setHeaderVisible] = useState(true);
   const [showMedRecordsModal, setShowMedRecordsModal] = useState(false);
+  const [doctorSearchItems, setDoctorSearchItems] = useState<SearchIndexItem[]>([]);
   const { lang, setLang, t } = useLanguage();
   const phoneDisplay = "+965 2536 0000";
   const phoneTextClass = "inline-block [direction:ltr] [unicode-bidi:isolate]";
@@ -77,7 +85,24 @@ const Header = () => {
     };
   }, [headerVisible, lang, menuOpen, searchOpen]);
 
-
+  useEffect(() => {
+    let cancelled = false;
+    void import("@/data/doctors").then(({ doctors }) => {
+      if (cancelled) return;
+      setDoctorSearchItems(
+        doctors.map((doc) => ({
+          label: doc.name,
+          labelAr: doc.nameAr,
+          type: `Doctor · ${doc.specialty}`,
+          typeAr: `طبيب · ${doc.specialtyAr}`,
+          href: `/doctors/${doc.id}`,
+        })),
+      );
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const aboutSubLinks = [
     { label: t("ourStory"), href: "/about-us?section=history", icon: BookOpen, desc: lang === "ar" ? "قصة مستشفى رويال حياة" : "The story of Royale Hayat Hospital" },
@@ -158,9 +183,8 @@ const Header = () => {
     }
   };
 
-  // Build comprehensive search index
   const searchIndex = useMemo(() => {
-    const items: { label: string; labelAr: string; type: string; typeAr: string; href: string }[] = [];
+    const items: SearchIndexItem[] = [];
 
     // Pages
     items.push(
@@ -207,16 +231,7 @@ const Header = () => {
       items.push({ label: d.en, labelAr: d.ar, type: "Department", typeAr: "قسم", href: "/departments" });
     });
 
-    // Doctors
-    doctors.forEach(doc => {
-      items.push({
-        label: doc.name,
-        labelAr: doc.nameAr,
-        type: `Doctor · ${doc.specialty}`,
-        typeAr: `طبيب · ${doc.specialtyAr}`,
-        href: `/doctors/${doc.id}`,
-      });
-    });
+    items.push(...doctorSearchItems);
 
     // Services / sections
     const services = [
@@ -258,7 +273,7 @@ const Header = () => {
     });
 
     return items;
-  }, []);
+  }, [doctorSearchItems]);
 
   const searchResults = useMemo(() => {
     if (!searchQuery || searchQuery.length < 2) return [];
@@ -471,7 +486,7 @@ const Header = () => {
                   </a>
                 )}
 
-                {/* Mega Menu Dropdown test push*/}
+                {/* Mega Menu Dropdown */}
                 <AnimatePresence>
                   {item.hasDropdown && activeDropdown === item.hasDropdown && (
                     <motion.div

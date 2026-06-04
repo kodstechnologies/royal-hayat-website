@@ -5,11 +5,11 @@ import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { doctors } from "@/data/doctors";
+import { loadDoctorById, type Doctor } from "@/data/loadDoctors";
 import { departments, deptDoctorAliases } from "@/data/departments";
 import { getDoctorById, mapApiDoctorRowToDoctor } from "@/api/doctors";
 import { X } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const patientFeedback = [
   {
@@ -131,7 +131,25 @@ const handleAddTestimonial = () => {
     }
   };
 
-  const localDoctor = doctors.find((d) => d.id === id);
+  const [localDoctor, setLocalDoctor] = useState<Doctor | undefined>();
+  const [localResolved, setLocalResolved] = useState(false);
+
+  useEffect(() => {
+    if (!id) {
+      setLocalResolved(true);
+      return;
+    }
+    let cancelled = false;
+    void loadDoctorById(id).then((doc) => {
+      if (!cancelled) {
+        setLocalDoctor(doc);
+        setLocalResolved(true);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
 
   const { data: apiDoctor, isLoading: apiLoading } = useQuery({
     queryKey: ["doctor", id],
@@ -140,7 +158,6 @@ const handleAddTestimonial = () => {
       try {
         const res = await getDoctorById(id);
         if (res.success && res.data) {
-          // Pass empty strings for dept names as mapApiDoctorRowToDoctor handles populated department objects
           return mapApiDoctorRowToDoctor(res.data, "", "");
         }
       } catch (err) {
@@ -148,12 +165,12 @@ const handleAddTestimonial = () => {
       }
       return null;
     },
-    enabled: !!id && !localDoctor,
+    enabled: !!id && localResolved && !localDoctor,
   });
 
   const doctor = localDoctor || apiDoctor;
 
-  if (apiLoading) {
+  if (!localResolved || apiLoading) {
     return (
       <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
         <Header />

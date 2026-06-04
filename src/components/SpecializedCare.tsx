@@ -4,9 +4,8 @@ import { useRef, useState, useEffect, useMemo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useLocation, useNavigate } from "react-router-dom";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
-import { doctors, Doctor } from "@/data/doctors";
+import { loadDoctors, type Doctor } from "@/data/loadDoctors";
 import { deptDoctorAliases, departments as staticDepartments } from "@/data/departments";
-import { departmentDetails } from "@/data/departmentDetails";
 
 interface ServiceItem {
   num: string;
@@ -237,6 +236,18 @@ const SpecializedCare = () => {
   const restoreScrollYRef = useRef<number | null>(null);
   const INITIAL_COUNT = 6;
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [doctorCatalog, setDoctorCatalog] = useState<Doctor[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    void loadDoctors().then((list) => {
+      if (!cancelled) setDoctorCatalog(list);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const normalizeDeptName = (value: string) =>
     value.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "");
   const staticOrderMap = useMemo(
@@ -344,7 +355,7 @@ const SpecializedCare = () => {
 
   const getDeptDoctors = (department: string): Doctor[] => {
     const aliases = deptDoctorAliases[department] || [department];
-    return doctors.filter((d) =>
+    return doctorCatalog.filter((d) =>
       aliases.some(a => d.department.includes(a) || d.specialty.includes(a))
     )
       .sort((a, b) => a.name.localeCompare(b.name))
@@ -388,10 +399,10 @@ const SpecializedCare = () => {
       .replace(/^-+|-+$/g, "");
 
   const getDepartmentSlug = (service: ServiceItem) => {
-    const matchedDept = departmentDetails.find(
+    const matchedDept = staticDepartments.find(
       (d) =>
         d.name.toLowerCase() === service.name.toLowerCase() ||
-        d.name.toLowerCase() === service.department.toLowerCase()
+        d.name.toLowerCase() === service.department.toLowerCase(),
     );
     return matchedDept?.slug;
   };
@@ -399,9 +410,9 @@ const SpecializedCare = () => {
   const getSubSlug = (service: ServiceItem, subName: string) => {
     const departmentSlug = getDepartmentSlug(service);
     if (!departmentSlug) return slugify(subName);
-    const dept = departmentDetails.find((d) => d.slug === departmentSlug);
-    const matchedSub = dept?.subDepartments?.find((sub) => sub.name.toLowerCase() === subName.toLowerCase());
-    return matchedSub?.slug ?? slugify(subName);
+    const dept = staticDepartments.find((d) => d.slug === departmentSlug);
+    const matchedSub = dept?.subs?.find((sub) => sub.name.toLowerCase() === subName.toLowerCase());
+    return slugify(matchedSub?.name ?? subName);
   };
 
   return (
@@ -435,7 +446,7 @@ const SpecializedCare = () => {
                 extraTerms.push("Nutricare", "La Cosmetique");
               }
               const allTerms = [...aliases, ...extraTerms];
-              const allDeptDoctors = doctors.filter((d) =>
+              const allDeptDoctors = doctorCatalog.filter((d) =>
                 allTerms.some(a => d.department.includes(a) || d.specialty.includes(a))
               );
 

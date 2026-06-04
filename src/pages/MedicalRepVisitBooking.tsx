@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -7,7 +7,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { CalendarCheck, ListChecks, Stethoscope } from "lucide-react";
-import { doctors, type Doctor } from "@/data/doctors";
+import { loadDoctors, type Doctor } from "@/data/loadDoctors";
 import { departments, deptDoctorAliases } from "@/data/departments";
 
 const getCleanCalendlySlug = (name: string) => {
@@ -104,6 +104,17 @@ const MedicalRepVisitBooking = () => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
   const locale = isAr ? "ar" : "en";
+  const [doctorCatalog, setDoctorCatalog] = useState<Doctor[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    void loadDoctors().then((list) => {
+      if (!cancelled) setDoctorCatalog(list);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const steps = isAr ? [
     'انقر على زر "تسجيل".',
@@ -123,7 +134,7 @@ const MedicalRepVisitBooking = () => {
     return departments
       .map((dept) => {
         const aliases = deptDoctorAliases[dept.name] || [dept.name];
-        const deptDoctors = doctors
+        const deptDoctors = doctorCatalog
           .filter((doc) => aliases.some((alias) => doc.department.includes(alias) || doc.specialty.includes(alias)))
           .sort((a, b) =>
             (isAr ? a.nameAr : a.name).localeCompare(isAr ? b.nameAr : b.name, locale)
@@ -135,7 +146,7 @@ const MedicalRepVisitBooking = () => {
       .sort((a, b) =>
         (isAr ? a.dept.nameAr : a.dept.name).localeCompare(isAr ? b.dept.nameAr : b.dept.name, locale)
       );
-  }, [isAr, locale]);
+  }, [isAr, locale, doctorCatalog]);
 
   return (
     <div className="min-h-screen bg-background">

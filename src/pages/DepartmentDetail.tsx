@@ -3,14 +3,17 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
-import { departmentDetails } from "@/data/departmentDetails";
+import {
+  loadDepartmentDetails,
+  type DepartmentDetail as DepartmentDetailData,
+  type DepartmentDetailSection,
+} from "@/data/loadDepartmentDetails";
 import { departments as staticDepartments } from "@/data/departments";
-import { doctors as allDoctors } from "@/data/doctors";
+import { loadDoctors, type Doctor } from "@/data/loadDoctors";
 import { motion } from "framer-motion";
-import { ChevronRight, ChevronLeft, ArrowLeft, CheckCircle2, ChevronDown, Stethoscope, MessageCircle, Phone } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { ChevronRight, ChevronLeft, ArrowLeft, CheckCircle2, ChevronDown, Stethoscope, MessageCircle, Phone, Loader2 } from "lucide-react";
+import { useState, useRef, useEffect, memo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import type { DepartmentDetailSection } from "@/data/departmentDetails";
 import { resolveDepartmentBySlug } from "@/utils/resolveDepartmentSlug";
 
 const pickDeptText = (lang: string, en: string, ar?: string) => (lang === "ar" && ar ? ar : en);
@@ -18,7 +21,7 @@ const pickDeptText = (lang: string, en: string, ar?: string) => (lang === "ar" &
 const isAlSafwaDepartment = (slug: string, name: string) =>
   slug.includes("al-safwa") || name.toLowerCase().includes("safwa");
 
-const DepartmentDoctors = ({ doctors, lang }: { doctors: typeof allDoctors; lang: string }) => {
+const DepartmentDoctors = memo(({ doctors, lang }: { doctors: Doctor[]; lang: string }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const autoSlideRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const isPausedRef = useRef(false);
@@ -160,7 +163,9 @@ const DepartmentDoctors = ({ doctors, lang }: { doctors: typeof allDoctors; lang
       </div>
     </section>
   );
-};
+});
+DepartmentDoctors.displayName = "DepartmentDoctors";
+
 const DepartmentDetail = () => {
   const { slug, subSlug } = useParams();
   const navigate = useNavigate();
@@ -178,6 +183,29 @@ const DepartmentDetail = () => {
   const { lang, t } = useLanguage();
   const isAr = lang === "ar";
   const [expandedSub, setExpandedSub] = useState<string | null>(subSlug || null);
+  const [dept, setDept] = useState<DepartmentDetailData | null | undefined>(undefined);
+  const [allDoctors, setAllDoctors] = useState<Doctor[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    void loadDepartmentDetails().then((details) => {
+      if (cancelled) return;
+      setDept(resolveDepartmentBySlug(slug, details) ?? null);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [slug]);
+
+  useEffect(() => {
+    let cancelled = false;
+    void loadDoctors().then((list) => {
+      if (!cancelled) setAllDoctors(list);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const goBackToSpecializedCare = () => {
     navigate(navState.returnPath || "/", {
@@ -197,10 +225,22 @@ const DepartmentDetail = () => {
     navigate(`/medical-services/${slug}`);
   };
 
-  const dept = departmentDetails.find((d) => d.slug === slug);
-  const alSafwaDept = dept ? isAlSafwaDepartment(dept.slug, dept.name) : false;
-
   const goToAlSafwaProgram = () => navigate("/al-safwa");
+
+  if (dept === undefined) {
+    return (
+      <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
+        <Header />
+        <div className="flex min-h-[40vh] items-center justify-center text-muted-foreground">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" aria-hidden />
+          <span className="sr-only">Loading department...</span>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  const alSafwaDept = dept ? isAlSafwaDepartment(dept.slug, dept.name) : false;
 
   if (!dept) {
     return (

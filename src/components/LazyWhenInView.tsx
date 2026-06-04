@@ -31,6 +31,10 @@ const LazyWhenInView = ({
   );
 };
 
+export const sectionPlaceholder = (className = "min-h-[240px] bg-background") => (
+  <div className={`${className} animate-pulse`} aria-hidden />
+);
+
 export const lifeCarouselPlaceholder = (variant: "default" | "muted" = "default") => (
   <section
     className={`py-16 ${variant === "muted" ? "bg-secondary/10" : "bg-background"}`}

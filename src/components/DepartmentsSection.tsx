@@ -5,9 +5,8 @@ import { motion } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { departments as staticDepartments, type Department, MAIN_CATEGORIES } from "@/data/departments";
-import { doctors, type Doctor } from "@/data/doctors";
+import { loadDoctors, type Doctor } from "@/data/loadDoctors";
 import { deptDoctorAliases } from "@/data/departments";
-import { departmentDetails } from "@/data/departmentDetails";
 type DepartmentsSectionProps = {
   showPageTitle?: boolean;
 };
@@ -33,6 +32,17 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
   const restoreScrollYRef = useRef<number | null>(null);
   const { lang, t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
+  const [doctorCatalog, setDoctorCatalog] = useState<Doctor[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    void loadDoctors().then((list) => {
+      if (!cancelled) setDoctorCatalog(list);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     const state = location.state as DeptRestoreState | null;
@@ -123,9 +133,9 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
       .replace(/^-+|-+$/g, "");
 
   const getSubSlug = (deptSlug: string, subName: string) => {
-    const detail = departmentDetails.find((d) => d.slug === deptSlug);
-    const matched = detail?.subDepartments?.find((s) => s.name.toLowerCase() === subName.toLowerCase());
-    return matched?.slug ?? slugify(subName);
+    const detail = departments.find((d) => d.slug === deptSlug);
+    const matched = detail?.subs?.find((s) => s.name.toLowerCase() === subName.toLowerCase());
+    return slugify(matched?.name ?? subName);
   };
 
   const selectedDept = openIndex !== null ? departments[openIndex] : null;
@@ -135,13 +145,13 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
         departments.map((dept) => {
           const aliases = deptDoctorAliases[dept.name];
           const matchTerms = aliases && aliases.length > 0 ? aliases : [dept.name];
-          const matchedDoctors = doctors.filter((doc) =>
+          const matchedDoctors = doctorCatalog.filter((doc) =>
             matchTerms.some((alias) => doc.department.includes(alias) || doc.specialty.includes(alias))
           );
           return [dept.name, matchedDoctors];
         })
       ),
-    [departments]
+    [departments, doctorCatalog]
   );
   const deptDoctors = useMemo(() => {
     if (!selectedDept) return [];
@@ -185,7 +195,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
       extraTerms.push("Nutricare", "La Cosmetique");
     }
     const allTerms = [...matchTerms, ...extraTerms];
-    const allDeptDoctors = doctors.filter((doc) =>
+    const allDeptDoctors = doctorCatalog.filter((doc) =>
       allTerms.some((alias) => doc.department.includes(alias) || doc.specialty.includes(alias))
     );
 

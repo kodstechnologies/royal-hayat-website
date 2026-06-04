@@ -7,8 +7,6 @@ import { Crown, Utensils, Sparkles, Flower2, Coffee, Phone, CheckCircle2, Baby, 
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useEffect, useState } from "react";
-// @ts-ignore
-import ReactPannellum from "react-pannellum";
 import { useSearchParams, Link } from "react-router-dom";
 
 type HospitalityServicesProps = {

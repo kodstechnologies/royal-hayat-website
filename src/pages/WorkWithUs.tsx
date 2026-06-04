@@ -237,6 +237,7 @@ const WorkWithUs = ({
   const isAr = lang === "ar";
   const isIOSWebKit = useMemo(() => detectIOSWebKit(), []);
   const [activeCategory, setActiveCategory] = useState("View All");
+<<<<<<<<< Temporary merge branch 1
   const [jobPostings, setJobPostings] = useState<JobPosting[]>([]);
   const [jobsLoading, setJobsLoading] = useState(true);
   const [jobsError, setJobsError] = useState(false);
@@ -939,7 +940,7 @@ const WorkWithUs = ({
           -webkit-transform: translateZ(0);
           backface-visibility: hidden;
           -webkit-backface-visibility: hidden;
-          will-change: opacity;
+          will-change: transform, opacity;
         }
 
         #work-culture-page .culture-narrative[dir="rtl"],

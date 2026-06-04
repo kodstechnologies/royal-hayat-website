@@ -1,24 +1,19 @@
 /**
- * QA-only forced booking failure for testing the registered-patient fallback flow.
- * Disabled in production builds unless VITE_BOOKING_TEST_FAILURE=true.
+ * QA forced booking failure for the registered-patient fallback flow.
+ * Toggle BOOKING_TEST_FAILURE_ENABLED in code. Scenario details below.
  */
+export const BOOKING_TEST_FAILURE_ENABLED = true;
+
 export const BOOKING_TEST_FAILURE_SCENARIO = {
   civilId: "286101702331",
   doctorId: "dr-abubakr-elmardi",
-  /** ISO date (matches calendar selection for 04/06/2026 in en-GB display). */
+  /** ISO date (04/06/2026 in en-GB display). */
   date: "2026-06-04",
-  /** Matches slot_from_time values such as 10:20, 10:20:00 */
-  slotTimePrefix: "10:20",
+  /** Matches slot_from_time "09:30" (9:30 AM–10:00 AM morning slot). */
+  slotTimePrefix: "09:30",
   message:
-    "Test booking failure (forced): online booking could not be completed. Please submit your contact details for call center follow-up.",
+    "Online booking could not be completed. Please add your phone number and date of birth so our call center can confirm your appointment.",
 } as const;
-
-export const isBookingTestFailureEnabled = (): boolean => {
-  if (import.meta.env.PROD && import.meta.env.VITE_BOOKING_TEST_FAILURE !== "true") {
-    return false;
-  }
-  return import.meta.env.DEV || import.meta.env.VITE_BOOKING_TEST_FAILURE === "true";
-};
 
 const normalizeCivilId = (value: string) => value.replace(/\D/g, "").trim();
 
@@ -38,7 +33,7 @@ export type BookingTestFailureParams = {
 
 /** Returns a failure message when the QA scenario matches; otherwise null. */
 export function getBookingTestFailureMessage(params: BookingTestFailureParams): string | null {
-  if (!isBookingTestFailureEnabled()) return null;
+  if (!BOOKING_TEST_FAILURE_ENABLED) return null;
 
   const civilId = normalizeCivilId(params.civilId);
   if (civilId !== BOOKING_TEST_FAILURE_SCENARIO.civilId) return null;

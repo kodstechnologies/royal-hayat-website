@@ -24,16 +24,32 @@ export type ApiDepartmentNested = {
     _id?: string;
     name?: string;
     description?: string;
-    customSubspecialities?: { subHeading?: string; explanations?: string[]; _id?: string }[];
+    customSubspecialities?: {
+      _id?: string;
+      heading?: string;
+      subHeading?: string;
+      arabicHeading?: string;
+      arabicSubHeading?: string;
+      explanations?: string[];
+      arabicExplanations?: string[];
+    }[];
   }[];
   subspeciality?: {
     _id?: string;
     name?: string;
     description?: string;
-    customSubspecialities?: { subHeading?: string; explanations?: string[]; _id?: string }[];
+    customSubspecialities?: {
+      _id?: string;
+      heading?: string;
+      subHeading?: string;
+      arabicHeading?: string;
+      arabicSubHeading?: string;
+      explanations?: string[];
+      arabicExplanations?: string[];
+    }[];
   } | null;
   doctors?: ApiDoctorNested[];
-  customExplainantions?: { _id?: string; subHeading?: string; explaination?: string[] }[];
+  customExplainantions?: { _id?: string; heading?: string; subHeading?: string; explaination?: string[]; arabicHeading?: string; arabicSubHeading?: string; arabicExplaination?: string[] }[];
 };
 export type ApiCategoryWithNested = {
   _id: string;

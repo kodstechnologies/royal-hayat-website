@@ -39,6 +39,7 @@ const AboutUs = lazy(() => import("./pages/AboutUs.tsx"));
 const WorkWithUs = lazy(() => import("./pages/WorkWithUs.tsx"));
 const InternationalPatient = lazy(() => import("./pages/InternationalPatient.tsx"));
 const AppointmentRequest = lazy(() => import("./pages/AppointmentRequest.tsx"));
+const AppointmentBookingFallback = lazy(() => import("./pages/AppointmentBookingFallback.tsx"));
 const ContactUs = lazy(() => import("./pages/ContactUs.tsx"));
 const VerifyNationalId = lazy(() => import("./pages/VerifyNationalId.tsx"));
 const FAQ = lazy(() => import("./pages/FAQ.tsx"));
@@ -116,6 +117,7 @@ const App = () => (
                 />
                 <Route path="/international-patient" element={<InternationalPatient />} />
                 <Route path="/appointment-request" element={<AppointmentRequest />} />
+                <Route path="/appointment-request/fallback" element={<AppointmentBookingFallback />} />
                 <Route path="/contact-us" element={<ContactUs />} />
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/medical-rep-visit-booking" element={<MedicalRepVisitBooking />} />

@@ -34,6 +34,8 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks(id) {
+          // Only split large app data/locale modules. Avoid splitting node_modules
+          // React packages — that causes "createContext of undefined" at runtime.
           if (!id.includes("node_modules")) {
             if (id.includes("/src/data/doctors")) return "data-doctors";
             if (id.includes("/src/data/departmentDetails")) return "data-department-details";
@@ -41,14 +43,7 @@ export default defineConfig(({ mode }) => ({
             if (id.includes("/src/i18n/en")) return "i18n-en";
             if (id.includes("/src/data/featuredDoctors")) return "data-featured-doctors";
             if (id.includes("/src/data/doctorsWithClinicCodes")) return "data-booking-doctors";
-            return undefined;
           }
-          if (id.includes("framer-motion")) return "vendor-motion";
-          if (id.includes("@tanstack/react-query")) return "vendor-query";
-          if (id.includes("react-router")) return "vendor-router";
-          if (id.includes("lucide-react")) return "vendor-icons";
-          if (id.includes("react-dom") || id.includes("/react/")) return "vendor-react";
-          return "vendor";
         },
       },
     },

@@ -3,7 +3,6 @@ import { CheckCircle2, Search, Stethoscope } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import type { DoctorWithClinicCode as Doctor } from "@/data/doctorsWithClinicCodes";
 import { pageVariants } from "../types";
-
 type DoctorSelectionProps = {
   isAr: boolean;
   lang: string;
@@ -24,7 +23,6 @@ type DoctorSelectionProps = {
   step: number;
   resolveDeptIdForDoctor: (doc: Doctor) => string | null;
 };
-
 const DoctorSelection = ({
   isAr,
   lang,
@@ -46,10 +44,8 @@ const DoctorSelection = ({
   resolveDeptIdForDoctor,
 }: DoctorSelectionProps) => {
   const navigate = useNavigate();
-
   const docList = bookingPathDoctor ? filteredAllDoctors : doctors;
   const displayList = showAllDoctors || doctorSearchTrimmed ? docList : docList.slice(0, 6);
-
   return (
     <motion.div
       key="s1"
@@ -211,5 +207,4 @@ const DoctorSelection = ({
     </motion.div>
   );
 };
-
 export default DoctorSelection;

@@ -6,22 +6,17 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { ChevronDown } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-
 const FAQ = () => {
   const { t, lang } = useLanguage();
   const location = useLocation();
   const [activeTab, setActiveTab] = useState<'faq' | 'disclaimer' | 'terms'>('faq');
-
   useEffect(() => {
     const hash = location.hash;
     if (hash === '#disclaimer') setActiveTab('disclaimer');
     else if (hash === '#terms') setActiveTab('terms');
     else setActiveTab('faq');
-    
-    // Scroll to top when tab changes
     window.scrollTo(0, 0);
   }, [location.hash]);
-
   const faqs = [
     { q: t("faqQ1"), a: t("faqA1") },
     { q: t("faqQ2"), a: t("faqA2") },
@@ -30,26 +25,21 @@ const FAQ = () => {
     { q: t("faqQ5"), a: t("faqA5") },
     { q: t("faqQ6"), a: t("faqA6") },
   ];
-
   const [openIndex, setOpenIndex] = useState<number | null>(null);
-
   const getPageTitle = () => {
     if (activeTab === 'disclaimer') return t("disclaimerTitle");
     if (activeTab === 'terms') return t("termsPrivacy");
     return t("faqTitle");
   };
-
   const getHeroLabel = () => {
     if (activeTab === 'disclaimer') return lang === 'ar' ? 'إخلاء المسؤولية' : 'Disclaimer';
     if (activeTab === 'terms') return lang === 'ar' ? 'الشروط والخصوصية' : 'Terms & Privacy';
     return t("faq");
   };
-
   return (
     <div className="min-h-screen bg-background">
       <Header />
-
-      {/* Hero */}
+      {}
       <section className="pt-40 pb-16 bg-primary">
         <div className="container mx-auto px-6 text-center">
           <ScrollAnimationWrapper>
@@ -58,15 +48,13 @@ const FAQ = () => {
           </ScrollAnimationWrapper>
         </div>
       </section>
-
-      {/* FAQ Section */}
+      {}
       {activeTab === 'faq' && (
         <section className="py-20" id="faq">
           <div className="container mx-auto px-6 max-w-3xl">
             <ScrollAnimationWrapper>
               <h2 className="text-2xl font-serif text-foreground mb-8">{t("faqGeneral")}</h2>
             </ScrollAnimationWrapper>
-
             <div className="space-y-4">
               {faqs.map((faq, i) => (
                 <ScrollAnimationWrapper key={i} delay={i * 0.05}>
@@ -88,8 +76,7 @@ const FAQ = () => {
           </div>
         </section>
       )}
-
-      {/* Disclaimer Section */}
+      {}
       {activeTab === 'disclaimer' && (
         <section className="py-20 bg-background" id="disclaimer">
           <div className="container mx-auto px-6 max-w-3xl">
@@ -100,8 +87,7 @@ const FAQ = () => {
           </div>
         </section>
       )}
-
-      {/* Terms Section */}
+      {}
       {activeTab === 'terms' && (
         <section className="py-20 bg-background" id="terms">
           <div className="container mx-auto px-6 max-w-3xl">
@@ -119,11 +105,9 @@ const FAQ = () => {
           </div>
         </section>
       )}
-
       <Footer />
       <ScrollToTop />
     </div>
   );
 };
-
 export default FAQ;

@@ -8,7 +8,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
-
 type HospitalityServicesProps = {
   gardeniaHallImages: string[];
   alJouriHallImages: string[];
@@ -18,7 +17,6 @@ type HospitalityServicesProps = {
   suiteCarouselImagesByIndex: Record<number, string[]>;
   inRoomEventGalleryImages: string[];
 };
-
 const HospitalityServices = ({
   gardeniaHallImages,
   alJouriHallImages,
@@ -47,11 +45,9 @@ const HospitalityServices = ({
   const [babySlide, setBabySlide] = useState(0);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const [eventBookingOpen, setEventBookingOpen] = useState(false);
-
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, [section]);
-
   const babyImages = [
     "https://royal-hayat.s3.eu-central-1.amazonaws.com/baby-images/WhatsApp+Image+2026-05-12+at+2.39.52+PM+(1).jpeg",
     "https://royal-hayat.s3.eu-central-1.amazonaws.com/baby-images/WhatsApp+Image+2026-05-12+at+2.39.52+PM.jpeg",
@@ -61,7 +57,6 @@ const HospitalityServices = ({
     "https://royal-hayat.s3.eu-central-1.amazonaws.com/fifth-floor/WhatsApp+Image+2026-06-02+at+2.17.44+PM.jpeg",
   ];
   const activeSuiteImages = suiteCarouselImagesByIndex[activeSuite] ?? suiteCarouselImagesByIndex[6];
-
   useEffect(() => {
     if (activeSuite === 0) return;
     const timer = window.setInterval(() => {
@@ -69,11 +64,9 @@ const HospitalityServices = ({
     }, 5000);
     return () => window.clearInterval(timer);
   }, [activeSuite, activeSuiteImages.length]);
-
   useEffect(() => {
     setSuiteSlide(0);
   }, [activeSuite]);
-
   useEffect(() => {
     if (activeHall !== "gardenia" || gardeniaHallImages.length <= 1) return;
     const timer = window.setInterval(() => {
@@ -81,7 +74,6 @@ const HospitalityServices = ({
     }, 5000);
     return () => window.clearInterval(timer);
   }, [activeHall, gardeniaHallImages.length]);
-
   useEffect(() => {
     if (activeHall !== "aljouri" || alJouriHallImages.length <= 1) return;
     const timer = window.setInterval(() => {
@@ -89,7 +81,6 @@ const HospitalityServices = ({
     }, 5000);
     return () => window.clearInterval(timer);
   }, [activeHall, alJouriHallImages.length]);
-
   useEffect(() => {
     if (activeSuite !== 0) return;
     const timer = window.setInterval(() => {
@@ -97,7 +88,6 @@ const HospitalityServices = ({
     }, 5000);
     return () => window.clearInterval(timer);
   }, [activeSuite, orchidSuiteImages.length]);
-
   useEffect(() => {
     if (spaImages.length <= 1) return;
     const timer = window.setInterval(() => {
@@ -105,7 +95,6 @@ const HospitalityServices = ({
     }, 5000);
     return () => window.clearInterval(timer);
   }, [spaImages.length]);
-
   useEffect(() => {
     if (cafeImages.length <= 1) return;
     const timer = window.setInterval(() => {
@@ -113,7 +102,6 @@ const HospitalityServices = ({
     }, 5000);
     return () => window.clearInterval(timer);
   }, [cafeImages.length]);
-
   useEffect(() => {
     if (fifthFloorCafeImages.length <= 1) return;
     const timer = window.setInterval(() => {
@@ -121,7 +109,6 @@ const HospitalityServices = ({
     }, 5000);
     return () => window.clearInterval(timer);
   }, [fifthFloorCafeImages.length]);
-
   useEffect(() => {
     if (babyImages.length <= 1) return;
     const timer = window.setInterval(() => {
@@ -129,12 +116,10 @@ const HospitalityServices = ({
     }, 5000);
     return () => window.clearInterval(timer);
   }, [babyImages.length]);
-
   const hallsNav = [
     { id: "gardenia", label: isAr ? "قاعة جاردينيا للاحتفالات" : "Gardenia Banquet Hall" },
     { id: "aljouri", label: isAr ? "قاعة الجوري للاحتفالات" : "Al Jouri Banquet Hall" },
   ];
-
   const suitesData = [
     {
       name: isAr ? "جناح رويال أوركيد" : "Royale Orchid Suite",
@@ -359,14 +344,11 @@ const HospitalityServices = ({
       phoneDisplay: isAr ? "+965 2536 0581" : "+96525360581",
     },
   ];
-
   const currentSuite = suitesData[activeSuite];
-
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107]">
       <Header />
-
-      {/* Hero */}
+      {}
       <section className="py-8 md:py-10 bg-primary/5">
         <div className="container mx-auto px-6 text-center">
           <ScrollAnimationWrapper>
@@ -381,8 +363,7 @@ const HospitalityServices = ({
           </ScrollAnimationWrapper>
         </div>
       </section>
-
-      {/* Introduction */}
+      {}
       {showAll && <section className="py-4">
         <div className="container mx-auto px-6 max-w-7xl">
           <ScrollAnimationWrapper>
@@ -402,7 +383,6 @@ const HospitalityServices = ({
               </>)}
             </div>
           </ScrollAnimationWrapper>
-
           <div className="mt-8 text-center">
             <button
               type="button"
@@ -413,17 +393,11 @@ const HospitalityServices = ({
               {isAr ? "اضغط لحجز مناسبتك" : "Book your Event Online"}
             </button>
           </div>
-
-          {/* <div className="mt-10 aspect-video bg-muted/30 rounded-2xl border border-border flex items-center justify-center">
-            <div className="text-center">
-              <Video className="w-10 h-10 text-muted-foreground/50 mx-auto mb-2" />
-              <p className="font-body text-sm text-muted-foreground text-justify">{isAr ? "فيديو ترويجي للخدمات الفاخرة قريباً" : "Luxury Services promotional video coming soon"}</p>
-            </div>
-          </div> */}
+          {
+}
         </div>
       </section>}
-
-      {/* ===== OUR LUXURY HALLS ===== */}
+      {}
       {show("halls") && <section className="py-6 bg-white">
         <div className="container mx-auto px-6 max-w-7xl">
           <ScrollAnimationWrapper>
@@ -437,12 +411,11 @@ const HospitalityServices = ({
               ))}
             </div>
           </ScrollAnimationWrapper>
-
-          {/* Gardenia */}
+          {}
           {activeHall === "gardenia" && (
             <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} key="gardenia">
               <div className="grid lg:grid-cols-2 gap-10 items-start">
-                {/* LEFT — carousel */}
+                {}
                 <div className="relative">
                   <div className="relative aspect-[5/4] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
                     <AnimatePresence initial={false}>
@@ -486,8 +459,7 @@ const HospitalityServices = ({
                     </span>
                   </div>
                 </div>
-
-                {/* RIGHT — content */}
+                {}
                 <ScrollAnimationWrapper>
                   <div>
                     <h3 className="text-xl font-serif text-foreground mb-4">{isAr ? "قاعة جاردينيا للاحتفالات" : "Gardenia Banquet Hall"}</h3>
@@ -537,12 +509,11 @@ const HospitalityServices = ({
               </div>
             </motion.div>
           )}
-
-          {/* Al Jouri */}
+          {}
           {activeHall === "aljouri" && (
             <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} key="aljouri">
               <div className="grid lg:grid-cols-2 gap-10 items-start">
-                {/* LEFT — carousel */}
+                {}
                 <div className="relative">
                   <div className="relative aspect-[5/4] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
                     <AnimatePresence initial={false}>
@@ -586,8 +557,7 @@ const HospitalityServices = ({
                     </span>
                   </div>
                 </div>
-
-                {/* RIGHT — content */}
+                {}
                 <ScrollAnimationWrapper>
                   <div>
                     <h3 className="text-xl font-serif text-foreground mb-4">{isAr ? "قاعة الجوري للاحتفالات" : "Al Jouri Banquet Hall"}</h3>
@@ -620,13 +590,9 @@ const HospitalityServices = ({
               </div>
             </motion.div>
           )}
-
-
-
         </div>
       </section>}
-
-      {/* ===== AL LIWAN BISTRO ===== */}
+      {}
       {section === "cafe" && <section className="py-6">
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="lg:hidden flex items-center gap-3 mb-4">
@@ -681,7 +647,6 @@ const HospitalityServices = ({
                 </span>
               </div>
             </div>
-
             <ScrollAnimationWrapper className="order-3 lg:order-1">
               <div>
                 <div className="hidden lg:flex items-center gap-3 mb-4">
@@ -715,8 +680,7 @@ const HospitalityServices = ({
           </div>
         </div>
       </section>}
-
-      {/* ===== ELEMENTS SPA ===== */}
+      {}
       {section === "spa" && <section className="py-6 bg-primary/5">
         <div className="container mx-auto px-6 max-w-7xl">
           <div className="grid lg:grid-cols-2 gap-10 items-start">
@@ -765,7 +729,6 @@ const HospitalityServices = ({
                 </span>
               </div>
             </div>
-
             <ScrollAnimationWrapper>
               <div>
                 <div className="flex items-center gap-3 mb-4">
@@ -801,10 +764,7 @@ const HospitalityServices = ({
           </div>
         </div>
       </section>}
-
-
-
-      {/* ===== OUR LUXURY SUITES ===== */}
+      {}
       {show("suites") && <section className="py-6 bg-primary/5">
         <div className="container mx-auto px-6 max-w-7xl">
           <ScrollAnimationWrapper>
@@ -820,7 +780,6 @@ const HospitalityServices = ({
                 : "Choose from seven distinctive suite categories, each named after a flower and designed to offer a unique experience."}
             </p>
           </ScrollAnimationWrapper>
-
           <div className="flex flex-wrap justify-center gap-2 mb-10">
             {suitesData.map((s, i) => (
               <button key={i} onClick={() => setActiveSuite(i)}
@@ -829,7 +788,6 @@ const HospitalityServices = ({
               </button>
             ))}
           </div>
-
           <motion.div key={activeSuite} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}>
             {activeSuite !== 0 ? (
               <div className="grid lg:grid-cols-2 gap-10 items-start">
@@ -874,7 +832,6 @@ const HospitalityServices = ({
                     </span>
                   </div>
                 </div>
-
                 <div>
                   <h3 className="text-xl font-serif text-foreground mb-2">{currentSuite.name}</h3>
                   <p className="font-body text-xs text-accent tracking-wide uppercase mb-4">{currentSuite.area}</p>
@@ -882,7 +839,6 @@ const HospitalityServices = ({
                   {"desc2" in currentSuite && currentSuite.desc2 && (
                     <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify mb-6">{currentSuite.desc2}</p>
                   )}
-
                   {currentSuite.highlights && (
                     <div className="space-y-2 mb-6 text-justify">
                       {isAr && <h4 className="font-serif text-base text-foreground mb-2">مميزات الجناح</h4>}
@@ -894,7 +850,6 @@ const HospitalityServices = ({
                       ))}
                     </div>
                   )}
-
                   {currentSuite.dimensions && (
                     <div className="mb-6 text-justify">
                       <h4 className="font-serif text-base text-foreground mb-2">{isAr ? "مساحات الجناح" : "Suite Dimensions:"}</h4>
@@ -908,7 +863,6 @@ const HospitalityServices = ({
                       </div>
                     </div>
                   )}
-
                   <div className="mb-6 text-justify">
                     <h4 className="font-serif text-base text-foreground mb-3">
                       {"amenitiesTitle" in currentSuite && currentSuite.amenitiesTitle
@@ -926,7 +880,6 @@ const HospitalityServices = ({
                       ))}
                     </div>
                   </div>
-
                   <div className="flex items-center gap-2 mt-6">
                     <Phone className="w-4 h-4 text-accent" />
                     <p className="font-body text-sm text-foreground text-justify">
@@ -940,7 +893,7 @@ const HospitalityServices = ({
               </div>
             ) : (
               <>
-                {/* Row 1: Text left, Image right (like Al Liwan Bistro) */}
+                {}
                 <div className="grid lg:grid-cols-2 gap-10 items-start">
                   <div className="rounded-2xl overflow-hidden border border-border shadow-md h-[340px] order-2 lg:order-2">
                     {activeSuite === 0 ? (
@@ -966,7 +919,6 @@ const HospitalityServices = ({
                     <h3 className="text-xl font-serif text-foreground mb-2">{currentSuite.name}</h3>
                     <p className="font-body text-xs text-accent tracking-wide uppercase mb-4">{currentSuite.area}</p>
                     <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify mb-4">{currentSuite.desc}</p>
-
                     {currentSuite.highlights && (
                       <div className="space-y-2 mb-4">
                         {isAr && <h4 className="font-serif text-base text-foreground mb-2">مميزات الجناح</h4>}
@@ -978,11 +930,9 @@ const HospitalityServices = ({
                         ))}
                       </div>
                     )}
-
                     {currentSuite.extraDesc && (
                       <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify mb-4">{currentSuite.extraDesc}</p>
                     )}
-
                     {currentSuite.dimensions && (
                       <div className="mb-4">
                         <h4 className="font-serif text-base text-foreground mb-2">{isAr ? "مساحات الجناح" : "Suite Dimensions:"}</h4>
@@ -998,8 +948,7 @@ const HospitalityServices = ({
                     )}
                   </div>
                 </div>
-
-                {/* Additional carousel + details for Royale Orchid */}
+                {}
                 <div className="grid lg:grid-cols-2 gap-10 items-start mt-16">
                   <div className="relative">
                     <div className="relative aspect-[5/4] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
@@ -1042,10 +991,8 @@ const HospitalityServices = ({
                       </span>
                     </div>
                   </div>
-
                   <div>
                     <p className="font-body text-xs text-accent tracking-wide uppercase mb-4">{currentSuite.area}</p>
-
                     <div className="mb-6">
                       <h4 className="font-serif text-base text-foreground mb-3">
                         {isAr ? "مرافق وخدمات الجناح" : "In-Suite Features & Amenities:"}
@@ -1059,7 +1006,6 @@ const HospitalityServices = ({
                         ))}
                       </div>
                     </div>
-
                     {currentSuite.hospitality && (
                       <div className="mb-6">
                         <h4 className="font-serif text-base text-foreground mb-2">
@@ -1075,7 +1021,6 @@ const HospitalityServices = ({
                         </div>
                       </div>
                     )}
-
                     <div className="flex items-center gap-2 mt-6">
                       <Phone className="w-4 h-4 text-accent" />
                       <p className="font-body text-sm text-foreground text-justify">
@@ -1089,7 +1034,6 @@ const HospitalityServices = ({
                 </div>
               </>
             )}
-
             {currentSuite.hall && (
               <div className="bg-popover border border-border/50 rounded-2xl p-6 mt-16">
                 <h4 className="font-serif text-base text-foreground mb-2">{currentSuite.hall.title}</h4>
@@ -1123,11 +1067,10 @@ const HospitalityServices = ({
           </motion.div>
         </div>
       </section>}
-
-      {/* In-Suite Celebration Experiences — compact two-column */}
+      {}
       {showAll && <section className="py-6 bg-muted/20">
         <div className="container mx-auto px-6 max-w-6xl">
-          {/* Mobile header */}
+          {}
           <div className="lg:hidden flex items-center gap-3 mb-4">
             <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
               <Sparkles className="w-6 h-6 text-primary" />
@@ -1136,9 +1079,8 @@ const HospitalityServices = ({
               {isAr ? "تجارب الاحتفال داخل الأجنحة" : "In-Suite Celebration Experiences"}
             </h2>
           </div>
-
           <div className="grid lg:grid-cols-2 gap-10 items-start">
-            {/* LEFT — image carousel */}
+            {}
             <div className="relative order-1">
               <div className="relative aspect-[5/4] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
                 <AnimatePresence initial={false}>
@@ -1193,11 +1135,10 @@ const HospitalityServices = ({
                 </div>
               )}
             </div>
-
-            {/* RIGHT — content */}
+            {}
             <ScrollAnimationWrapper className="order-2">
               <div>
-                {/* Desktop header */}
+                {}
                 <div className="hidden lg:flex items-center gap-3 mb-4">
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                     <Sparkles className="w-6 h-6 text-primary" />
@@ -1206,13 +1147,11 @@ const HospitalityServices = ({
                     {isAr ? "تجارب الاحتفال داخل الأجنحة" : "In-Suite Celebration Experiences"}
                   </h2>
                 </div>
-
                 <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify mb-5">
                   {isAr
                     ? "اصنعوا لحظات لا تُنسى واحتفلوا بمناسباتكم الخاصة بكل خصوصية وراحة داخل أجنحتكم الفاخرة، حيث تلتقي الأجواء الدافئة بالضيافة الراقية لتمنحكم تجربة استثنائية مليئة بالذكريات الجميلة."
                     : "Prefer a more private and intimate celebration? We offer the perfect opportunity to host unforgettable moments right within the comfort and elegance of your suite."}
                 </p>
-
                 {isAr ? (
                   <>
                     <h3 className="font-serif text-base text-foreground mb-2">خدماتنا</h3>
@@ -1302,7 +1241,6 @@ const HospitalityServices = ({
                     </div>
                   </>
                 )}
-
                 <a href="tel:+96525360573" className="inline-flex items-center gap-2 text-accent font-body text-sm hover:underline font-semibold">
                   <Phone className="w-4 h-4" />
                   +965 2536 0573
@@ -1312,8 +1250,7 @@ const HospitalityServices = ({
           </div>
         </div>
       </section>}
-
-      {/* ===== ELEMENTS SPA (Show All Order) ===== */}
+      {}
       {showAll && <section className="py-6 bg-primary/5">
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-10 items-start">
@@ -1362,7 +1299,6 @@ const HospitalityServices = ({
                 </span>
               </div>
             </div>
-
             <ScrollAnimationWrapper className="order-1 lg:order-1">
               <div>
                 <div className="flex items-center gap-3 mb-4">
@@ -1398,8 +1334,7 @@ const HospitalityServices = ({
           </div>
         </div>
       </section>}
-
-      {/* ===== AL LIWAN BISTRO (Show All Order) ===== */}
+      {}
       {showAll && <section className="py-6 bg-white">
         <div className="container mx-auto px-6 max-w-7xl">
           <div className="lg:hidden flex items-center gap-3 mb-4">
@@ -1454,7 +1389,6 @@ const HospitalityServices = ({
                 </span>
               </div>
             </div>
-
             <ScrollAnimationWrapper className="order-3 lg:order-2">
               <div>
                 <div className="hidden lg:flex items-center gap-3 mb-4">
@@ -1488,8 +1422,7 @@ const HospitalityServices = ({
           </div>
         </div>
       </section>}
-
-      {/* ===== 5TH FLOOR CAFÉ (Show All Order) — layout aligned with FifthFloorCafe page */}
+      {}
       {showAll && <section className="py-6 bg-muted/10">
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-10 items-start">
@@ -1532,7 +1465,6 @@ const HospitalityServices = ({
                 </p>
               </div>
             </ScrollAnimationWrapper>
-
             <div className="relative order-1 lg:order-2">
               <div className="relative aspect-[5/4] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
                 <AnimatePresence initial={false}>
@@ -1581,19 +1513,18 @@ const HospitalityServices = ({
           </div>
         </div>
       </section>}
-      {/* ===== NEWBORN PHOTOGRAPHY ===== */}
+      {}
       {showAll && <section className="py-6">
         <div className="container mx-auto px-6 max-w-6xl">
-          {/* Mobile header */}
+          {}
           <div className="lg:hidden flex items-center gap-3 mb-4">
             <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
               <Baby className="w-6 h-6 text-accent" />
             </div>
             <h2 className="text-2xl font-serif text-foreground">{isAr ? "خدمات تصوير حديثي الولادة" : "Newborn Photography Services"}</h2>
           </div>
-
           <div className="grid lg:grid-cols-2 gap-10 items-start">
-            {/* LEFT — carousel */}
+            {}
             <div className="relative order-1 lg:order-1">
               <div className="relative aspect-[5/4] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
                 <AnimatePresence initial={false}>
@@ -1637,8 +1568,7 @@ const HospitalityServices = ({
                 </span>
               </div>
             </div>
-
-            {/* RIGHT — content */}
+            {}
             <ScrollAnimationWrapper className="order-2 lg:order-2">
               <div>
                 <div className="hidden lg:flex items-center gap-3 mb-4">
@@ -1671,7 +1601,6 @@ const HospitalityServices = ({
         </div>
       </section>}
       <EventBookingModal isOpen={eventBookingOpen} isAr={isAr} onClose={() => setEventBookingOpen(false)} />
-
       <AnimatePresence>
         {lightboxImage && (
           <motion.div
@@ -1698,11 +1627,9 @@ const HospitalityServices = ({
           </motion.div>
         )}
       </AnimatePresence>
-
       <Footer />
       <ScrollToTop />
     </div>
   );
 };
-
 export default HospitalityServices;

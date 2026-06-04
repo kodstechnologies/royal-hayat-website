@@ -8,20 +8,17 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "sonner";
 import axios from "axios";
 import { postEnquiry } from "@/api/enquiry";
-
 const ContactUs = () => {
   const { lang } = useLanguage();
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [form, setForm] = useState({ fullName: "", email: "", phone: "", department: "", message: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
-
   const departments = [
     "Obstetrics & Gynecology", "Pediatrics", "Internal Medicine", "Cardiology",
     "Orthopedics", "Dermatology", "Ophthalmology", "ENT", "Neurology",
     "General Surgery", "Pulmonology", "Gastroenterology", "General Inquiry"
   ];
-
   const validate = () => {
     const e: Record<string, string> = {};
     if (!form.fullName.trim()) e.fullName = lang === "ar" ? "الاسم مطلوب" : "Full name is required";
@@ -32,10 +29,8 @@ const ContactUs = () => {
     setErrors(e);
     return Object.keys(e).length === 0;
   };
-
   const handleSubmit = async () => {
     if (!validate()) return;
-
     try {
       setIsSubmitting(true);
       await postEnquiry(form);
@@ -47,7 +42,6 @@ const ContactUs = () => {
         axios.isAxiosError(error)
           ? error.response?.data?.message || error.response?.data?.error || error.message
           : null;
-
       toast.error(
         backendMessage ||
         (lang === "ar" ? "تعذر إرسال الرسالة. يرجى المحاولة مرة أخرى." : "Failed to send message. Please try again.")
@@ -56,17 +50,13 @@ const ContactUs = () => {
       setIsSubmitting(false);
     }
   };
-
   const updateField = (field: string, value: string) => {
     setForm(prev => ({ ...prev, [field]: value }));
     setErrors(prev => ({ ...prev, [field]: "" }));
   };
-
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
       <Header />
-
-      {/* Hero */}
       <div className="bg-primary py-14 text-center">
         <motion.h1 initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
           className="text-3xl md:text-5xl font-serif text-primary-foreground mb-3">
@@ -76,17 +66,15 @@ const ContactUs = () => {
           {lang === "ar" ? "أي أسئلة؟ يسعدنا مساعدتك!" : "Any questions? We would be happy to help you!"}
         </p>
       </div>
-
       <div className="container mx-auto px-6 py-12 max-w-6xl">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-          {/* Left: Contact Info */}
+          {}
           <div className="space-y-6">
             <motion.h2 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
               className="text-2xl font-serif text-foreground mb-6">
               {lang === "ar" ? "تواصل معنا" : "Get In Touch"}
             </motion.h2>
-
-            {/* Hotline */}
+            {}
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
               className="bg-popover rounded-2xl p-6 border border-border">
               <div className="flex items-center gap-4">
@@ -106,8 +94,7 @@ const ContactUs = () => {
                 </div>
               </div>
             </motion.div>
-
-            {/* Email */}
+            {}
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
               className="bg-popover rounded-2xl p-6 border border-border">
               <div className="flex items-center gap-4">
@@ -124,8 +111,7 @@ const ContactUs = () => {
                 </div>
               </div>
             </motion.div>
-
-            {/* Address */}
+            {}
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
               className="bg-popover rounded-2xl p-6 border border-border">
               <div className="flex items-start gap-4">
@@ -144,8 +130,7 @@ const ContactUs = () => {
                 </div>
               </div>
             </motion.div>
-
-            {/* Google Map */}
+            {}
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
               className="rounded-2xl overflow-hidden border border-border h-[250px]">
               <iframe
@@ -156,8 +141,7 @@ const ContactUs = () => {
               />
             </motion.div>
           </div>
-
-          {/* Right: Contact Form */}
+          {}
           <div>
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
               className="bg-popover rounded-2xl p-6 md:p-8 border border-border shadow-sm sticky top-24">
@@ -186,7 +170,6 @@ const ContactUs = () => {
                   <p className="text-muted-foreground font-body text-xs mb-6">
                     {lang === "ar" ? "املأ النموذج أدناه وسنرد عليك قريباً" : "Fill the form below and we'll respond shortly"}
                   </p>
-
                   <div className="space-y-4">
                     <div>
                       <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
@@ -197,7 +180,6 @@ const ContactUs = () => {
                         className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 ${errors.fullName ? "border-destructive" : "border-border"}`} />
                       {errors.fullName && <p className="font-body text-xs text-destructive mt-1">{errors.fullName}</p>}
                     </div>
-
                     <div>
                       <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
                         {lang === "ar" ? "البريد الإلكتروني" : "Email"} <span className="text-destructive">*</span>
@@ -207,7 +189,6 @@ const ContactUs = () => {
                         className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 ${errors.email ? "border-destructive" : "border-border"}`} />
                       {errors.email && <p className="font-body text-xs text-destructive mt-1">{errors.email}</p>}
                     </div>
-
                     <div>
                       <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
                         {lang === "ar" ? "الهاتف" : "Phone"}
@@ -217,7 +198,6 @@ const ContactUs = () => {
                         className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 ${errors.phone ? "border-destructive" : "border-border"}`} />
                       {errors.phone && <p className="font-body text-xs text-destructive mt-1">{errors.phone}</p>}
                     </div>
-
                     <div>
                       <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
                         {lang === "ar" ? "القسم" : "Department"}
@@ -228,7 +208,6 @@ const ContactUs = () => {
                         {departments.map(d => <option key={d} value={d}>{d}</option>)}
                       </select>
                     </div>
-
                     <div>
                       <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
                         {lang === "ar" ? "الرسالة" : "Message"} <span className="text-destructive">*</span>
@@ -239,7 +218,6 @@ const ContactUs = () => {
                       {errors.message && <p className="font-body text-xs text-destructive mt-1">{errors.message}</p>}
                     </div>
                   </div>
-
                   <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} onClick={handleSubmit} disabled={isSubmitting}
                     className="w-full mt-6 bg-primary text-primary-foreground py-3.5 rounded-xl font-body text-sm tracking-widest uppercase hover:bg-primary/90 transition-all flex items-center justify-center gap-2">
                     <Send className="w-4 h-4" />
@@ -251,11 +229,9 @@ const ContactUs = () => {
           </div>
         </div>
       </div>
-
       <Footer />
       <ScrollToTop />
     </div>
   );
 };
-
 export default ContactUs;

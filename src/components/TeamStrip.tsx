@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
-
 const teamMembers = [
   { initials: "MA", name: "Mohammed Al-Khaled" },
   { initials: "HA", name: "Dr. Hanan Al-Shammari" },
@@ -9,7 +8,6 @@ const teamMembers = [
   { initials: "NA", name: "Noor Al-Ahmad" },
   { initials: "SA", name: "Dr. Salem Al-Dosari" },
 ];
-
 const TeamStrip = () => {
   return (
     <section className="py-12 bg-background border-t border-border">
@@ -33,5 +31,4 @@ const TeamStrip = () => {
     </section>
   );
 };
-
 export default TeamStrip;

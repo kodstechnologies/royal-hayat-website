@@ -3,11 +3,9 @@ import { motion } from "framer-motion";
 import { Building2, Stethoscope, Brain } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
-
 const HomeBookingBlock = () => {
   const navigate = useNavigate();
   const { lang, t } = useLanguage();
-
   const cards = [
     {
       icon: Building2,
@@ -34,7 +32,6 @@ const HomeBookingBlock = () => {
       iconColor: "text-foreground",
     },
   ];
-
   return (
     <section className="py-14 bg-primary" id="book">
       <div className="container mx-auto px-6">
@@ -48,7 +45,6 @@ const HomeBookingBlock = () => {
             </p>
           </div>
         </ScrollAnimationWrapper>
-
         <ScrollAnimationWrapper delay={0.1}>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 max-w-4xl mx-auto">
             {cards.map((card) => (
@@ -72,5 +68,4 @@ const HomeBookingBlock = () => {
     </section>
   );
 };
-
 export default HomeBookingBlock;

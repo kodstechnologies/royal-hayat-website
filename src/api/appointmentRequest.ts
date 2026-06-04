@@ -1,9 +1,7 @@
 import api from "./axiosInstance";
-
 export type AppointmentRequestType =
   | "doctor unavailability request"
   | "first time visitor request";
-
 export type CreateAppointmentRequestPayload = {
   fullname: string;
   phone: string;
@@ -25,7 +23,6 @@ export type CreateAppointmentRequestPayload = {
   symptoms?: string[];
   email?: string;
 };
-
 export const createAppointmentRequest = async (
   data: CreateAppointmentRequestPayload,
 ) => {

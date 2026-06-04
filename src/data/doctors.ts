@@ -22,14 +22,10 @@ export interface Doctor {
   availableOnline?: boolean;
   image?: string;
   hideBooking?: boolean;
-  /** Mongo department `_id` when returned from API (populated or raw ObjectId). */
   departmentId?: string;
-  /** Legacy/External doctor ID (provider code) used for appointments. */
   providerCode?: string;
-  /** Scheduling / subspecialty clinic code (when used for availability). */
   clinicCode?: string;
 }
-
 export const doctors: Doctor[] = [
   {
     id: 'dr-mustafa-alfiki',
@@ -1166,7 +1162,7 @@ export const doctors: Doctor[] = [
   },
   {
     id: 'dr-musheera-m-ali',
-    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/dr-musheera-ali.png', ///////////////////
+    image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/dr-musheera-ali.png',
     name: 'Dr. Musheera M. Ali', nameAr: 'د. مشيرة محمد علي',
     specialty: 'Dermatology', specialtyAr: 'الأمراض الجلدية',
     department: 'Dermatology', departmentAr: 'الأمراض الجلدية',
@@ -1525,7 +1521,6 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-husain-alqattan',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/hussain-alqattan.png',
-
     name: 'Dr. Husain Alqattan', nameAr: ' القطان د. حسين',
     specialty: 'La Cosmetique', specialtyAr: 'التجميل',
     department: 'La Cosmetique', departmentAr: 'التجميل',
@@ -1593,7 +1588,6 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-mohammad-razzak',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/razzak34.png',
-
     name: 'Dr. Mohammad Razzak', nameAr: 'د. محمد عبدالرزاق',
     specialty: 'La Cosmetique', specialtyAr: 'التجميل',
     department: 'La Cosmetique', departmentAr: 'التجميل',
@@ -1645,7 +1639,6 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-sarah-al-youha',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/sarah-al-youha.png',
-
     name: 'Dr. Sarah Al Youha', nameAr: 'د. ســارة اليوحـــة',
     specialty: 'La Cosmetique', specialtyAr: 'التجميل',
     department: 'La Cosmetique', departmentAr: 'التجميل',
@@ -1708,7 +1701,6 @@ export const doctors: Doctor[] = [
   {
     id: 'prof-omar-el-khateeb',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/omar1.png',
-
     name: 'Prof. Omar El Khateeb', nameAr: 'البروفيسور د. عمر الخطيب',
     specialty: 'Anesthesia', specialtyAr: 'التخدير والعناية المركزة',
     department: 'Anesthesia', departmentAr: 'التخدير والعناية المركزة',
@@ -1757,7 +1749,6 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-hamid-ghaderi',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/hamid-ghaderi.png',
-
     name: 'Dr. Hamid Ghaderi', nameAr: 'د. حميد القادري',
     specialty: 'Anesthesia', specialtyAr: 'التخدير والعناية المركزة',
     department: 'Anesthesia', departmentAr: 'التخدير والعناية المركزة',
@@ -1815,7 +1806,6 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-yasser-haggag',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/yasser1.png',
-
     name: 'Dr. Yasser Haggag', nameAr: 'د. ياسر حجاج',
     specialty: 'Anesthesia', specialtyAr: 'التخدير والعناية المركزة',
     department: 'Anesthesia', departmentAr: 'التخدير والعناية المركزة',
@@ -1864,9 +1854,8 @@ export const doctors: Doctor[] = [
     clinicCode: "R002ANA"
   },
   {
-    id: 'dr-ahmad-abdulrahman-al-mulla',//////// same name issue
+    id: 'dr-ahmad-abdulrahman-al-mulla',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/ahmed-al-mulla.png',
-
     name: 'Dr. Ahmad Abdulrahman Al Mulla', nameAr: 'د. أحمد عبدالرحمن المُلا',
     specialty: 'Pediatric', specialtyAr: 'طب الأطفال',
     department: 'Pediatric', departmentAr: 'طب الأطفال',
@@ -1903,7 +1892,6 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-ahmad-al-mosawi',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/mosawi1.png',
-
     name: 'Dr. Ahmad Al Mosawi', nameAr: 'د. أحمــد الموســوي',
     specialty: 'Pediatric', specialtyAr: 'طب الأطفال',
     department: 'Pediatric', departmentAr: 'طب الأطفال',
@@ -1949,7 +1937,6 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-mohammad-ebrahim',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/mohamed-ebrahim.png',
-
     name: 'Dr. Mohammad Ebrahim', nameAr: 'د.محمد ابراهيم',
     specialty: 'Pediatric', specialtyAr: 'طب الأطفال',
     department: 'Pediatric', departmentAr: 'طب الأطفال',
@@ -2002,7 +1989,6 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-rajendra-c-mishra',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/rajendra-mishra.png',
-
     name: 'Dr. Rajendra C. Mishra', nameAr: 'د. راجنــدرا ميســرا',
     specialty: 'Pediatric', specialtyAr: 'طب الأطفال',
     department: 'Pediatric', departmentAr: 'طب الأطفال',
@@ -2054,7 +2040,6 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-wasmi-al-fadhli',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/wasmi-alfadhli.png',
-
     name: 'Dr. Wasmi Al Fadhli', nameAr: 'د. وسمــي الفضلــي',
     specialty: 'Pediatric', specialtyAr: 'طب الأطفال',
     department: 'Pediatric', departmentAr: 'طب الأطفال',
@@ -2109,7 +2094,6 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-ehab-atteya',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/ehab2.png',
-
     name: 'Dr. Ehab Atteya', nameAr: 'د. إيهــاب عطيــة',
     specialty: 'Pediatric', specialtyAr: 'طب الأطفال',
     department: 'Pediatric', departmentAr: 'طب الأطفال',
@@ -2155,7 +2139,6 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-fahed-abdulaziz-aljaser',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/fahed-aljaser.png',
-
     name: 'Dr. Fahed Abdulaziz Aljaser', nameAr: 'د. فهد عبدالعزيز الجاسر',
     specialty: 'Pediatric', specialtyAr: 'طب الأطفال',
     department: 'Pediatric', departmentAr: 'طب الأطفال',
@@ -2203,13 +2186,10 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'FA', color: 'bg-accent/80',
     symptoms: [],
-
-
   },
   {
     id: 'dr-omar-alkandari',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/omar-alkandari.png',
-
     name: 'Dr. Omar Alkandari', nameAr: 'د. عمر الكندري',
     specialty: 'Pediatric', specialtyAr: 'طب الأطفال',
     department: 'Pediatric', departmentAr: 'طب الأطفال',
@@ -2249,7 +2229,6 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-roland-waked',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/roland.png',
-
     name: 'Dr. Roland Waked', nameAr: 'د. رولانــد واكــد',
     specialty: 'Pediatric', specialtyAr: 'طب الأطفال',
     department: 'Pediatric', departmentAr: 'طب الأطفال',
@@ -2300,7 +2279,6 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-adel-al-ali',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/adel-al-ali.png',
-
     name: 'Dr. Adel Al-ali', nameAr: 'الدكتور عادل العلي',
     specialty: 'Radiology', specialtyAr: 'الأشعة التشخيصية',
     department: 'Radiology', departmentAr: 'الأشعة التشخيصية',
@@ -2358,7 +2336,6 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-osama-al-saeed',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/ossama1.png',
-
     name: 'Dr. Osama Al Saeed', nameAr: 'د. أسامه السعيد',
     specialty: 'Radiology', specialtyAr: 'الأشعة التشخيصية',
     department: 'Radiology', departmentAr: 'الأشعة التشخيصية',
@@ -2407,7 +2384,6 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-yomna-abdelaal-husseiny',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/yomna3.png',
-
     name: 'Dr. Yomna Abdelaal Husseiny', nameAr: 'د. يمنى عبدالعال حسينى',
     specialty: 'Radiology', specialtyAr: 'الأشعة التشخيصية',
     department: 'Radiology', departmentAr: 'الأشعة التشخيصية',
@@ -2460,7 +2436,6 @@ export const doctors: Doctor[] = [
   {
     id: 'farah-hachem',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/farah2.png',
-
     name: 'Farah Hachem', nameAr: 'فـرح هاشـم',
     specialty: 'Nutricare', specialtyAr: 'التغذية السريرية',
     department: 'Nutricare', departmentAr: 'التغذية السريرية',
@@ -2501,7 +2476,6 @@ export const doctors: Doctor[] = [
   {
     id: 'fatme-khreis',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/fatme-khreis.png',
-
     name: 'Fatme Khreis', nameAr: 'فاطمــة خريــس',
     specialty: 'Nutricare', specialtyAr: 'التغذية السريرية',
     department: 'Nutricare', departmentAr: 'التغذية السريرية',
@@ -2540,7 +2514,6 @@ export const doctors: Doctor[] = [
   {
     id: 'heba-ben-salamah',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/heba1.png',
-
     name: 'Heba Ben Salamah', nameAr: 'هبه بن سلامة',
     specialty: 'Nutricare', specialtyAr: 'التغذية السريرية',
     department: 'Nutricare', departmentAr: 'التغذية السريرية',
@@ -2603,7 +2576,6 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-mazen-alessa',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/Mazen34.png',
-
     name: 'Dr. Mazen Alessa', nameAr: 'د. مــازن العيســى',
     specialty: 'Neonatal', specialtyAr: 'حديثي الولادة',
     department: 'Neonatal', departmentAr: 'حديثي الولادة',
@@ -2660,7 +2632,6 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-mohamad-hassoun',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/mohamad-hassoun.png',
-
     name: 'Dr. Mohamad Hassoun', nameAr: 'Dr. Mohamad Hassoun',
     specialty: 'Neonatal', specialtyAr: 'حديثي الولادة',
     department: 'Neonatal', departmentAr: 'حديثي الولادة',
@@ -2716,7 +2687,6 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-deepak-vasudev',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/deepak.png',
-
     name: 'Dr. Deepak Vasudev', nameAr: 'د. ديبـاك ڤاسوديـڤ',
     specialty: 'Neonatal', specialtyAr: 'حديثي الولادة',
     department: 'Neonatal', departmentAr: 'حديثي الولادة',
@@ -2769,7 +2739,6 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-eyhab-bader',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/eyhab-bader.png',
-
     name: 'Dr. Eyhab Bader', nameAr: 'د. إيهـاب بـدر',
     specialty: 'Neonatal', specialtyAr: 'حديثي الولادة',
     department: 'Neonatal', departmentAr: 'حديثي الولادة',
@@ -2820,7 +2789,6 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-mirvat-sameer-ghanem',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/dr-mirvat-sameer-ghanem.png',
-
     name: 'Dr. Mirvat Sameer Ghanem', nameAr: 'د. مـيــرفــت غــانـــم',
     specialty: 'Pharmacy', specialtyAr: 'الصيدلية',
     department: 'Pharmacy', departmentAr: 'الصيدلية',
@@ -2881,7 +2849,6 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-anood-yousef-aljasser-alrajahi',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/dr-anood.png',
-
     name: 'Dr. Anood Yousef Aljasser Alrajahi', nameAr: 'د. عنود يوسف الجاسر الراجحي',
     specialty: 'Dental', specialtyAr: 'طب الأسنان',
     department: 'Dental', departmentAr: 'طب الأسنان',
@@ -2928,9 +2895,8 @@ export const doctors: Doctor[] = [
     symptoms: [],
   },
   {
-    id: 'dr-khaled-n-al-awadhi', //////
+    id: 'dr-khaled-n-al-awadhi',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/dr-khalid.png',
-
     name: 'Dr. Khaled N. Al Awadhi', nameAr: 'د. خالد نعمة العوضي',
     specialty: 'Dental', specialtyAr: 'طب الأسنان',
     department: 'Dental', departmentAr: 'طب الأسنان',
@@ -2977,9 +2943,8 @@ export const doctors: Doctor[] = [
     symptoms: [],
   },
   {
-    id: 'dr-salman-ben-nakhi',////////
+    id: 'dr-salman-ben-nakhi',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/salman.png',
-
     name: 'Dr. Salman Ben Nakhi', nameAr: 'د. سلمان بن نخي',
     specialty: 'Dental', specialtyAr: 'طب الأسنان',
     department: 'Dental', departmentAr: 'طب الأسنان',
@@ -3028,7 +2993,6 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-sanketa-patil',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/Sanketa1.png',
-
     name: 'Dr. Sanketa Patil', nameAr: 'د. سانكيتـة باتيـل',
     specialty: 'Dental', specialtyAr: 'طب الأسنان',
     department: 'Dental', departmentAr: 'طب الأسنان',
@@ -3071,7 +3035,6 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-nourah-adnan-saad-alrubaian',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/noorah1.png',
-
     name: 'Dr. Nourah Adnan Saad Alrubaian', nameAr: 'د.نوره عدنان سعد الربيعان',
     specialty: 'Dental', specialtyAr: 'طب الأسنان',
     department: 'Dental', departmentAr: 'طب الأسنان',
@@ -3120,7 +3083,6 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-rajesh-r-patil',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/rajesh.png',
-
     name: 'Dr. Rajesh R. Patil', nameAr: 'د. راجيش ر. باتيل',
     specialty: 'Dental', specialtyAr: 'طب الأسنان',
     department: 'Dental', departmentAr: 'طب الأسنان',
@@ -3673,7 +3635,7 @@ export const doctors: Doctor[] = [
     availableOnline: false,
   },
   {
-    id: 'dr-nourah-al-ibrahim', //////////////
+    id: 'dr-nourah-al-ibrahim',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/noura34.png',
     providerCode: 'PT082',
     clinicCode: 'R002OBG',
@@ -3949,7 +3911,6 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-elisavet-angelaki',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/Elisavet1.png',
-
     name: 'Dr. Elisavet Angelaki', nameAr: 'الدكتورة إليزافيت أنجيلاكي',
     specialty: 'IVF', specialtyAr: 'أطفال الأنابيب',
     department: 'Reproductive Medicine & IVF', departmentAr: 'الطب التناسلي وأطفال الأنابيب',
@@ -4065,47 +4026,9 @@ export const doctors: Doctor[] = [
     symptoms: [],
     availableOnline: false,
   },
-  // {
-  //   id: 'dr-mohammad-h-jaragh',
-  //   image: '/images/doctors/mohamad-jaragh.png',
-
-  //   name: 'Dr. Mohammad H. Jaragh', nameAr: 'د. محمد جراغ',
-  //   specialty: 'Laboratory', specialtyAr: 'المختبر',
-  //   department: 'Laboratory', departmentAr: 'المختبر',
-  //   title: 'Laboratory Consultant (Pathology)',
-  //   titleAr: 'إستشاري مختبرات (باثولوجى)',
-  //   bio: 'Dr. Mohammad H. Jaragh is a specialist in the Laboratory department at Royale Hayat Hospital.',
-  //   bioAr: 'د. محمد جراغ متخصص في قسم المختبر في مستشفى رويال حياة.',
-  //   qualifications: [
-  //     'Graduate of Kuwait university faculty of medicine',
-  //     'Fellow of Royale colleague of physicians of Canada',
-  //     'Fellow of the international academy of cytology',
-  //   ],
-  //   qualificationsAr: [
-  //     'خريج كلية الطب جامعة الكويت',
-  //     'زميل كلية رويال للأطباء في كندا',
-  //     'زميل الأكاديمية الدولية لعلم الخلايا',
-  //   ],
-  //   expertise: [
-  //     'Fine needle aspiration of tumors',
-  //     'Microscopic diagnosis of tissue',
-  //     'Microscopic diagnosis of cells',
-  //     'Microscopic diagnosis of Tumors',
-  //   ],
-  //   expertiseAr: [
-  //     'شفط الأورام بإبرة رفيعة',
-  //     'التشخيص المجهري للأنسجة',
-  //     'التشخيص المجهري للخلايا',
-  //     'التشخيص المجهري للأورام',
-  //   ],
-  //   languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
-  //   initials: 'MJ', color: 'bg-accent',
-  //   symptoms: [],
-  // },
   {
     id: 'dr-salah-al-wuhaib',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/salah-al-wuhaib.png',
-
     name: 'Dr. Salah Al-wuhaib', nameAr: 'د. صلاح الوهيب',
     specialty: 'Laboratory', specialtyAr: 'المختبر',
     department: 'Laboratory', departmentAr: 'المختبر',
@@ -4154,13 +4077,10 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'SA', color: 'bg-primary/90',
     symptoms: [],
-    //   clinicCode:"R002PED",
-    // providerCode:"PT036"
   },
   {
     id: 'dr-alaa-abdullah',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/dr-alaa.png',
-
     name: 'Dr. Alaa Abdullah', nameAr: 'د. آلاء عبـدالله',
     specialty: 'Laboratory', specialtyAr: 'المختبر',
     department: 'Laboratory', departmentAr: 'المختبر',
@@ -4202,7 +4122,6 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-najat-rouhaldeen',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/najat-rouhaldeen.png',
-
     name: 'Dr. Najat Rouhaldeen', nameAr: 'د نجاة روح الدين',
     specialty: 'Laboratory', specialtyAr: 'المختبر',
     department: 'Laboratory', departmentAr: 'المختبر',
@@ -4265,7 +4184,6 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-abdullah-albader',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/abdullah-al-bader.png',
-
     name: 'Dr. Abdullah Albader', nameAr: 'د.عبدالله خالد البدر',
     specialty: 'ENT (Ear, Nose & Throat)', specialtyAr: 'الأنف والأذن والحنجرة',
     department: 'ENT (Ear, Nose & Throat)', departmentAr: 'الأنف والأذن والحنجرة',
@@ -4334,7 +4252,6 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-hamoud-abdullah-alarouj',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/hamod2.png',
-
     name: 'Dr. Hamoud Abdullah Alarouj', nameAr: 'د. حمـود عبـد اللـه العـروج',
     specialty: 'ENT (Ear, Nose & Throat)', specialtyAr: 'الأنف والأذن والحنجرة',
     department: 'ENT (Ear, Nose & Throat)', departmentAr: 'الأنف والأذن والحنجرة',
@@ -4397,7 +4314,6 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-hanafi-abdelsalam',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/Hanafi34.png',
-
     name: 'Dr. Hanafi Abdelsalam', nameAr: 'د. حنفي عبدالسلام',
     specialty: 'ENT (Ear, Nose & Throat)', specialtyAr: 'الأنف والأذن والحنجرة',
     department: 'ENT (Ear, Nose & Throat)', departmentAr: 'الأنف والأذن والحنجرة',
@@ -4446,7 +4362,6 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-maha-al-gilani',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/WhatsApp+Image+2026-05-12+at+5.04.41+PM.jpeg',
-
     name: 'Dr. Maha Al-gilani', nameAr: 'د. مـهــا الـجـيـلانــي',
     specialty: 'ENT (Ear, Nose & Throat)', specialtyAr: 'الأنف والأذن والحنجرة',
     department: 'ENT (Ear, Nose & Throat)', departmentAr: 'الأنف والأذن والحنجرة',
@@ -4515,62 +4430,18 @@ export const doctors: Doctor[] = [
     initials: 'MA', color: 'bg-primary',
     symptoms: [],
   },
-  // {
-  //   id: 'dr-hartmut-meyer',
-  //   image: '/images/doctors/',
-
-  //   name: 'Dr. Hartmut Meyer', nameAr: 'د. هارتموت ماير',
-  //   specialty: 'La Cosmetique', specialtyAr: 'التجميل',
-  //   department: 'La Cosmetique', departmentAr: 'التجميل',
-  //   title: 'Consultant Plastic Surgeon',
-  //   titleAr: 'استشاري جراحة التجميل',
-  //   bio: 'Dr. Hartmut Meyer is a consultant plastic surgeon at Royale Hayat Hospital.',
-  //   bioAr: 'د. هارتموت ماير استشاري جراحة التجميل في مستشفى رويال حياة.',
-  //   qualifications: [],
-  //   qualificationsAr: [],
-  //   expertise: [],
-  //   expertiseAr: [],
-  //   languages: ['English', 'Arabic', 'German'], languagesAr: ['الإنجليزية', 'العربية', 'الألمانية'],
-  //   initials: 'HM', color: 'bg-accent/70',
-  //   symptoms: [],
-  //   availableOnline: false,
-  // },
-  // {
-  //   id: 'dr-salman-al-sabah',
-  //   image: '/images/doctors/salman.png',
-
-  //   name: 'Dr. Salman Al Sabah', nameAr: 'د. سلمان الصباح',
-  //   specialty: 'General Surgery', specialtyAr: 'الجراحة العامة',
-  //   department: 'General Surgery', departmentAr: 'الجراحة العامة',
-  //   title: 'Consultant General Surgery',
-  //   titleAr: 'استشاري جراحة عامة',
-  //   bio: 'Dr. Salman Al Sabah is a consultant general surgeon at Royale Hayat Hospital.',
-  //   bioAr: 'د. سلمان الصباح استشاري جراحة عامة في مستشفى رويال حياة.',
-  //   qualifications: [],
-  //   qualificationsAr: [],
-  //   expertise: [],
-  //   expertiseAr: [],
-  //   languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
-  //   initials: 'SS', color: 'bg-primary/80',
-  //   symptoms: [],
-  //   availableOnline: false,
-  // },
 ];
-
-// Helper functions
 export function getDoctorsByDepartment(): Record<string, Doctor[]> {
   const grouped: Record<string, Doctor[]> = {};
   for (const doc of doctors) {
     if (!grouped[doc.department]) grouped[doc.department] = [];
     grouped[doc.department].push(doc);
   }
-  // Sort each department's doctors alphabetically by name
   for (const dept in grouped) {
     grouped[dept].sort((a, b) => a.name.localeCompare(b.name));
   }
   return grouped;
 }
-
 export function searchDoctorsBySymptom(query: string): Doctor[] {
   const q = query.toLowerCase();
   return doctors.filter((doc) => {
@@ -4584,8 +4455,6 @@ export function searchDoctorsBySymptom(query: string): Doctor[] {
     return searchFields.some((field) => field.toLowerCase().includes(q));
   });
 }
-
-/** @deprecated Use `featuredDoctors` from `@/data/featuredDoctors` to avoid loading the full catalog. */
 export function getFeaturedDoctors(limit = 12): Doctor[] {
   return doctors
     .filter(

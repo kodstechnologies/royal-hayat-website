@@ -4,7 +4,6 @@ import ScrollToTop from "@/components/ScrollToTop";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { motion } from "framer-motion";
-
 const initiatives = [
   {
     titleKey: "csrInit1Title",
@@ -39,16 +38,13 @@ const initiatives = [
     alt: "Women's Health International Conference",
   },
 ] as const;
-
 const CSR = () => {
   const { lang, t } = useLanguage();
   const isAr = lang === "ar";
-
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
       <Header />
-
-      {/* Hero */}
+      {}
       <section className="pt-16 pb-12 md:pt-24 md:pb-16 bg-primary/5">
         <div className="container mx-auto px-6 text-center">
           <ScrollAnimationWrapper>
@@ -62,8 +58,7 @@ const CSR = () => {
           </ScrollAnimationWrapper>
         </div>
       </section>
-
-      {/* Video Section */}
+      {}
       <section className="pb-16 bg-primary/5">
         <div className="container mx-auto px-6">
           <motion.div
@@ -95,8 +90,7 @@ const CSR = () => {
           </div>
         </div>
       </section>
-
-      {/* Initiatives */}
+      {}
       <section className="py-16 bg-background">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto space-y-10">
@@ -124,7 +118,6 @@ const CSR = () => {
           </div>
         </div>
       </section>
-
       <style>{`
         .rtl-text {
           direction: rtl;
@@ -135,11 +128,9 @@ const CSR = () => {
           text-align: center;
         }
       `}</style>
-
       <Footer />
       <ScrollToTop />
     </div>
   );
 };
-
 export default CSR;

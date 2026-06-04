@@ -9,7 +9,6 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { loadDoctors, type Doctor } from "@/data/loadDoctors";
 import { departments, deptDoctorAliases, MAIN_CATEGORIES, type MainCategory } from "@/data/departments";
 import { Input } from "@/components/ui/input";
-
 const DoctorCard = memo(({ doc }: { doc: Doctor }) => {
   const { lang } = useLanguage();
   return (
@@ -55,7 +54,6 @@ const DoctorCard = memo(({ doc }: { doc: Doctor }) => {
   );
 });
 DoctorCard.displayName = "DoctorCard";
-
 const departmentDescriptions: Record<string, { en: string; ar: string }> = {
   "Obstetrics & Gynecology": { en: "Complete maternity care from prenatal through postpartum recovery. Our team provides expert guidance for high-risk pregnancies, minimally invasive gynecological procedures, and comprehensive family planning services.", ar: "رعاية أمومة شاملة من ما قبل الولادة حتى التعافي بعد الولادة. يقدم فريقنا إرشادات متخصصة لحالات الحمل عالية الخطورة وإجراءات نسائية طفيفة التوغل وخدمات تنظيم الأسرة الشاملة." },
   "Internal Medicine": { en: "Comprehensive diagnosis and treatment of complex adult diseases. Our internists specialize in managing chronic conditions, preventive health screenings, and coordinating multidisciplinary care for optimal patient outcomes.", ar: "تشخيص وعلاج شامل لأمراض البالغين المعقدة. يتخصص أطباؤنا في إدارة الحالات المزمنة والفحوصات الوقائية وتنسيق الرعاية متعددة التخصصات لتحقيق أفضل النتائج." },
@@ -75,33 +73,24 @@ const departmentDescriptions: Record<string, { en: string; ar: string }> = {
   "Laboratory": { en: "Comprehensive clinical laboratory and pathology services with rapid, accurate diagnostic testing. Our team includes histopathologists, microbiologists, and hematologists performing specialized analyses.", ar: "خدمات مختبر سريري وباثولوجي شاملة مع فحوصات تشخيصية سريعة ودقيقة. يضم فريقنا أخصائيي أنسجة وأحياء دقيقة وأمراض دم يجرون تحاليل متخصصة." },
   "ENT (Ear, Nose & Throat)": { en: "Expert care for conditions affecting the ear, nose, throat, head, and neck. Our ENT specialists provide surgical and non-surgical treatments for hearing disorders, sinus conditions, voice disorders, and head & neck tumors.", ar: "رعاية متخصصة لأمراض الأنف والأذن والحنجرة والرأس والرقبة. يقدم أخصائيونا علاجات جراحية وغير جراحية لاضطرابات السمع وأمراض الجيوب الأنفية واضطرابات الصوت وأورام الرأس والرقبة." },
 };
-
 const DepartmentRow = memo(({ department, departmentAr, docs }: { department: string; departmentAr: string; docs: Doctor[] }) => {
   const { lang } = useLanguage();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-
-  // Show arrows if more than 4 on desktop, or more than 1 on mobile
   const showArrows = docs.length > (isMobile ? 1 : 4);
-
   const scroll = (dir: "left" | "right") => {
     if (scrollRef.current) {
       const isMobile = window.innerWidth < 768;
-      // On mobile, scroll by card width (280) + large gap (80)
-      // On desktop, scroll card width (280) + gap (24)
       const amount = isMobile ? (280 + 80) : (280 + 24);
       scrollRef.current.scrollBy({ left: dir === "left" ? -amount : amount, behavior: "smooth" });
     }
   };
-
   const deptDesc = departmentDescriptions[department];
-
   return (
     <div className="mb-14">
       <div className="max-w-[1192px] mx-auto mb-6">
@@ -129,8 +118,7 @@ const DepartmentRow = memo(({ department, departmentAr, docs }: { department: st
             </button>
           </>
         )}
-
-        {/* Container centered on desktop, full width on mobile */}
+        {}
         <div className="max-w-[1192px] mx-auto overflow-hidden">
           <div
             ref={scrollRef}
@@ -138,12 +126,11 @@ const DepartmentRow = memo(({ department, departmentAr, docs }: { department: st
             style={{
               scrollbarWidth: "none",
               msOverflowStyle: "none",
-              // Precise padding to center 280px card on mobile:
               paddingLeft: "calc((100vw - 280px) / 2)",
               paddingRight: "calc((100vw - 280px) / 2)",
             }}
           >
-            {/* On desktop (md), we don't want the extreme padding, so we reset it via media-query-like logic or just standard classes */}
+            {}
             <style dangerouslySetInnerHTML={{
               __html: `
               @media (min-width: 768px) {
@@ -160,13 +147,11 @@ const DepartmentRow = memo(({ department, departmentAr, docs }: { department: st
   );
 });
 DepartmentRow.displayName = "DepartmentRow";
-
 const Doctors = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [doctorCatalog, setDoctorCatalog] = useState<Doctor[]>([]);
   const [catalogLoading, setCatalogLoading] = useState(true);
   const { lang, t } = useLanguage();
-
   useEffect(() => {
     let cancelled = false;
     void loadDoctors().then((list) => {
@@ -178,18 +163,13 @@ const Doctors = () => {
       cancelled = true;
     };
   }, []);
-
-  // Build dept → mainCategory lookup from departments data
   const deptToMainCategory = useMemo<Record<string, MainCategory>>(() => {
     const map: Record<string, MainCategory> = {};
     departments.forEach((d) => {
-      // Map by all alias names too
       map[d.name] = d.mainCategory;
     });
     return map;
   }, []);
-
-  // Same ordering as Departments.tsx / departments.ts (array index within catalog)
   const doctorDeptOrderIndex = useMemo(() => {
     const m = new Map<string, number>();
     departments.forEach((d, i) => {
@@ -202,10 +182,7 @@ const Doctors = () => {
     if (pharmacyIdx >= 0) m.set("Pharmacy", pharmacyIdx);
     return m;
   }, []);
-
   const DEPT_ORDER_FALLBACK = 100_000;
-
-  // dept name → mainCategory using doctor department field (canonical + deptDoctorAliases, then fuzzy)
   const getDeptMainCategory = useCallback((dept: string): MainCategory => {
     if (deptToMainCategory[dept]) return deptToMainCategory[dept];
     for (const d of departments) {
@@ -224,13 +201,11 @@ const Doctors = () => {
       "Pharmacy", "Al Safwa",
     ];
     const homeCare: string[] = ["Royale Home Health", "Physiotherapy", "Home Health"];
-
     if (clinicalSpeciality.some(a => dept.toLowerCase().includes(a.toLowerCase()) || a.toLowerCase().includes(dept.toLowerCase()))) return "Clinical Speciality";
     if (clinicalSupport.some(a => dept.toLowerCase().includes(a.toLowerCase()) || a.toLowerCase().includes(dept.toLowerCase()))) return "Clinical Support Service";
     if (homeCare.some(a => dept.toLowerCase().includes(a.toLowerCase()) || a.toLowerCase().includes(dept.toLowerCase()))) return "Home Care Service";
-    return "Clinical Speciality"; // default
+    return "Clinical Speciality";
   }, [deptToMainCategory]);
-
   const grouped = useMemo<Record<string, Doctor[]>>(() => {
     return doctorCatalog.reduce<Record<string, Doctor[]>>((acc, doctor) => {
       const key = doctor.department || "General";
@@ -239,9 +214,7 @@ const Doctors = () => {
       return acc;
     }, {});
   }, [doctorCatalog]);
-
   const allDoctors = useMemo(() => Object.values(grouped).flat(), [grouped]);
-
   const searchResults = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
     if (!query) return [];
@@ -254,13 +227,10 @@ const Doctors = () => {
       return searchableFields.some((field) => (field || "").toLowerCase().includes(query));
     });
   }, [allDoctors, searchQuery]);
-
   const isSearching = searchQuery.trim().length > 0;
   const locale = lang === "ar" ? "ar" : "en";
-
   const stripTitlePrefix = (name: string) =>
     name.replace(/^(dr|prof|professor)\.?\s+/i, "").trim();
-
   const sortedGroupedEntries = useMemo(() => {
     const sortDocsWithinDept = (dept: string, docs: Doctor[]) =>
       [...docs].sort((a, b) => {
@@ -274,9 +244,7 @@ const Doctors = () => {
           : lang === "ar" ? b.nameAr : b.name;
         return aKey.localeCompare(bKey, locale);
       });
-
     const orderOf = (dept: string) => doctorDeptOrderIndex.get(dept) ?? DEPT_ORDER_FALLBACK;
-
     return Object.entries(grouped)
       .filter(([, docs]) => Array.isArray(docs) && docs.length > 0)
       .map(([dept, docs]) => [dept, sortDocsWithinDept(dept, docs)] as const)
@@ -287,8 +255,6 @@ const Doctors = () => {
         return deptA.localeCompare(deptB, locale);
       });
   }, [grouped, lang, locale, doctorDeptOrderIndex]);
-
-  // Group department rows by main category
   const groupedByMainCategory = useMemo(() => {
     const result: Record<MainCategory, typeof sortedGroupedEntries> = {
       "Clinical Speciality": [],
@@ -301,11 +267,9 @@ const Doctors = () => {
     });
     return result;
   }, [sortedGroupedEntries, getDeptMainCategory]);
-
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
       <Header />
-
       <section className="py-16 md:py-24">
         <div className="container mx-auto px-4 md:px-6">
           {catalogLoading && (
@@ -314,14 +278,13 @@ const Doctors = () => {
               <span className="sr-only">Loading doctors...</span>
             </div>
           )}
-          {/* Header */}
+          {}
           <div className="text-center mb-12">
             <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-4">{t("ourTeam")}</p>
             <h1 className="text-3xl md:text-5xl font-serif text-foreground mb-4">{t("meetOurDoctors")}</h1>
             <p className="text-muted-foreground font-body max-w-lg mx-auto text-sm md:text-base">{t("findDoctor")}</p>
           </div>
-
-          {/* Search */}
+          {}
           <div className="max-w-2xl mx-auto mb-14">
             <div className="relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
@@ -333,8 +296,7 @@ const Doctors = () => {
               />
             </div>
           </div>
-
-          {/* Search results */}
+          {}
           {isSearching ? (
             <div>
               <h3 className="text-lg font-serif text-foreground mb-6">
@@ -355,14 +317,13 @@ const Doctors = () => {
               )}
             </div>
           ) : (
-            /* Main-category grouped departments */
             <div className="space-y-16">
               {MAIN_CATEGORIES.map((cat) => {
                 const entries = groupedByMainCategory[cat.key];
                 if (!entries || entries.length === 0) return null;
                 return (
                   <div key={cat.key}>
-                    {/* Category divider header */}
+                    {}
                     <div className="flex items-center gap-4 mb-10">
                       <div className="h-px flex-1 bg-border/50" />
                       <h2 className="text-base md:text-lg font-body font-bold tracking-[0.2em] md:tracking-[0.25em] uppercase text-accent whitespace-nowrap px-1">
@@ -370,7 +331,6 @@ const Doctors = () => {
                       </h2>
                       <div className="h-px flex-1 bg-border/50" />
                     </div>
-
                     {entries.map(([dept, docs]) => (
                       <DepartmentRow
                         key={dept}
@@ -386,11 +346,9 @@ const Doctors = () => {
           )}
         </div>
       </section>
-
       <Footer />
       <ScrollToTop />
     </div>
   );
 };
-
 export default Doctors;

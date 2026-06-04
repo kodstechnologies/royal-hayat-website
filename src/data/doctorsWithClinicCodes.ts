@@ -7,7 +7,6 @@ export interface DoctorWithClinicCode {
   department: string;
   departmentAr: string;
   departmentClinicCode?: string;
-  /** Subspecialty / scheduling code (may mirror departmentClinicCode). */
   clinicCode?: string;
   title: string;
   titleAr: string;
@@ -28,7 +27,6 @@ export interface DoctorWithClinicCode {
   departmentId?: string;
   providerCode?: string;
 }
-
 export const doctorsWithClinicCodes: DoctorWithClinicCode[] = [
   {
     id: 'dr-mustafa-alfiki',
@@ -436,8 +434,6 @@ export const doctorsWithClinicCodes: DoctorWithClinicCode[] = [
     providerCode: 'PT070',
     symptoms: [],
   },
-
-
   {
     id: 'dr-raed-al-swait',
     image: '/images/doctors/raed-alswait.png',
@@ -1082,7 +1078,6 @@ export const doctorsWithClinicCodes: DoctorWithClinicCode[] = [
     initials: 'FA',
     color: 'bg-accent/80',
     providerCode: 'PT069',
-    
     symptoms: [],
   },
   {
@@ -2721,13 +2716,9 @@ export const doctorsWithClinicCodes: DoctorWithClinicCode[] = [
     symptoms: [],
   },
 ];
-
-// Helper function to get doctors by department clinic code
 export const getDoctorsByClinicCode = (clinicCode: string): DoctorWithClinicCode[] => {
   return doctorsWithClinicCodes.filter(doctor => doctor.departmentClinicCode === clinicCode);
 };
-
-// Helper function to get doctors by department name
 export const getDoctorsByDepartment = (departmentName: string): DoctorWithClinicCode[] => {
   return doctorsWithClinicCodes.filter(doctor => doctor.department === departmentName);
 };

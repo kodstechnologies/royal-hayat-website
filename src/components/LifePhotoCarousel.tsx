@@ -2,46 +2,31 @@ import { useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight, ImageIcon, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
-
 export interface LifePhoto {
   src?: string;
   alt: string;
   caption?: string;
 }
-
 interface Props {
   title: string;
   subtitle?: string;
   photos: LifePhoto[];
-  /** auto-rotate interval in ms */
   interval?: number;
-  /** background tint for the section */
   variant?: "default" | "muted";
 }
-
-/**
- * Auto-sliding single-image carousel.
- * - Shows ONE card at a time, full-width
- * - Side arrows to navigate
- * - Pause on hover
- * - Placeholder tiles when an image src is missing
- */
 const LifePhotoCarousel = ({ title, subtitle, photos, interval = 4500, variant = "default" }: Props) => {
   const { lang } = useLanguage();
   const [index, setIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const total = photos.length;
-
   const next = useCallback(() => setIndex((p) => (p + 1) % total), [total]);
   const prev = useCallback(() => setIndex((p) => (p - 1 + total) % total), [total]);
-
   useEffect(() => {
     if (isPaused || total <= 1) return;
     const t = setInterval(next, interval);
     return () => clearInterval(t);
   }, [isPaused, next, interval, total]);
-
   useEffect(() => {
     if (total <= 1) return;
     const nextSrc = photos[(index + 1) % total]?.src;
@@ -49,10 +34,8 @@ const LifePhotoCarousel = ({ title, subtitle, photos, interval = 4500, variant =
     const img = new Image();
     img.src = nextSrc;
   }, [index, photos, total]);
-
   const current = photos[index];
   const isAr = lang === "ar";
-
   return (
     <section className={`py-16 ${variant === "muted" ? "bg-secondary/10" : "bg-background"}`}>
       <div className="container mx-auto px-6">
@@ -65,7 +48,6 @@ const LifePhotoCarousel = ({ title, subtitle, photos, interval = 4500, variant =
             <p className="text-muted-foreground font-body text-sm max-w-2xl mx-auto mt-3 text-center">{subtitle}</p>
           )}
         </div>
-
         <div
           className="relative max-w-4xl mx-auto"
           onMouseEnter={() => setIsPaused(true)}
@@ -107,7 +89,6 @@ const LifePhotoCarousel = ({ title, subtitle, photos, interval = 4500, variant =
               </motion.div>
             </AnimatePresence>
           </div>
-
           {total > 1 && (
             <>
               <button
@@ -128,8 +109,7 @@ const LifePhotoCarousel = ({ title, subtitle, photos, interval = 4500, variant =
               </button>
             </>
           )}
-
-          {/* counter */}
+          {}
           <div className="flex items-center justify-center gap-3 mt-5">
             <span className="font-body text-xs text-muted-foreground tracking-widest">
               {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
@@ -137,7 +117,6 @@ const LifePhotoCarousel = ({ title, subtitle, photos, interval = 4500, variant =
           </div>
         </div>
       </div>
-
       <AnimatePresence>
         {lightboxImage && (
           <motion.div
@@ -167,5 +146,4 @@ const LifePhotoCarousel = ({ title, subtitle, photos, interval = 4500, variant =
     </section>
   );
 };
-
 export default LifePhotoCarousel;

@@ -6,7 +6,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { loadDoctors, type Doctor } from "@/data/loadDoctors";
 import { deptDoctorAliases, departments as staticDepartments } from "@/data/departments";
-
 interface ServiceItem {
   num: string;
   name: string;
@@ -17,7 +16,6 @@ interface ServiceItem {
   department: string;
   subspecialties: { name: string; nameAr: string }[];
 }
-
 const services: ServiceItem[] = [
   {
     num: "01", name: "Obstetrics & Gynecology", nameAr: "التوليد وأمراض النساء",
@@ -216,13 +214,11 @@ const services: ServiceItem[] = [
     subspecialties: [],
   },
 ];
-
 type SpecializedRestoreState = {
   restoreExpandedIndex?: number;
   restoreSelectedSubByService?: Record<string, string>;
   restoreScrollY?: number;
 };
-
 const SpecializedCare = () => {
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-80px" });
@@ -237,7 +233,6 @@ const SpecializedCare = () => {
   const INITIAL_COUNT = 6;
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [doctorCatalog, setDoctorCatalog] = useState<Doctor[]>([]);
-
   useEffect(() => {
     let cancelled = false;
     void loadDoctors().then((list) => {
@@ -247,7 +242,6 @@ const SpecializedCare = () => {
       cancelled = true;
     };
   }, []);
-
   const normalizeDeptName = (value: string) =>
     value.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "");
   const staticOrderMap = useMemo(
@@ -274,23 +268,19 @@ const SpecializedCare = () => {
         }),
     [staticOrderMap],
   );
-
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-
   useEffect(() => {
     const state = location.state as SpecializedRestoreState | null;
     const hasRestore =
       typeof state?.restoreScrollY === "number" || state?.restoreExpandedIndex != null;
     if (!hasRestore || restoreAppliedKeyRef.current === location.key) return;
-
     restoreAppliedKeyRef.current = location.key;
     restoreScrollYRef.current =
       typeof state.restoreScrollY === "number" ? state.restoreScrollY : 0;
-
     if (state.restoreExpandedIndex != null) {
       setExpandedIndex(state.restoreExpandedIndex);
     }
@@ -298,14 +288,11 @@ const SpecializedCare = () => {
       setSelectedSubByService(state.restoreSelectedSubByService);
     }
   }, [location.key, location.state]);
-
   useEffect(() => {
     if (restoreScrollYRef.current == null) return;
-
     const scrollY = restoreScrollYRef.current;
     const serviceNum =
       expandedIndex != null ? sortedServices[expandedIndex]?.num : undefined;
-
     const scrollToSavedPosition = () => {
       if (scrollY > 0) {
         window.scrollTo({ top: scrollY, left: 0, behavior: "auto" });
@@ -319,7 +306,6 @@ const SpecializedCare = () => {
         document.getElementById("services")?.scrollIntoView({ block: "start", behavior: "auto" });
       }
     };
-
     scrollToSavedPosition();
     const raf = window.requestAnimationFrame(scrollToSavedPosition);
     const timerMid = window.setTimeout(scrollToSavedPosition, 300);
@@ -327,14 +313,12 @@ const SpecializedCare = () => {
       scrollToSavedPosition();
       restoreScrollYRef.current = null;
     }, 700);
-
     return () => {
       window.cancelAnimationFrame(raf);
       window.clearTimeout(timerMid);
       window.clearTimeout(timerLate);
     };
   }, [expandedIndex, sortedServices]);
-
   const getSpecializedCareReturnState = () => ({
     fromSpecializedCare: true,
     returnPath: "/",
@@ -342,17 +326,14 @@ const SpecializedCare = () => {
     restoreSelectedSubByService: selectedSubByService,
     restoreScrollY: window.scrollY,
   });
-
   const openDoctorProfile = (docId: string) => {
     navigate(`/doctors/${docId}`, {
       state: getSpecializedCareReturnState(),
     });
   };
-
   const openMedicalService = (path: string) => {
     navigate(path, { state: getSpecializedCareReturnState() });
   };
-
   const getDeptDoctors = (department: string): Doctor[] => {
     const aliases = deptDoctorAliases[department] || [department];
     return doctorCatalog.filter((d) =>
@@ -361,12 +342,9 @@ const SpecializedCare = () => {
       .sort((a, b) => a.name.localeCompare(b.name))
       .slice(0, 3);
   };
-
   const scrollDoctors = (direction: "left" | "right") => {
     if (scrollRef.current) {
       const isMobile = window.innerWidth < 768;
-      // On mobile, card is 280 and gap is 80
-      // On desktop, card is 280 and gap is 16 (gap-4)
       const amount = isMobile ? (280 + 80) : (280 + 16);
       scrollRef.current.scrollBy({
         left: direction === "left" ? -amount : amount,
@@ -374,30 +352,22 @@ const SpecializedCare = () => {
       });
     }
   };
-
   const handleExpand = (index: number) => {
     setExpandedIndex(expandedIndex === index ? null : index);
   };
-
   const visibleServices = sortedServices.slice(0, INITIAL_COUNT);
-
-  // Reorder: expanded card first, rest below
   const reorderedServices = (expandedIndex !== null && !isMobile)
     ? [sortedServices[expandedIndex], ...visibleServices.filter((s) => sortedServices.indexOf(s) !== expandedIndex)]
     : visibleServices;
-
   const getOriginalIndex = (service: ServiceItem) =>
     sortedServices.findIndex((s) => s.num === service.num);
-
   const isInFirstSix = (origIdx: number) => origIdx < INITIAL_COUNT;
-
   const slugify = (value: string) =>
     value
       .toLowerCase()
       .replace(/&/g, "and")
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "");
-
   const getDepartmentSlug = (service: ServiceItem) => {
     const matchedDept = staticDepartments.find(
       (d) =>
@@ -406,7 +376,6 @@ const SpecializedCare = () => {
     );
     return matchedDept?.slug;
   };
-
   const getSubSlug = (service: ServiceItem, subName: string) => {
     const departmentSlug = getDepartmentSlug(service);
     if (!departmentSlug) return slugify(subName);
@@ -414,7 +383,6 @@ const SpecializedCare = () => {
     const matchedSub = dept?.subs?.find((sub) => sub.name.toLowerCase() === subName.toLowerCase());
     return slugify(matchedSub?.name ?? subName);
   };
-
   return (
     <section className="py-16 md:py-20 bg-background" id="services" ref={sectionRef}>
       <div className="container mx-auto px-4 md:px-6">
@@ -431,7 +399,6 @@ const SpecializedCare = () => {
             </p>
           </ScrollAnimationWrapper>
         </div>
-
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
           {reorderedServices.map((s) => {
             const origIdx = getOriginalIndex(s);
@@ -449,10 +416,8 @@ const SpecializedCare = () => {
               const allDeptDoctors = doctorCatalog.filter((d) =>
                 allTerms.some(a => d.department.includes(a) || d.specialty.includes(a))
               );
-
               if (selectedSubSlug && s.subspecialties && s.subspecialties.length > 0) {
                 const subSpecialtyDoctorMap: Record<string, string[]> = {
-                  // Internal Medicine subs
                   "cardiology": ["alturki", "turki"],
                   "nephrology": ["qallaf"],
                   "gastroenterology": ["swait", "jaser"],
@@ -461,25 +426,20 @@ const SpecializedCare = () => {
                   "clinical-nutrition-and-dietetics": ["hachem", "khreis", "salamah"],
                   "respiratory-clinic-pulmonology": ["alia", "ibrahim"],
                   "allergy-and-immunology": ["othman", "yassmin"],
-                  // OB/GYN subs
                   "cosmetic-gynecology": ["abubakr", "elmardi", "nada", "samar", "nagaty"],
                   "gynecologic-oncology": ["nourah-al-ibrahim"],
                   "urogynecology": ["abubakr", "elmardi", "nada"],
-                  "women-s-health": [], // All OBGYN doctors
+                  "women-s-health": [],
                   "physiotherapy": [],
                   "parent-and-childbirth-education": [],
-                  // General & Laparoscopic Surgery subs
                   "obesity-bariatric-surgery": ["ahmed-al-mulla", "mulla", "humoud", "alrasheedi", "hussein", "faour", "sulaiman", "almazeedi"],
                   "breast-surgical-oncology": ["noha", "alsaleh"],
                   "abdominal-wall-reconstruction": ["humoud", "alrasheedi", "sarah", "youha"],
                   "nutrition-and-diet-surgery": ["hachem", "khreis", "salamah"],
                 };
-
-                // Try explicit map first
                 const mapKey = Object.keys(subSpecialtyDoctorMap).find(
                   (k) => selectedSubSlug.includes(k) || k.includes(selectedSubSlug)
                 );
-
                 if (mapKey && subSpecialtyDoctorMap[mapKey].length > 0) {
                   const keywords = subSpecialtyDoctorMap[mapKey];
                   const filtered = allDeptDoctors.filter((doc) =>
@@ -491,8 +451,6 @@ const SpecializedCare = () => {
                     );
                   }
                 }
-
-                // Fallback: keyword match on title/specialty
                 const selectedSub = s.subspecialties.find(
                   (sub) => getSubSlug(s, sub.name) === selectedSubSlug
                 );
@@ -509,15 +467,12 @@ const SpecializedCare = () => {
                   }
                 }
               }
-
               return [...allDeptDoctors]
                 .sort((a, b) => (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en"))
                 .slice(0, 3);
             })();
-
             const showImageCard = isInFirstSix(origIdx);
             const departmentSlug = getDepartmentSlug(s);
-
             return (
               <motion.div
                 key={s.num}
@@ -545,7 +500,6 @@ const SpecializedCare = () => {
                       exit={{ opacity: 0 }}
                     >
                       {showImageCard ? (
-                        /* First 6: Image cards */
                         <>
                           <div className="relative h-52 md:h-60 overflow-hidden">
                             <img
@@ -570,7 +524,6 @@ const SpecializedCare = () => {
                           </div>
                         </>
                       ) : (
-                        /* Remaining: compact pill style */
                         <div className="p-4 md:p-5 flex items-center gap-3">
                           <span className="text-lg font-serif text-primary/40 flex-shrink-0"></span>
                           <div className="min-w-0">
@@ -583,7 +536,6 @@ const SpecializedCare = () => {
                       )}
                     </motion.div>
                   ) : (
-                    /* Expanded Panel */
                     <motion.div
                       key="expanded"
                       layout
@@ -594,7 +546,7 @@ const SpecializedCare = () => {
                       className="flex flex-col lg:flex-row"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      {/* Left: Image + Info */}
+                      {}
                       <div className="lg:w-2/5 relative">
                         <div className="relative h-72 lg:h-full min-h-[380px] overflow-hidden">
                           <img
@@ -624,13 +576,11 @@ const SpecializedCare = () => {
                               </button>
                             )}
                           </div>
-                         
                         </div>
                       </div>
-
-                      {/* Right: Sub-specialties + Doctors */}
+                      {}
                       <div className="lg:w-3/5 p-6 lg:p-8 flex flex-col">
-                        {/* Close button */}
+                        {}
                         <div className="flex justify-between items-start mb-6">
                           <div>
                             {s.subspecialties.length > 0 && (
@@ -673,8 +623,7 @@ const SpecializedCare = () => {
                             <X className="w-4 h-4 text-muted-foreground" />
                           </button>
                         </div>
-
-                        {/* Doctors */}
+                        {}
                         {deptDoctors.length > 0 && (
                           <div className="mt-auto">
                             <p className="text-accent text-xs tracking-[0.2em] uppercase font-body mb-4">
@@ -712,9 +661,9 @@ const SpecializedCare = () => {
                                   padding-right: calc((100vw - 280px) / 2);
                                 }
                                 @media (min-width: 1024px) {
-                                  .specialized-doctor-carousel { 
-                                    padding-left: 0 !important; 
-                                    padding-right: 0 !important; 
+                                  .specialized-doctor-carousel {
+                                    padding-left: 0 !important;
+                                    padding-right: 0 !important;
                                   }
                                 }
                               `}} />
@@ -782,8 +731,7 @@ const SpecializedCare = () => {
             );
           })}
         </div>
-
-        {/* Show All Departments button — navigates to full page */}
+        {}
         <motion.div
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
@@ -802,5 +750,4 @@ const SpecializedCare = () => {
     </section>
   );
 };
-
 export default SpecializedCare;

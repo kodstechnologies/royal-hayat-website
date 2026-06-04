@@ -7,7 +7,6 @@ import { Link } from "react-router-dom";
 import { Home } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { featuredDoctors } from "@/data/featuredDoctors";
-
 const HomeHealthPreview = () => {
   const { lang } = useLanguage();
   return (
@@ -35,9 +34,7 @@ const HomeHealthPreview = () => {
     </section>
   );
 };
-
 const MedicalServices = () => {
-
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107]">
       <Header />
@@ -49,5 +46,4 @@ const MedicalServices = () => {
     </div>
   );
 };
-
 export default MedicalServices;

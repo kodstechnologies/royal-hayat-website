@@ -7,9 +7,7 @@ import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { createAppointmentRequest } from "@/api/appointmentRequest";
 import { toast } from "@/hooks/use-toast";
 import axios from "axios";
-
 const chipSuggestions = ["Headache", "Chest Pain", "Fever", "Dizziness", "Back Pain", "Fatigue", "Nausea", "Cough", "Joint Pain", "Shortness of Breath"];
-
 const departmentMap: Record<string, { name: string; category: string }[]> = {
   headache: [{ name: "Neurology", category: "Nervous System" }, { name: "ENT", category: "Head & Neck" }],
   "chest pain": [{ name: "Cardiology", category: "Heart & Vascular" }, { name: "Emergency Medicine", category: "Emergency" }],
@@ -22,7 +20,6 @@ const departmentMap: Record<string, { name: string; category: string }[]> = {
   "joint pain": [{ name: "Orthopedics", category: "Bones & Joints" }, { name: "Rheumatology", category: "Bones & Joints" }],
   "shortness of breath": [{ name: "Pulmonology", category: "Lungs" }, { name: "Cardiology", category: "Heart & Vascular" }],
 };
-
 const conditionHints: Record<string, string> = {
   headache: "Possible tension headache or migraine",
   "chest pain": "Could indicate cardiac or musculoskeletal issue",
@@ -35,8 +32,6 @@ const conditionHints: Record<string, string> = {
   "joint pain": "May indicate arthritis or strain",
   "shortness of breath": "Could relate to respiratory or cardiac conditions",
 };
-
-// Doctors per recommended department
 const deptDoctors: Record<string, Array<{ name: string; specialty: string; available: boolean; experience: string; rating: number }>> = {
   Neurology: [
     { name: "Dr. Ahmed Al-Khaled", specialty: "Neurology", available: true, experience: "15+ Years", rating: 4.8 },
@@ -81,9 +76,7 @@ const deptDoctors: Record<string, Array<{ name: string; specialty: string; avail
     { name: "Dr. Fatima Al-Sabah", specialty: "Rheumatology", available: true, experience: "10+ Years", rating: 4.5 },
   ],
 };
-
 type BookingStep = "symptoms" | "results" | "registered" | "doctor" | "patient" | "confirm" | "success";
-
 const IntelligentBooking = () => {
   const navigate = useNavigate();
   const { t, lang } = useLanguage();
@@ -92,8 +85,6 @@ const IntelligentBooking = () => {
   const [symptomText, setSymptomText] = useState("");
   const [analyzing, setAnalyzing] = useState(false);
   const [results, setResults] = useState<{ departments: { name: string; category: string }[]; conditions: string[] } | null>(null);
-
-  // Booking flow state
   const [bookingStep, setBookingStep] = useState<BookingStep>("symptoms");
   const [selectedDept, setSelectedDept] = useState<string | null>(null);
   const [selectedDoctor, setSelectedDoctor] = useState<{ name: string; specialty: string; available: boolean; experience: string; rating: number } | null>(null);
@@ -105,7 +96,6 @@ const IntelligentBooking = () => {
   const [patientGender, setPatientGender] = useState("");
   const [patientErrors, setPatientErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
-
   const toggleChip = (chip: string) => {
     setSelectedChips((prev) =>
       prev.includes(chip) ? prev.filter((c) => c !== chip) : [...prev, chip]
@@ -113,11 +103,9 @@ const IntelligentBooking = () => {
     setResults(null);
     setBookingStep("symptoms");
   };
-
   const handleAnalyze = () => {
     const allSymptoms = [...selectedChips, ...(symptomText.trim() ? [symptomText.trim()] : [])];
     if (allSymptoms.length === 0) return;
-
     setAnalyzing(true);
     setTimeout(() => {
       const depts = new Map<string, { name: string; category: string }>();
@@ -140,18 +128,15 @@ const IntelligentBooking = () => {
       setBookingStep("results");
     }, 1500);
   };
-
   const handleSelectDept = (deptName: string) => {
     setSelectedDept(deptName);
     setBookingStep("registered");
   };
-
   const handleSelectDoctor = (doc: typeof selectedDoctor) => {
     setSelectedDoctor(doc);
     setIsRequestMode(!doc?.available);
     setBookingStep("patient");
   };
-
   const validatePatientDetails = () => {
     const errors: Record<string, string> = {};
     if (!patientName.trim()) errors.name = lang === "ar" ? "الاسم مطلوب" : "Full name is required";
@@ -163,12 +148,10 @@ const IntelligentBooking = () => {
     setPatientErrors(errors);
     return Object.keys(errors).length === 0;
   };
-
   const handlePatientSubmit = () => {
     if (!validatePatientDetails()) return;
     setBookingStep("confirm");
   };
-
   const handleConfirmBooking = async () => {
     setSubmitting(true);
     try {
@@ -202,7 +185,6 @@ const IntelligentBooking = () => {
       setSubmitting(false);
     }
   };
-
   const handleReset = () => {
     setSelectedChips([]);
     setSymptomText("");
@@ -217,11 +199,8 @@ const IntelligentBooking = () => {
     setPatientErrors({});
     setIsRequestMode(false);
   };
-
   const allSymptoms = [...selectedChips, ...(symptomText.trim() ? [symptomText.trim()] : [])];
-
   const availableDoctors = selectedDept ? (deptDoctors[selectedDept] || [{ name: "Dr. General Specialist", specialty: selectedDept, available: true, experience: "10+ Years", rating: 4.5 }]) : [];
-
   return (
     <section className="py-14 bg-primary" id="book">
       <div className="container mx-auto px-6 text-center">
@@ -231,19 +210,16 @@ const IntelligentBooking = () => {
             <p className="text-accent text-xs tracking-[0.3em] uppercase font-body">{t("aiPowered")}</p>
           </div>
         </ScrollAnimationWrapper>
-
         <ScrollAnimationWrapper delay={0.1}>
           <h2 className="text-3xl md:text-4xl font-serif text-primary-foreground mb-3">{t("tellUsSymptoms")}</h2>
         </ScrollAnimationWrapper>
-
         <ScrollAnimationWrapper delay={0.15}>
           <p className="text-secondary/70 font-body max-w-xl mx-auto mb-6 text-sm">{t("symptomDesc")}</p>
         </ScrollAnimationWrapper>
-
         <ScrollAnimationWrapper delay={0.2}>
           <div className="max-w-2xl mx-auto bg-background rounded-2xl p-6 md:p-8 text-left shadow-2xl border border-border">
             <AnimatePresence mode="wait">
-              {/* STEP: SYMPTOMS INPUT */}
+              {}
               {bookingStep === "symptoms" && (
                 <motion.div key="symptoms" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
                   <div className="flex items-center gap-3 mb-2">
@@ -253,7 +229,6 @@ const IntelligentBooking = () => {
                     <h3 className="text-xl font-serif text-foreground">{t("howFeeling")}</h3>
                   </div>
                   <p className="text-muted-foreground font-body text-xs mb-4 ms-12">{t("describeSymptoms")}</p>
-
                   <div className="flex flex-wrap gap-2 mb-4 ms-12">
                     {chipSuggestions.map((chip, i) => (
                       <motion.button
@@ -274,7 +249,6 @@ const IntelligentBooking = () => {
                       </motion.button>
                     ))}
                   </div>
-
                   <textarea
                     value={symptomText}
                     onChange={(e) => { setSymptomText(e.target.value); setResults(null); }}
@@ -286,7 +260,6 @@ const IntelligentBooking = () => {
                         : "border-border"
                       }`}
                   />
-
                   <AnimatePresence>
                     {analyzing && (
                       <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="mt-4 overflow-hidden">
@@ -298,7 +271,6 @@ const IntelligentBooking = () => {
                       </motion.div>
                     )}
                   </AnimatePresence>
-
                   <div className="mt-4 bg-muted/20 rounded-lg p-3 border border-border">
                     <p className="font-body text-[10px] text-muted-foreground leading-relaxed">
                       <Shield className="w-3 h-3 inline me-1 text-accent" />
@@ -307,7 +279,6 @@ const IntelligentBooking = () => {
                         : "Disclaimer: This is just an AI recommendation. For complete information, please talk to our staff."}
                     </p>
                   </div>
-
                   <div className="mt-3 flex items-center justify-between">
                     <div className="flex items-center gap-2 text-muted-foreground">
                       <ShieldCheck className="w-3.5 h-3.5 text-accent" />
@@ -325,8 +296,7 @@ const IntelligentBooking = () => {
                   </div>
                 </motion.div>
               )}
-
-              {/* STEP: RESULTS - Select Department */}
+              {}
               {bookingStep === "results" && results && (
                 <motion.div key="results" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
                   <div className="bg-accent/5 rounded-xl p-5 border border-accent/10 mb-4">
@@ -345,7 +315,6 @@ const IntelligentBooking = () => {
                         ))}
                       </div>
                     </div>
-
                     <div className="bg-muted/20 rounded-lg p-3 border border-border mb-4">
                       <p className="font-body text-[10px] text-muted-foreground leading-relaxed">
                         <Shield className="w-3 h-3 inline me-1 text-accent" />
@@ -355,7 +324,6 @@ const IntelligentBooking = () => {
                       </p>
                     </div>
                   </div>
-
                   <div className="flex items-center gap-2 mb-3">
                     <Building2 className="w-4 h-4 text-accent" />
                     <span className="font-body text-sm font-medium text-accent">{t("recommendedDepts")}</span>
@@ -373,14 +341,12 @@ const IntelligentBooking = () => {
                       </motion.button>
                     ))}
                   </div>
-
                   <button onClick={() => setBookingStep("symptoms")} className="flex items-center gap-2 text-muted-foreground font-body text-xs hover:text-foreground transition-colors">
                     <ArrowLeft className="w-3 h-3" /> {t("previous")}
                   </button>
                 </motion.div>
               )}
-
-              {/* STEP: REGISTERED PATIENT CHECK */}
+              {}
               {bookingStep === "registered" && (
                 <motion.div key="registered" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
                   <div className="flex items-center gap-3 mb-5">
@@ -398,7 +364,6 @@ const IntelligentBooking = () => {
                       </p>
                     </div>
                   </div>
-
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
                     <motion.button
                       whileHover={{ scale: 1.02 }}
@@ -415,7 +380,6 @@ const IntelligentBooking = () => {
                         {lang === "ar" ? "سيتم توجيهك إلى بوابة عافيتي" : "You will be redirected to Afiyati Portal"}
                       </p>
                     </motion.button>
-
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       onClick={() => {
@@ -432,14 +396,12 @@ const IntelligentBooking = () => {
                       </p>
                     </motion.button>
                   </div>
-
                   <button onClick={() => setBookingStep("results")} className="flex items-center gap-2 text-muted-foreground font-body text-xs hover:text-foreground transition-colors">
                     <ArrowLeft className="w-3 h-3" /> {t("previous")}
                   </button>
                 </motion.div>
               )}
-
-              {/* STEP: SELECT DOCTOR */}
+              {}
               {bookingStep === "doctor" && (
                 <motion.div key="doctor" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
                   <div className="flex items-center gap-3 mb-4">
@@ -451,7 +413,6 @@ const IntelligentBooking = () => {
                       <p className="text-muted-foreground font-body text-xs">{selectedDept}</p>
                     </div>
                   </div>
-
                   <div className="space-y-3 mb-4">
                     {availableDoctors.map((doc, i) => (
                       <motion.div key={doc.name} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
@@ -476,14 +437,12 @@ const IntelligentBooking = () => {
                       </motion.div>
                     ))}
                   </div>
-
                   <button onClick={() => setBookingStep("results")} className="flex items-center gap-2 text-muted-foreground font-body text-xs hover:text-foreground transition-colors">
                     <ArrowLeft className="w-3 h-3" /> {t("previous")}
                   </button>
                 </motion.div>
               )}
-
-              {/* STEP: PATIENT INFO */}
+              {}
               {bookingStep === "patient" && (
                 <motion.div key="patient" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
                   <div className="flex items-center gap-3 mb-5">
@@ -495,7 +454,6 @@ const IntelligentBooking = () => {
                       <p className="text-muted-foreground font-body text-xs">{t("provideInfo")}</p>
                     </div>
                   </div>
-
                   <div className="space-y-4">
                     <div>
                       <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
@@ -558,7 +516,6 @@ const IntelligentBooking = () => {
                       </div>
                     </div>
                   </div>
-
                   <div className="flex items-center justify-between mt-5">
                     <button onClick={() => setBookingStep("doctor")} className="flex items-center gap-2 text-muted-foreground font-body text-xs hover:text-foreground transition-colors">
                       <ArrowLeft className="w-3 h-3" /> {t("previous")}
@@ -570,8 +527,6 @@ const IntelligentBooking = () => {
                   </div>
                 </motion.div>
               )}
-
-              {/* STEP: CONFIRM */}
               {bookingStep === "confirm" && (
                 <motion.div key="confirm" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
                   <div className="flex items-center gap-3 mb-5">
@@ -580,14 +535,12 @@ const IntelligentBooking = () => {
                     </div>
                     <h3 className="text-lg font-serif text-foreground">{lang === "ar" ? "مراجعة وتأكيد" : "Review & Confirm"}</h3>
                   </div>
-
                   {isRequestMode && (
                     <div className="bg-accent/5 border border-accent/10 rounded-xl p-3 mb-4">
                       <p className="font-body text-xs text-accent font-medium">{t("appointmentRequest")}</p>
                       <p className="font-body text-[10px] text-muted-foreground">{t("requestNote")}</p>
                     </div>
                   )}
-
                   <div className="space-y-3 mb-5">
                     {[
                       { label: t("department"), value: selectedDept || "" },
@@ -603,7 +556,6 @@ const IntelligentBooking = () => {
                       </div>
                     ))}
                   </div>
-
                   <div className="flex items-center justify-between">
                     <button onClick={() => setBookingStep("patient")} className="flex items-center gap-2 text-muted-foreground font-body text-xs hover:text-foreground transition-colors">
                       <ArrowLeft className="w-3 h-3" /> {t("previous")}
@@ -623,8 +575,7 @@ const IntelligentBooking = () => {
                   </div>
                 </motion.div>
               )}
-
-              {/* STEP: SUCCESS */}
+              {}
               {bookingStep === "success" && (
                 <motion.div key="success" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-6">
                   <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
@@ -655,5 +606,4 @@ const IntelligentBooking = () => {
     </section>
   );
 };
-
 export default IntelligentBooking;

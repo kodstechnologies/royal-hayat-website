@@ -1,6 +1,5 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, ReactNode } from "react";
-
 interface ScrollAnimationWrapperProps {
   children: ReactNode;
   className?: string;
@@ -8,7 +7,6 @@ interface ScrollAnimationWrapperProps {
   direction?: "up" | "down" | "left" | "right" | "none";
   distance?: number;
 }
-
 const directionMap = (dist: number) => ({
   up: { y: dist, x: 0 },
   down: { y: -dist, x: 0 },
@@ -16,7 +14,6 @@ const directionMap = (dist: number) => ({
   right: { x: -dist, y: 0 },
   none: { x: 0, y: 0 },
 });
-
 const ScrollAnimationWrapper = ({
   children,
   className = "",
@@ -27,7 +24,6 @@ const ScrollAnimationWrapper = ({
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-60px" });
   const d = directionMap(distance)[direction];
-
   return (
     <motion.div
       ref={ref}
@@ -40,5 +36,4 @@ const ScrollAnimationWrapper = ({
     </motion.div>
   );
 };
-
 export default ScrollAnimationWrapper;

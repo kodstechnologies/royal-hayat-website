@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { AlertCircle, ArrowLeft, Loader2 } from "lucide-react";
 import type { VerifiedIdentityDetails } from "../types";
-
 type ReturningPatientModalProps = {
   isAr: boolean;
   t: (key: string) => string;
@@ -21,7 +20,6 @@ type ReturningPatientModalProps = {
   onVerify: () => void;
   onCancel: () => void;
 };
-
 const ReturningPatientModal = ({
   isAr,
   t,
@@ -121,7 +119,6 @@ const ReturningPatientModal = ({
             </button>
           )}
         </div>
-
         {isVerifyingNationalId ? (
           <div className="mt-6 flex flex-col items-center justify-center py-6 rounded-2xl border border-border/70 bg-muted/20 px-4">
             <Loader2 className="w-10 h-10 animate-spin text-accent" />
@@ -155,7 +152,6 @@ const ReturningPatientModal = ({
                   ? "التحقق عبر هويتي"
                   : "Verify with Kuwait Mobile ID"}
             </button>
-
             <button
               type="button"
               onClick={onCancel}
@@ -165,7 +161,6 @@ const ReturningPatientModal = ({
             </button>
           </div>
         )}
-
         {(isWaitingForApproval || isConfirmingPatientRecord) && (
           <div className="mt-3">
             <button
@@ -181,5 +176,4 @@ const ReturningPatientModal = ({
     </motion.div>
   </div>
 );
-
 export default ReturningPatientModal;

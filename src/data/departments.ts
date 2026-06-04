@@ -3,9 +3,7 @@ import {
   Scissors, Pill, Microscope, AlertCircle, Home, Shield
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-
 export type MainCategory = "Clinical Speciality" | "Clinical Support Service" | "Home Care Service";
-
 export interface Department {
   id: number;
   name: string;
@@ -16,9 +14,7 @@ export interface Department {
   slug: string;
   icon: LucideIcon;
   category: string;
-  /** Used for booking / availability (speciality code). */
   clinicCode?: string;
-  /** Grouping for department directory. */
   mainCategory?: MainCategory;
   subs?: {
     name: string;
@@ -27,18 +23,14 @@ export interface Department {
     description?: string;
     customBlocks?: { subHeading?: string; explanations: string[] }[];
   }[];
-  /** Optional rich sections from API (`CustomExplainantion` → mapped as explanations for UI). */
   departmentContentBlocks?: { subHeading?: string; explanations: string[] }[];
 }
-
 export const MAIN_CATEGORIES: { key: MainCategory; label: string; labelAr: string }[] = [
   { key: "Clinical Speciality", label: "Clinical Speciality", labelAr: "التخصصات الطبية" },
   { key: "Clinical Support Service", label: "Clinical Support Service", labelAr: "الخدمات الطبية الداعمة" },
   { key: "Home Care Service", label: "Home Care Service", labelAr: "خدمات الرعاية المنزلية" },
 ];
-
 export const departments: Department[] = [
-  // ── CLINICAL SPECIALITY ──────────────────────────────────────────────
   {
     id: 1, icon: Heart, category: "Women's Health", mainCategory: "Clinical Speciality",
     name: "Obstetrics & Gynecology", nameAr: "قسم أمراض النساء والولادة", slug: "obstetrics-gynecology",
@@ -165,8 +157,6 @@ export const departments: Department[] = [
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Pain+Management/1.jpg",
     clinicCode: "R002PAI",
   },
-
-  // ── CLINICAL SUPPORT SERVICE ─────────────────────────────────────────
   {
     id: 16, icon: Microscope, category: "Diagnostics", mainCategory: "Clinical Support Service",
     name: "Laboratory Services", nameAr: "قسم الخدمات المخبرية", slug: "laboratory-services",
@@ -212,8 +202,6 @@ export const departments: Department[] = [
     descAr: "تحكم في صحتك بسهولة من خلال برنامجنا المخصص. سجل عن طريق إكمال نموذج تسجيل سريع، وتقديم لمحة عن تاريخك الطبي ونمط حياتك.",
     img: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=250&fit=crop",
   },
-
-  // ── HOME CARE SERVICE ────────────────────────────────────────────────
   {
     id: 18, icon: Home, category: "Wellness", mainCategory: "Home Care Service",
     name: "Royale Home Health", nameAr: "رويال هوم هيلث للرعاية المنزلية", slug: "home-health",
@@ -229,8 +217,6 @@ export const departments: Department[] = [
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Physiotherapy/1.jpg",
   },
 ];
-
-// Maps department name → doctor department/specialty values for filtering
 export const deptDoctorAliases: Record<string, string[]> = {
   "Obstetrics & Gynecology": ["Obstetrics & Gynecology"],
   "Reproductive Medicine & IVF": ["Reproductive Medicine & IVF", "IVF", "Reproductive Medicine"],

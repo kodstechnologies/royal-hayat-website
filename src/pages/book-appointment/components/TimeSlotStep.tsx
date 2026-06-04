@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils";
 import type { Slot } from "@/api/royalhayat";
 import type { DoctorWithClinicCode as Doctor } from "@/data/doctorsWithClinicCodes";
 import { pageVariants, type BookingDeptRow } from "../types";
-
 type TimeSlotStepProps = {
   isAr: boolean;
   lang: string;
@@ -32,7 +31,6 @@ type TimeSlotStepProps = {
   setStep: (step: number) => void;
   formatSlotRange: (slot: Slot) => string;
 };
-
 const TimeSlotStep = ({
   isAr,
   lang,
@@ -133,7 +131,6 @@ const TimeSlotStep = ({
             </motion.button>
           </div>
         )}
-
         {showSlotSelection && selectedDate && isLoadingSlots && (
           <div className="flex flex-col items-center justify-center py-12">
             <motion.div
@@ -146,7 +143,6 @@ const TimeSlotStep = ({
             </p>
           </div>
         )}
-
         {showSlotSelection && selectedDate && !isLoadingSlots && fetchedSlots.length > 0 && (
           <div className="space-y-6">
             <p className="font-body text-xs text-muted-foreground uppercase tracking-wider">
@@ -190,7 +186,6 @@ const TimeSlotStep = ({
             )}
           </div>
         )}
-
         {showSlotSelection && selectedDate && !isLoadingSlots && fetchedSlots.length === 0 && (
           <div className="text-center py-12 text-muted-foreground font-body text-sm bg-muted/20 rounded-2xl border border-dashed border-border">
             <AlertCircle className="w-8 h-8 mx-auto mb-2 opacity-30" />
@@ -201,5 +196,4 @@ const TimeSlotStep = ({
     </div>
   </motion.div>
 );
-
 export default TimeSlotStep;

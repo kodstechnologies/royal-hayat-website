@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { ClipboardList, LogIn, UserPlus } from "lucide-react";
 import { pageVariants, type VerifiedIdentityDetails } from "../types";
-
 type PatientDetailsStepProps = {
   isAr: boolean;
   t: (key: string) => string;
@@ -27,7 +26,6 @@ type PatientDetailsStepProps = {
   onChangePatientType: () => void;
   resetReturningModalState: () => void;
 };
-
 const PatientDetailsStep = ({
   isAr,
   t,
@@ -300,5 +298,4 @@ const PatientDetailsStep = ({
     </div>
   </motion.div>
 );
-
 export default PatientDetailsStep;

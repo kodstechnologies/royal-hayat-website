@@ -16,7 +16,6 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
-
 const MedicalRecordsRequest = () => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
@@ -28,7 +27,6 @@ const MedicalRecordsRequest = () => {
   const [requestedBy, setRequestedBy] = useState("");
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [govIdFile, setGovIdFile] = useState<File | null>(null);
-
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!agreeTerms) {
@@ -37,12 +35,10 @@ const MedicalRecordsRequest = () => {
     }
     toast({ title: isAr ? "تم إرسال النموذج" : "Form Submitted", description: isAr ? "تم إرسال طلب السجلات الطبية بنجاح. سنتواصل معك قريباً." : "Your medical records request has been submitted successfully. We will contact you shortly." });
   };
-
   return (
     <div className="min-h-screen bg-background">
       <Header />
-
-      {/* Hero */}
+      {}
       <section className="pt-40 pb-16 bg-primary">
         <div className="container mx-auto px-6 text-center">
           <ScrollAnimationWrapper>
@@ -51,8 +47,7 @@ const MedicalRecordsRequest = () => {
           </ScrollAnimationWrapper>
         </div>
       </section>
-
-      {/* Intro */}
+      {}
       <section className="py-16">
         <div className="container mx-auto px-6 max-w-3xl">
           <ScrollAnimationWrapper>
@@ -70,13 +65,11 @@ const MedicalRecordsRequest = () => {
           </ScrollAnimationWrapper>
         </div>
       </section>
-
-      {/* Form */}
+      {}
       <section className="pb-20">
         <div className="container mx-auto px-6 max-w-3xl">
           <form onSubmit={handleSubmit} className="space-y-12">
-
-            {/* Section 1 */}
+            {}
             <ScrollAnimationWrapper>
               <div className="space-y-6">
                 <h3 className="text-lg font-serif text-foreground border-b border-border pb-3">{isAr ? "1. معلومات المريض" : "1. Patient Information"}</h3>
@@ -117,8 +110,7 @@ const MedicalRecordsRequest = () => {
                 </div>
               </div>
             </ScrollAnimationWrapper>
-
-            {/* Section 2 */}
+            {}
             <ScrollAnimationWrapper>
               <div className="space-y-4">
                 <h3 className="text-lg font-serif text-foreground border-b border-border pb-3">{isAr ? "2. التفويض والمعلومات المراد الإفصاح عنها" : "2. Authorization and Information to be Disclosed"}</h3>
@@ -129,8 +121,7 @@ const MedicalRecordsRequest = () => {
                 </p>
               </div>
             </ScrollAnimationWrapper>
-
-            {/* Section 3 */}
+            {}
             <ScrollAnimationWrapper>
               <div className="space-y-4">
                 <h3 className="text-lg font-serif text-foreground border-b border-border pb-3">{isAr ? "3. يرجى تحديد المعلومات التي تفوض بالإفصاح عنها" : "3. Please select the specific information you are authorizing for release"}</h3>
@@ -161,8 +152,7 @@ const MedicalRecordsRequest = () => {
                 </div>
               </div>
             </ScrollAnimationWrapper>
-
-            {/* Section 4 */}
+            {}
             <ScrollAnimationWrapper>
               <div className="space-y-6">
                 <h3 className="text-lg font-serif text-foreground border-b border-border pb-3">{isAr ? "4. معلومات المستلم والغرض" : "4. Recipient Information and Purpose"}</h3>
@@ -203,8 +193,7 @@ const MedicalRecordsRequest = () => {
                 </div>
               </div>
             </ScrollAnimationWrapper>
-
-            {/* Section 5 */}
+            {}
             <ScrollAnimationWrapper>
               <div className="space-y-6">
                 <h3 className="text-lg font-serif text-foreground border-b border-border pb-3">{isAr ? "5. اتفاقية التوقيع الإلكتروني" : "5. Electronic Signature Agreement"}</h3>
@@ -219,7 +208,6 @@ const MedicalRecordsRequest = () => {
                     {isAr ? "لقد قرأت وفهمت ووافقت على شروط هذا التفويض الإلكتروني." : "I have read, understand, and agree to the terms of this Electronic Authorization."}
                   </Label>
                 </div>
-
                 <div className="space-y-4">
                   <Label>{isAr ? "مقدم الطلب:" : "Requested by:"} <span className="text-destructive">*</span></Label>
                   <RadioGroup value={requestedBy} onValueChange={setRequestedBy} className="flex gap-6">
@@ -233,7 +221,6 @@ const MedicalRecordsRequest = () => {
                     </div>
                   </RadioGroup>
                 </div>
-
                 {requestedBy === "patient" && (
                   <div className="space-y-2">
                     <Label htmlFor="eSignature">{isAr ? "الاسم الكامل للمريض (التوقيع الإلكتروني)" : "Patient Full Name (E-Signature)"} <span className="text-destructive">*</span></Label>
@@ -242,7 +229,6 @@ const MedicalRecordsRequest = () => {
                 )}
               </div>
             </ScrollAnimationWrapper>
-
             <ScrollAnimationWrapper>
               <div className="space-y-4">
                 <p className="font-body text-xs text-muted-foreground">
@@ -253,15 +239,12 @@ const MedicalRecordsRequest = () => {
                 <Button type="submit" size="lg" className="w-full sm:w-auto">{isAr ? "إرسال" : "Submit"}</Button>
               </div>
             </ScrollAnimationWrapper>
-
           </form>
         </div>
       </section>
-
       <Footer />
       <ScrollToTop />
     </div>
   );
 };
-
 export default MedicalRecordsRequest;

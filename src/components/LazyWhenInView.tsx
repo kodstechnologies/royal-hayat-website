@@ -1,19 +1,12 @@
 import { useRef, type ReactNode } from "react";
 import { useInView } from "framer-motion";
-
 export type LazyWhenInViewProps = {
   children: ReactNode;
   placeholder?: ReactNode;
   className?: string;
   dir?: "ltr" | "rtl";
-  /** Intersection root margin passed to useInView */
   margin?: string;
 };
-
-/**
- * Renders children only when the wrapper enters (or nears) the viewport.
- * Use to defer image downloads and heavy child mounts until scroll.
- */
 const LazyWhenInView = ({
   children,
   placeholder = null,
@@ -23,18 +16,15 @@ const LazyWhenInView = ({
 }: LazyWhenInViewProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin });
-
   return (
     <div ref={ref} dir={dir} className={className}>
       {inView ? children : placeholder}
     </div>
   );
 };
-
 export const sectionPlaceholder = (className = "min-h-[240px] bg-background") => (
   <div className={`${className} animate-pulse`} aria-hidden />
 );
-
 export const lifeCarouselPlaceholder = (variant: "default" | "muted" = "default") => (
   <section
     className={`py-16 ${variant === "muted" ? "bg-secondary/10" : "bg-background"}`}
@@ -46,5 +36,4 @@ export const lifeCarouselPlaceholder = (variant: "default" | "muted" = "default"
     </div>
   </section>
 );
-
 export default LazyWhenInView;

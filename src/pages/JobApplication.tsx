@@ -28,7 +28,6 @@ const openPositions = [
   { title: "Human Resources Coordinator", category: "Administrative", location: "Royale Hayat Hospital", type: "Full-time", date: "February 10, 2026", desc: "Support HR operations including recruitment, onboarding, employee relations, and benefits administration.", responsibilities: ["Coordinate recruitment and onboarding processes", "Manage employee records and documentation", "Assist with benefits administration", "Support employee relations activities"], requirements: ["Bachelor's degree in HR or related field", "2+ years HR experience", "Knowledge of labor laws", "Proficiency in HR information systems"] },
   { title: "Medical Records Specialist", category: "Administrative", location: "Royale Hayat Hospital", type: "Full-time", date: "February 8, 2026", desc: "Manage and maintain accurate medical records, ensuring compliance with healthcare regulations and standards.", responsibilities: ["Maintain and organize medical records", "Ensure compliance with privacy regulations", "Process record requests accurately", "Support audits and quality reviews"], requirements: ["Experience in medical records management", "Knowledge of healthcare regulations", "Attention to detail", "Proficiency in electronic health records"] },
 ];
-
 const mapApiJobToDisplay = (apiJob: JobPosting) => ({
   title: apiJob.title,
   category: String(apiJob.classification ?? apiJob.category ?? apiJob.department ?? ""),
@@ -39,7 +38,6 @@ const mapApiJobToDisplay = (apiJob: JobPosting) => ({
   responsibilities: apiJob.responsibilities ?? [],
   requirements: apiJob.requirements ?? [],
 });
-
 const JobApplication = () => {
   const { lang } = useLanguage();
   const [searchParams] = useSearchParams();
@@ -56,7 +54,6 @@ const JobApplication = () => {
   const [coverLetter, setCoverLetter] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const formRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     if (!jobId) return;
     let cancelled = false;
@@ -77,7 +74,6 @@ const JobApplication = () => {
       cancelled = true;
     };
   }, [jobId, isAr]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!jobId) {
@@ -134,7 +130,6 @@ const JobApplication = () => {
       setSubmitting(false);
     }
   };
-
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({ title: job.title, url: window.location.href });
@@ -143,14 +138,12 @@ const JobApplication = () => {
       toast({ title: isAr ? "تم نسخ الرابط" : "Link Copied" });
     }
   };
-
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
       <Header />
-
       <section className="py-10 md:py-14">
         <div className="container mx-auto px-6 max-w-6xl">
-          {/* Breadcrumb */}
+          {}
           <div className="flex items-center gap-2 text-sm font-body mb-8">
             <Link to="/" className="text-primary hover:text-accent transition-colors">{isAr ? "الرئيسية" : "Home"}</Link>
             <ChevronRight className="w-4 h-4 text-muted-foreground" />
@@ -158,19 +151,15 @@ const JobApplication = () => {
             <ChevronRight className="w-4 h-4 text-muted-foreground" />
             <span className="text-muted-foreground">{isAr ? "تقديم" : "Apply"}</span>
           </div>
-
           <div className="grid lg:grid-cols-3 gap-10">
-            {/* Left: Job Details */}
+            {}
             <div className="lg:col-span-2">
               <h1 className="text-3xl md:text-4xl font-serif text-foreground mb-6 uppercase leading-tight">{job.title}</h1>
-
               <p className="font-body text-base text-muted-foreground leading-relaxed mb-8 text-justify">{job.desc}</p>
-
               <Link to="/work-with-us?section=positions" className="text-primary hover:text-accent font-body text-sm underline underline-offset-4 inline-block mb-10">
                 {isAr ? "عرض جميع الوظائف المتاحة" : "View All open positions"}
               </Link>
-
-              {/* Duties */}
+              {}
               <div className="mb-8">
                 <h2 className="font-serif text-sm uppercase tracking-widest text-muted-foreground mb-4">{isAr ? "المهام والمسؤوليات" : "Duties and Responsibilities"}</h2>
                 <ul className="space-y-3">
@@ -182,8 +171,7 @@ const JobApplication = () => {
                   ))}
                 </ul>
               </div>
-
-              {/* Requirements */}
+              {}
               <div className="mb-8">
                 <h2 className="font-serif text-sm uppercase tracking-widest text-muted-foreground mb-4">{isAr ? "المتطلبات" : "Requirements"}</h2>
                 <ul className="space-y-3">
@@ -195,12 +183,10 @@ const JobApplication = () => {
                   ))}
                 </ul>
               </div>
-
             </div>
-
-            {/* Right Sidebar */}
+            {}
             <div className="lg:col-span-1 space-y-6">
-              {/* Action Buttons */}
+              {}
               <div className="space-y-3">
                 <Button onClick={() => {
                   setShowForm(true);
@@ -216,21 +202,17 @@ const JobApplication = () => {
                   {isAr ? "شارك الآن" : "Share Now"}
                 </Button>
               </div>
-
-              {/* Job Meta */}
+              {}
               <div className="bg-popover border border-border/50 rounded-2xl p-6 space-y-5">
                 <p className="font-serif text-lg text-foreground">{job.date}</p>
-
                 <div>
                   <p className="font-body text-xs uppercase tracking-widest text-foreground font-semibold mb-1">{isAr ? "الموقع" : "Location"}</p>
                   <p className="font-body text-sm text-muted-foreground">{job.location}</p>
                 </div>
-
                 <div>
                   <p className="font-body text-xs uppercase tracking-widest text-foreground font-semibold mb-1">{isAr ? "نوع العمل" : "Work Type"}</p>
                   <p className="font-body text-sm text-muted-foreground">{job.type}</p>
                 </div>
-
                 <div>
                   <p className="font-body text-xs uppercase tracking-widest text-foreground font-semibold mb-1">{isAr ? "التصنيف" : "Classification"}</p>
                   <p className="font-body text-sm text-muted-foreground">{job.category}</p>
@@ -238,8 +220,7 @@ const JobApplication = () => {
               </div>
             </div>
           </div>
-
-          {/* Application Form (centered) */}
+          {}
           {showForm && (
             <div
               ref={formRef}
@@ -276,11 +257,9 @@ const JobApplication = () => {
           )}
         </div>
       </section>
-
       <Footer />
       <ScrollToTop />
     </div>
   );
 };
-
 export default JobApplication;

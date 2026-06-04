@@ -10,7 +10,6 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "@/hooks/use-toast";
 import { createAlSafwaEnrollment } from "../api/alSafwa";
 import axios from "axios";
-
 const EnrollmentModal = ({ isOpen, onClose, t, isAr, onSuccess }: { isOpen: boolean; onClose: () => void; t: any; isAr: boolean; onSuccess: () => void }) => {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -32,11 +31,9 @@ const EnrollmentModal = ({ isOpen, onClose, t, isAr, onSuccess }: { isOpen: bool
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-
     try {
       await createAlSafwaEnrollment({
         ...formData,
@@ -77,7 +74,6 @@ const EnrollmentModal = ({ isOpen, onClose, t, isAr, onSuccess }: { isOpen: bool
       });
     }
   };
-
   return (
     <AnimatePresence>
       {isOpen && (
@@ -109,7 +105,6 @@ const EnrollmentModal = ({ isOpen, onClose, t, isAr, onSuccess }: { isOpen: bool
                   <X className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
                 </button>
               </div>
-
               {isSuccess ? (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
@@ -156,7 +151,6 @@ const EnrollmentModal = ({ isOpen, onClose, t, isAr, onSuccess }: { isOpen: bool
                       />
                     </div>
                   </div>
-
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="relative">
                       <label className="block text-[11px] font-serif text-primary/70 mb-1 ml-1.5 uppercase tracking-wider">
@@ -187,7 +181,6 @@ const EnrollmentModal = ({ isOpen, onClose, t, isAr, onSuccess }: { isOpen: bool
                       />
                     </div>
                   </div>
-
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-[11px] font-serif text-primary/70 mb-1 ml-1.5 uppercase tracking-wider">
@@ -216,7 +209,6 @@ const EnrollmentModal = ({ isOpen, onClose, t, isAr, onSuccess }: { isOpen: bool
                       />
                     </div>
                   </div>
-
                   <div>
                     <label className="block text-[11px] font-serif text-primary/70 mb-1 ml-1.5 uppercase tracking-wider">
                       {isAr ? "التاريخ المفضل للموعد *" : "Preferred Date of Appointment *"}
@@ -231,7 +223,6 @@ const EnrollmentModal = ({ isOpen, onClose, t, isAr, onSuccess }: { isOpen: bool
                       }
                     />
                   </div>
-
                   <div>
                     <label className="block text-[11px] font-serif text-primary/70 mb-2 ml-1.5 uppercase tracking-wider">
                       {isAr
@@ -260,7 +251,6 @@ const EnrollmentModal = ({ isOpen, onClose, t, isAr, onSuccess }: { isOpen: bool
                       ))}
                     </div>
                   </div>
-
                   <div className="rounded-xl border border-primary/10 p-3 space-y-2">
                     <p className="text-[11px] font-serif text-primary/70 uppercase tracking-wider">
                       {isAr ? "أي من الحالات التالية تعاني منها؟" : "Which of the following do you suffer from?"}
@@ -304,7 +294,6 @@ const EnrollmentModal = ({ isOpen, onClose, t, isAr, onSuccess }: { isOpen: bool
                       ))}
                     </div>
                   </div>
-
                   <div className="rounded-xl border border-primary/10 p-3 space-y-2">
                     <p className="text-[11px] font-serif text-primary/70 uppercase tracking-wider">
                       {isAr ? "العادات الخاصة" : "Special Habits"}
@@ -343,7 +332,6 @@ const EnrollmentModal = ({ isOpen, onClose, t, isAr, onSuccess }: { isOpen: bool
                       ))}
                     </div>
                   </div>
-
                   <button
                     disabled={isSubmitting}
                     type="submit"
@@ -361,7 +349,6 @@ const EnrollmentModal = ({ isOpen, onClose, t, isAr, onSuccess }: { isOpen: bool
     </AnimatePresence>
   );
 };
-
 const AlSafwaProgram = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -372,7 +359,6 @@ const AlSafwaProgram = () => {
   const isAr = lang === "ar";
   const [showEnrollModal, setShowEnrollModal] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-
   const objectives = isAr ? [
     "تقديم رعاية صحية متميزة وشخصية",
     "تحديد المخاطر الصحية والتخفيف منها مبكراً",
@@ -386,7 +372,6 @@ const AlSafwaProgram = () => {
     "Provide immunization updates",
     "Enhance overall health and well-being",
   ];
-
   const features = isAr ? [
     "الوصول إلى أفضل المتخصصين في أمراض القلب والجهاز الهضمي والمزيد",
     "استمتع بأجنحة تنفيذية خاصة وأنيقة",
@@ -400,7 +385,6 @@ const AlSafwaProgram = () => {
     "Utilize our accredited laboratory and diagnostic services",
     "Receive a comprehensive medical report after your assessment",
   ];
-
   const whatToBring = isAr ? [
     "قائمة الأدوية الحالية أو عينات",
     "السجلات الطبية السابقة ونتائج المختبر",
@@ -412,7 +396,6 @@ const AlSafwaProgram = () => {
     "Contact details of your referring physician",
     "Comfortable clothing for overnight stays",
   ];
-
   if (isSubmitted) {
     return (
       <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
@@ -443,7 +426,6 @@ const AlSafwaProgram = () => {
               {isAr ? "شكراً لاهتمامك ببرنامج الصفوة. سنتواصل معك خلال 24 ساعة لتنسيق تقييمك الصحي الشخصي." : "Thank you for your interest in the Al Safwa Program. We will contact you within 24 hours to coordinate your personal health assessment."}
             </p>
           </motion.div>
-
           <div className="container mx-auto px-6 py-12 max-w-3xl">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
               className="bg-popover rounded-2xl border border-border p-8 mb-6 shadow-sm -mt-8">
@@ -463,7 +445,6 @@ const AlSafwaProgram = () => {
                 </div>
               </div>
             </motion.div>
-
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
               className="bg-accent/5 rounded-2xl border border-accent/20 p-8 mb-8 text-center">
               <h3 className="font-serif text-lg text-foreground mb-2">{isAr ? "هل لديك أسئلة فورية؟" : "Have Urgent Questions?"}</h3>
@@ -472,7 +453,6 @@ const AlSafwaProgram = () => {
               </p>
               <div className="text-primary font-serif text-xl">+965 2536 0123</div>
             </motion.div>
-
             <div className="text-center">
               <button onClick={() => window.location.href = "/"}
                 className="bg-primary text-primary-foreground px-10 py-3.5 rounded-full font-body text-sm tracking-widest uppercase hover:bg-primary/90 transition-all active:scale-95 shadow-lg shadow-primary/20">
@@ -486,12 +466,10 @@ const AlSafwaProgram = () => {
       </div>
     );
   }
-
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
       <Header />
-
-      {/* Hero */}
+      {}
       <section className="py-20 bg-primary/5">
         <div className="container mx-auto px-6">
           {fromBookAppointment && (
@@ -520,8 +498,7 @@ const AlSafwaProgram = () => {
           </ScrollAnimationWrapper>
         </div>
       </section>
-
-      {/* Program Overview */}
+      {}
       <section className="py-16">
         <div className="container mx-auto px-6 max-w-4xl">
           <ScrollAnimationWrapper>
@@ -541,8 +518,7 @@ const AlSafwaProgram = () => {
           </ScrollAnimationWrapper>
         </div>
       </section>
-
-      {/* Objectives */}
+      {}
       <section className="py-16 bg-primary/5">
         <div className="container mx-auto px-6 max-w-4xl">
           <ScrollAnimationWrapper>
@@ -564,8 +540,7 @@ const AlSafwaProgram = () => {
           </div>
         </div>
       </section>
-
-      {/* Features */}
+      {}
       <section className="py-16">
         <div className="container mx-auto px-6 max-w-4xl">
           <ScrollAnimationWrapper>
@@ -587,8 +562,7 @@ const AlSafwaProgram = () => {
           </div>
         </div>
       </section>
-
-      {/* Preparing for Your Visit */}
+      {}
       <section className="py-16 bg-primary/5">
         <div className="container mx-auto px-6 max-w-4xl">
           <ScrollAnimationWrapper>
@@ -608,8 +582,7 @@ const AlSafwaProgram = () => {
           </ScrollAnimationWrapper>
         </div>
       </section>
-
-      {/* What to Bring */}
+      {}
       <section className="py-16">
         <div className="container mx-auto px-6 max-w-4xl">
           <ScrollAnimationWrapper>
@@ -631,8 +604,7 @@ const AlSafwaProgram = () => {
           </div>
         </div>
       </section>
-
-      {/* Register CTA */}
+      {}
       <section className="py-20 bg-primary/5">
         <div className="container mx-auto px-6">
           <ScrollAnimationWrapper>
@@ -655,7 +627,6 @@ const AlSafwaProgram = () => {
           </ScrollAnimationWrapper>
         </div>
       </section>
-
       <EnrollmentModal
         isOpen={showEnrollModal}
         onClose={() => setShowEnrollModal(false)}
@@ -663,12 +634,9 @@ const AlSafwaProgram = () => {
         isAr={isAr}
         onSuccess={() => setIsSubmitted(true)}
       />
-
       <Footer />
       <ScrollToTop />
     </div>
   );
 };
-
 export default AlSafwaProgram;
-

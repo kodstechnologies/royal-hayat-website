@@ -10,15 +10,12 @@ import { deptDoctorAliases } from "@/data/departments";
 type DepartmentsSectionProps = {
   showPageTitle?: boolean;
 };
-
 const isAlSafwaDeptSlug = (slug: string) => slug.includes("al-safwa");
-
 type DeptRestoreState = {
   restoreDeptOpenIndex?: number;
   restoreSelectedSubByDept?: Record<number, string>;
   restoreScrollY?: number;
 };
-
 const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -33,7 +30,6 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
   const { lang, t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
   const [doctorCatalog, setDoctorCatalog] = useState<Doctor[]>([]);
-
   useEffect(() => {
     let cancelled = false;
     void loadDoctors().then((list) => {
@@ -43,7 +39,6 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
       cancelled = true;
     };
   }, []);
-
   useEffect(() => {
     const state = location.state as DeptRestoreState | null;
     if (state?.restoreDeptOpenIndex == null) return;
@@ -54,13 +49,10 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
       setSelectedSubByDept(state.restoreSelectedSubByDept);
     }
   }, [location.state]);
-
   useEffect(() => {
     if (openIndex === null || restoreScrollYRef.current == null) return;
-
     const scrollY = restoreScrollYRef.current;
     const deptSlug = departments[openIndex]?.slug;
-
     const scrollToSavedPosition = () => {
       if (scrollY > 0) {
         window.scrollTo({ top: scrollY, left: 0, behavior: "auto" });
@@ -72,20 +64,17 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
           ?.scrollIntoView({ block: "center", behavior: "auto" });
       }
     };
-
     scrollToSavedPosition();
     const raf = window.requestAnimationFrame(scrollToSavedPosition);
     const timer = window.setTimeout(() => {
       scrollToSavedPosition();
       restoreScrollYRef.current = null;
     }, 500);
-
     return () => {
       window.cancelAnimationFrame(raf);
       window.clearTimeout(timer);
     };
   }, [openIndex, departments]);
-
   const openDoctorProfile = (docId: string, origIdx: number) => {
     navigate(`/doctors/${docId}`, {
       state: {
@@ -97,7 +86,6 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
       },
     });
   };
-
   const filteredDepts = departments.filter(dept => {
     const query = searchQuery.toLowerCase();
     return (
@@ -107,12 +95,9 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
       dept.descAr.toLowerCase().includes(query)
     );
   });
-
   const scrollDoctors = (direction: "left" | "right") => {
     if (doctorScrollRef.current) {
       const isMobile = window.innerWidth < 768;
-      // On mobile, card is 280 and gap is 80
-      // On desktop, card is 280 and gap is 16 (gap-4)
       const amount = isMobile ? (280 + 80) : (280 + 16);
       doctorScrollRef.current.scrollBy({
         left: direction === "left" ? -amount : amount,
@@ -120,24 +105,20 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
       });
     }
   };
-
   const handleToggle = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
   };
-
   const slugify = (value: string) =>
     value
       .toLowerCase()
       .replace(/&/g, "and")
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "");
-
   const getSubSlug = (deptSlug: string, subName: string) => {
     const detail = departments.find((d) => d.slug === deptSlug);
     const matched = detail?.subs?.find((s) => s.name.toLowerCase() === subName.toLowerCase());
     return slugify(matched?.name ?? subName);
   };
-
   const selectedDept = openIndex !== null ? departments[openIndex] : null;
   const deptDoctorsMap = useMemo<Record<string, Doctor[]>>(
     () =>
@@ -157,10 +138,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
     if (!selectedDept) return [];
     const origIdx = openIndex!;
     const selectedSubSlug = selectedSubByDept[origIdx];
-
-    // Explicit sub-specialty → doctor name keywords map for reliable filtering
     const subSpecialtyDoctorMap: Record<string, string[]> = {
-      // Internal Medicine subs
       "cardiology": ["alturki", "turki"],
       "nephrology": ["qallaf"],
       "gastroenterology": ["swait", "jaser"],
@@ -169,25 +147,19 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
       "clinical-nutrition-and-dietetics": ["hachem", "khreis", "salamah"],
       "respiratory-clinic-pulmonology": ["alia", "ibrahim"],
       "allergy-and-immunology": ["othman", "yassmin"],
-      // OB/GYN subs
       "cosmetic-gynecology": ["abubakr", "elmardi", "nada", "samar", "nagaty"],
       "gynecologic-oncology": ["nourah-al-ibrahim"],
       "urogynecology": ["abubakr", "elmardi", "nada"],
-      "women-s-health": [], // All OBGYN doctors
+      "women-s-health": [],
       "physiotherapy": [],
       "parent-and-childbirth-education": [],
-      // General & Laparoscopic Surgery subs
       "obesity-bariatric-surgery": ["ahmed-al-mulla", "mulla", "humoud", "alrasheedi", "hussein", "faour", "sulaiman", "almazeedi"],
       "breast-surgical-oncology": ["noha", "alsaleh"],
       "abdominal-wall-reconstruction": ["humoud", "alrasheedi", "sarah", "youha"],
       "nutrition-and-diet-surgery": ["hachem", "khreis", "salamah"],
     };
-
-    // Build all doctors pool — include Nutricare for Clinical Nutrition sub
     const aliases = deptDoctorAliases[selectedDept.name];
     const matchTerms = aliases && aliases.length > 0 ? aliases : [selectedDept.name];
-    // For Internal Medicine, also pull Nutricare doctors
-    // For General Surgery, also pull Nutricare and La Cosmetique doctors
     const extraTerms: string[] = [];
     if (selectedDept.name === "Internal Medicine") {
       extraTerms.push("Nutricare");
@@ -198,9 +170,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
     const allDeptDoctors = doctorCatalog.filter((doc) =>
       allTerms.some((alias) => doc.department.includes(alias) || doc.specialty.includes(alias))
     );
-
     if (selectedSubSlug && selectedDept.subs) {
-      // Try explicit map first
       const mapKey = Object.keys(subSpecialtyDoctorMap).find((k) => selectedSubSlug.includes(k) || k.includes(selectedSubSlug));
       if (mapKey && subSpecialtyDoctorMap[mapKey].length > 0) {
         const keywords = subSpecialtyDoctorMap[mapKey];
@@ -213,8 +183,6 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
           );
         }
       }
-
-      // Fallback: keyword match on title/specialty
       const selectedSub = selectedDept.subs.find(
         (s) => getSubSlug(selectedDept.slug, s.name) === selectedSubSlug
       );
@@ -231,18 +199,13 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
         }
       }
     }
-
-    // No sub selected or no match — show all dept doctors (excluding Nutricare unless sub selected)
     const baseDoctors = deptDoctorsMap[selectedDept.name] || [];
     return [...baseDoctors].sort((a, b) =>
       (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en")
     );
   }, [deptDoctorsMap, selectedDept, openIndex, selectedSubByDept, lang]);
-
-  // Reorder: expanded first, rest after
   const getOriginalIndex = (dept: Department) =>
     departments.findIndex((d) => d.name === dept.name);
-
   return (
     <section className="py-16 md:py-24 bg-background" ref={sectionRef} id="departments">
       <div className="container mx-auto px-4 md:px-6">
@@ -277,8 +240,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
             {t("deptCount")}
           </p>
         </motion.div>
-
-        {/* Search Bar */}
+        {}
         <div className="max-w-2xl mx-auto mb-12">
           <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
@@ -290,14 +252,13 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
             />
           </div>
         </div>
-
         <div className="space-y-14">
           {MAIN_CATEGORIES.map((cat) => {
             const catDepts = filteredDepts.filter(d => d.mainCategory === cat.key);
             if (catDepts.length === 0) return null;
             return (
               <div key={cat.key}>
-                {/* Category Header */}
+                {}
                 <div className="flex items-center gap-4 mb-6">
                   <div className="h-px flex-1 bg-border/50" />
                   <h3 className="text-base md:text-lg font-body font-bold tracking-[0.2em] md:tracking-[0.25em] uppercase text-accent whitespace-nowrap px-1">
@@ -305,13 +266,11 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                   </h3>
                   <div className="h-px flex-1 bg-border/50" />
                 </div>
-
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
                   {catDepts.map((dept) => {
                     const origIdx = getOriginalIndex(dept);
                     const isExpanded = openIndex === origIdx;
                     const selectedSubSlug = selectedSubByDept[origIdx];
-
                     return (
                       <motion.div
                         key={dept.name}
@@ -468,9 +427,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
             </div>
           )}
         </div>
-
       </div>
-
       <style>{`
         .dept-rtl-center {
           direction: rtl;
@@ -480,5 +437,4 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
     </section>
   );
 };
-
 export default DepartmentsSection;

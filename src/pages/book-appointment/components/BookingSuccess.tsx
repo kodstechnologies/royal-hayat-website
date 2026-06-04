@@ -5,7 +5,6 @@ import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import type { DoctorWithClinicCode as Doctor } from "@/data/doctorsWithClinicCodes";
 import type { BookingDeptRow } from "../types";
-
 type BookingSuccessProps = {
   isAr: boolean;
   isRequestMode: boolean;
@@ -19,7 +18,6 @@ type BookingSuccessProps = {
   formatTimeString: (time: string | null) => string;
   onBackToHome: () => void;
 };
-
 const BookingSuccess = ({
   isAr,
   isRequestMode,
@@ -57,7 +55,6 @@ const BookingSuccess = ({
           {isRequestMode ? t("requestConfirmMsg") : t("bookingConfirmMsg")}
         </p>
       </motion.div>
-
       <div className="container mx-auto px-6 py-12 max-w-3xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -105,7 +102,6 @@ const BookingSuccess = ({
             </div>
           </div>
         </motion.div>
-
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -125,7 +121,6 @@ const BookingSuccess = ({
             ))}
           </ul>
         </motion.div>
-
         <div className="text-center">
           <button
             type="button"
@@ -141,5 +136,4 @@ const BookingSuccess = ({
     <ScrollToTop />
   </div>
 );
-
 export default BookingSuccess;

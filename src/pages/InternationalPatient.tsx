@@ -8,11 +8,9 @@ import { useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import { createInternationalPatientEnquiry } from "@/api/internationalPatient";
-
 const InternationalPatient = () => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
-
   const services = [
     { icon: Calendar, label: isAr ? "حجز المواعيد مع الأطباء" : "Appointment scheduling with physicians" },
     { icon: Globe, label: isAr ? "تنسيق إجراءات الدخول إلى المستشفى" : "Coordination of the admissions process" },
@@ -23,12 +21,10 @@ const InternationalPatient = () => {
     { icon: UtensilsCrossed, label: isAr ? "وجبات خاصة حسب الطلب" : "Specially prepared meals upon request" },
     { icon: Globe, label: isAr ? "خدمات الكونسيرج عند الطلب" : "Concierge services upon request" },
   ];
-
   const [form, setForm] = useState({
     firstName: "", lastName: "", mobile: "", email: "", address: "", country: "", comments: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const validateForm = () => {
     if (!form.firstName.trim() || !form.lastName.trim() || !form.email.trim() || !form.mobile.trim()) {
       toast.error(isAr ? "يرجى ملء الحقول المطلوبة." : "Please fill in required fields.");
@@ -45,11 +41,9 @@ const InternationalPatient = () => {
     }
     return true;
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
-
     try {
       setIsSubmitting(true);
       await createInternationalPatientEnquiry({
@@ -79,14 +73,10 @@ const InternationalPatient = () => {
       setIsSubmitting(false);
     }
   };
-
   const handleChange = (field: string, value: string) => setForm(prev => ({ ...prev, [field]: value }));
-
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
       <Header />
-
-      {/* Hero */}
       <section className="bg-primary py-16 md:py-20">
         <div className="container mx-auto px-6 text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
@@ -103,8 +93,7 @@ const InternationalPatient = () => {
           </motion.div>
         </div>
       </section>
-
-      {/* About */}
+      {}
       <section className="py-16">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto space-y-6">
@@ -129,8 +118,7 @@ const InternationalPatient = () => {
           </div>
         </div>
       </section>
-
-      {/* Services */}
+      {}
       <section className="py-16 bg-secondary/20">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto">
@@ -159,8 +147,7 @@ const InternationalPatient = () => {
           </div>
         </div>
       </section>
-
-      {/* Contact Info */}
+      {}
       <section className="py-12 bg-primary/5">
         <div className="container mx-auto px-6 text-center">
           <motion.div initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
@@ -174,8 +161,7 @@ const InternationalPatient = () => {
           </motion.div>
         </div>
       </section>
-
-      {/* Enquiry Form */}
+      {}
       <section className="py-16">
         <div className="container mx-auto px-6">
           <div className="max-w-2xl mx-auto">
@@ -183,11 +169,9 @@ const InternationalPatient = () => {
               <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-2 text-center">{isAr ? "الاستفسار الإلكتروني" : "Online Enquiry"}</h2>
               <p className="font-body text-sm text-muted-foreground text-center mb-8">{isAr ? "للاستفسارات عبر الإنترنت، يرجى تعبئة النموذج التالي:" : "For online enquiries, please fill in the form below."}</p>
             </motion.div>
-
             <motion.form onSubmit={handleSubmit} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }} transition={{ delay: 0.1 }}
               className="bg-popover border border-border/50 rounded-2xl p-6 md:p-8 space-y-5">
-
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "الاسم الأول" : "First Name"} *</label>
@@ -200,37 +184,31 @@ const InternationalPatient = () => {
                     className="w-full rounded-lg border border-border bg-background px-4 py-2.5 font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
                 </div>
               </div>
-
               <div>
                 <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "الهاتف المحمول" : "Mobile"} *</label>
                   <input type="tel" value={form.mobile} onChange={e => handleChange("mobile", e.target.value)}
                   className="w-full rounded-lg border border-border bg-background px-4 py-2.5 font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
               </div>
-
               <div>
                 <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "البريد الإلكتروني" : "Email"} *</label>
                 <input type="email" value={form.email} onChange={e => handleChange("email", e.target.value)}
                   className="w-full rounded-lg border border-border bg-background px-4 py-2.5 font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
               </div>
-
               <div>
                 <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "العنوان" : "Address"}</label>
                 <input type="text" value={form.address} onChange={e => handleChange("address", e.target.value)}
                   className="w-full rounded-lg border border-border bg-background px-4 py-2.5 font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
               </div>
-
               <div>
                 <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "الدولة" : "Country"}</label>
                 <input type="text" value={form.country} onChange={e => handleChange("country", e.target.value)}
                   className="w-full rounded-lg border border-border bg-background px-4 py-2.5 font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
               </div>
-
               <div>
                 <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "الملاحظات" : "Comments"}</label>
                 <textarea rows={4} value={form.comments} onChange={e => handleChange("comments", e.target.value)}
                   className="w-full rounded-lg border border-border bg-background px-4 py-2.5 font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none" />
               </div>
-
               <button
                 type="submit"
                 disabled={isSubmitting}
@@ -243,13 +221,9 @@ const InternationalPatient = () => {
           </div>
         </div>
       </section>
-
- 
-
       <Footer />
       <ScrollToTop />
     </div>
   );
 };
-
 export default InternationalPatient;

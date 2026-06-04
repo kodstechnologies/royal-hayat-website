@@ -1,6 +1,5 @@
 import { writeFileSync } from "fs";
 import { getFeaturedDoctors } from "../src/data/doctors.ts";
-
 const pick = (d) => ({
   id: d.id,
   name: d.name,
@@ -17,13 +16,9 @@ const pick = (d) => ({
   availableOnline: d.availableOnline,
   hideBooking: d.hideBooking,
 });
-
 const list = getFeaturedDoctors(12).map(pick);
 const body = `import type { Doctor } from "./doctors";
-
-/** Homepage / medical-services carousel — subset of doctors (no full catalog import). */
 export const featuredDoctors: Doctor[] = ${JSON.stringify(list, null, 2)};
 `;
-
 writeFileSync(new URL("../src/data/featuredDoctors.ts", import.meta.url), body);
 console.log("featuredDoctors.ts:", list.length, "doctors");

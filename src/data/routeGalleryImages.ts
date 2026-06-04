@@ -119,7 +119,6 @@ export const suiteCarouselImagesByIndex: Record<number, string[]> = {
     "https://royal-hayat.s3.eu-central-1.amazonaws.com/Lily/iutpipwwggghend6stbw.jpeg",
     "https://royal-hayat.s3.eu-central-1.amazonaws.com/Lily/khr9yeymetkhvqaanojt.jpeg",
     "https://royal-hayat.s3.eu-central-1.amazonaws.com/Lily/myvuptdn5rvcaexz0s6u.jpeg",
-
   ],
   6: [
     "https://royal-hayat.s3.eu-central-1.amazonaws.com/daisysuit/1.JPG",
@@ -129,7 +128,6 @@ export const suiteCarouselImagesByIndex: Record<number, string[]> = {
     "https://royal-hayat.s3.eu-central-1.amazonaws.com/daisysuit/5.JPG",
   ],
 };
-// Paste your final gallery links here
 export const workWithUsStaffActivitiesImages: string[] = [
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/newly-compressed/1.jpeg",
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/newly-compressed/2.jpeg",
@@ -149,7 +147,6 @@ export const workWithUsStaffActivitiesImages: string[] = [
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/newly-compressed/16.jpeg",
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/newly-compressed/17.jpeg",
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/staff-activities-compressed/newly-compressed/18.jpeg"
-
 ];
 export const workWithUsGalaDinnerImages: string[] = [
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/Gala-Dinner/blcpmdecxupelqvkijou.jpeg",
@@ -164,17 +161,13 @@ export const workWithUsGalaDinnerImages: string[] = [
 ];
 export const workWithUsHospitalityWeekImages: string[] = [
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/0.jpeg",
- 
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/1.jpeg",
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/2.jpeg",
-
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/3.jpeg",
-
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/4.jpeg",
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/7.jpeg",
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/8.jpeg",
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/9.jpeg",
-
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/10.jpeg",
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/11.jpeg",
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/Hospitalitiy/12.jpeg",
@@ -202,4 +195,3 @@ export const workWithUsRhhQuizImages: string[] = [
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/RHH-quiz/DSC07379.JPG",
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/RHH-quiz/DSC07389.JPG"
 ];
-

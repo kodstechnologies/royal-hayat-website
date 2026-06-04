@@ -442,5 +442,4 @@ export const en = {
   "disclaimerTitle": "Disclaimer",
   "disclaimerText": "The information provided on this website is for general informational purposes only. It is not intended as medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition. Never disregard professional medical advice or delay in seeking it because of something you have read on this website. Royale Hayat Hospital does not recommend or endorse any specific tests, physicians, products, procedures, opinions, or other information that may be mentioned on this website."
 } as const;
-
 export type TranslationKey = keyof typeof en;

@@ -1,6 +1,4 @@
 import type { Doctor } from "./doctors";
-
-/** Homepage / medical-services carousel — subset of doctors (no full catalog import). */
 export const featuredDoctors: Doctor[] = [
   {
     "id": "dr-abdulaziz-ramadhan",

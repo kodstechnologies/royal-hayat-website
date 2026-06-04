@@ -9,7 +9,6 @@ import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import LazyWhenInView, { sectionPlaceholder } from "@/components/LazyWhenInView";
 import { featuredDoctors } from "@/data/featuredDoctors";
-
 const InsurancePartners = lazy(() => import("@/components/InsurancePartners"));
 const DoctorsSection = lazy(() => import("@/components/DoctorsSection"));
 const WhyRoyaleHayat = lazy(() => import("@/components/WhyRoyaleHayat"));
@@ -18,7 +17,6 @@ const AlSafwaSpotlight = lazy(() => import("@/components/AlSafwaSpotlight"));
 const AwardsSection = lazy(() => import("@/components/AwardsSection"));
 const PatientsQuickLinks = lazy(() => import("@/components/PatientsQuickLinks"));
 const TestimonialsSection = lazy(() => import("@/components/TestimonialsSection"));
-
 const Index = () => {
   useEffect(() => {
     featuredDoctors.forEach((doc) => {
@@ -28,7 +26,6 @@ const Index = () => {
       }
     });
   }, [featuredDoctors]);
-
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)] max-lg:pt-[var(--header-height,7.5rem)] [&_.text-accent]:text-[#816107]">
       <Header />
@@ -82,5 +79,4 @@ const Index = () => {
     </div>
   );
 };
-
 export default Index;

@@ -24,7 +24,6 @@ import {
   workWithUsHospitalityWeekImages,
   workWithUsRhhQuizImages,
 } from "@/data/routeGalleryImages";
-
 const BookAppointment = lazy(() => import("./pages/BookAppointment.tsx"));
 const HospitalityServices = lazy(() => import("./pages/HospitalityServices.tsx"));
 const PatientsVisitors = lazy(() => import("./pages/PatientsVisitors.tsx"));
@@ -52,7 +51,6 @@ const CSR = lazy(() => import("./pages/CSR.tsx"));
 const FifthFloorCafe = lazy(() => import("./pages/FifthFloorCafe.tsx"));
 const NewbornPhotography = lazy(() => import("./pages/NewbornPhotography.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
-
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -61,14 +59,12 @@ const queryClient = new QueryClient({
     },
   },
 });
-
 const PageLoader = () => (
   <div className="flex min-h-[40vh] items-center justify-center text-muted-foreground">
     <Loader2 className="h-8 w-8 animate-spin text-primary" aria-hidden />
     <span className="sr-only">Loading page...</span>
   </div>
 );
-
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -149,5 +145,4 @@ const App = () => (
     </TooltipProvider>
   </QueryClientProvider>
 );
-
 export default App;

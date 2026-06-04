@@ -2,8 +2,6 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
-
-// https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
@@ -34,8 +32,6 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          // Only split large app data/locale modules. Avoid splitting node_modules
-          // React packages — that causes "createContext of undefined" at runtime.
           if (!id.includes("node_modules")) {
             if (id.includes("/src/data/doctors")) return "data-doctors";
             if (id.includes("/src/data/departmentDetails")) return "data-department-details";

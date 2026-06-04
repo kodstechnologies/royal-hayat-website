@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { useRef, useState } from "react";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { useLanguage } from "@/contexts/LanguageContext";
-
 const voices = [
   {
     text: "Royale Hayat is more than a workplace. It is a family. Every day I feel respected, supported, and proud of the care we deliver together.",
@@ -36,15 +35,12 @@ const voices = [
     name: "Dr. Hassan T.", nameAr: "د. حسن ت.", role: "Specialist Physician", roleAr: "طبيب اختصاصي",
   },
 ];
-
 const duplicated = [...voices, ...voices];
-
 const VoicesFromOurPeople = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
   const { lang } = useLanguage();
   const isAr = lang === "ar";
-
   return (
     <section className="py-20 bg-popover overflow-hidden">
       <div className="container mx-auto px-6">
@@ -59,7 +55,6 @@ const VoicesFromOurPeople = () => {
           </div>
         </ScrollAnimationWrapper>
       </div>
-
       <div
         ref={containerRef}
         className="relative w-full"
@@ -98,5 +93,4 @@ const VoicesFromOurPeople = () => {
     </section>
   );
 };
-
 export default VoicesFromOurPeople;

@@ -1,11 +1,9 @@
 import api from "./axiosInstance";
-
 export type JobPosting = {
   _id?: string;
   id?: string | number;
   jobId?: string;
   title: string;
-  /** Backend field used for grouping (maps to "category" in UI). */
   department?: string;
   category?: string;
   location?: string;
@@ -19,7 +17,6 @@ export type JobPosting = {
   isActive?: boolean;
   [key: string]: unknown;
 };
-
 export type JobApplicationPayload = {
   jobId: string;
   fullName: string;
@@ -28,13 +25,11 @@ export type JobApplicationPayload = {
   coverLetter?: string;
   cv?: File;
 };
-
 export type GetJobsParams = {
   page?: number;
   limit?: number;
   isActive?: boolean;
 };
-
 export const getAllJobs = async (params?: GetJobsParams) => {
   const response = await api.get("/api/v1/jobs", {
     params: {
@@ -46,12 +41,10 @@ export const getAllJobs = async (params?: GetJobsParams) => {
   const data = response.data?.data;
   return Array.isArray(data) ? (data as JobPosting[]) : [];
 };
-
 export const getJobById = async (id: string) => {
   const response = await api.get(`/api/v1/jobs/${id}`);
   return response.data?.data ?? response.data?.job ?? response.data;
 };
-
 export const applyForJob = async (data: JobApplicationPayload) => {
   const formData = new FormData();
   formData.append("jobId", data.jobId);
@@ -60,7 +53,6 @@ export const applyForJob = async (data: JobApplicationPayload) => {
   formData.append("phone", data.phone);
   if (data.coverLetter) formData.append("coverLetter", data.coverLetter);
   if (data.cv) formData.append("resume", data.cv);
-
   const response = await api.post("/api/v1/jobs/apply", formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });

@@ -9,7 +9,6 @@ import {
   createEventBooking,
   type CreateEventBookingPayload,
 } from "@/api/event";
-
 type EventBookingForm = {
   hall: string;
   dueDate: string;
@@ -22,13 +21,11 @@ type EventBookingForm = {
   email: string;
   mrn: string;
 };
-
 type EventBookingModalProps = {
   isOpen: boolean;
   isAr: boolean;
   onClose: () => void;
 };
-
 const initialForm: EventBookingForm = {
   hall: "",
   dueDate: "",
@@ -41,12 +38,10 @@ const initialForm: EventBookingForm = {
   email: "",
   mrn: "",
 };
-
 const formatMobileNumber = (mobile: string) => {
   const digits = mobile.replace(/\D/g, "");
   return digits ? `+${digits}` : "";
 };
-
 const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) => {
   const [form, setForm] = useState<EventBookingForm>(initialForm);
   const [errors, setErrors] = useState<Partial<Record<keyof EventBookingForm, string>>>({});
@@ -55,13 +50,11 @@ const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) =>
     countryCode: "kw",
     dialCode: "965",
   });
-
   const hallOptions = [
     { value: "gardenia", labelEn: "Gardenia Banquet Hall", labelAr: "قاعة جاردينيا للاحتفالات" },
     { value: "aljouri", labelEn: "Al Jouri Banquet Hall", labelAr: "قاعة الجوري للاحتفالات" },
     { value: "in-room-event-services", labelEn: "In room event services", labelAr: "خدمات فعاليات داخل الغرفة" },
   ];
-
   const validate = () => {
     const nextErrors: Partial<Record<keyof EventBookingForm, string>> = {};
     if (!form.hall) nextErrors.hall = isAr ? "القاعة مطلوبة" : "Choose your hall is required";
@@ -94,18 +87,15 @@ const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) =>
     }
     return nextErrors;
   };
-
   const updateField = (field: keyof EventBookingForm, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
     setErrors((prev) => ({ ...prev, [field]: undefined }));
   };
-
   const handleMobileChange = (value: string, country: CountryData | {}) => {
     const data = country as CountryData;
     const countryCode = data.countryCode || mobileCountry.countryCode;
     const dialCode = data.dialCode || mobileCountry.dialCode;
     setMobileCountry({ countryCode, dialCode });
-
     const digits = value.replace(/\D/g, "");
     if (countryCode === "kw") {
       const localDigitsRaw = digits.startsWith(dialCode) ? digits.slice(dialCode.length) : digits;
@@ -114,16 +104,13 @@ const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) =>
       updateField("mobile", `${dialCode}${limitedLocalDigits}`);
       return;
     }
-
     updateField("mobile", digits);
   };
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const nextErrors = validate();
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
-
     const payload: CreateEventBookingPayload = {
       hall: form.hall as CreateEventBookingPayload["hall"],
       dueDateOfExpectingMother: form.dueDate,
@@ -134,14 +121,11 @@ const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) =>
       mobileNumber: formatMobileNumber(form.mobile),
       email: form.email.trim(),
     };
-
     if (form.eventType === "other") {
       payload.otherEventType = form.otherEventType.trim();
     }
-
     const mrn = form.mrn.trim();
     if (mrn) payload.mrn = mrn;
-
     setIsSubmitting(true);
     try {
       const response = await createEventBooking(payload);
@@ -171,7 +155,6 @@ const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) =>
       setIsSubmitting(false);
     }
   };
-
   return (
     <AnimatePresence>
       {isOpen && (
@@ -201,7 +184,6 @@ const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) =>
                 <X className="w-5 h-5" />
               </button>
             </div>
-
             <form className="grid grid-cols-1 md:grid-cols-2 gap-4" onSubmit={handleSubmit}>
               <div>
                 <label className="block text-sm font-body text-foreground mb-1">{isAr ? "اختيار القاعة *" : "Choose your Hall *"}</label>
@@ -217,7 +199,6 @@ const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) =>
                 </select>
                 {errors.hall && <p className="mt-1 text-xs text-destructive">{errors.hall}</p>}
               </div>
-
               <div>
                 <label className="block text-sm font-body text-foreground mb-1">{isAr ? "التاريخ المتوقع للولادة *" : "Due Date of Expecting Mother *"}</label>
                 <input
@@ -228,7 +209,6 @@ const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) =>
                 />
                 {errors.dueDate && <p className="mt-1 text-xs text-destructive">{errors.dueDate}</p>}
               </div>
-
               <div>
                 <label className="block text-sm font-body text-foreground mb-1">{isAr ? "نوع المناسبة *" : "Type of Event *"}</label>
                 <select
@@ -244,7 +224,6 @@ const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) =>
                 </select>
                 {errors.eventType && <p className="mt-1 text-xs text-destructive">{errors.eventType}</p>}
               </div>
-
               {form.eventType === "other" && (
                 <div>
                   <label className="block text-sm font-body text-foreground mb-1">{isAr ? "حدد نوع المناسبة *" : "Other Event Type *"}</label>
@@ -258,7 +237,6 @@ const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) =>
                   {errors.otherEventType && <p className="mt-1 text-xs text-destructive">{errors.otherEventType}</p>}
                 </div>
               )}
-
               <div>
                 <label className="block text-sm font-body text-foreground mb-1">{isAr ? "التاريخ المقترح للمناسبة *" : "Proposed Date of Event *"}</label>
                 <input
@@ -269,7 +247,6 @@ const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) =>
                 />
                 {errors.proposedDate && <p className="mt-1 text-xs text-destructive">{errors.proposedDate}</p>}
               </div>
-
               <div>
                 <label className="block text-sm font-body text-foreground mb-1">{isAr ? "عدد الأيام *" : "No of Days *"}</label>
                 <input
@@ -281,7 +258,6 @@ const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) =>
                 />
                 {errors.numberOfDays && <p className="mt-1 text-xs text-destructive">{errors.numberOfDays}</p>}
               </div>
-
               <div>
                 <label className="block text-sm font-body text-foreground mb-1">{isAr ? "الاسم *" : "Name *"}</label>
                 <input
@@ -292,7 +268,6 @@ const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) =>
                 />
                 {errors.name && <p className="mt-1 text-xs text-destructive">{errors.name}</p>}
               </div>
-
               <div className="md:col-span-2">
                 <label className="block text-sm font-body text-foreground mb-1">{isAr ? "رقم الجوال *" : "Mobile *"}</label>
                 <PhoneInput
@@ -311,7 +286,6 @@ const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) =>
                 />
                 {errors.mobile && <p className="mt-1 text-xs text-destructive">{errors.mobile}</p>}
               </div>
-
               <div className="md:col-span-2">
                 <label className="block text-sm font-body text-foreground mb-1">{isAr ? "البريد الإلكتروني *" : "Email *"}</label>
                 <input
@@ -322,7 +296,6 @@ const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) =>
                 />
                 {errors.email && <p className="mt-1 text-xs text-destructive">{errors.email}</p>}
               </div>
-
               <div>
                 <label className="block text-sm font-body text-foreground mb-1">{isAr ? "الرقم الطبي (إن وجد)" : "MRN - if applicable"}</label>
                 <input
@@ -332,7 +305,6 @@ const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) =>
                   className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm font-body"
                 />
               </div>
-
               <div className="md:col-span-2 pt-2 flex justify-center">
                 <button
                   type="submit"
@@ -350,5 +322,4 @@ const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) =>
     </AnimatePresence>
   );
 };
-
 export default EventBookingModal;

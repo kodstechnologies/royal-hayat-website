@@ -426,6 +426,8 @@ const BookAppointment = () => {
   const [paciVerifiedNoHisPatient, setPaciVerifiedNoHisPatient] = useState(false);
   const verifySocketCleanupRef = useRef<(() => void) | null>(null);
   const verificationDoneRef = useRef(false);
+  const patientStepRef = useRef<HTMLDivElement>(null);
+  const hisFinalizeInFlightRef = useRef(false);
   const [verifiedIdentityDetails, setVerifiedIdentityDetails] = useState<VerifiedIdentityDetails | null>(null);
   const [symptomText, setSymptomText] = useState("");
   const [symptomChips, setSymptomChips] = useState<string[]>([]);
@@ -895,6 +897,68 @@ const BookAppointment = () => {
     setHisLookupFailureMessage("");
     setShowReturningPatientModal(true);
   };
+  const populateVerifiedIdentityFromRaw = useCallback(
+    (rawData: Record<string, unknown>, civilIdForData: string, pickedName: string) => {
+      const rawName = (rawData?.name || {}) as Record<string, unknown>;
+      const nameFromRaw = rawData?.name
+        ? (isAr
+            ? String(rawName.arabic || rawName.ar || rawName.english || rawName.en || "")
+            : String(rawName.english || rawName.en || rawName.arabic || rawName.ar || ""))
+        : pickedName;
+      const nationalityObj = (rawData?.nationality || {}) as Record<string, unknown>;
+      const nationalityNameObj = (nationalityObj?.name || {}) as Record<string, unknown>;
+      const nationalityName = nationalityObj?.name
+        ? (isAr
+            ? String(nationalityNameObj.arabic || nationalityNameObj.english || "")
+            : String(nationalityNameObj.english || nationalityNameObj.arabic || ""))
+        : "";
+      const registration = (rawData?.registration || {}) as Record<string, unknown>;
+
+      const dobIso = identityDateToIso(rawData?.dateOfBirth);
+      if (dobIso) {
+        setPatientDobIso(dobIso);
+        setPatientDob(dobIso);
+      }
+      const genderMapped = mapPaciSexToGender(String(rawData?.sex || ""));
+      if (genderMapped) setPatientGender(genderMapped);
+
+      setVerifiedIdentityDetails({
+        name: nameFromRaw || pickedName || "—",
+        dateOfBirth: rawData?.dateOfBirth
+          ? new Date(String(rawData.dateOfBirth)).toLocaleDateString(isAr ? "ar-KW" : "en-GB")
+          : "—",
+        civilIdNumber: String(rawData?.civilId || civilIdForData || "—"),
+        nationality: nationalityName || String(nationalityObj?.iso3Letter || "—"),
+        gender: String(rawData?.sex || "—"),
+        passportNumber: String(registration?.passport || "—"),
+      });
+    },
+    [isAr],
+  );
+
+  const ensureVerifiedIdentityFallback = useCallback(
+    (civilIdForData: string, pickedName: string, names?: { english: string; arabic: string }) => {
+      const mock = getQaMockIdentityData(civilIdForData);
+      const raw = (mock?.raw || mock?.identityData) as Record<string, unknown> | undefined;
+      if (raw && Object.keys(raw).length > 0) {
+        populateVerifiedIdentityFromRaw(raw, civilIdForData, pickedName);
+        return;
+      }
+      const displayName = isAr
+        ? names?.arabic || names?.english || pickedName
+        : names?.english || names?.arabic || pickedName;
+      setVerifiedIdentityDetails({
+        name: displayName || pickedName || "—",
+        dateOfBirth: "—",
+        civilIdNumber: civilIdForData,
+        nationality: "—",
+        gender: "—",
+        passportNumber: "—",
+      });
+    },
+    [isAr, populateVerifiedIdentityFromRaw],
+  );
+
   const loadVerifiedIdentityDetails = useCallback(
     async (civilIdForData: string, pickedName: string) => {
       try {
@@ -904,44 +968,13 @@ const BookAppointment = () => {
           string,
           unknown
         >;
-        const rawName = (rawData?.name || {}) as Record<string, unknown>;
-        const nameFromRaw = rawData?.name
-          ? (isAr
-              ? String(rawName.arabic || rawName.ar || rawName.english || rawName.en || "")
-              : String(rawName.english || rawName.en || rawName.arabic || rawName.ar || ""))
-          : pickedName;
-        const nationalityObj = (rawData?.nationality || {}) as Record<string, unknown>;
-        const nationalityNameObj = (nationalityObj?.name || {}) as Record<string, unknown>;
-        const nationalityName = nationalityObj?.name
-          ? (isAr
-              ? String(nationalityNameObj.arabic || nationalityNameObj.english || "")
-              : String(nationalityNameObj.english || nationalityNameObj.arabic || ""))
-          : "";
-        const registration = (rawData?.registration || {}) as Record<string, unknown>;
-
-        const dobIso = identityDateToIso(rawData?.dateOfBirth);
-        if (dobIso) {
-          setPatientDobIso(dobIso);
-          setPatientDob(dobIso);
-        }
-        const genderMapped = mapPaciSexToGender(String(rawData?.sex || ""));
-        if (genderMapped) setPatientGender(genderMapped);
-
-        setVerifiedIdentityDetails({
-          name: nameFromRaw || pickedName || "—",
-          dateOfBirth: rawData?.dateOfBirth
-            ? new Date(String(rawData.dateOfBirth)).toLocaleDateString(isAr ? "ar-KW" : "en-GB")
-            : "—",
-          civilIdNumber: String(rawData?.civilId || civilIdForData || "—"),
-          nationality: nationalityName || String(nationalityObj?.iso3Letter || "—"),
-          gender: String(rawData?.sex || "—"),
-          passportNumber: String(registration?.passport || "—"),
-        });
+        populateVerifiedIdentityFromRaw(rawData, civilIdForData, pickedName);
       } catch (err) {
         console.error("Failed to load identity details for display:", err);
+        ensureVerifiedIdentityFallback(civilIdForData, pickedName);
       }
     },
-    [isAr]
+    [ensureVerifiedIdentityFallback, populateVerifiedIdentityFromRaw],
   );
   const resetPatientLookupFailure = useCallback(() => {
     verificationDoneRef.current = false;
@@ -971,9 +1004,10 @@ const BookAppointment = () => {
       setPatientType("returning");
       setPatientId(null);
       setPaciVerifiedNoHisPatient(true);
-      await loadVerifiedIdentityDetails(params.civilId, params.pickedName);
+      ensureVerifiedIdentityFallback(params.civilId, params.pickedName, params.names);
+      void loadVerifiedIdentityDetails(params.civilId, params.pickedName);
     },
-    [loadVerifiedIdentityDetails],
+    [ensureVerifiedIdentityFallback, loadVerifiedIdentityDetails],
   );
   const dismissHisFailureAndContinue = useCallback(() => {
     setShowHisFailureModal(false);
@@ -985,7 +1019,12 @@ const BookAppointment = () => {
     setIsConfirmingPatientRecord(false);
     setVerifyOperationId(null);
     setShowReturningPatientModal(false);
+    setPatientType("returning");
+    setPaciVerifiedNoHisPatient(true);
     setStep(2);
+    requestAnimationFrame(() => {
+      patientStepRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
   }, []);
   const finalizeRegisteredPatientAfterPaci = useCallback(
     async (params: {
@@ -993,6 +1032,8 @@ const BookAppointment = () => {
       pickedName: string;
       names: { english: string; arabic: string };
     }): Promise<boolean> => {
+      if (hisFinalizeInFlightRef.current) return false;
+      hisFinalizeInFlightRef.current = true;
       setIsConfirmingPatientRecord(true);
       setPatientLookupShowGoBack(false);
       setNationalIdError("");
@@ -1024,6 +1065,7 @@ const BookAppointment = () => {
         setShowHisFailureModal(true);
         return false;
       } finally {
+        hisFinalizeInFlightRef.current = false;
         setIsConfirmingPatientRecord(false);
       }
     },
@@ -1749,7 +1791,7 @@ Clinic Code:`;
             </motion.div>
           )}
           {step === 2 && (
-            <motion.div key="s2" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.35 }}>
+            <motion.div key="s2" ref={patientStepRef} variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.35 }}>
               <div className="max-w-3xl mx-auto">
                 {!patientType && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
@@ -1789,7 +1831,7 @@ Clinic Code:`;
                     </div>
                   </div>
                 )}
-                {patientType === "returning" && paciVerifiedNoHisPatient && patientName && verifiedIdentityDetails && (
+                {patientType === "returning" && paciVerifiedNoHisPatient && patientName.trim() && (
                   <div className="bg-popover rounded-2xl p-5 sm:p-8 border border-border shadow-sm">
                     <div className="rounded-xl border border-accent/30 bg-accent/5 px-4 py-3 mb-5">
                       <p className="font-body text-sm text-foreground leading-relaxed">{t("paciVerifiedNoHisBanner")}</p>
@@ -1804,19 +1846,19 @@ Clinic Code:`;
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div className="rounded-xl border border-border/70 bg-popover/80 px-3 py-2.5">
                           <p className="font-body text-[10px] uppercase tracking-wider text-muted-foreground">{isAr ? "الاسم" : "Name"}</p>
-                          <p className="font-body text-sm text-foreground font-medium mt-0.5">{verifiedIdentityDetails.name}</p>
+                          <p className="font-body text-sm text-foreground font-medium mt-0.5">{verifiedIdentityDetails?.name || patientName}</p>
                         </div>
                         <div className="rounded-xl border border-border/70 bg-popover/80 px-3 py-2.5">
                           <p className="font-body text-[10px] uppercase tracking-wider text-muted-foreground">{isAr ? "تاريخ الميلاد" : "Date of Birth"}</p>
-                          <p className="font-body text-sm text-foreground font-medium mt-0.5">{verifiedIdentityDetails.dateOfBirth}</p>
+                          <p className="font-body text-sm text-foreground font-medium mt-0.5">{verifiedIdentityDetails?.dateOfBirth || "—"}</p>
                         </div>
                         <div className="rounded-xl border border-border/70 bg-popover/80 px-3 py-2.5">
                           <p className="font-body text-[10px] uppercase tracking-wider text-muted-foreground">{isAr ? "الرقم المدني" : "Civil ID Number"}</p>
-                          <p className="font-body text-sm text-foreground font-medium mt-0.5">{verifiedIdentityDetails.civilIdNumber}</p>
+                          <p className="font-body text-sm text-foreground font-medium mt-0.5">{verifiedIdentityDetails?.civilIdNumber || nationalId || "—"}</p>
                         </div>
                         <div className="rounded-xl border border-border/70 bg-popover/80 px-3 py-2.5">
                           <p className="font-body text-[10px] uppercase tracking-wider text-muted-foreground">{isAr ? "الجنس" : "Gender"}</p>
-                          <p className="font-body text-sm text-foreground font-medium mt-0.5">{verifiedIdentityDetails.gender}</p>
+                          <p className="font-body text-sm text-foreground font-medium mt-0.5">{verifiedIdentityDetails?.gender || "—"}</p>
                         </div>
                       </div>
                     </div>

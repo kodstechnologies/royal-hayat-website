@@ -15,7 +15,7 @@ export default {
     extend: {
       fontFamily: {
         serif: ["'Garamond'", "Georgia", "serif"],
-        body: ["'Inter'", "system-ui", "sans-serif"],
+        body: ["'Avenir'", "sans-serif"],
         arabic: ["'GE Dinar One'", "sans-serif"],
       },
       colors: {

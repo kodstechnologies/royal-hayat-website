@@ -1,4 +1,55 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@font-face {
+  font-family: 'Avenir';
+  src:
+    local('Avenir Light'),
+    local('Avenir-Light'),
+    url('/fonts/Avenir-Light.woff2') format('woff2'),
+    url('/fonts/Avenir-Light.woff') format('woff'),
+    url('/fonts/Avenir-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Avenir';
+  src:
+    local('Avenir Book'),
+    local('Avenir-Book'),
+    local('Avenir'),
+    url('/fonts/Avenir-Book.woff2') format('woff2'),
+    url('/fonts/Avenir-Book.woff') format('woff'),
+    url('/fonts/Avenir-Book.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Avenir';
+  src:
+    local('Avenir Medium'),
+    local('Avenir-Medium'),
+    url('/fonts/Avenir-Medium.woff2') format('woff2'),
+    url('/fonts/Avenir-Medium.woff') format('woff'),
+    url('/fonts/Avenir-Medium.otf') format('opentype');
+  font-weight: 500 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Avenir';
+  src:
+    local('Avenir Heavy'),
+    local('Avenir-Heavy'),
+    url('/fonts/Avenir-Heavy.woff2') format('woff2'),
+    url('/fonts/Avenir-Heavy.woff') format('woff'),
+    url('/fonts/Avenir-Heavy.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
 
 @font-face {
   font-family: 'GE Dinar One';
@@ -48,6 +99,19 @@
 }
 
 @layer base {
+  html[lang="en"] {
+    font-family: 'Avenir', sans-serif;
+  }
+
+  html[lang="en"] body,
+  html[lang="en"] p,
+  html[lang="en"] .font-body,
+  [dir="ltr"] body,
+  [dir="ltr"] p,
+  [dir="ltr"] .font-body {
+    font-family: 'Avenir', sans-serif;
+  }
+
   html[lang="ar"] {
     font-family: 'GE Dinar One', sans-serif;
   }

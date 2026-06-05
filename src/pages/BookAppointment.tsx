@@ -26,10 +26,15 @@ import {
   type IdentityStatusResponse,
 } from "@/api/identity";
 import { subscribeToIdentityVerification } from "@/api/identitySocket";
-import { extractPatientId } from "@/utils/patientLookupErrors";
+import { extractPatientId, getPatientLookupUserMessage } from "@/utils/patientLookupErrors";
+import {
+  classifyBookingConflict,
+  formatBookingConflictAlert,
+  type BookingConflictDetails,
+} from "@/utils/bookingErrors";
 import { identityDateToIso, mapPaciSexToGender } from "@/utils/mapPaciGender";
 import type { AppointmentBookingFallbackState } from "@/types/appointmentBookingFallback";
-import type { AppointmentRequestPrefillState } from "@/types/appointmentRequestPrefill";
+import type { AppointmentRequestPrefillState, PaciIdentityDetails } from "@/types/appointmentRequestPrefill";
 import { departments as staticDepts, deptDoctorAliases, MAIN_CATEGORIES } from "@/data/departments";
 import { Calendar as DatePickerCalendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
@@ -242,6 +247,7 @@ const BookAppointment = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [bookingError, setBookingError] = useState<string | null>(null);
   const [bookingPopupMessage, setBookingPopupMessage] = useState<string | null>(null);
+  const [bookingPopupGoHome, setBookingPopupGoHome] = useState(false);
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
   useEffect(() => {
     if (selectedDoctor) {
@@ -421,6 +427,9 @@ const BookAppointment = () => {
   const [isConfirmingPatientRecord, setIsConfirmingPatientRecord] = useState(false);
   const [patientLookupShowGoBack, setPatientLookupShowGoBack] = useState(false);
   const [showHisFailureModal, setShowHisFailureModal] = useState(false);
+  const [hisFailureMessage, setHisFailureMessage] = useState("");
+  const [hisFailureIdentityDetails, setHisFailureIdentityDetails] = useState<PaciIdentityDetails | null>(null);
+  const [hisFailureAllowsRequest, setHisFailureAllowsRequest] = useState(false);
   const verifySocketCleanupRef = useRef<(() => void) | null>(null);
   const verificationDoneRef = useRef(false);
   const hisFailurePrefillRef = useRef<AppointmentRequestPrefillState | null>(null);
@@ -700,17 +709,35 @@ const BookAppointment = () => {
       default: return true;
     }
   };
+  const resolveBookingConflict = useCallback(
+    (raw: unknown, apiMeta?: { conflict?: BookingConflictDetails | null }): BookingConflictDetails | null => {
+      if (apiMeta?.conflict?.code) {
+        return apiMeta.conflict;
+      }
+      return classifyBookingConflict(raw);
+    },
+    [],
+  );
+  const showBookingConflictAlert = useCallback(
+    (conflict: BookingConflictDetails) => {
+      setBookingPopupGoHome(true);
+      setBookingPopupMessage(
+        formatBookingConflictAlert(conflict, isAr, {
+          doctorName: isAr ? selectedDoctorObj?.nameAr : selectedDoctorObj?.name,
+          date: formattedSelectedDate || selectedDate,
+          time: formatTimeString(selectedSlot) || selectedSlot || "",
+        }),
+      );
+    },
+    [formattedSelectedDate, isAr, selectedDate, selectedDoctorObj, selectedSlot],
+  );
   const handleConfirm = async () => {
     setIsSubmitting(true);
     setBookingError(null);
-    const duplicateBookingMessage = "Patient already has an active booking with this doctor on the same day";
     const formatBookingErrorMessage = (raw: unknown) => {
       const fallback = isAr ? "فشل تأكيد الموعد" : "Failed to confirm appointment";
       const cleaned = String(raw || fallback).replace(/^Error:\s*/i, "").trim();
-      const normalized = cleaned.replace(/care provider/gi, "doctor");
-      return normalized.toLowerCase() === duplicateBookingMessage.toLowerCase()
-        ? duplicateBookingMessage
-        : normalized;
+      return cleaned.replace(/care provider/gi, "doctor");
     };
     try {
       if (patientType === "returning" && patientId && selectedSlotId) {
@@ -726,6 +753,11 @@ const BookAppointment = () => {
           return;
         }
         const rawMessage = res?.message || res?.status || res?.meta?.status;
+        const conflict = resolveBookingConflict(rawMessage, res?.meta);
+        if (conflict) {
+          showBookingConflictAlert(conflict);
+          return;
+        }
         const messageToShow = formatBookingErrorMessage(rawMessage);
         setBookingError(messageToShow);
         redirectToBookingFallback(messageToShow);
@@ -761,11 +793,17 @@ const BookAppointment = () => {
         err?.response?.data?.status ||
         err?.response?.data?.meta?.status ||
         err?.message;
+      const conflict = resolveBookingConflict(apiErrorMessage, err?.response?.data?.meta);
+      if (patientType === "returning" && patientId && selectedSlotId && conflict) {
+        showBookingConflictAlert(conflict);
+        return;
+      }
       const finalMessage = formatBookingErrorMessage(apiErrorMessage);
       setBookingError(finalMessage);
       if (patientType === "returning" && patientId && selectedSlotId) {
         redirectToBookingFallback(finalMessage);
       } else {
+        setBookingPopupGoHome(false);
         setBookingPopupMessage(finalMessage);
       }
     } finally {
@@ -836,12 +874,69 @@ const BookAppointment = () => {
     setVerifiedIdentityDetails(null);
     setShowReturningPatientModal(true);
   };
+  const buildIdentityDetailsFromRaw = useCallback(
+    (
+      rawData: Record<string, unknown>,
+      civilIdForData: string,
+      pickedName: string,
+    ): PaciIdentityDetails => {
+      const rawName = (rawData?.name || {}) as Record<string, unknown>;
+      const nameFromRaw = rawData?.name
+        ? (isAr
+            ? String(rawName.arabic || rawName.ar || rawName.english || rawName.en || "")
+            : String(rawName.english || rawName.en || rawName.arabic || rawName.ar || ""))
+        : pickedName;
+      const nationalityObj = (rawData?.nationality || {}) as Record<string, unknown>;
+      const nationalityNameObj = (nationalityObj?.name || {}) as Record<string, unknown>;
+      const nationalityName = nationalityObj?.name
+        ? (isAr
+            ? String(nationalityNameObj.arabic || nationalityNameObj.english || "")
+            : String(nationalityNameObj.english || nationalityNameObj.arabic || ""))
+        : "";
+      const registration = (rawData?.registration || {}) as Record<string, unknown>;
+
+      return {
+        name: nameFromRaw || pickedName || "—",
+        dateOfBirth: rawData?.dateOfBirth
+          ? new Date(String(rawData.dateOfBirth)).toLocaleDateString(isAr ? "ar-KW" : "en-GB")
+          : "—",
+        civilIdNumber: String(rawData?.civilId || civilIdForData || "—"),
+        nationality: nationalityName || String(nationalityObj?.iso3Letter || "—"),
+        gender: String(rawData?.sex || "—"),
+        passportNumber: String(registration?.passport || "—"),
+      };
+    },
+    [isAr],
+  );
+  const fetchVerifiedIdentityDetails = useCallback(
+    async (civilIdForData: string, pickedName: string): Promise<PaciIdentityDetails | null> => {
+      try {
+        const identityDataResponse = await getIdentityData(civilIdForData);
+        const rawData = (identityDataResponse?.raw || identityDataResponse?.identityData || {}) as Record<
+          string,
+          unknown
+        >;
+        return buildIdentityDetailsFromRaw(rawData, civilIdForData, pickedName);
+      } catch (err) {
+        console.error("Failed to load identity details:", err);
+        return null;
+      }
+    },
+    [buildIdentityDetailsFromRaw],
+  );
   const buildPaciPrefillFromIdentityApi = useCallback(
-    async (civilIdForData: string, pickedName: string): Promise<AppointmentRequestPrefillState> => {
+    async (
+      civilIdForData: string,
+      pickedName: string,
+      identityDetails?: PaciIdentityDetails | null,
+    ): Promise<AppointmentRequestPrefillState> => {
+      const resolvedDetails = identityDetails ?? (await fetchVerifiedIdentityDetails(civilIdForData, pickedName));
       const fallback: AppointmentRequestPrefillState = {
         fullName: pickedName,
         civilId: civilIdForData,
+        requestType: "registered patient booking fallback",
         readOnlyIdentity: true,
+        identityDetails: resolvedDetails || undefined,
       };
       try {
         const identityDataResponse = await getIdentityData(civilIdForData);
@@ -857,19 +952,22 @@ const BookAppointment = () => {
           : pickedName;
         const dobIso = identityDateToIso(rawData?.dateOfBirth);
         const gender = mapPaciSexToGender(String(rawData?.sex || ""));
+        const details = resolvedDetails || buildIdentityDetailsFromRaw(rawData, civilIdForData, pickedName);
         return {
           fullName: nameFromRaw || pickedName,
           dateOfBirth: dobIso || undefined,
           gender: gender || undefined,
           civilId: String(rawData?.civilId || civilIdForData),
+          requestType: "registered patient booking fallback",
           readOnlyIdentity: true,
+          identityDetails: details,
         };
       } catch (err) {
         console.error("Failed to load PACI identity for appointment request prefill:", err);
         return fallback;
       }
     },
-    [isAr],
+    [buildIdentityDetailsFromRaw, fetchVerifiedIdentityDetails, isAr],
   );
   const loadVerifiedIdentityDetails = useCallback(
     async (civilIdForData: string, pickedName: string) => {
@@ -879,39 +977,36 @@ const BookAppointment = () => {
           string,
           unknown
         >;
-        const rawName = (rawData?.name || {}) as Record<string, unknown>;
-        const nameFromRaw = rawData?.name
-          ? (isAr
-              ? String(rawName.arabic || rawName.ar || rawName.english || rawName.en || "")
-              : String(rawName.english || rawName.en || rawName.arabic || rawName.ar || ""))
-          : pickedName;
-        const nationalityObj = (rawData?.nationality || {}) as Record<string, unknown>;
-        const nationalityNameObj = (nationalityObj?.name || {}) as Record<string, unknown>;
-        const nationalityName = nationalityObj?.name
-          ? (isAr
-              ? String(nationalityNameObj.arabic || nationalityNameObj.english || "")
-              : String(nationalityNameObj.english || nationalityNameObj.arabic || ""))
-          : "";
-        const registration = (rawData?.registration || {}) as Record<string, unknown>;
-
         const dobIso = identityDateToIso(rawData?.dateOfBirth);
         if (dobIso) setPatientDobIso(dobIso);
-
-        setVerifiedIdentityDetails({
-          name: nameFromRaw || pickedName || "—",
-          dateOfBirth: rawData?.dateOfBirth
-            ? new Date(String(rawData.dateOfBirth)).toLocaleDateString(isAr ? "ar-KW" : "en-GB")
-            : "—",
-          civilIdNumber: String(rawData?.civilId || civilIdForData || "—"),
-          nationality: nationalityName || String(nationalityObj?.iso3Letter || "—"),
-          gender: String(rawData?.sex || "—"),
-          passportNumber: String(registration?.passport || "—"),
-        });
+        setVerifiedIdentityDetails(buildIdentityDetailsFromRaw(rawData, civilIdForData, pickedName));
       } catch (err) {
         console.error("Failed to load identity details for display:", err);
       }
     },
-    [isAr],
+    [buildIdentityDetailsFromRaw],
+  );
+  const renderIdentityDetailsCard = (details: PaciIdentityDetails) => (
+    <div className="rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 via-background to-accent/5 p-4 sm:p-5">
+      <h4 className="font-body text-[11px] tracking-[0.18em] uppercase text-accent mb-3">
+        {isAr ? "تفاصيل الهوية" : "Identity Details"}
+      </h4>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {[
+          { label: isAr ? "الاسم" : "Name", value: details.name },
+          { label: isAr ? "تاريخ الميلاد" : "Date of Birth", value: details.dateOfBirth },
+          { label: isAr ? "الرقم المدني" : "Civil ID Number", value: details.civilIdNumber },
+          { label: isAr ? "الجنسية" : "Nationality", value: details.nationality },
+          { label: isAr ? "الجنس" : "Gender", value: details.gender },
+          { label: isAr ? "رقم جواز السفر" : "Passport Number", value: details.passportNumber },
+        ].map((row) => (
+          <div key={row.label} className="rounded-xl border border-border/70 bg-popover/80 px-3 py-2.5">
+            <p className="font-body text-[10px] uppercase tracking-wider text-muted-foreground">{row.label}</p>
+            <p className="font-body text-sm text-foreground font-medium mt-0.5">{row.value}</p>
+          </div>
+        ))}
+      </div>
+    </div>
   );
   const resetPatientLookupFailure = useCallback(() => {
     verificationDoneRef.current = false;
@@ -924,10 +1019,17 @@ const BookAppointment = () => {
     setVerifiedPersonName(null);
     setVerifiedIdentityDetails(null);
   }, []);
-  const dismissHisFailureAndGoToRequest = useCallback(() => {
+  const dismissHisFailureModal = useCallback(() => {
     setShowHisFailureModal(false);
     setNationalIdError("");
+    setHisFailureMessage("");
+    setHisFailureIdentityDetails(null);
+    setHisFailureAllowsRequest(false);
     setPatientLookupShowGoBack(false);
+  }, []);
+  const dismissHisFailureAndGoToRequest = useCallback(() => {
+    dismissHisFailureModal();
+    setNationalIdError("");
     verifySocketCleanupRef.current?.();
     verifySocketCleanupRef.current = null;
     setIsWaitingForApproval(false);
@@ -943,7 +1045,7 @@ const BookAppointment = () => {
     navigate(`/appointment-request${doctorQuery}`, {
       state: prefill ? { appointmentRequestPrefill: prefill } : undefined,
     });
-  }, [navigate, resetPatientLookupFailure, selectedDoctor]);
+  }, [dismissHisFailureModal, navigate, resetPatientLookupFailure, selectedDoctor]);
   const finalizeRegisteredPatientAfterPaci = useCallback(
     async (params: {
       civilId: string;
@@ -972,12 +1074,24 @@ const BookAppointment = () => {
         return true;
       } catch (err) {
         console.error("Hospital patient lookup failed:", err);
-        hisFailurePrefillRef.current = await buildPaciPrefillFromIdentityApi(
-          params.civilId,
-          params.pickedName,
-        );
+        const userMsg = getPatientLookupUserMessage(err, t);
+        const allowsRequest =
+          userMsg.code === "PATIENT_NOT_FOUND" || userMsg.code === "PATIENT_DUPLICATE_NATIONAL_ID";
+        const identityDetails = await fetchVerifiedIdentityDetails(params.civilId, params.pickedName);
+        setHisFailureMessage(userMsg.text);
+        setHisFailureIdentityDetails(identityDetails);
+        setHisFailureAllowsRequest(allowsRequest);
+        setPatientLookupShowGoBack(userMsg.showGoBack);
+        if (allowsRequest) {
+          hisFailurePrefillRef.current = await buildPaciPrefillFromIdentityApi(
+            params.civilId,
+            params.pickedName,
+            identityDetails,
+          );
+        } else {
+          hisFailurePrefillRef.current = null;
+        }
         setNationalIdError("");
-        setPatientLookupShowGoBack(false);
         setShowReturningPatientModal(false);
         resetPatientLookupFailure();
         setShowHisFailureModal(true);
@@ -986,7 +1100,13 @@ const BookAppointment = () => {
         setIsConfirmingPatientRecord(false);
       }
     },
-    [buildPaciPrefillFromIdentityApi, loadVerifiedIdentityDetails, resetPatientLookupFailure],
+    [
+      buildPaciPrefillFromIdentityApi,
+      fetchVerifiedIdentityDetails,
+      loadVerifiedIdentityDetails,
+      resetPatientLookupFailure,
+      t,
+    ],
   );
   const goBackFromPatientLookupModal = () => {
     verificationDoneRef.current = false;
@@ -2044,30 +2164,52 @@ Clinic Code:`;
           <motion.div
             initial={{ opacity: 0, scale: 0.97 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="w-full max-w-lg rounded-2xl border border-border/70 bg-popover shadow-2xl p-6 text-center"
+            className="w-full max-w-2xl rounded-2xl border border-border/70 bg-popover shadow-2xl p-6 text-start max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex flex-col items-center gap-3 mb-6">
+            <div className="flex flex-col gap-3 mb-5">
               <AlertCircle className="w-8 h-8 text-accent" />
               <p
                 id="his-failure-modal-title"
-                className="font-body text-sm text-foreground leading-relaxed text-start"
+                className="font-body text-sm text-foreground leading-relaxed"
               >
-                {t("hisFailureCallCenterMessage")}
+                {hisFailureMessage || t("hisFailureCallCenterMessage")}
               </p>
             </div>
-            <div className="flex justify-center">
+            {hisFailureIdentityDetails && (
+              <div className="mb-5">{renderIdentityDetailsCard(hisFailureIdentityDetails)}</div>
+            )}
+            {hisFailureAllowsRequest && (
+              <p className="font-body text-xs text-muted-foreground mb-5">
+                {t("hisFailureCallCenterMessage")}
+              </p>
+            )}
+            <div className="flex flex-col sm:flex-row gap-3 justify-end">
               <button
                 type="button"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  dismissHisFailureAndGoToRequest();
+                  dismissHisFailureModal();
+                  goBackFromPatientLookupModal();
                 }}
-                className="min-w-28 bg-primary text-primary-foreground px-6 py-2.5 rounded-lg font-body text-xs tracking-widest uppercase hover:bg-primary/90 transition-colors"
+                className="min-w-28 bg-secondary/40 text-foreground px-6 py-2.5 rounded-lg font-body text-xs tracking-widest uppercase hover:bg-secondary/60 transition-colors"
               >
-                {isAr ? "موافق" : "OK"}
+                {t("patientLookupGoBack")}
               </button>
+              {hisFailureAllowsRequest ? (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dismissHisFailureAndGoToRequest();
+                  }}
+                  className="min-w-28 bg-primary text-primary-foreground px-6 py-2.5 rounded-lg font-body text-xs tracking-widest uppercase hover:bg-primary/90 transition-colors"
+                >
+                  {isAr ? "متابعة" : "Continue"}
+                </button>
+              ) : null}
             </div>
           </motion.div>
         </div>
@@ -2092,14 +2234,16 @@ Clinic Code:`;
                 type="button"
                 onClick={() => {
                   setBookingPopupMessage(null);
-                  navigate("/book-appointment", {
-                    state: { resetBookingFlow: true },
-                    replace: true,
-                  });
+                  if (bookingPopupGoHome) {
+                    setBookingPopupGoHome(false);
+                    navigate("/", { replace: true });
+                    return;
+                  }
+                  navigate("/book-appointment", { state: { resetBookingFlow: true }, replace: true });
                 }}
                 className="min-w-28 bg-primary text-primary-foreground px-6 py-2.5 rounded-lg font-body text-xs tracking-widest uppercase hover:bg-primary/90 transition-colors"
               >
-                {isAr ? "موافق" : "OK"}
+                {bookingPopupGoHome ? t("backToHome") : isAr ? "موافق" : "OK"}
               </button>
             </div>
           </motion.div>

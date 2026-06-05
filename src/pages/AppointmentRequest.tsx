@@ -26,6 +26,7 @@ const AppointmentRequest = () => {
   const locState = (location.state as AppointmentRequestLocationState | null) ?? {};
   const prefill = locState.appointmentRequestPrefill ?? {};
   const identityReadOnly = Boolean(prefill.readOnlyIdentity);
+  const requestType = prefill.requestType || "first time visitor request";
   const returnState = (location.state as Record<string, unknown>) ?? {};
   const doctorId = searchParams.get("doctor");
   const [prefilledDoctor, setPrefilledDoctor] = useState<Doctor | null>(null);
@@ -89,7 +90,7 @@ const AppointmentRequest = () => {
         ]
           .filter(Boolean)
           .join(". ") || undefined,
-        requestType: "first time visitor request",
+        requestType,
       });
       setSubmitted(true);
     } catch (error) {
@@ -223,6 +224,28 @@ const AppointmentRequest = () => {
               <p className="text-muted-foreground font-body text-xs">{t("provideInfo")}</p>
             </div>
           </div>
+          {prefill.identityDetails && (
+            <div className="mb-6 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 via-background to-accent/5 p-4 sm:p-5">
+              <h4 className="font-body text-[11px] tracking-[0.18em] uppercase text-accent mb-3">
+                {lang === "ar" ? "تفاصيل الهوية" : "Identity Details"}
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {[
+                  { label: lang === "ar" ? "الاسم" : "Name", value: prefill.identityDetails.name },
+                  { label: lang === "ar" ? "تاريخ الميلاد" : "Date of Birth", value: prefill.identityDetails.dateOfBirth },
+                  { label: lang === "ar" ? "الرقم المدني" : "Civil ID Number", value: prefill.identityDetails.civilIdNumber },
+                  { label: lang === "ar" ? "الجنسية" : "Nationality", value: prefill.identityDetails.nationality },
+                  { label: lang === "ar" ? "الجنس" : "Gender", value: prefill.identityDetails.gender },
+                  { label: lang === "ar" ? "رقم جواز السفر" : "Passport Number", value: prefill.identityDetails.passportNumber },
+                ].map((row) => (
+                  <div key={row.label} className="rounded-xl border border-border/70 bg-popover/80 px-3 py-2.5">
+                    <p className="font-body text-[10px] uppercase tracking-wider text-muted-foreground">{row.label}</p>
+                    <p className="font-body text-sm text-foreground font-medium mt-0.5">{row.value}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
           <div className="space-y-5">
             {}
             <div>

@@ -27,7 +27,7 @@ export const departmentDetails: DepartmentDetail[] = [
   {
     slug: "obstetrics-gynecology",
     name: "Obstetrics & Gynecology",
-    nameAr: "قسم النساء والولادة",
+    nameAr: "أمراض النساء والولادة",
     intro:
       "At Royale Hayat Hospital, we know that pregnancy and childbirth are life-changing experiences. Our expert team is here to guide you, offering compassionate care tailored to your needs, ensuring safety and comfort for you and your baby.",
     introAr:
@@ -78,7 +78,7 @@ export const departmentDetails: DepartmentDetail[] = [
           "Care for Multiples: Specialized support for twins and more.",
           "Management of Conditions: From gestational diabetes to IUGR.",
           "Vaginal and Cesarean Deliveries: Safe, personalized birth plans.",
-          "Genetic Counseling: Guidance on hereditary risks.",
+          "Genetic Counselling: Guidance on hereditary risks.",
         ],
         itemsAr: [
           "التخطيط للحمل: استشارات متخصصة لدعم بداية صحية وآمنة للحمل",
@@ -149,7 +149,7 @@ export const departmentDetails: DepartmentDetail[] = [
       {
         slug: "urogynecology",
         name: "Urogynecology",
-        nameAr: "طب أمراض المسالك البولية النسائية",
+        nameAr: "أمراض المسالك البولية النسائية",
         intro:
           "At our Women's Urogynecology Clinic, we provide expert care for urinary and pelvic health challenges. Our specialized team uses the latest diagnostic tools and treatments to offer personalized, evidence-based care in a luxurious, supportive environment.",
         introAr:
@@ -184,7 +184,7 @@ export const departmentDetails: DepartmentDetail[] = [
       {
         slug: "cosmetic-gynecology",
         name: "Cosmetic Gynecology",
-        nameAr: "وحدة التجميل النسائي",
+        nameAr: "التجميل النسائي",
         intro:
           "Introducing Kuwait's first Cosmetic Gynecology Unit at Royale Hayat Hospital. We offer the latest surgical and non-surgical procedures tailored to women's unique needs.",
         introAr:
@@ -203,13 +203,13 @@ export const departmentDetails: DepartmentDetail[] = [
               "Cervical Cancer Vaccination: HPV vaccine for women aged 11 to 26.",
             ],
             itemsAr: [
-              "العلاج بالتردد الحراري المهبلي (EVA): علاج غير جراحي للمساعدة في شد المنطقة المهبلية وعلاج السلس البولي الخفيف الناتج عن الإجهاد",
-              "الرعاية الوقائية لصحة المرأة: برامج شاملة للعناية بصحة المرأة، تشمل متابعة الحمل والتطعيمات الوقائية لسرطان عنق الرحم",
+              "العلاج بالتردد الحراري المهبلي: علاج غير جراحي للمساعدة في شد المنطقة المهبلية وعلاج السلس البولي الخفيف الناتج عن الإجهاد",
+              "الرعاية الوقائية لصحة المرأة: برامج شاملة للعناية بصحة المرأة، تشمل متابعة الحمل والتطعيمات الوقائية لسرطان عنق الرحم.",
               "علاج اضطرابات الدورة الشهرية: رعاية متخصصة لعلاج غزارة الدورة الشهرية وآلامها بما يساهم في تحسين جودة الحياة",
               "العلاجات الهرمونية للبشرة: حلول علاجية مخصصة لعلاج حب الشباب والمشكلات الجلدية المرتبطة بالتغيرات الهرمونية",
               "علاجات تقليل نمو الشعر: خيارات فعّالة للمساعدة في تقليل نمو الشعر غير المرغوب فيه وتقليل الحاجة إلى الحلاقة المتكررة",
               "الفحوصات السنوية الدورية: تقييمات صحية شاملة لدعم الصحة العامة والوقاية على المدى الطويل",
-              "لقاح سرطان عنق الرحم: توفير لقاح فيروس الورم الحليمي البشري للفتيات والنساء من عمر 11 إلى 26 عامًا",
+              "لقاح سرطان عنق الرحم: توفير لقاح فيروس الورم الحليمي البشري، للفتيات والنساء من عمر 11 إلى 26 عاما",
             ],
           },
           {
@@ -225,7 +225,7 @@ export const departmentDetails: DepartmentDetail[] = [
       {
         slug: "gynecologic-oncology",
         name: "Gynecologic Oncology",
-        nameAr: "أورام النساء",
+        nameAr: "الأورام النسائية",
         intro: "Our Gynecologic Oncology unit provides specialized care for gynecological cancers and related conditions.",
         introAr:
           "تقدم وحدة أورام النساء في مستشفى رويال حياة رعاية متخصصة ومتقدمة لتشخيص وعلاج السرطانات النسائية والحالات المرتبطة بها، وذلك من خلال فريق طبي متعدد التخصصات يلتزم بتقديم رعاية شاملة تتمحور حول المريضة.",
@@ -535,7 +535,7 @@ export const departmentDetails: DepartmentDetail[] = [
   {
     slug: "neonatal",
     name: "Neonatal",
-    nameAr: "قسم حديثي الولادة",
+    nameAr: "حديثي الولادة",
     intro:
       "At Royale Hayat Hospital, your newborn's health is paramount. Our Level III Neonatal Unit, the highest in Kuwait's private sector, offers specialized care for premature and critically ill infants from 24 weeks of gestation.",
     introAr:
@@ -544,15 +544,14 @@ export const departmentDetails: DepartmentDetail[] = [
       {
         title: "Expert Care and Facilities",
         titleAr: "خبرات متخصصة وتجهيزات متقدمة",
-        content: "Our team of neonatologists and specialists provides 24/7 care using the latest technologies.",
-        contentAr:
-          "يضم القسم نخبة من أطباء حديثي الولادة والمتخصصين الذين يقدمون رعاية متواصلة على مدار الساعة، مدعومة بأحدث التقنيات والتجهيزات الطبية المتطورة.",
         items: [
+          "Our team of neonatologists and specialists provides 24/7 care using the latest technologies.",
           "7 Intensive Care Cots: For critically ill newborns needing constant monitoring.",
           "15 Special Care Baby Cots: For additional medical support.",
           "1 Isolation Cot: For specialized infection control.",
         ],
         itemsAr: [
+          "يضم القسم نخبة من أطباء حديثي الولادة والمتخصصين الذين يقدمون رعاية متواصلة على مدار الساعة، مدعومة بأحدث التقنيات والتجهيزات الطبية المتطورة.",
           "7 أسرّة للعناية المركزة مخصصة للحالات الحرجة التي تتطلب مراقبة دقيقة ومستمرة",
           "15 سريرًا للرعاية الخاصة لتقديم دعم ورعاية طبية متقدم",
           "سرير عزل مجهز للحالات التي تتطلب إجراءات خاصة لمكافحة العدوى",

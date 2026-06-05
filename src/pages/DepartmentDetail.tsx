@@ -16,6 +16,22 @@ import { useState, useRef, useEffect, memo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { resolveDepartmentBySlug } from "@/utils/resolveDepartmentSlug";
 const pickDeptText = (lang: string, en: string, ar?: string) => (lang === "ar" && ar ? ar : en);
+
+/** Bold text before the first colon (e.g. "Preconception Planning:") in EN/AR list items. */
+const renderDeptListItem = (item: string) => {
+  const colonIndex = item.indexOf(":");
+  if (colonIndex === -1) {
+    return item;
+  }
+  const label = item.slice(0, colonIndex + 1);
+  const rest = item.slice(colonIndex + 1);
+  return (
+    <>
+      <strong className="font-semibold text-foreground">{label}</strong>
+      {rest}
+    </>
+  );
+};
 const isAlSafwaDepartment = (slug: string, name: string) =>
   slug.includes("al-safwa") || name.toLowerCase().includes("safwa");
 const DepartmentDoctors = memo(({ doctors, lang }: { doctors: Doctor[]; lang: string }) => {
@@ -64,7 +80,7 @@ const DepartmentDoctors = memo(({ doctors, lang }: { doctors: Doctor[]; lang: st
               {lang === "ar" ? "ÙØ±ÙŠÙ‚Ù†Ø§" : "Our Team"}
             </p>
             <h2 className="text-2xl md:text-3xl font-serif text-foreground">
-              {lang === "ar" ? "Ø£Ø·Ø¨Ø§Ø¡ Ø§Ù„Ù‚Ø³Ù…" : "Department Doctors"}
+              {lang === "ar" ? "أطباء القسم" : "Department Doctors"}
             </h2>
           </div>
         </ScrollAnimationWrapper>
@@ -135,7 +151,7 @@ const DepartmentDoctors = memo(({ doctors, lang }: { doctors: Doctor[]; lang: st
                   <p className="font-serif text-sm text-foreground group-hover:text-primary transition-colors">{lang === "ar" ? doc.nameAr : doc.name}</p>
                   <p className="font-body text-xs text-muted-foreground mt-1 line-clamp-1">{lang === "ar" ? doc.titleAr : doc.title}</p>
                   <span className="inline-flex items-center gap-1 text-primary font-body text-xs tracking-wide mt-2">
-                    {lang === "ar" ? "Ø¹Ø±Ø¶ Ø§Ù„Ù…Ù„Ù â†" : "View Profile â†’"}
+                    {lang === "ar" ? "عرض الملف ←" : "View Profile →"}
                   </span>
                 </div>
               </Link>
@@ -147,7 +163,7 @@ const DepartmentDoctors = memo(({ doctors, lang }: { doctors: Doctor[]; lang: st
             to="/doctors"
             className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-body text-xs tracking-[0.15em] uppercase rounded-full hover:bg-primary/90 transition-colors"
           >
-            {lang === "ar" ? "Ø§Ø¹Ø±Ù Ø§Ù„Ù…Ø²ÙŠØ¯" : "Read More"} <span className="ltr-icon">â†’</span>
+            {lang === "ar" ? "اعرف المزيد" : "Read More"} <span className="ltr-icon">→</span>
           </Link>
         </div>
       </div>
@@ -402,7 +418,7 @@ const DepartmentDetail = () => {
                   className="inline-flex items-center gap-2 text-accent font-body text-xs tracking-wide mb-4 hover:underline"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
-                  {lang === "ar" ? "Ø§Ù„Ø¹ÙˆØ¯Ø© Ø¥Ù„Ù‰ Ø­Ø¬Ø² Ø§Ù„Ù…ÙˆØ¹Ø¯" : "Back to Book Appointment"}
+                  {lang === "ar" ? "العودة إلى حجز الموعد" : "Back to Book Appointment"}
                 </button>
               )}
               {activeSub && !fromDepartments && (
@@ -411,7 +427,7 @@ const DepartmentDetail = () => {
                   className="inline-flex items-center gap-2 text-accent font-body text-xs tracking-wide mb-4 hover:underline"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
-                  {isAr ? `Ø§Ù„Ø¹ÙˆØ¯Ø© Ø¥Ù„Ù‰ ${dept.nameAr}` : `Back to ${dept.name}`}
+                  {isAr ? `العودة إلى ${dept.nameAr}` : `Back to ${dept.name}`}
                 </button>
               )}
               <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">
@@ -511,7 +527,7 @@ const DepartmentDetail = () => {
                   }`}
                 >
                   <h3
-                    className={`font-serif text-lg md:text-xl text-foreground mb-4 ${
+                    className={`font-serif text-lg md:text-xl font-bold text-foreground mb-4 ${
                       isAr ? "dept-detail-rtl" : ""
                     }`}
                   >
@@ -532,7 +548,7 @@ const DepartmentDetail = () => {
                         <div key={j} className={`flex items-start gap-3 ${isAr ? "dept-detail-rtl" : ""}`}>
                           <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
                           <span className="font-body text-sm text-foreground leading-relaxed text-justify">
-                            {item}
+                            {renderDeptListItem(item)}
                           </span>
                         </div>
                       ))}
@@ -553,7 +569,9 @@ const DepartmentDetail = () => {
                           {(lang === "ar" && sub.itemsAr?.length ? sub.itemsAr : sub.items)!.map((item, l) => (
                             <div key={l} className="flex items-start gap-3">
                               <CheckCircle2 className="w-3.5 h-3.5 text-primary flex-shrink-0 mt-0.5" />
-                              <span className="font-body text-sm text-foreground text-justify">{item}</span>
+                              <span className="font-body text-sm text-foreground text-justify">
+                                {renderDeptListItem(item)}
+                              </span>
                             </div>
                           ))}
                         </div>
@@ -632,7 +650,9 @@ const DepartmentDetail = () => {
                                   (item, k) => (
                                     <div key={k} className="flex items-start gap-2">
                                       <CheckCircle2 className="w-3.5 h-3.5 text-accent flex-shrink-0 mt-0.5" />
-                                      <span className="font-body text-xs text-foreground text-justify">{item}</span>
+                                      <span className="font-body text-xs text-foreground text-justify">
+                                        {renderDeptListItem(item)}
+                                      </span>
                                     </div>
                                   )
                                 )}
@@ -677,7 +697,7 @@ const DepartmentDetail = () => {
                     className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-full font-body text-xs tracking-[0.15em] uppercase hover:bg-primary/90 transition-colors"
                   >
                     <Phone className="w-4 h-4" />
-                    {lang === "ar" ? "Ø§Ù„Ù‡Ø§ØªÙ: 25360500 965+" : "Call: +965 25360500"}
+                    {lang === "ar" ? "الهاتف: +965 25360500" : "Call: +965 25360500"}
                   </a>
                 </div>
               </div>

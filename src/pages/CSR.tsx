@@ -10,7 +10,7 @@ const initiatives = [
     dateKey: "csrInit1Date",
     p1Key: "csrInit1P1",
     p2Key: "csrInit1P2",
-    image: "/images/doctors/image4.png.png",
+    image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a231c90f16f8c373c02c85e/1780686016335-image4.png.png",
     alt: "Breast Cancer Awareness Hospital Session",
   },
   {
@@ -18,7 +18,7 @@ const initiatives = [
     dateKey: "csrInit2Date",
     p1Key: "csrInit2P1",
     p2Key: "csrInit2P2",
-    image: "/images/doctors/image.png.png",
+    image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a231c90f16f8c373c02c85e/1780686014084-image.png.png",
     alt: "Breast Cancer Awareness Session at Burgan Bank",
   },
   {
@@ -26,7 +26,7 @@ const initiatives = [
     dateKey: "csrInit3Date",
     p1Key: "csrInit3P1",
     p2Key: "csrInit3P2",
-    image: "/images/doctors/image2.png.png",
+    image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a231c90f16f8c373c02c85e/1780686015581-image2.png.png",
     alt: "Special Olympics Health Screening",
   },
   {
@@ -34,7 +34,7 @@ const initiatives = [
     dateKey: "csrInit4Date",
     p1Key: "csrInit4P1",
     p2Key: "csrInit4P2",
-    image: "/images/doctors/image3.png.png",
+    image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a231c90f16f8c373c02c85e/1780686015994-image3.png.png",
     alt: "Women's Health International Conference",
   },
 ] as const;

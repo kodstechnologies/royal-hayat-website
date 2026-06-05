@@ -183,9 +183,9 @@ const handleAddTestimonial = () => {
   const isOnlineAvailable = !isRequestOnlyDoctor;
   const canBookSlot = bookingReturnState?.canBookSlot ?? isOnlineAvailable;
   const hideRequestAppointmentButton = [
-    "Dr. Mirvat Sameer Ghanem",
-    "Dr. Mustafa Alfiki",
-  ].includes(doctor.name);
+    "dr-mirvat-sameer-ghanem",
+    "dr-mustafa-alfiki",
+  ].includes(doctor.id);
   const inferredDept = departments.find((d) => {
     const aliases = deptDoctorAliases[d.name] || [d.name];
     return aliases.some((a) => doctor.department.includes(a) || doctor.specialty.includes(a));
@@ -235,7 +235,7 @@ const handleAddTestimonial = () => {
                   <p className="text-accent text-xs tracking-[0.2em] uppercase font-body mb-2">
                     {lang === "ar" ? doctor.specialtyAr : doctor.specialty}
                   </p>
-                  <h1 className="text-2xl font-serif text-foreground mb-1">{lang === "ar" ? doctor.nameAr : doctor.name}</h1>
+                  <h1 className="text-2xl font-serif font-bold text-foreground mb-1">{lang === "ar" ? doctor.nameAr : doctor.name}</h1>
                   <p className="text-muted-foreground font-body text-sm mb-5">{lang === "ar" ? doctor.titleAr : doctor.title}</p>
                   {}
                   {!hideRequestAppointmentButton && (

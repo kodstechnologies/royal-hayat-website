@@ -171,8 +171,8 @@ const HeroSection = () => {
                   transition={{ duration: 0.4, delay: 0.38 }}
                   className={`font-serif mb-5 max-lg:mb-6 md:mb-8 max-w-xl ${
                     isAr
-                      ? "text-start text-base md:text-lg lg:text-xl text-gray-600"
-                      : "text-base md:text-xl text-gray-400"
+                      ? "text-start text-base md:text-lg lg:text-xl text-gray-800"
+                      : "text-base md:text-xl text-gray-700"
                   }`}
                 >
                   {t("heroTagline")}

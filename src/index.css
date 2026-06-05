@@ -377,6 +377,21 @@
   font-size: 0.925rem;
 }
 
+.stats-value {
+  font-family: "Garamond", serif !important;
+  font-weight: 400;
+  font-size: 2.25rem !important;
+  line-height: 1 !important;
+  font-variant-numeric: tabular-nums;
+  color: #816107;
+}
+
+@media (min-width: 768px) {
+  .stats-value {
+    font-size: 3rem !important;
+  }
+}
+
 
 html[lang="ar"] h1,
 html[lang="ar"] h2,

@@ -337,6 +337,7 @@ export const ar = {
   "bookAsFirstTimePatient": "الحجز كمريض لأول مرة",
   "patientLookupGoBack": "رجوع",
   "hisFailureCallCenterMessage": "نعتذر عن الإزعاج. نواجه حاليًا بعض المشاكل التقنية. يرجى مشاركة رقم هاتفكم، وسيتواصل معكم أحد موظفي خدمة العملاء لدينا في أقرب وقت لتأكيد موعدكم.",
+  "hisFailureRedirectToRequest": "سيتم نقلك إلى شاشة طلب الموعد مع البيانات الموضحة أدناه.",
   "dontSeeInsurance": "لا ترى شركة التأمين الخاصة بك؟",
   "dontSeeInsurancePatients": "لا ترى شركة التأمين الخاصة بك؟ يرجى التواصل معنا على ",
   "contactUs": "اتصل بنا",

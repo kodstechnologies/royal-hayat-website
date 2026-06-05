@@ -337,6 +337,7 @@ export const en = {
   "bookAsFirstTimePatient": "Book as first-time patient",
   "patientLookupGoBack": "Go back",
   "hisFailureCallCenterMessage": "We are currently experiencing some technical issues. Kindly share your mobile number, and our call center team will contact you to confirm your appointment.",
+  "hisFailureRedirectToRequest": "We're moving you to the Appointment Request screen with the details shown below.",
   "dontSeeInsurance": "Don't see your insurance provider?",
   "dontSeeInsurancePatients": "Don't see your insurance provider? please contact us at ",
   "contactUs": "Contact us",

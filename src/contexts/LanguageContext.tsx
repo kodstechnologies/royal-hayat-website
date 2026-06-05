@@ -574,6 +574,10 @@ const translations: Translations = {
     en: "We are currently experiencing some technical issues. Kindly share your mobile number, and our call center team will contact you to confirm your appointment.",
     ar: "نعتذر عن الإزعاج. نواجه حاليًا بعض المشاكل التقنية. يرجى مشاركة رقم هاتفكم، وسيتواصل معكم أحد موظفي خدمة العملاء لدينا في أقرب وقت لتأكيد موعدكم.",
   },
+  hisFailureRedirectToRequest: {
+    en: "We're moving you to the Appointment Request screen with the details shown below.",
+    ar: "سيتم نقلك إلى شاشة طلب الموعد مع البيانات الموضحة أدناه.",
+  },
   bookingFallbackTitle: {
     en: "Complete Your Appointment Request",
     ar: "أكمل طلب الموعد",

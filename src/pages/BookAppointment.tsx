@@ -2173,16 +2173,13 @@ Clinic Code:`;
                 id="his-failure-modal-title"
                 className="font-body text-sm text-foreground leading-relaxed"
               >
-                {hisFailureMessage || t("hisFailureCallCenterMessage")}
+                {hisFailureAllowsRequest
+                  ? t("hisFailureRedirectToRequest")
+                  : hisFailureMessage || t("patientLookupFailed")}
               </p>
             </div>
             {hisFailureIdentityDetails && (
               <div className="mb-5">{renderIdentityDetailsCard(hisFailureIdentityDetails)}</div>
-            )}
-            {hisFailureAllowsRequest && (
-              <p className="font-body text-xs text-muted-foreground mb-5">
-                {t("hisFailureCallCenterMessage")}
-              </p>
             )}
             <div className="flex flex-col sm:flex-row gap-3 justify-end">
               <button

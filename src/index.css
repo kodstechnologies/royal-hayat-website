@@ -1,4 +1,44 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@font-face {
+  font-family: 'GE Dinar One';
+  src:
+    local('GE Dinar One Light'),
+    local('GEDinarOne-Light'),
+    url('/fonts/GEDinarOne-Light.woff2') format('woff2'),
+    url('/fonts/GEDinarOne-Light.woff') format('woff'),
+    url('/fonts/GEDinarOne-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'GE Dinar One';
+  src:
+    local('GE Dinar One Medium'),
+    local('GEDinarOne-Medium'),
+    url('/fonts/GEDinarOne-Medium.woff2') format('woff2'),
+    url('/fonts/GEDinarOne-Medium.woff') format('woff'),
+    url('/fonts/GEDinarOne-Medium.otf') format('opentype');
+  font-weight: 400 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'GE Dinar One';
+  src:
+    local('GE Dinar One Medium'),
+    local('GEDinarOne-Medium'),
+    url('/fonts/GEDinarOne-Medium.woff2') format('woff2'),
+    url('/fonts/GEDinarOne-Medium.woff') format('woff'),
+    url('/fonts/GEDinarOne-Medium.otf') format('opentype');
+  font-weight: 600 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 @font-face {
   font-family: 'Garamond';
   src: url('/fonts/Garamond.ttc') format('truetype-collection');
@@ -8,20 +48,17 @@
 }
 
 @layer base {
-  html[lang="en"] {
-    font-family: system-ui, sans-serif;
-  }
-
   html[lang="ar"] {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'GE Dinar One', sans-serif;
   }
 
-  
   html[lang="ar"] body,
   html[lang="ar"] .font-body,
+  html[lang="ar"] .font-serif,
   [dir="rtl"] body,
-  [dir="rtl"] .font-body {
-    font-family: 'Roboto', sans-serif !important;
+  [dir="rtl"] .font-body,
+  [dir="rtl"] .font-serif {
+    font-family: 'GE Dinar One', sans-serif !important;
   }
 }
 @tailwind base;
@@ -236,7 +273,7 @@ html[lang="ar"] h6,
 [dir="rtl"] h4,
 [dir="rtl"] h5,
 [dir="rtl"] h6 {
-  font-family: 'Roboto', sans-serif !important;
+  font-family: 'GE Dinar One', sans-serif !important;
 }
 
 

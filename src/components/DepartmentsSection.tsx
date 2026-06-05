@@ -15,6 +15,8 @@ type DeptRestoreState = {
   restoreDeptOpenIndex?: number;
   restoreSelectedSubByDept?: Record<number, string>;
   restoreScrollY?: number;
+  fromDepartments?: boolean;
+  returnPath?: string;
 };
 const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) => {
   const navigate = useNavigate();
@@ -77,6 +79,24 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
   }, [openIndex, departments]);
   const openDoctorProfile = (docId: string, origIdx: number) => {
     navigate(`/doctors/${docId}`, {
+      state: {
+        fromDepartments: true,
+        returnPath: location.pathname,
+        restoreDeptOpenIndex: origIdx,
+        restoreSelectedSubByDept: selectedSubByDept,
+        restoreScrollY: window.scrollY,
+      },
+    });
+  };
+  const openDepartmentDetail = (
+    deptSlug: string,
+    origIdx: number,
+    subSlug?: string
+  ) => {
+    const path = subSlug
+      ? `/medical-services/${deptSlug}/${subSlug}`
+      : `/medical-services/${deptSlug}`;
+    navigate(path, {
       state: {
         fromDepartments: true,
         returnPath: location.pathname,
@@ -319,12 +339,20 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                     {lang === "ar" ? dept.nameAr : dept.name}
                                   </h3>
                                   <p className="text-muted-foreground font-body text-sm leading-relaxed">{lang === "ar" ? dept.descAr : dept.desc}</p>
-                                  <Link
-                                    to={isAlSafwaDeptSlug(dept.slug) ? "/al-safwa" : `/medical-services/${dept.slug}`}
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (isAlSafwaDeptSlug(dept.slug)) {
+                                        navigate("/al-safwa");
+                                        return;
+                                      }
+                                      openDepartmentDetail(dept.slug, origIdx);
+                                    }}
                                     className="inline-flex w-full justify-end items-center gap-1.5 text-primary font-body text-xs tracking-wide hover:text-accent transition-colors"
                                   >
                                     {t("Read More")} <ArrowRight className="w-3.5 h-3.5" />
-                                  </Link>
+                                  </button>
                                 </div>
                               </div>
                             </div>
@@ -401,9 +429,19 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                   </div>
                                   {dept.subs && dept.subs.length > 0 && selectedSubSlug && (
                                     <div className="mt-4 text-center">
-                                      <Link to={`/medical-services/${dept.slug}/${selectedSubSlug}`} className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-full font-body text-xs tracking-[0.15em] uppercase hover:bg-primary/90 transition-colors">
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          openDepartmentDetail(
+                                            dept.slug,
+                                            origIdx,
+                                            selectedSubSlug
+                                          )
+                                        }
+                                        className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-full font-body text-xs tracking-[0.15em] uppercase hover:bg-primary/90 transition-colors"
+                                      >
                                         {t("learnMore")} <ArrowRight className="w-3.5 h-3.5" />
-                                      </Link>
+                                      </button>
                                     </div>
                                   )}
                                 </div>

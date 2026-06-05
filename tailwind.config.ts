@@ -16,6 +16,7 @@ export default {
       fontFamily: {
         serif: ["'Garamond'", "Georgia", "serif"],
         body: ["'Inter'", "system-ui", "sans-serif"],
+        arabic: ["'GE Dinar One'", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",

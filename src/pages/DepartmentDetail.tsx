@@ -162,13 +162,17 @@ const DepartmentDetail = () => {
   const navState = (location.state as {
     fromBookAppointment?: boolean;
     fromSpecializedCare?: boolean;
+    fromDepartments?: boolean;
     returnPath?: string;
+    restoreDeptOpenIndex?: number;
+    restoreSelectedSubByDept?: Record<number, string>;
+    restoreScrollY?: number;
     restoreExpandedIndex?: number | null;
     restoreSelectedSubByService?: Record<string, string>;
-    restoreScrollY?: number;
   } | null) ?? {};
   const fromBookAppointment = Boolean(navState.fromBookAppointment);
   const fromSpecializedCare = Boolean(navState.fromSpecializedCare);
+  const fromDepartments = Boolean(navState.fromDepartments);
   const { lang, t } = useLanguage();
   const isAr = lang === "ar";
   const [expandedSub, setExpandedSub] = useState<string | null>(subSlug || null);
@@ -202,7 +206,20 @@ const DepartmentDetail = () => {
       },
     });
   };
+  const goBackToDepartmentsList = () => {
+    navigate(navState.returnPath || "/medical-services", {
+      state: {
+        restoreDeptOpenIndex: navState.restoreDeptOpenIndex,
+        restoreSelectedSubByDept: navState.restoreSelectedSubByDept,
+        restoreScrollY: navState.restoreScrollY,
+      },
+    });
+  };
   const goBackToDepartment = () => {
+    if (fromDepartments) {
+      goBackToDepartmentsList();
+      return;
+    }
     if (fromSpecializedCare) {
       goBackToSpecializedCare();
       return;
@@ -330,7 +347,6 @@ const DepartmentDetail = () => {
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
       <Header />
-      {}
       <div className="bg-muted/30 border-b border-border/50">
         <div className="container mx-auto px-6 py-3">
           <nav className="flex items-center gap-2 font-body text-xs text-muted-foreground">
@@ -359,9 +375,19 @@ const DepartmentDetail = () => {
       {}
       <section className="py-12 md:py-16 bg-primary/5">
         <div className="container mx-auto px-6">
+          {fromDepartments && (
+            <button
+              type="button"
+              onClick={goBackToDepartmentsList}
+              className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary font-body text-sm mb-8 transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              {isAr ? "رجوع" : "Go Back"}
+            </button>
+          )}
           <ScrollAnimationWrapper>
             <div className="max-w-4xl">
-              {fromSpecializedCare && !activeSub && (
+              {fromSpecializedCare && !activeSub && !fromDepartments && (
                 <button
                   onClick={goBackToSpecializedCare}
                   className="inline-flex items-center gap-2 text-accent font-body text-xs tracking-wide mb-4 hover:underline"
@@ -379,7 +405,7 @@ const DepartmentDetail = () => {
                   {lang === "ar" ? "العودة إلى حجز الموعد" : "Back to Book Appointment"}
                 </button>
               )}
-              {activeSub && (
+              {activeSub && !fromDepartments && (
                 <button
                   onClick={goBackToDepartment}
                   className="inline-flex items-center gap-2 text-accent font-body text-xs tracking-wide mb-4 hover:underline"

@@ -29,7 +29,7 @@ const leaders = [
       "بدأ رحلته الأكاديمية في كلية الطب بجامعة الكويت، وهو عضو في البورد الكويتي للجراحة العامة والكلية الملكية للجراحين في إنجلترا، حيث تلقى تدريبه في جراحات السمنة والقولون في لندن، المملكة المتحدة. وخلال هذه المرحلة، طوّر خبراته السريرية واكتسب فهمًا عميقًا للحالات الطبية المعقدة.",
       "ويؤمن د. المزيدي بأهمية تطوير القطاع الصحي في الكويت، حيث قاد العديد من المبادرات التي تهدف إلى دمج أحدث التقنيات في أنظمة الرعاية الصحية، بما يسهم في تحسين نتائج المرضى ورفع كفاءة الخدمات الطبية.",
     ],
-    image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/Leadership-photos/sulaiman-web.jpeg",
+    image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a22fff4c88e2e7932620105/1780678706759-dr-sulaiman-al-mazeedi.png",
   },
   {
     initials: "AE",
@@ -54,7 +54,7 @@ const leaders = [
       "يتخصص د. المرضي في متابعة حالات الحمل الطبيعية وعالية الخطورة، وإجراء الولادات الطبيعية والمعقدة والقيصرية والعمليات النسائية الكبرى. كما يمتلك خبرة في جراحات التجميل النسائي باستخدام أحدث تقنيات الليزر وعلاج موناليزا.",
       "يقدم علاجات متطورة لاضطرابات الدورة الشهرية، مثل تقنية نوفاشور لعلاج بطانة الرحم، إضافة إلى إجراء المناظير النسائية والعمليات الجراحية لعلاج الأورام الليفية، والالتصاقات، والحمل خارج الرحم، واضطرابات قاع الحوض والمسالك البولية النسائية.",
     ],
-    image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/abubakr-elmardi.png",
+    image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a22fff4c88e2e7932620105/1780678708901-dr-abubakr-elmardi.png",
   },
   {
     initials: "OE",
@@ -74,7 +74,7 @@ const leaders = [
       "حصل على درجة الماجستير في التخدير والعناية المركزة الجراحية من كلية الطب بجامعة الإسكندرية، ثم نال درجة الدكتوراه في التخدير والعناية المركزة وعلاج الألم عام 1982. كما أنه عضو في الجمعية الدولية لدراسة (IASP).",
       "ويتمتع الدكتور الخطيب بخبرة واسعة في تخدير النساء والولادة، وتطبيق تقنيات التخدير فوق الجافية للولادة، إلى جانب خبرته في تخدير الحالات عالية الخطورة وكبار السن، والعناية المركزة الجراحية للكبار والأطفال، فضلًا عن التخدير لجراحات السمنة.",
     ],
-    image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/Dr.+Omar.jpg",
+    image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a22fff4c88e2e7932620105/1780678709624-dr-omar-el-khateeb.png",
   },
   {
     initials: "SM",
@@ -96,7 +96,7 @@ const leaders = [
       "ويمتلك خبرة قيادية واسعة في مجالات المالية والمحاسبة والخزينة ضمن مؤسسات متعددة الجنسيات، ويجمع في أسلوبه القيادي بين الانضباط التشغيلي والرؤية الاستراتيجية والاهتمام بالعنصر البشري.",
       "هو حاصل على شهادة المحاسب الإداري المعتمد (CMA) من الولايات المتحدة الأمريكية، وعضو في معهد المحاسبين الإداريين المعتمدين (ACMA) في الهند، فضلًا عن حمله اعتماد المعايير الدولية لإعداد التقارير المالية (IFRS)، وشهادة التعليم التنفيذي في استراتيجية الرعاية الصحية من كلية هارفارد T.H. Chan للصحة العامة.",
     ],
-    image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/Mr.+Shibu.jpg",
+    image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a22fff4c88e2e7932620105/1780678708460-shibu-thomas-mathew.png",
   },
   {
     initials: "HG",
@@ -120,7 +120,7 @@ const leaders = [
       "ويمتلك خبرة واسعة في التخدير العام والموضعي لمختلف التخصصات والحالات عالية الخطورة، بما في ذلك جراحات السمنة، وحقن التخدير للولادة الطبيعية والقيصرية. كما يتخصص في تخدير الأطفال وحديثي الولادة وذوي الاحتياجات الخاصة، إضافة إلى العناية المركزة للكبار والأطفال.",
       "وفي مجال علاج الألم المزمن، اشتُهر الدكتور حميد بريادته في علاج آلام العمود الفقري باستخدام الحقن العلاجية الموجهة بالأشعة المقطعية، حيث أسس أول مركز مؤهل لهذا النوع من العلاج في الكويت والشرق الأوسط، إلى جانب خبرته في علاج الصداع، وآلام السرطان، والفيبروميالغيا، وغيرها من الحالات المزمنة المرتبطة بالألم.",
     ],
-    image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/Dr.+Hamid.jpg",
+    image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a22fff4c88e2e7932620105/1780678707983-dr-hamid-ghaderi.png",
   },
   {
     initials: "MA",
@@ -144,7 +144,7 @@ const leaders = [
       "وقد ساهمت قيادتها بشكل مباشر في حصول مستشفى رويال حياة على لقب أفضل مستشفى خاص في الكويت لمدة 16 عامًا متتالية، بالإضافة إلى تصنيفه ضمن أفضل ثلاث علامات تجارية في الكويت لعام 2022، وضمن أفضل عشر علامات تجارية لعام 2025.",
       "وبفضل خبرتها المهنية والمعيشية في أوروبا وآسيا والشرق الأوسط، إلى جانب رحلاتها الواسعة عبر مختلف قارات العالم، تتمتع مارتا برؤية عالمية متكاملة، تنطلق من إيمان راسخ بأن الضيافة الاستثنائية، سواء في منتجع فاخر أو مستشفى عالمي، تتمحور دائمًا حول الإنسان أولًا.",
     ],
-    image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/Leadership-photos/marta.jpeg",
+    image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a22fff4c88e2e7932620105/1780678709265-marta.png",
   },
 ];
 const LeaderCard = ({ leader, lang }: { leader: typeof leaders[0] & { image?: string }; lang: string }) => {
@@ -156,13 +156,13 @@ const LeaderCard = ({ leader, lang }: { leader: typeof leaders[0] & { image?: st
   const bio = lang === "ar" ? leader.bioAr : leader.bioEn;
   const roles = role.split("\n");
   const mobileImageOverride: Record<string, string> = {
-    "Dr. Abubakr Elmardi": "https://royal-hayat.s3.eu-central-1.amazonaws.com/leadership/abubkar.jpeg",
-    "Dr. Sulaiman Al Mazeedi": "https://royal-hayat.s3.eu-central-1.amazonaws.com/leadership/sulaiman-mobile123.png",
+    "Dr. Abubakr Elmardi": "",
+    "Dr. Sulaiman Al Mazeedi": "",
   };
   const desktopImageOverride: Record<string, string> = {
-    "Prof. Dr. Omar El Khateeb": "https://royal-hayat.s3.eu-central-1.amazonaws.com/Leadership-photos/omar-we.jpeg",
-    "Dr. Hamid Ghaderi": "https://royal-hayat.s3.eu-central-1.amazonaws.com/Leadership-photos/hamid-we.jpeg",
-    "Shibu Thomas Mathew": "https://royal-hayat.s3.eu-central-1.amazonaws.com/Leadership-photos/shibu-web2.jpeg",
+    "Prof. Dr. Omar El Khateeb": "",
+    "Dr. Hamid Ghaderi": "",
+    "Shibu Thomas Mathew": "",
   };
   const mobileOverrideSrc = mobileImageOverride[leader.nameEn];
   const desktopOverrideSrc = desktopImageOverride[leader.nameEn];

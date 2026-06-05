@@ -1494,7 +1494,7 @@ export const departmentDetails: DepartmentDetail[] = [
   {
     slug: "center-for-diagnostic-imaging",
     name: "Center for Diagnostic Imaging",
-    nameAr: "مركز الأشعة التشخيصية",
+    nameAr: "الأشعة التشخيصية",
     intro:
       "At Royale Hayat Hospital, our Center for Diagnostic Imaging offers advanced diagnostic and image-guided therapeutic services. Combining expert professionals with state-of-the-art technology, we ensure accurate diagnoses and timely care.",
     introAr:

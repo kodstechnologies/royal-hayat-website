@@ -174,7 +174,7 @@ export const departments: Department[] = [
   },
   {
     id: 15, icon: Microscope, category: "Diagnostics", mainCategory: "Clinical Support Service",
-    name: "Center for Diagnostic Imaging", nameAr: "مركز الأشعة التشخيصية", slug: "center-for-diagnostic-imaging",
+    name: "Center for Diagnostic Imaging", nameAr: "الأشعة التشخيصية", slug: "center-for-diagnostic-imaging",
     desc: "Advanced diagnostic and image-guided therapeutic services combining expert professionals with state-of-the-art technology.",
     descAr: "في مستشفى رويال حياة، يقدم مركز الأشعة التشخيصية خدمات متقدمة في التشخيص والتدخلات العلاجية الموجهة بالتصوير الطبي، من خلال الجمع بين الخبرات الطبية المتخصصة وأحدث التقنيات لضمان دقة التشخيص وسرعة تقديم الرعاية المناسبة.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Center+for+Diagnostic+Imaging/1.JPG",

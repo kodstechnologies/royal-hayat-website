@@ -133,49 +133,49 @@ const translations: Translations = {
     en: "Breast Cancer Awareness Lecture – Royale Hayat Hospital",
     ar: "محاضرة التوعية بسرطان الثدي – مستشفى رويال حياة",
   },
-  csrInit1Date: { en: "held on 7 October 2025", ar: "أُقيمت بتاريخ 7 أكتوبر 2025" },
+  csrInit1Date: { en: "Held on 7 October 2025", ar: "أُقيمت بتاريخ 7 أكتوبر 2025" },
   csrInit1P1: {
     en: "Within its walls, Royale Hayat Hospital hosted an exclusive Breast Cancer Awareness lecture led by our team of expert consultants. The session emphasized early detection, advanced treatment options, and holistic patient care, including emotional well-being.",
-    ar: "استضاف مستشفى رويال حياة محاضرة توعوية حصرية حول سرطان الثدي، قدّمها نخبة من استشاريين المستشفى، حيث ركزت الجلسة على أهمية الكشف المبكر، وأحدث الخيارات العلاجية، والرعاية الشاملة التي تراعي الجوانب النفسية والعاطفية للمريضات.",
+    ar: "استضاف مستشفى رويال حياة بكل فخر محاضرة توعوية حصرية حول سرطان الثدي، قدّمها نخبة من استشاريي المستشفى، حيث ركزت الجلسة على أهمية الكشف المبكر، وأحدث الخيارات العلاجية، والرعاية الشاملة التي تراعي الجوانب النفسية والعاطفية للمريضات.",
   },
   csrInit1P2: {
     en: "This luxurious and informative initiative reflects our dedication to empowering women with knowledge, compassion, and exceptional healthcare standards.",
-    ar: "وتعكس هذه المبادرة الراقية والتثقيفية التزامنا المستمر بتمكين المرأة بالمعرفة، والرعاية الإنسانية، وتقديم أعلى معايير الرعاية الصحية.",
+    ar: "وتعكس هذه المبادرة الهادفة والتثقيفية التزامنا المستمر بتمكين المرأة بالمعرفة، والرعاية الإنسانية، وتقديم أعلى معايير الرعاية الصحية.",
   },
   csrInit2Title: {
     en: "Breast Cancer Awareness Lecture - Burgan Bank",
     ar: "محاضرة التوعية بسرطان الثدي – بنك برقان",
   },
-  csrInit2Date: { en: "held on 16 October 2025", ar: "أُقيمت بتاريخ 16 أكتوبر 2025" },
+  csrInit2Date: { en: "Held on 16 October 2025", ar: "أُقيمت بتاريخ 16 أكتوبر 2025" },
   csrInit2P1: {
-    en: "As part of its signature community initiatives, Royale Hayat Hospital hosted a distinguished Breast Cancer Awareness lecture at Burgan Bank. Our elite consultants guided attendees through the importance of early detection, self-examination, and proactive health practices, empowering women with knowledge and confidence.",
-    ar: "ضمن مبادراته المجتمعية المتميزة، نظم مستشفى رويال حياة محاضرة توعوية خاصة بسرطان الثدي في بنك برقان، حيث قدّم استشاريو المستشفى للحضور معلومات مهمة حول الكشف المبكر، الفحص الذاتي، وأهمية اتباع الممارسات الصحية الوقائية، بما يسهم في تعزيز الوعي والثقة لدى النساء.",
+    en: "As part of its ongoing community outreach initiatives, Royale Hayat Hospital hosted a specialised Breast Cancer Awareness lecture at Burgan Bank. Our expert consultants guided attendees through the importance of early detection, self-examination, and proactive health practices, empowering women with knowledge and confidence.",
+    ar: "ضمن مبادراته المجتمعية المتميِّزة، نظم مستشفى رويال حياة محاضرة توعوية متخصصة بسرطان الثدي في بنك برقان، حيث استعرض استشاريو المستشفى للحضور أبرز المعطيات الطبية حول الكشف المبكر، والفحص الذاتي، وأهمية اتباع الممارسات الصحية الوقائية، بما يسهم في تعزيز الوعي والثقة لدى النساء.",
   },
   csrInit2P2: {
     en: "This initiative epitomizes Royale Hayat’s dedication to preventive healthcare and elevating public health awareness.",
-    ar: "تجسد هذه المبادرة التزام رويال حياة بدعم الرعاية الوقائية والارتقاء بمستوى الوعي الصحي في المجتمع.",
+    ar: "تجسّد هذه المبادرة التزام رويال حياة بدعم الرعاية الوقائية والارتقاء بمستوى الوعي الصحي في المجتمع.",
   },
   csrInit3Title: {
     en: "Royale Hayat Hospital participated in the 3rd Special Olympics Kuwait Health Screening Event",
     ar: "مشاركة مستشفى رويال حياة في فعالية الفحص الصحي للأولمبياد الخاص – الكويت",
   },
-  csrInit3Date: { en: "held on 22 October 2025", ar: "أُقيمت بتاريخ 22 أكتوبر 2025" },
+  csrInit3Date: { en: "Held on 22 October 2025", ar: "أُقيمت بتاريخ 22 أكتوبر 2025" },
   csrInit3P1: {
-    en: "Royale Hayat Hospital proudly participated in the 3rd Special Olympics Kuwait Health Screening Event through its dedicated medical team led by Dr. Alia Ali Ibrahim, Consultant in Internal and Respiratory Medicine. The initiative provided essential health screenings for 150 athletes with special needs across the State of Kuwait.",
-    ar: "يفخر مستشفى رويال حياة بمشاركته في النسخة الثالثة من فعالية الفحص الصحي للأولمبياد الخاص – الكويت، من خلال فريقه الطبي المتخصص بقيادة د. عالية علي إبراهيم، استشارية الأمراض الباطنية والجهاز التنفسي. وقدمت المبادرة فحوصات صحية شاملة لـ 150 رياضيًا من ذوي الاحتياجات الخاصة في مختلف أنحاء دولة الكويت،",
+    en: "Royale Hayat Hospital proudly participated in the 3rd Special Olympics Kuwait Health Screening Event, represented by its dedicated medical team, led by Dr. Alia Ali Ibrahim, Consultant in Internal and Respiratory Medicine. The initiative delivered comprehensive health screenings to 150 athletes of determination across the State of Kuwait.",
+    ar: "يفخر مستشفى رويال حياة بمشاركته في النسخة الثالثة من فعالية الفحص الصحي للأولمبياد الخاص – الكويت، من خلال فريقه الطبي المتخصص بقيادة د. عالية علي إبراهيم، استشارية الأمراض الباطنية والجهاز التنفسي.",
   },
   csrInit3P2: {
-    en: "This reflects the hospital’s continued commitment to community engagement, inclusivity, and promoting access to comprehensive, compassionate healthcare for all, especially athletes of determination.",
-    ar: "في خطوة تعكس التزام المستشفى المستمر بخدمة المجتمع، تعزيز الشمولية، وتوفير رعاية صحية متكاملة وإنسانية للجميع، وخاصة لأصحاب الهمم.",
+    en: "This reflects the hospital’s continued commitment to community engagement, inclusivity, and equitable access to comprehensive, compassionate healthcare for all, especially athletes of determination.",
+    ar: "وقدمت المبادرة فحوصات صحية شاملة لـ 150 رياضيًا من أصحاب الهمم في مختلف أنحاء دولة الكويت، مما يعكس التزام المستشفى المستمر خدمة المجتمع، وتعزيز الشمولية، وتوفير رعاية صحية متكاملة وإنسانية للجميع، وخاصة لأصحاب الهمم.",
   },
   csrInit4Title: {
     en: "Royale Hayat Hospital's International Conference on Updates in Women's Health",
     ar: "المؤتمر الدولي لصحة المرأة – مستشفى رويال حياة",
   },
-  csrInit4Date: { en: "held on 29 November 2025", ar: "أُقيم بتاريخ 29 نوفمبر 2025" },
+  csrInit4Date: { en: "Held on 29 November 2025", ar: "أُقيمت بتاريخ 29 نوفمبر 2025" },
   csrInit4P1: {
     en: "Royale Hayat Hospital had the honor of hosting an exclusive, high-level scientific conference on the latest advancements in women's health. Esteemed doctors and consultants from across the globe gathered to exchange insights, showcase best practices, and explore innovative approaches in women's healthcare.",
-    ar: "تشرف مستشفى رويال حياة باستضافة مؤتمر علمي دولي رفيع المستوى حول أحدث المستجدات والتطورات في مجال صحة المرأة، بمشاركة نخبة من الأطباء والاستشاريين من مختلف أنحاء العالم. وشكّل المؤتمر منصة علمية متميزة لتبادل الخبرات، واستعراض أفضل الممارسات الطبية، ومناقشة أحدث الابتكارات في الرعاية الصحية للمرأة.",
+    ar: "تشرّف مستشفى رويال حياة باستضافة مؤتمر علمي دولي رفيع المستوى حول أحدث المستجدات والتطورات في مجال صحة المرأة، بمشاركة نخبة من الأطباء والاستشاريين من مختلف أنحاء العالم. وشكّل المؤتمر منصة علمية متميِّزة لتبادل الخبرات، واستعراض أفضل الممارسات الطبية، ومناقشة أحدث الابتكارات في الرعاية الصحية للمرأة.",
   },
   csrInit4P2: {
     en: "This prestigious event reflects our unwavering commitment to delivering world-class, evidence-based care for women in Kuwait and the region.",

@@ -94,7 +94,7 @@ export const ROOM_SERVICE_LOST_FOUND_EN = hyphEn(
   "If you misplace an item, our Guest Services team is here to help. Please contact us to file a Lost & Found report with the Security Department. While we are not liable for personal items, we will make every effort to assist in locating them."
 );
 export const PATIENT_RESPONSIBILITIES_EN = [
-  hyphEn("Follow the rules and regulations of RHH.").split(" ").join(NBSP),
+  hyphEn("Follow the rules and regulations of Royale Hayat Hospital.").split(" ").join(NBSP),
   `Give us com${SHY}plete and ac${SHY}cu${SHY}rate in${SHY}for${SHY}ma${SHY}tion about your health, in${SHY}clud${SHY}ing pre${SHY}vi${SHY}ous medical history and all the med${SHY}i${SHY}ca${SHY}tions you are taking.`,
   hyphEn(
     "Submit documents required as per the law/protocol before admission or undergoing specific procedures."

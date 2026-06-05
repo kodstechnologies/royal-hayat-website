@@ -1,4 +1,4 @@
-import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
+﻿import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -61,10 +61,10 @@ const DepartmentDoctors = memo(({ doctors, lang }: { doctors: Doctor[]; lang: st
         <ScrollAnimationWrapper>
           <div className="text-center mb-8">
             <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">
-              {lang === "ar" ? "فريقنا" : "Our Team"}
+              {lang === "ar" ? "ÙØ±ÙŠÙ‚Ù†Ø§" : "Our Team"}
             </p>
             <h2 className="text-2xl md:text-3xl font-serif text-foreground">
-              {lang === "ar" ? "أطباء القسم" : "Department Doctors"}
+              {lang === "ar" ? "Ø£Ø·Ø¨Ø§Ø¡ Ø§Ù„Ù‚Ø³Ù…" : "Department Doctors"}
             </h2>
           </div>
         </ScrollAnimationWrapper>
@@ -135,7 +135,7 @@ const DepartmentDoctors = memo(({ doctors, lang }: { doctors: Doctor[]; lang: st
                   <p className="font-serif text-sm text-foreground group-hover:text-primary transition-colors">{lang === "ar" ? doc.nameAr : doc.name}</p>
                   <p className="font-body text-xs text-muted-foreground mt-1 line-clamp-1">{lang === "ar" ? doc.titleAr : doc.title}</p>
                   <span className="inline-flex items-center gap-1 text-primary font-body text-xs tracking-wide mt-2">
-                    {lang === "ar" ? "عرض الملف ←" : "View Profile →"}
+                    {lang === "ar" ? "Ø¹Ø±Ø¶ Ø§Ù„Ù…Ù„Ù â†" : "View Profile â†’"}
                   </span>
                 </div>
               </Link>
@@ -147,7 +147,7 @@ const DepartmentDoctors = memo(({ doctors, lang }: { doctors: Doctor[]; lang: st
             to="/doctors"
             className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-body text-xs tracking-[0.15em] uppercase rounded-full hover:bg-primary/90 transition-colors"
           >
-            {lang === "ar" ? "اعرف المزيد" : "Read More"} <span className="ltr-icon">→</span>
+            {lang === "ar" ? "Ø§Ø¹Ø±Ù Ø§Ù„Ù…Ø²ÙŠØ¯" : "Read More"} <span className="ltr-icon">â†’</span>
           </Link>
         </div>
       </div>
@@ -247,7 +247,7 @@ const DepartmentDetail = () => {
         <div className="container mx-auto px-6 py-20 text-center">
           <h1 className="text-3xl font-serif text-foreground mb-4">Department Not Found</h1>
           <Link to="/medical-services" className="text-accent hover:underline font-body text-sm">
-            ← Back to Medical Services
+            â† Back to Medical Services
           </Link>
         </div>
         <Footer />
@@ -273,7 +273,7 @@ const DepartmentDetail = () => {
     "Anesthesia": ["Anesthesia"],
     "Center for Diagnostic Imaging": ["Radiology"],
     "Laboratory Services": ["Laboratory"],
-    "Royale Hayat Pharmacy": [],
+    "Royale Hayat Pharmacy": ["Pharmacy"],
     "Clinical Pharmacy": ["Clinical Pharmacy"],
     "Clinical Nutrition & Dietetics": ["Nutricare"],
     "Physiotherapy": ["Physiotherapy"],
@@ -382,7 +382,7 @@ const DepartmentDetail = () => {
               className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary font-body text-sm mb-8 transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
-              {isAr ? "رجوع" : "Go Back"}
+              {isAr ? "Ø±Ø¬ÙˆØ¹" : "Go Back"}
             </button>
           )}
           <ScrollAnimationWrapper>
@@ -393,7 +393,7 @@ const DepartmentDetail = () => {
                   className="inline-flex items-center gap-2 text-accent font-body text-xs tracking-wide mb-4 hover:underline"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
-                  {isAr ? "رجوع" : "Go Back"}
+                  {isAr ? "Ø±Ø¬ÙˆØ¹" : "Go Back"}
                 </button>
               )}
               {fromBookAppointment && (
@@ -402,7 +402,7 @@ const DepartmentDetail = () => {
                   className="inline-flex items-center gap-2 text-accent font-body text-xs tracking-wide mb-4 hover:underline"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
-                  {lang === "ar" ? "العودة إلى حجز الموعد" : "Back to Book Appointment"}
+                  {lang === "ar" ? "Ø§Ù„Ø¹ÙˆØ¯Ø© Ø¥Ù„Ù‰ Ø­Ø¬Ø² Ø§Ù„Ù…ÙˆØ¹Ø¯" : "Back to Book Appointment"}
                 </button>
               )}
               {activeSub && !fromDepartments && (
@@ -411,7 +411,7 @@ const DepartmentDetail = () => {
                   className="inline-flex items-center gap-2 text-accent font-body text-xs tracking-wide mb-4 hover:underline"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
-                  {isAr ? `العودة إلى ${dept.nameAr}` : `Back to ${dept.name}`}
+                  {isAr ? `Ø§Ù„Ø¹ÙˆØ¯Ø© Ø¥Ù„Ù‰ ${dept.nameAr}` : `Back to ${dept.name}`}
                 </button>
               )}
               <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">
@@ -662,7 +662,7 @@ const DepartmentDetail = () => {
             <div className="max-w-2xl mx-auto">
               <div className="bg-popover border border-border/50 rounded-2xl p-6 md:p-8 text-center">
                 <h3 className="font-serif text-xl text-foreground mb-6">
-                  {lang === "ar" ? "للاستفسار" : "Enquire Now"}
+                  {lang === "ar" ? "Ù„Ù„Ø§Ø³ØªÙØ³Ø§Ø±" : "Enquire Now"}
                 </h3>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                   <a
@@ -670,14 +670,14 @@ const DepartmentDetail = () => {
                     className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-full font-body text-xs tracking-[0.15em] uppercase hover:bg-primary/90 transition-colors"
                   >
                     <MessageCircle className="w-4 h-4" />
-                    {lang === "ar" ? "واتساب: 66320717 965+" : "WhatsApp: +965 66320717"}
+                    {lang === "ar" ? "ÙˆØ§ØªØ³Ø§Ø¨: 66320717 965+" : "WhatsApp: +965 66320717"}
                   </a>
                   <a
                     href="tel:+96525360500"
                     className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-full font-body text-xs tracking-[0.15em] uppercase hover:bg-primary/90 transition-colors"
                   >
                     <Phone className="w-4 h-4" />
-                    {lang === "ar" ? "الهاتف: 25360500 965+" : "Call: +965 25360500"}
+                    {lang === "ar" ? "Ø§Ù„Ù‡Ø§ØªÙ: 25360500 965+" : "Call: +965 25360500"}
                   </a>
                 </div>
               </div>

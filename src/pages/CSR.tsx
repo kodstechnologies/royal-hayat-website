@@ -50,7 +50,7 @@ const CSR = () => {
           <ScrollAnimationWrapper>
             <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">{t("csrEyebrow")}</p>
             <h1 className={`text-4xl md:text-5xl font-serif text-foreground mb-4 text-center ${isAr ? "rtl-text-center" : ""}`}>
-              {isAr ? "الاحتفاء بالحياة" : "Celebrating Life"}
+              {t("csrCelebratingLife")}
             </h1>
             <p className={`text-muted-foreground font-body text-sm max-w-xl mx-auto text-justify ${isAr ? "rtl-text" : ""}`}>
               {t("csrAboutP1")}
@@ -98,10 +98,10 @@ const CSR = () => {
               <ScrollAnimationWrapper key={item.titleKey}>
                 <div className="relative left-1/2 right-1/2 -mx-[50vw] w-screen border-y border-border/40 bg-primary/5 px-6 py-10 md:px-8 space-y-6">
                   <div className="text-center max-w-4xl mx-auto">
-                    <h3 className={`font-serif text-2xl text-foreground ${isAr ? "rtl-text-center" : ""}`}>
+                    <h3 className={`font-serif text-2xl font-bold text-foreground ${isAr ? "rtl-text-center" : ""}`}>
                       {t(item.titleKey)}
                     </h3>
-                    <p className={`font-body text-sm text-muted-foreground mt-2 ${isAr ? "rtl-text-center" : ""}`}>
+                    <p className={`font-body text-sm font-bold text-muted-foreground mt-2 ${isAr ? "rtl-text-center" : ""}`}>
                       {t(item.dateKey)}
                     </p>
                   </div>

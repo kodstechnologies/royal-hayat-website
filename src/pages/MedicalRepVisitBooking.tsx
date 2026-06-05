@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { CalendarCheck, ListChecks, Stethoscope } from "lucide-react";
 import { loadDoctors, type Doctor } from "@/data/loadDoctors";
-import { departments, deptDoctorAliases } from "@/data/departments";
+import { departments, doctorMatchesDepartment } from "@/data/departments";
 const getCleanCalendlySlug = (name: string) => {
   let clean = name.replace(/^Dr\.?\s+/i, '').trim();
   clean = clean.replace(/[^\w\s-]/g, '');
@@ -98,9 +98,8 @@ const MedicalRepVisitBooking = () => {
   const doctorsByDepartment = useMemo(() => {
     return departments
       .map((dept) => {
-        const aliases = deptDoctorAliases[dept.name] || [dept.name];
         const deptDoctors = doctorCatalog
-          .filter((doc) => aliases.some((alias) => doc.department.includes(alias) || doc.specialty.includes(alias)))
+          .filter((doc) => doctorMatchesDepartment(dept.name, doc))
           .sort((a, b) =>
             (isAr ? a.nameAr : a.name).localeCompare(isAr ? b.nameAr : b.name, locale)
           );

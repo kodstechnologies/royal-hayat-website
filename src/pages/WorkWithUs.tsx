@@ -110,7 +110,7 @@ const openPositions = [
     category: "Marketing & Communications",
     location: "On-Site",
     type: "Full-Time",
-    desc: "The Brand Manager develops and executes strategies to enhance RHH's brand image. Responsibilities include managing social media campaigns, supervising team members, coordinating publicity for doctors.",
+    desc: "The Brand Manager develops and executes strategies to enhance Royale Hayat Hospital's brand image. Responsibilities include managing social media campaigns, supervising team members, coordinating publicity for doctors.",
   },
   {
     title: "Anesthesia Technician – Local (Female with MOH)",
@@ -606,13 +606,13 @@ const WorkWithUs = ({
           />
           <LifePhotoCarousel
             variant="muted"
-            title={isAr ? "مسابقة رويال حياة" : "RHH Quiz"}
+            title={isAr ? "مسابقة رويال حياة" : "Royale Hayat Hospital Quiz"}
             subtitle={
               isAr
                 ? "أجواء من التفاعل، والمتعة، والمنافسة الودية التي تجمع فرق العمل بروح واحدة."
                 : "Fun, friendly competition across teams."
             }
-            photos={toCarouselPhotos("RHH Quiz", rhhQuizImages)}
+            photos={toCarouselPhotos("Royale Hayat Hospital Quiz", rhhQuizImages)}
           />
         </>
       )}

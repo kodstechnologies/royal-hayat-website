@@ -34,14 +34,16 @@ const Footer = () => {
             </p>
             <div className="flex items-center gap-3">
               {[
-                { key: "instagram", icon: Instagram, href: "#", type: "outline" },
-                { key: "facebook", icon: Facebook, href: "#", type: "filled" },
-                { key: "x", href: "#", type: "x" },
-                { key: "youtube", href: "#", type: "youtube" },
+                { key: "instagram", icon: Instagram, href: "https://www.instagram.com/accounts/login/?next=%2Froyalehayat&source=omni_redirect", type: "outline" },
+                { key: "facebook", icon: Facebook, href: "https://www.facebook.com/RoyaleHayat", type: "filled" },
+                { key: "x", href: "https://x.com/royale_hayat", type: "x" },
+                { key: "youtube", href: "https://www.youtube.com/user/RoyaleHayatHospital", type: "youtube" },
               ].map((social) => (
                 <a
                   key={social.key}
                   href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-10 h-10 flex items-center justify-center text-primary-foreground/70 hover:text-accent hover:border-accent transition-colors"
                   aria-label={social.key}
                 >

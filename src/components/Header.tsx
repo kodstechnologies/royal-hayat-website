@@ -376,6 +376,7 @@ const Header = () => {
               <div className="flex items-center bg-muted/40 rounded-full border border-border p-0.5 md:scale-95 lg:scale-100 origin-left">
                 <button
                   onClick={() => setLang("en")}
+                  lang="en"
                   className={`rounded-full font-body font-semibold tracking-wide transition-all duration-300 !leading-none flex items-center justify-center px-2 md:px-2.5 h-6.5 md:h-7 !text-[10px] md:!text-[11px] ${lang === "en"
                     ? "bg-accent text-accent-foreground shadow-sm"
                     : "bg-transparent text-muted-foreground hover:bg-background/60"
@@ -386,7 +387,8 @@ const Header = () => {
                 </button>
                 <button
                   onClick={() => setLang("ar")}
-                  className={`rounded-full font-body font-semibold transition-all duration-300 !leading-none flex items-center justify-center px-2 md:px-2.5 h-6.5 md:h-7 !text-[10px] md:!text-[11px] ${lang === "ar"
+                  lang="ar"
+                  className={`rounded-full font-arabic font-semibold transition-all duration-300 !leading-none flex items-center justify-center px-2 md:px-2.5 h-6.5 md:h-7 !text-[10px] md:!text-[11px] ${lang === "ar"
                     ? "bg-primary text-primary-foreground shadow-sm"
                     : "bg-transparent text-muted-foreground hover:bg-background/60"
                     }`}
@@ -566,6 +568,7 @@ const Header = () => {
             <div className="flex md:hidden items-center bg-muted/40 rounded-full border border-border p-0.5">
               <button
                 onClick={() => setLang("en")}
+                lang="en"
                 className={`rounded-full font-body font-semibold tracking-wide transition-all duration-300 !leading-none flex items-center justify-center px-2 h-7 !text-[10px] ${lang === "en"
                   ? "bg-accent text-accent-foreground shadow-sm"
                   : "bg-transparent text-muted-foreground hover:bg-background/60"
@@ -576,7 +579,8 @@ const Header = () => {
               </button>
               <button
                 onClick={() => setLang("ar")}
-                className={`rounded-full font-body font-semibold transition-all duration-300 !leading-none flex items-center justify-center px-2 h-7 !text-[10px] ${lang === "ar"
+                lang="ar"
+                className={`rounded-full font-arabic font-semibold transition-all duration-300 !leading-none flex items-center justify-center px-2 h-7 !text-[10px] ${lang === "ar"
                   ? "bg-primary text-primary-foreground shadow-sm"
                   : "bg-transparent text-muted-foreground hover:bg-background/60"
                   }`}

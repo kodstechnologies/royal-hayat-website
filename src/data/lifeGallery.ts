@@ -16,7 +16,7 @@ export const galleries = {
     { src: galaPhoto4, alt: "Gala Dinner — 4" },
   ],
   hospitalityWeek: slot("Hospitality Week", 16, galaPhoto),
-  rhhQuiz: slot("RHH Quiz", 12, galaPhoto),
+  rhhQuiz: slot("Royale Hayat Hospital Quiz", 12, galaPhoto),
   recognition: slot("Employee of the Month", 1, galaPhoto),
   staffActivities: slot("Volley Ball Tournament", 18, galaPhoto),
 };

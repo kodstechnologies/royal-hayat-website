@@ -6,7 +6,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { departments as staticDepartments, type Department, MAIN_CATEGORIES } from "@/data/departments";
 import { loadDoctors, type Doctor } from "@/data/loadDoctors";
-import { deptDoctorAliases } from "@/data/departments";
+import { doctorMatchesDepartment } from "@/data/departments";
 type DepartmentsSectionProps = {
   showPageTitle?: boolean;
 };
@@ -15,6 +15,8 @@ type DeptRestoreState = {
   restoreDeptOpenIndex?: number;
   restoreSelectedSubByDept?: Record<number, string>;
   restoreScrollY?: number;
+  fromDepartments?: boolean;
+  returnPath?: string;
 };
 const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) => {
   const navigate = useNavigate();
@@ -86,6 +88,24 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
       },
     });
   };
+  const openDepartmentDetail = (
+    deptSlug: string,
+    origIdx: number,
+    subSlug?: string
+  ) => {
+    const path = subSlug
+      ? `/medical-services/${deptSlug}/${subSlug}`
+      : `/medical-services/${deptSlug}`;
+    navigate(path, {
+      state: {
+        fromDepartments: true,
+        returnPath: location.pathname,
+        restoreDeptOpenIndex: origIdx,
+        restoreSelectedSubByDept: selectedSubByDept,
+        restoreScrollY: window.scrollY,
+      },
+    });
+  };
   const filteredDepts = departments.filter(dept => {
     const query = searchQuery.toLowerCase();
     return (
@@ -124,10 +144,8 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
     () =>
       Object.fromEntries(
         departments.map((dept) => {
-          const aliases = deptDoctorAliases[dept.name];
-          const matchTerms = aliases && aliases.length > 0 ? aliases : [dept.name];
           const matchedDoctors = doctorCatalog.filter((doc) =>
-            matchTerms.some((alias) => doc.department.includes(alias) || doc.specialty.includes(alias))
+            doctorMatchesDepartment(dept.name, doc)
           );
           return [dept.name, matchedDoctors];
         })
@@ -158,17 +176,14 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
       "abdominal-wall-reconstruction": ["humoud", "alrasheedi", "sarah", "youha"],
       "nutrition-and-diet-surgery": ["hachem", "khreis", "salamah"],
     };
-    const aliases = deptDoctorAliases[selectedDept.name];
-    const matchTerms = aliases && aliases.length > 0 ? aliases : [selectedDept.name];
     const extraTerms: string[] = [];
     if (selectedDept.name === "Internal Medicine") {
       extraTerms.push("Nutricare");
     } else if (selectedDept.name === "General & Laparoscopic Surgery") {
       extraTerms.push("Nutricare", "La Cosmetique");
     }
-    const allTerms = [...matchTerms, ...extraTerms];
     const allDeptDoctors = doctorCatalog.filter((doc) =>
-      allTerms.some((alias) => doc.department.includes(alias) || doc.specialty.includes(alias))
+      doctorMatchesDepartment(selectedDept.name, doc, extraTerms)
     );
     if (selectedSubSlug && selectedDept.subs) {
       const mapKey = Object.keys(subSpecialtyDoctorMap).find((k) => selectedSubSlug.includes(k) || k.includes(selectedSubSlug));
@@ -319,12 +334,20 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                     {lang === "ar" ? dept.nameAr : dept.name}
                                   </h3>
                                   <p className="text-muted-foreground font-body text-sm leading-relaxed">{lang === "ar" ? dept.descAr : dept.desc}</p>
-                                  <Link
-                                    to={isAlSafwaDeptSlug(dept.slug) ? "/al-safwa" : `/medical-services/${dept.slug}`}
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (isAlSafwaDeptSlug(dept.slug)) {
+                                        navigate("/al-safwa");
+                                        return;
+                                      }
+                                      openDepartmentDetail(dept.slug, origIdx);
+                                    }}
                                     className="inline-flex w-full justify-end items-center gap-1.5 text-primary font-body text-xs tracking-wide hover:text-accent transition-colors"
                                   >
                                     {t("Read More")} <ArrowRight className="w-3.5 h-3.5" />
-                                  </Link>
+                                  </button>
                                 </div>
                               </div>
                             </div>
@@ -401,9 +424,19 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                   </div>
                                   {dept.subs && dept.subs.length > 0 && selectedSubSlug && (
                                     <div className="mt-4 text-center">
-                                      <Link to={`/medical-services/${dept.slug}/${selectedSubSlug}`} className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-full font-body text-xs tracking-[0.15em] uppercase hover:bg-primary/90 transition-colors">
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          openDepartmentDetail(
+                                            dept.slug,
+                                            origIdx,
+                                            selectedSubSlug
+                                          )
+                                        }
+                                        className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-full font-body text-xs tracking-[0.15em] uppercase hover:bg-primary/90 transition-colors"
+                                      >
                                         {t("learnMore")} <ArrowRight className="w-3.5 h-3.5" />
-                                      </Link>
+                                      </button>
                                     </div>
                                   )}
                                 </div>

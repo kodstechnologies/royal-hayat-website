@@ -59,16 +59,18 @@ export const departments: Department[] = [
   {
     id: 3, icon: Baby, category: "Children", mainCategory: "Clinical Speciality",
     name: "Pediatrics", nameAr: "طب الأطفال", slug: "pediatrics",
-    desc: "World-class pediatric care with warmth and a child-centered approach, from infancy through adolescence.",
-    descAr: "رعاية أطفال عالمية المستوى بدفء ونهج محوره الطفل، من الرضاعة حتى المراهقة.",
+    desc: "World-class pediatric care with warmth and a child-centered approach.",
+    descAr:
+      "رعاية متقدمة لطب الأطفال وفق أعلى المعايير الطبية العالمية، ضمن بيئة مريحة للأطفال وعائلاتهم.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Pediatrics/2.JPG",
     clinicCode: "R002PED",
   },
   {
     id: 6, icon: Scissors, category: "Surgery", mainCategory: "Clinical Speciality",
     name: "General & Laparoscopic Surgery", nameAr: "الجراحة العامة والمنظار", slug: "general-laparoscopic-surgery",
-    desc: "Exceptional surgical care blending expert skills with advanced technology for precision, safety, and quick recovery.",
-    descAr: "رعاية جراحية استثنائية تجمع بين المهارات والتكنولوجيا المتقدمة.",
+    desc: "Exceptional surgical care blending expert skills with advanced technology. Our internationally recognized surgeons focus on precision, safety, and quick recovery.",
+    descAr:
+      "رعاية جراحية متقدمة تجمع بين الخبرة الجراحية العالية وأحدث التقنيات، مع تركيز على الدقة والأمان وسرعة التعافي.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/General+%26+Laparoscopic+Surgery/1.JPG",
     clinicCode: "GI 1",
     subs: [
@@ -81,16 +83,18 @@ export const departments: Department[] = [
   {
     id: 13, icon: Stethoscope, category: "Surgery", mainCategory: "Clinical Speciality",
     name: "Anesthesia", nameAr: "التخدير", slug: "anesthesia",
-    desc: "Top-tier anesthesia services ensuring patient safety and comfort for all surgical and childbirth procedures.",
-    descAr: "خدمات تخدير عالية المستوى تضمن سلامة المريض وراحته لجميع الإجراءات الجراحية والولادة.",
+    desc: "Top-tier anesthesia services using the latest techniques and technologies for surgical and childbirth procedures.",
+    descAr:
+      "يضمن قسم التخدير أعلى مستويات الأمان والراحة خلال العمليات الجراحية والولادة، باستخدام أحدث تقنيات التخدير.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Anesthesia/1.JPG",
     clinicCode: "R002ANA",
   },
   {
     id: 5, icon: Activity, category: "General", mainCategory: "Clinical Speciality",
     name: "Internal Medicine", nameAr: "الأمراض الباطنية", slug: "internal-medicine",
-    desc: "Comprehensive diagnosis and treatment of complex adult diseases with personalized health check programs.",
-    descAr: "تشخيص وعلاج شامل لأمراض البالغين المعقدة مع برامج فحص صحي مخصصة.",
+    desc: "Your trusted partner for health management, from chronic conditions to preventive care at every stage.",
+    descAr:
+      "شريكك الموثوق في إدارة الصحة العامة، للأمراض المزمنة والرعاية الوقائية في جميع مراحل الرعاية الصحية.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Internal+Medicine/1.jpg",
     clinicCode: "R01ERC",
     subs: [
@@ -105,32 +109,34 @@ export const departments: Department[] = [
   {
     id: 10, icon: Activity, category: "General", mainCategory: "Clinical Speciality",
     name: "Family Medicine", nameAr: "طب العائلة", slug: "family-medicine",
-    desc: "Continuous, personalized care for individuals and families of all ages with coordinated health management.",
-    descAr: "رعاية مستمرة ومخصصة للأفراد والعائلات من جميع الأعمار مع إدارة صحية منسقة.",
+    desc: "Continuous, personalized care for individuals and families of all ages, coordinated with expertise and compassion.",
+    descAr:
+      "رعاية صحية متكاملة ومستمرة للأفراد والعائلات من جميع الأعمار، مع متابعة شخصية وتنسيق شامل للرعاية.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Family+Medicine/1.jpg",
     clinicCode: "R01FMC",
   },
   {
     id: 9, icon: Stethoscope, category: "Head & Neck", mainCategory: "Clinical Speciality",
     name: "ENT (Ear, Nose & Throat)", nameAr: "الأنف والأذن والحنجرة", slug: "ent",
-    desc: "Expert care for conditions affecting the ear, nose, throat, head, and neck with both medical and surgical expertise.",
-    descAr: "رعاية متخصصة لأمراض الأنف والأذن والحنجرة والرأس والرقبة بخبرات طبية وجراحية.",
+    desc: "Expert ENT care for ear, nose, throat, head, and neck conditions for all ages, with advanced diagnostic and surgical expertise.",
+    descAr:
+      "رعاية متخصصة لحالات الأذن والأنف والحنجرة والرأس والرقبة لجميع الأعمار، بأحدث تقنيات التشخيص والعلاج.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/ENT+(Ear%2C+Nose+%26+Throat)/1.jpg",
     clinicCode: "R01ENT",
   },
   {
     id: 7, icon: Scissors, category: "Cosmetic", mainCategory: "Clinical Speciality",
     name: "Plastic Surgery & Cosmetology", nameAr: "الجراحة التجميلية والتجميل", slug: "plastic-surgery",
-    desc: "Internationally certified physicians offering advanced surgical and non-surgical cosmetic and reconstructive solutions.",
-    descAr: "أطباء معتمدون دولياً يقدمون حلولاً تجميلية وترميمية جراحية وغير جراحية متقدمة.",
+    desc: "Internationally certified physicians offering advanced surgical and non-surgical solutions with precision and discretion. All-female medical team available.",
+    descAr: "رعاية متقدمة تحت إشراف أطباء معتمدين دوليًا، مع حلول جراحية وغير جراحية دقيقة ونتائج طبيعية. فريق طبي نسائي متكامل متاح.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Plastic+Surgery/3.JPG",
     clinicCode: "R060COS",
   },
   {
     id: 2, icon: Heart, category: "Women's Health", mainCategory: "Clinical Speciality",
     name: "Reproductive Medicine & IVF", nameAr: "طب الإنجاب وأطفال الأنابيب", slug: "reproductive-medicine-ivf",
-    desc: "Advanced fertility treatments blending expertise with cutting-edge technology, including IVF, ICSI, and genetic diagnosis.",
-    descAr: "علاجات خصوبة متقدمة تجمع بين الخبرة والتكنولوجيا المتطورة، بما في ذلك أطفال الأنابيب والحقن المجهري.",
+    desc: "We blend expertise with cutting-edge technology for advanced infertility treatments, with compassionate care in a luxurious setting.",
+    descAr: "نجمع بين الخبرة الطبية والتقنيات الحديثة لتقديم أحدث علاجات تأخر الإنجاب، ضمن بيئة راقية وفريق متخصص.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Reproductive+Medicine+%26+IVF/2.jpg",
     clinicCode: "R002IVF",
   },
@@ -138,7 +144,7 @@ export const departments: Department[] = [
     id: 8, icon: Smile, category: "Skin", mainCategory: "Clinical Speciality",
     name: "Dermatology", nameAr: "الأمراض الجلدية", slug: "dermatology",
     desc: "Expert care for all dermatological needs combining clinical excellence with the latest advances for adults and children.",
-    descAr: "رعاية متخصصة لجميع احتياجات الأمراض الجلدية مع أحدث التطورات.",
+    descAr: "رعاية طبية متخصصة على يد أطباء مؤهلين لعلاج جميع الحالات الجلدية، مع أحدث التطورات الطبية للبالغين والأطفال.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Dermatology/1.JPG",
     clinicCode: "R01DER",
   },
@@ -146,7 +152,7 @@ export const departments: Department[] = [
     id: 11, icon: Smile, category: "Dental", mainCategory: "Clinical Speciality",
     name: "Dental Clinic", nameAr: "طب الأسنان", slug: "dental-clinic",
     desc: "Exceptional dental care in a luxurious setting with specialized dentists using advanced technology for all ages.",
-    descAr: "رعاية أسنان استثنائية في بيئة فاخرة مع أطباء متخصصين يستخدمون تقنيات متقدمة لجميع الأعمار.",
+    descAr: "رعاية أسنان متكاملة ضمن بيئة راقية، مع أطباء متخصصين وأحدث التقنيات لجميع الفئات العمرية.",
     img: "/images/Department/Dental.jpg",
     clinicCode: "R002DEN",
   },
@@ -154,31 +160,31 @@ export const departments: Department[] = [
     id: 12, icon: Pill, category: "Wellness", mainCategory: "Clinical Speciality",
     name: "Pain Management", nameAr: "علاج الألم", slug: "pain-management",
     desc: "Comprehensive program offering advanced, compassionate care for acute and chronic pain to restore comfort and functionality.",
-    descAr: "برنامج شامل يقدم رعاية متقدمة ورحيمة للألم الحاد والمزمن لاستعادة الراحة والوظائف.",
+    descAr: "رعاية متقدمة وشاملة للألم الحاد والمزمن، لمساعدة المرضى على استعادة الراحة والقدرة الوظيفية.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Pain+Management/1.jpg",
     clinicCode: "R002PAI",
   },
   {
     id: 16, icon: Microscope, category: "Diagnostics", mainCategory: "Clinical Support Service",
     name: "Laboratory Services", nameAr: "الخدمات المخبرية", slug: "laboratory-services",
-    desc: "CAP-accredited laboratory providing gold-standard diagnostic testing and pathology services.",
-    descAr: "مختبر معتمد من CAP يقدم فحوصات تشخيصية وخدمات علم الأمراض بأعلى المعايير.",
+    desc: "State-of-the-art clinical laboratory for accurate diagnosis and personalized treatment, with some of the region's fastest turnaround times.",
+    descAr: "مختبر سريري متطور لدقة التشخيص ووضع الخطط العلاجية، بخدمات شاملة وأوقات إنجاز من الأسرع على مستوى المنطقة.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Laboratory+Services/1.jpg",
     clinicCode: "R07LABH",
   },
   {
     id: 15, icon: Microscope, category: "Diagnostics", mainCategory: "Clinical Support Service",
-    name: "Center for Diagnostic Imaging", nameAr: "الأشعة التشخيصية", slug: "center-for-diagnostic-imaging",
+    name: "Center for Diagnostic Imaging", nameAr: "مركز الأشعة التشخيصية", slug: "center-for-diagnostic-imaging",
     desc: "Advanced diagnostic and image-guided therapeutic services combining expert professionals with state-of-the-art technology.",
-    descAr: "خدمات تشخيصية وعلاجية موجهة بالتصوير تجمع بين متخصصين وتقنيات حديثة.",
+    descAr: "في مستشفى رويال حياة، يقدم مركز الأشعة التشخيصية خدمات متقدمة في التشخيص والتدخلات العلاجية الموجهة بالتصوير الطبي، من خلال الجمع بين الخبرات الطبية المتخصصة وأحدث التقنيات لضمان دقة التشخيص وسرعة تقديم الرعاية المناسبة.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Center+for+Diagnostic+Imaging/1.JPG",
     clinicCode: "R010DIE",
   },
   {
     id: 14, icon: AlertCircle, category: "Emergency", mainCategory: "Clinical Support Service",
     name: "Intensive Care", nameAr: "العناية المركزة", slug: "intensive-care",
-    desc: "Round-the-clock monitoring and care for severe, life-threatening conditions with cutting-edge technology.",
-    descAr: "مراقبة ورعاية على مدار الساعة للحالات الحرجة المهددة للحياة بأحدث التقنيات.",
+    desc: "At Royale Hayat Hospital, our ICU offers round-the-clock monitoring and care for severe, life-threatening conditions with cutting-edge technology.",
+    descAr: "في مستشفى رويال حياة، توفر وحدة العناية المركزة رعاية طبية متقدمة ومراقبة دقيقة على مدار الساعة للحالات الحرجة والمهددة للحياة، باستخدام أحدث التقنيات والأجهزة الطبية لضمان أعلى مستويات الرعاية والأمان.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Intensive+Care/1.jpg",
     clinicCode: "R001SCN",
   },
@@ -192,8 +198,8 @@ export const departments: Department[] = [
   {
     id: 20, icon: Pill, category: "Pharmacy", mainCategory: "Clinical Support Service",
     name: "Royale Hayat Pharmacy", nameAr: "صيدلية رويال حياة", slug: "royale-hayat-pharmacy",
-    desc: "Conveniently located on the ground floor, Royale Pharmacy is staffed by highly qualified pharmacists available 24/7 to provide expert guidance for all your medicinal needs.",
-    descAr: "تقع صيدلية رويال حياة في الطابق الأرضي، ويعمل بها صيادلة مؤهلون تأهيلاً عالياً متاحون على مدار الساعة طوال أيام الأسبوع.",
+    desc: "Conveniently located on the ground floor, Royale Pharmacy is staffed by highly qualified pharmacists available 24/7 to provide expert guidance for all your medicinal needs. Our pharmacists collaborate closely with clinical and nursing teams to ensure the highest standard of pharmaceutical care.",
+    descAr: "تقع صيدلية مستشفى رويال حياة في الطابق الأرضي، وتعمل على مدار الساعة بإشراف نخبة من الصيادلة المؤهلين لتقديم الاستشارات الدوائية والدعم المتخصص لجميع الاحتياجات العلاجية. كما يتعاون فريق الصيدلة بشكل وثيق مع الكوادر الطبية والتمريضية لضمان أعلى مستويات الرعاية الدوائية.",
     img: "/images/Department/Pharmacy.jpg",
   },
   {
@@ -207,14 +213,14 @@ export const departments: Department[] = [
     id: 18, icon: Home, category: "Wellness", mainCategory: "Home Care Service",
     name: "Royale Home Health", nameAr: "رويال هوم هيلث للرعاية المنزلية", slug: "home-health",
     desc: "Royale Home Health is an exclusive extension of Royale Hayat Hospital, offering exceptional health and wellness support delivered directly to your home.",
-    descAr: "رويال هوم هيلث للرعاية المنزلية امتداد حصري لمستشفى رويال حياة، يقدّم دعماً استثنائياً للصحة والعافية مباشرة في منزلك.",
+    descAr: "تُعد خدمات الرعاية الصحية المنزلية في مستشفى رويال حياة امتدادًا حصريًا لخدمات المستشفى، حيث توفر رعاية صحية وعلاجية متكاملة داخل المنزل، تجمع بين الجودة الطبية العالية ومستوى الضيافة والرعاية الراقية التي تتميز بها رويال حياة. ويشرف على هذه الخدمات فريق متعدد التخصصات من الكوادر الطبية المؤهلة لتقديم رعاية شخصية وإنسانية وفق أعلى المعايير العالمية.",
     img: "/images/Department/home-health.jpg",
   },
   {
     id: 22, icon: Activity, category: "Physiotherapy", mainCategory: "Home Care Service",
     name: "Physiotherapy", nameAr: "العلاج الطبيعي", slug: "physiotherapy",
-    desc: "Advanced physiotherapy treatments tailored for recovery, rehabilitation, and long-term wellness.",
-    descAr: "علاجات طبيعية متقدمة مصممة للتعافي وإعادة التأهيل والعافية على المدى الطويل.",
+    desc: "We offer advanced physiotherapy treatments tailored to support women's health throughout life. We collaborate with other departments for comprehensive recovery and rehabilitation.",
+    descAr: "في مستشفى رويال حياة، نقدم خدمات علاج طبيعي متقدمة مصممة لدعم صحة المرأة في مختلف مراحل الحياة، مع التعاون المستمر بين الأقسام الطبية المختلفة لضمان رعاية متكاملة وخطط علاجية فعالة للتعافي وإعادة التأهيل.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Physiotherapy/1.jpg",
   },
 ];
@@ -242,13 +248,17 @@ export const deptDoctorAliases: Record<string, string[]> = {
   "Royale Hayat Pharmacy": ["Pharmacy"],
   "Physiotherapy": ["Physiotherapy"],
 };
+export const ROYALE_HAYAT_PHARMACY_DOCTOR_IDS = [
+  "dr-mustafa-alfiki",
+  "dr-mirvat-sameer-ghanem",
+] as const;
 export function doctorMatchesDepartment(
   deptName: string,
-  doc: { department: string; specialty: string },
+  doc: { id?: string; department: string; specialty: string },
   extraTerms: string[] = []
 ): boolean {
   if (deptName === "Royale Hayat Pharmacy") {
-    return doc.department === "Pharmacy";
+    return doc.id != null && (ROYALE_HAYAT_PHARMACY_DOCTOR_IDS as readonly string[]).includes(doc.id);
   }
   const aliases = deptDoctorAliases[deptName];
   const matchTerms = [...(aliases && aliases.length > 0 ? aliases : [deptName]), ...extraTerms];

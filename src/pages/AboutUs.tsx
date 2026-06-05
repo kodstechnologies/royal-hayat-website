@@ -148,6 +148,7 @@ const leaders = [
   },
 ];
 const LeaderCard = ({ leader, lang }: { leader: typeof leaders[0] & { image?: string }; lang: string }) => {
+  const { t } = useLanguage();
   const [expanded, setExpanded] = useState(false);
   const name = lang === "ar" ? leader.nameAr : leader.nameEn;
   const role = lang === "ar" ? leader.roleAr : leader.roleEn;
@@ -249,7 +250,7 @@ const LeaderCard = ({ leader, lang }: { leader: typeof leaders[0] & { image?: st
             >
               {expanded
                 ? (lang === "ar" ? "عرض أقل" : "Show Less")
-                : (lang === "ar" ? "اقرأ المزيد" : "Read More")}
+                : t("learnMore")}
               {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
             </button>
           )}

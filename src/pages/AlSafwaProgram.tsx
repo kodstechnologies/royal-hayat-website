@@ -361,10 +361,10 @@ const AlSafwaProgram = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const objectives = isAr ? [
     "تقديم رعاية صحية متميزة وشخصية",
-    "تحديد المخاطر الصحية والتخفيف منها مبكراً",
-    "إدارة الحالات المزمنة والوراثية بكفاءة",
-    "توفير تحديثات التطعيم",
-    "تعزيز الصحة العامة والرفاهية",
+    "الكشف المبكر عن المخاطر الصحية والحدّ منها",
+    "إدارة فعّالة للأمراض المزمنة والوراثية",
+    "تحديث جدول التطعيمات والتحصينات",
+    "تعزيز الصحة العامة والعافية الشاملة",
   ] : [
     "Deliver premium, personalized healthcare",
     "Identify and mitigate health risks early",
@@ -373,11 +373,11 @@ const AlSafwaProgram = () => {
     "Enhance overall health and well-being",
   ];
   const features = isAr ? [
-    "الوصول إلى أفضل المتخصصين في أمراض القلب والجهاز الهضمي والمزيد",
-    "استمتع بأجنحة تنفيذية خاصة وأنيقة",
-    "استفد من منسق تنفيذي مخصص لجدولة سلسة",
-    "استخدم مختبرنا المعتمد وخدمات التشخيص",
-    "احصل على تقرير طبي شامل بعد التقييم",
+    "الوصول إلى نخبة من المتخصصين في أمراض القلب والجهاز الهضمي وغيرها",
+    "الاستمتاع بأجنحة تنفيذية خاصة وأنيقة",
+    "الاستفادة من منسّق تنفيذي مخصص لضمان سلاسة المواعيد",
+    "الاستفادة من خدمات المختبر المعتمد والتشخيص الطبي المتكامل",
+    "الحصول على تقرير طبي شامل عقب إتمام الفحص",
   ] : [
     "Access top specialists in Cardiology, Gastroenterology, and more",
     "Enjoy elegant, private executive suites",
@@ -386,15 +386,13 @@ const AlSafwaProgram = () => {
     "Receive a comprehensive medical report after your assessment",
   ];
   const whatToBring = isAr ? [
-    "قائمة الأدوية الحالية أو عينات",
-    "السجلات الطبية السابقة ونتائج المختبر",
-    "تفاصيل الاتصال بالطبيب المحيل",
-    "ملابس مريحة للإقامة النهائية",
+    "قائمة الأدوية الحالية أو عيّنات منها",
+    "السجلات الطبية السابقة ونتائج التحاليل",
+    "بيانات التواصل مع الطبيب المُحيل",
   ] : [
     "Current medication list or samples",
     "Previous medical records and lab results",
     "Contact details of your referring physician",
-    "Comfortable clothing for overnight stays",
   ];
   if (isSubmitted) {
     return (
@@ -491,7 +489,7 @@ const AlSafwaProgram = () => {
               <h1 className="text-4xl md:text-5xl font-serif text-foreground mb-6">{t("alSafwaProgram")}</h1>
               <p className="text-muted-foreground font-body text-base leading-relaxed">
                 {isAr
-                  ? "في عالم اليوم سريع الإيقاع، غالباً ما تأخذ الصحة مقعداً خلفياً. يقدم برنامج الصفوة في مستشفى رويال حياة رعاية طبية متميزة مصممة لتتناسب بسلاسة مع أسلوب حياتك المزدحم."
+                  ? "في عالمنا المتسارع اليوم، كثيراً ما تتراجع الصحة أمام ضغوط الحياة اليومية. يقدم برنامج الصفوة في مستشفى رويال حياة رعاية طبية مميزة، مصممة لتندمج بسلاسة مع نمط حياتك المشغول."
                   : "In today's fast-paced world, health can often take a backseat. The Al Safwa Program at Royale Hayat Hospital offers elite medical care designed to fit seamlessly into your busy lifestyle."}
               </p>
             </div>
@@ -510,8 +508,8 @@ const AlSafwaProgram = () => {
                 <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-3">{isAr ? "نظرة عامة على البرنامج" : "Program Overview"}</h2>
                 <p className="text-muted-foreground font-body text-sm leading-relaxed">
                   {isAr
-                    ? "تحكم في صحتك بسهولة مع برنامجنا المخصص. سجّل عن طريق ملء نموذج تسجيل سريع يقدم لمحة عن تاريخك الطبي ونمط حياتك. سيقوم فريقنا بإعداد خطة رعاية مخصصة لك."
-                    : "Take control of your health effortlessly with our personalized program. Enroll by completing a quick registration form, providing a snapshot of your medical history and lifestyle. Our team will craft a customized care plan just for you."}
+                    ? "تحكّم في صحتك بكل يسر وسهولة من خلال برنامجنا المخصص. سجّل اشتراكك بملء استمارة تسجيل سريعة تتضمن لمحة عن تاريخك الطبي ونمط حياتك، وسيتولى فريقنا المتخصص وضع خطة رعاية صحية مخصصة تلبي احتياجاتك."
+                    : "Take control of your health effortlessly with our personalized program. Enrol by completing a quick registration form, providing a snapshot of your medical history and lifestyle. Our team will craft a customized care plan just for you."}
                 </p>
               </div>
             </div>
@@ -526,7 +524,7 @@ const AlSafwaProgram = () => {
               <div className="w-12 h-12 rounded-full bg-accent/15 flex items-center justify-center flex-shrink-0">
                 <Target className="w-6 h-6 text-accent" />
               </div>
-              <h2 className="text-2xl md:text-3xl font-serif text-foreground">{isAr ? "الأهداف" : "Objectives"}</h2>
+              <h2 className="text-2xl md:text-3xl font-serif text-foreground">{isAr ? "أهداف البرنامج" : "Objectives"}</h2>
             </div>
           </ScrollAnimationWrapper>
           <div className="grid gap-4 ml-16">
@@ -548,7 +546,7 @@ const AlSafwaProgram = () => {
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                 <Stethoscope className="w-6 h-6 text-primary" />
               </div>
-              <h2 className="text-2xl md:text-3xl font-serif text-foreground">{isAr ? "المميزات" : "Features"}</h2>
+              <h2 className="text-2xl md:text-3xl font-serif text-foreground">{isAr ? "مميزات البرنامج" : "Features"}</h2>
             </div>
           </ScrollAnimationWrapper>
           <div className="grid gap-4 ml-16">
@@ -571,10 +569,10 @@ const AlSafwaProgram = () => {
                 <ClipboardList className="w-6 h-6 text-accent" />
               </div>
               <div>
-                <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-3">{isAr ? "التحضير لزيارتك" : "Preparing for Your Visit"}</h2>
+                <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-3">{isAr ? "الاستعداد لزيارتك" : "Preparing for Your Visit"}</h2>
                 <p className="text-muted-foreground font-body text-sm leading-relaxed">
                   {isAr
-                    ? "لضمان نتائج دقيقة، يرجى الصيام لمدة 12 ساعة قبل الزيارة واستشارة طبيبك بشأن الأدوية. الوصول مبكراً لإتمام التسجيل والاسترخاء في جناحك التنفيذي."
+                    ? "لضمان دقة النتائج، يُرجى الصيام لمدة اثنتي عشرة ساعة قبل الزيارة، واستشارة طبيبك بشأن الأدوية التي تتناولها. نوصي بالحضور مبكراً لإتمام إجراءات التسجيل والاسترخاء في جناحك."
                     : "To ensure accurate results, please fast for 12 hours before, and consult your doctor about medications. Arrive early to complete registration and relax in your executive suite."}
                 </p>
               </div>
@@ -615,8 +613,8 @@ const AlSafwaProgram = () => {
               <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-4">{isAr ? "سجّل اليوم" : "Register Today"}</h2>
               <p className="text-muted-foreground font-body text-sm leading-relaxed mb-6">
                 {isAr
-                  ? "سجّل الآن للانضمام إلى برنامج الصفوة وإعطاء الأولوية لصحتك بفخامة وسهولة."
-                  : "Enroll today to join the Al Safwa Program and prioritize your health with luxury and ease."}
+                  ? "انضم إلى برنامج الصفوة اليوم وأعِد الأولوية لصحتك، في أجواء من الرقي والسهولة."
+                  : "Enrol today to join the Al Safwa Program and prioritize your health with luxury and ease."}
               </p>
               <button
                 onClick={() => setShowEnrollModal(true)}

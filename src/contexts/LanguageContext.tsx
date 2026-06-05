@@ -320,7 +320,7 @@ const translations: Translations = {
   whatWeOffer: { en: "What We Offer", ar: "ما نقدمه" },
   specializedCare: { en: "Specialized Care", ar: "رعاية متخصصة" },
   specializedDesc: { en: "Tailored, premium medical services designed around your individual needs, delivered with compassion and clinical excellence.", ar: "خدمات طبية فاخرة مصممة حسب احتياجاتك الفردية، تُقدم بالرحمة والتميز السريري." },
-  learnMore: { en: "Read More", ar: "اعرف المزيد" },
+  learnMore: { en: "Read More", ar: "المزيد" },
   // Departments
   ourSpecialties: { en: "Our Specialties", ar: "تخصصاتنا" },
   medicalDepartments: { en: "Medical Departments", ar: "الأقسام الطبية" },
@@ -504,7 +504,7 @@ const translations: Translations = {
     ar: "فريق من الأطباء المتخصصين يقدّم رعاية صحية على مستوى عالمي",
   },
   viewAllDoctors: { en: "View All Doctors", ar: "عرض جميع الأطباء" },
-  viewProfile: { en: "View Profile", ar: "عرض الملف الشخصي ←" },
+  viewProfile: { en: "View Profile", ar: "عرض الملف الشخصي" },
 
   // Testimonials
   testimonials: { en: "Testimonials", ar: "شهادات المرضى" },
@@ -568,7 +568,7 @@ const translations: Translations = {
   },
   patientLookupGoBack: {
     en: "Go back",
-    ar: "رجوع",
+    ar: "العودة",
   },
   hisFailureCallCenterMessage: {
     en: "We are currently experiencing some technical issues. Kindly share your mobile number, and our call center team will contact you to confirm your appointment.",

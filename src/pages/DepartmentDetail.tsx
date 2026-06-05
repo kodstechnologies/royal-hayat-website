@@ -8,13 +8,14 @@ import {
   type DepartmentDetail as DepartmentDetailData,
   type DepartmentDetailSection,
 } from "@/data/loadDepartmentDetails";
-import { departments as staticDepartments } from "@/data/departments";
+import { departments as staticDepartments, ROYALE_HAYAT_PHARMACY_DOCTOR_IDS } from "@/data/departments";
 import { loadDoctors, type Doctor } from "@/data/loadDoctors";
 import { motion } from "framer-motion";
-import { ChevronRight, ChevronLeft, ArrowLeft, CheckCircle2, ChevronDown, Stethoscope, MessageCircle, Phone, Loader2 } from "lucide-react";
+import { ChevronRight, ChevronLeft, ArrowLeft, ArrowRight, CheckCircle2, ChevronDown, Stethoscope, MessageCircle, Phone, Loader2 } from "lucide-react";
 import { useState, useRef, useEffect, memo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { resolveDepartmentBySlug } from "@/utils/resolveDepartmentSlug";
+import { normalizeSubSlug, resolveSubDepartment } from "@/utils/departmentSubSlug";
 const pickDeptText = (lang: string, en: string, ar?: string) => (lang === "ar" && ar ? ar : en);
 
 /** Bold text before the first colon (e.g. "Preconception Planning:") in EN/AR list items. */
@@ -35,6 +36,7 @@ const renderDeptListItem = (item: string) => {
 const isAlSafwaDepartment = (slug: string, name: string) =>
   slug.includes("al-safwa") || name.toLowerCase().includes("safwa");
 const DepartmentDoctors = memo(({ doctors, lang }: { doctors: Doctor[]; lang: string }) => {
+  const { t } = useLanguage();
   const scrollRef = useRef<HTMLDivElement>(null);
   const autoSlideRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const isPausedRef = useRef(false);
@@ -151,7 +153,7 @@ const DepartmentDoctors = memo(({ doctors, lang }: { doctors: Doctor[]; lang: st
                   <p className="font-serif text-sm text-foreground group-hover:text-primary transition-colors">{lang === "ar" ? doc.nameAr : doc.name}</p>
                   <p className="font-body text-xs text-muted-foreground mt-1 line-clamp-1">{lang === "ar" ? doc.titleAr : doc.title}</p>
                   <span className="inline-flex items-center gap-1 text-primary font-body text-xs tracking-wide mt-2">
-                    {lang === "ar" ? "عرض الملف ←" : "View Profile →"}
+                    {t("viewProfile")} <ArrowRight className={`w-3 h-3 shrink-0 ${lang === "ar" ? "rotate-180" : ""}`} />
                   </span>
                 </div>
               </Link>
@@ -163,7 +165,7 @@ const DepartmentDoctors = memo(({ doctors, lang }: { doctors: Doctor[]; lang: st
             to="/doctors"
             className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-body text-xs tracking-[0.15em] uppercase rounded-full hover:bg-primary/90 transition-colors"
           >
-            {lang === "ar" ? "اعرف المزيد" : "Read More"} <span className="ltr-icon">→</span>
+            {t("learnMore")} <span className="ltr-icon">→</span>
           </Link>
         </div>
       </div>
@@ -189,6 +191,13 @@ const DepartmentDetail = () => {
   const fromBookAppointment = Boolean(navState.fromBookAppointment);
   const fromSpecializedCare = Boolean(navState.fromSpecializedCare);
   const fromDepartments = Boolean(navState.fromDepartments);
+  const departmentsListRestoreState = fromDepartments
+    ? {
+        restoreDeptOpenIndex: navState.restoreDeptOpenIndex,
+        restoreSelectedSubByDept: navState.restoreSelectedSubByDept,
+        restoreScrollY: navState.restoreScrollY,
+      }
+    : undefined;
   const { lang, t } = useLanguage();
   const isAr = lang === "ar";
   const [expandedSub, setExpandedSub] = useState<string | null>(subSlug || null);
@@ -224,11 +233,7 @@ const DepartmentDetail = () => {
   };
   const goBackToDepartmentsList = () => {
     navigate(navState.returnPath || "/medical-services", {
-      state: {
-        restoreDeptOpenIndex: navState.restoreDeptOpenIndex,
-        restoreSelectedSubByDept: navState.restoreSelectedSubByDept,
-        restoreScrollY: navState.restoreScrollY,
-      },
+      state: departmentsListRestoreState,
     });
   };
   const goBackToDepartment = () => {
@@ -270,7 +275,8 @@ const DepartmentDetail = () => {
       </div>
     );
   }
-  const activeSub = subSlug ? dept.subDepartments?.find((s) => s.slug === subSlug) : null;
+  const resolvedSubSlug = subSlug && dept ? normalizeSubSlug(dept.slug, subSlug) : subSlug;
+  const activeSub = resolvedSubSlug ? resolveSubDepartment(dept, resolvedSubSlug) : null;
   const displayDept = activeSub || dept;
   const staticDept = staticDepartments.find((d) => d.slug === dept.slug);
   const deptImage = staticDept?.img || "";
@@ -295,14 +301,16 @@ const DepartmentDetail = () => {
     "Physiotherapy": ["Physiotherapy"],
   };
   const matchingDepts = deptNameToDoctorDept[displayDept.name] || deptNameToDoctorDept[dept.name] || [];
-  const baseDeptDoctors = matchingDepts.length > 0
-    ? allDoctors.filter((doc) => matchingDepts.includes(doc.department))
-    : allDoctors.filter((doc) =>
-      doc.department.toLowerCase().includes(dept.name.toLowerCase().split(" ")[0]) ||
-      dept.name.toLowerCase().includes(doc.department.toLowerCase().split(" ")[0])
-    );
+  const baseDeptDoctors = dept.name === "Royale Hayat Pharmacy"
+    ? allDoctors.filter((doc) => (ROYALE_HAYAT_PHARMACY_DOCTOR_IDS as readonly string[]).includes(doc.id))
+    : matchingDepts.length > 0
+      ? allDoctors.filter((doc) => matchingDepts.includes(doc.department))
+      : allDoctors.filter((doc) =>
+        doc.department.toLowerCase().includes(dept.name.toLowerCase().split(" ")[0]) ||
+        dept.name.toLowerCase().includes(doc.department.toLowerCase().split(" ")[0])
+      );
   const deptDoctors = (() => {
-    if (!subSlug) {
+    if (!resolvedSubSlug) {
       return baseDeptDoctors.sort((a, b) =>
         (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en")
       );
@@ -311,24 +319,24 @@ const DepartmentDetail = () => {
       "cardiology": ["alturki", "turki"],
       "nephrology": ["qallaf"],
       "gastroenterology": ["swait", "jaser"],
-      "endocrinology-and-metabolism": ["ramadhan", "alroudhan", "roudhan"],
+      "endocrinology-metabolism": ["ramadhan", "alroudhan", "roudhan"],
       "rheumatology": ["aldei", "dei"],
-      "clinical-nutrition-and-dietetics": ["hachem", "khreis", "salamah"],
+      "clinical-nutrition-dietetics": ["hachem", "khreis", "salamah"],
       "respiratory-clinic-pulmonology": ["alia", "ibrahim"],
       "allergy-and-immunology": ["othman", "yassmin"],
       "cosmetic-gynecology": ["abubakr", "elmardi", "nada", "samar", "nagaty"],
       "gynecologic-oncology": ["nourah-al-ibrahim"],
       "urogynecology": ["abubakr", "elmardi", "nada"],
-      "women-s-health": [],
+      "womens-health": [],
       "physiotherapy": [],
-      "parent-and-childbirth-education": [],
+      "parent-childbirth-education": [],
       "obesity-bariatric-surgery": ["ahmed-al-mulla", "mulla", "humoud", "alrasheedi", "hussein", "faour", "sulaiman", "almazeedi"],
       "breast-surgical-oncology": ["noha", "alsaleh"],
       "abdominal-wall-reconstruction": ["humoud", "alrasheedi", "sarah", "youha"],
       "nutrition-and-diet-surgery": ["hachem", "khreis", "salamah"],
     };
     const mapKey = Object.keys(subSpecialtyDoctorMap).find(
-      (k) => subSlug.includes(k) || k.includes(subSlug)
+      (k) => resolvedSubSlug.includes(k) || k.includes(resolvedSubSlug)
     );
     if (mapKey && subSpecialtyDoctorMap[mapKey].length > 0) {
       const keywords = subSpecialtyDoctorMap[mapKey];
@@ -368,13 +376,21 @@ const DepartmentDetail = () => {
           <nav className="flex items-center gap-2 font-body text-xs text-muted-foreground">
             <Link to="/" className="hover:text-accent transition-colors">Home</Link>
             <ChevronRight className="w-3 h-3" />
-            <Link to="/medical-services" className="hover:text-accent transition-colors">
+            <Link
+              to={fromDepartments ? navState.returnPath || "/medical-services" : "/medical-services"}
+              state={departmentsListRestoreState}
+              className="hover:text-accent transition-colors"
+            >
               {t("medicalServices")}
             </Link>
             <ChevronRight className="w-3 h-3" />
             {activeSub ? (
               <>
-                <Link to={`/medical-services/${dept.slug}`} className="hover:text-accent transition-colors">
+                <Link
+                  to={`/medical-services/${dept.slug}`}
+                  state={navState}
+                  className="hover:text-accent transition-colors"
+                >
                   {pickDeptText(lang, dept.name, dept.nameAr)}
                 </Link>
                 <ChevronRight className="w-3 h-3" />
@@ -398,7 +414,7 @@ const DepartmentDetail = () => {
               className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary font-body text-sm mb-8 transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
-              {isAr ? "Ø±Ø¬ÙˆØ¹" : "Go Back"}
+              {isAr ? "العودة" : "Go Back"}
             </button>
           )}
           <ScrollAnimationWrapper>
@@ -409,7 +425,7 @@ const DepartmentDetail = () => {
                   className="inline-flex items-center gap-2 text-accent font-body text-xs tracking-wide mb-4 hover:underline"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
-                  {isAr ? "Ø±Ø¬ÙˆØ¹" : "Go Back"}
+                  {isAr ? "العودة" : "Go Back"}
                 </button>
               )}
               {fromBookAppointment && (
@@ -682,22 +698,40 @@ const DepartmentDetail = () => {
             <div className="max-w-2xl mx-auto">
               <div className="bg-popover border border-border/50 rounded-2xl p-6 md:p-8 text-center">
                 <h3 className="font-serif text-xl text-foreground mb-6">
-                  {lang === "ar" ? "Ù„Ù„Ø§Ø³ØªÙØ³Ø§Ø±" : "Enquire Now"}
+                  {lang === "ar" ? "للاستفسار" : "Enquire Now"}
                 </h3>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                   <a
                     href="https://wa.me/96566320717"
-                    className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-full font-body text-xs tracking-[0.15em] uppercase hover:bg-primary/90 transition-colors"
+                    className={`inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-full font-body text-xs hover:bg-primary/90 transition-colors ${lang === "ar" ? "tracking-normal normal-case" : "tracking-[0.15em] uppercase"}`}
                   >
-                    <MessageCircle className="w-4 h-4" />
-                    {lang === "ar" ? "ÙˆØ§ØªØ³Ø§Ø¨: 66320717 965+" : "WhatsApp: +965 66320717"}
+                    <MessageCircle className="w-4 h-4 shrink-0" />
+                    {lang === "ar" ? (
+                      <>
+                        واتساب:{" "}
+                        <span className="inline-block [unicode-bidi:bidi-override] [direction:rtl] tabular-nums">
+                          {"+965 66320717".split("").reverse().join("")}
+                        </span>
+                      </>
+                    ) : (
+                      <>WhatsApp: <span className="inline-block [direction:ltr] [unicode-bidi:isolate]">+965 66320717</span></>
+                    )}
                   </a>
                   <a
                     href="tel:+96525360500"
-                    className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-full font-body text-xs tracking-[0.15em] uppercase hover:bg-primary/90 transition-colors"
+                    className={`inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-full font-body text-xs hover:bg-primary/90 transition-colors ${lang === "ar" ? "tracking-normal normal-case" : "tracking-[0.15em] uppercase"}`}
                   >
-                    <Phone className="w-4 h-4" />
-                    {lang === "ar" ? "الهاتف: +965 25360500" : "Call: +965 25360500"}
+                    <Phone className="w-4 h-4 shrink-0" />
+                    {lang === "ar" ? (
+                      <>
+                        الهاتف:{" "}
+                        <span className="inline-block [unicode-bidi:bidi-override] [direction:rtl] tabular-nums">
+                          {"+965 25360500".split("").reverse().join("")}
+                        </span>
+                      </>
+                    ) : (
+                      <>Call: <span className="inline-block [direction:ltr] [unicode-bidi:isolate]">+965 25360500</span></>
+                    )}
                   </a>
                 </div>
               </div>

@@ -76,69 +76,69 @@ const App = () => (
           <BrowserRouter>
             <ScrollToTopOnNav />
             <Suspense fallback={<PageLoader />}>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/book-appointment" element={<BookAppointment />} />
-                <Route
-                  path="/hospitality"
-                  element={
-                    <HospitalityServices
-                      gardeniaHallImages={gardeniaHallImages}
-                      alJouriHallImages={alJouriHallImages}
-                      orchidSuiteImages={orchidSuiteImages}
-                      spaImages={spaImages}
-                      cafeImages={cafeImages}
-                      suiteCarouselImagesByIndex={suiteCarouselImagesByIndex}
-                      inRoomEventGalleryImages={inRoomEventGalleryImages}
-                    />
-                  }
+            <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/book-appointment" element={<BookAppointment />} />
+            <Route
+              path="/hospitality"
+              element={
+                <HospitalityServices
+                  gardeniaHallImages={gardeniaHallImages}
+                  alJouriHallImages={alJouriHallImages}
+                  orchidSuiteImages={orchidSuiteImages}
+                  spaImages={spaImages}
+                  cafeImages={cafeImages}
+                  suiteCarouselImagesByIndex={suiteCarouselImagesByIndex}
+                  inRoomEventGalleryImages={inRoomEventGalleryImages}
                 />
-                <Route path="/patients-visitors" element={<PatientsVisitors />} />
-                <Route path="/al-safwa" element={<AlSafwaProgram />} />
-                <Route path="/home-health" element={<HomeHealth />} />
-                <Route path="/doctors" element={<Doctors />} />
-                <Route path="/doctors/:id" element={<DoctorProfile />} />
-                <Route path="/downloads" element={<Downloads />} />
-                <Route path="/departments" element={<Departments />} />
-                <Route path="/medical-services" element={<MedicalServices />} />
-                <Route path="/medical-services/:slug" element={<DepartmentDetail />} />
-                <Route path="/medical-services/:slug/:subSlug" element={<DepartmentDetail />} />
-                <Route path="/about-us" element={<AboutUs />} />
-                <Route
-                  path="/work-with-us"
-                  element={
-                    <WorkWithUs
-                      staffActivitiesImages={workWithUsStaffActivitiesImages}
-                      galaDinnerImages={workWithUsGalaDinnerImages}
-                      hospitalityWeekImages={workWithUsHospitalityWeekImages}
-                      rhhQuizImages={workWithUsRhhQuizImages}
-                    />
-                  }
+              }
+            />
+            <Route path="/patients-visitors" element={<PatientsVisitors />} />
+            <Route path="/al-safwa" element={<AlSafwaProgram />} />
+            <Route path="/home-health" element={<HomeHealth />} />
+            <Route path="/doctors" element={<Doctors />} />
+            <Route path="/doctors/:id" element={<DoctorProfile />} />
+            <Route path="/downloads" element={<Downloads />} />
+            <Route path="/departments" element={<Departments />} />
+            <Route path="/medical-services" element={<MedicalServices />} />
+            <Route path="/medical-services/:slug" element={<DepartmentDetail />} />
+            <Route path="/medical-services/:slug/:subSlug" element={<DepartmentDetail />} />
+            <Route path="/about-us" element={<AboutUs />} />
+            <Route
+              path="/work-with-us"
+              element={
+                <WorkWithUs
+                  staffActivitiesImages={workWithUsStaffActivitiesImages}
+                  galaDinnerImages={workWithUsGalaDinnerImages}
+                  hospitalityWeekImages={workWithUsHospitalityWeekImages}
+                  rhhQuizImages={workWithUsRhhQuizImages}
                 />
-                <Route path="/international-patient" element={<InternationalPatient />} />
-                <Route path="/appointment-request" element={<AppointmentRequest />} />
+              }
+            />
+            <Route path="/international-patient" element={<InternationalPatient />} />
+            <Route path="/appointment-request" element={<AppointmentRequest />} />
                 <Route path="/appointment-request/fallback" element={<AppointmentBookingFallback />} />
-                <Route path="/contact-us" element={<ContactUs />} />
-                <Route path="/faq" element={<FAQ />} />
-                <Route path="/medical-rep-visit-booking" element={<MedicalRepVisitBooking />} />
-                <Route path="/medical-records-request" element={<MedicalRecordsRequest />} />
-                <Route path="/infant-security" element={<TrackerWaveInfantSecurity />} />
-                <Route
-                  path="/in-room-events"
-                  element={
-                    <InRoomEvents
-                      topCarouselImages={inRoomEventsTopCarouselImages}
-                      galleryImages={inRoomEventGalleryImages}
-                    />
-                  }
+            <Route path="/contact-us" element={<ContactUs />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/medical-rep-visit-booking" element={<MedicalRepVisitBooking />} />
+            <Route path="/medical-records-request" element={<MedicalRecordsRequest />} />
+            <Route path="/infant-security" element={<TrackerWaveInfantSecurity />} />
+            <Route
+              path="/in-room-events"
+              element={
+                <InRoomEvents
+                  topCarouselImages={inRoomEventsTopCarouselImages}
+                  galleryImages={inRoomEventGalleryImages}
                 />
-                <Route path="/job-application" element={<JobApplication />} />
-                <Route path="/csr" element={<CSR />} />
-                <Route path="/fifth-floor-cafe" element={<FifthFloorCafe />} />
-                <Route path="/newborn-photography" element={<NewbornPhotography />} />
-                <Route path="/verify-national-id" element={<VerifyNationalId />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+              }
+            />
+            <Route path="/job-application" element={<JobApplication />} />
+            <Route path="/csr" element={<CSR />} />
+            <Route path="/fifth-floor-cafe" element={<FifthFloorCafe />} />
+            <Route path="/newborn-photography" element={<NewbornPhotography />} />
+            <Route path="/verify-national-id" element={<VerifyNationalId />} />
+            <Route path="*" element={<NotFound />} />
+            </Routes>
             </Suspense>
             <ChatButton />
           </BrowserRouter>

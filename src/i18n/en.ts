@@ -358,7 +358,7 @@ export const en = {
   "ourServices": "Our Services",
   "findADoctor": "Find a Doctor",
   "contactUsFooter": "Contact Us",
-  "footerDesc": "Celebrating Life. Premier multidisciplinary healthcare provider in Kuwait since 2006.",
+  "footerDesc": "Celebrating Life. Premier multi disciplinary healthcare provider in Kuwait since 2006.",
   "hotline247": "24/7 Hotline",
   "emergencyServices247": "Emergency Services",
   "callAmbulance": "Call Ambulance",

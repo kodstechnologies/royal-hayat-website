@@ -172,7 +172,7 @@ const handleAddTestimonial = () => {
             {lang === "ar" ? "الطبيب غير موجود" : "Doctor Not Found"}
           </h1>
           <button onClick={handleGoBack} className="text-primary hover:text-accent font-body transition-colors">
-            {lang === "ar" ? "← رجوع" : "← Go Back"}
+            {lang === "ar" ? "العودة" : "← Go Back"}
           </button>
         </div>
         <Footer />
@@ -212,7 +212,7 @@ const handleAddTestimonial = () => {
           {}
           <button onClick={handleGoBack} className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary font-body text-sm mb-8 transition-colors">
             <ArrowLeft className="w-4 h-4" />
-            {lang === "ar" ? "رجوع" : "Go Back"}
+            {lang === "ar" ? "العودة" : "Go Back"}
           </button>
           <div className="grid md:grid-cols-3 gap-10">
             {}

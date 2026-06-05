@@ -7,6 +7,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { departments as staticDepartments, type Department, MAIN_CATEGORIES } from "@/data/departments";
 import { loadDoctors, type Doctor } from "@/data/loadDoctors";
 import { doctorMatchesDepartment } from "@/data/departments";
+import { getSubSlugForDepartment, normalizeSubSlug } from "@/utils/departmentSubSlug";
 type DepartmentsSectionProps = {
   showPageTitle?: boolean;
 };
@@ -128,17 +129,8 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
   const handleToggle = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
   };
-  const slugify = (value: string) =>
-    value
-      .toLowerCase()
-      .replace(/&/g, "and")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "");
-  const getSubSlug = (deptSlug: string, subName: string) => {
-    const detail = departments.find((d) => d.slug === deptSlug);
-    const matched = detail?.subs?.find((s) => s.name.toLowerCase() === subName.toLowerCase());
-    return slugify(matched?.name ?? subName);
-  };
+  const getSubSlug = (deptSlug: string, subName: string) =>
+    getSubSlugForDepartment(deptSlug, subName);
   const selectedDept = openIndex !== null ? departments[openIndex] : null;
   const deptDoctorsMap = useMemo<Record<string, Doctor[]>>(
     () =>
@@ -155,22 +147,24 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
   const deptDoctors = useMemo(() => {
     if (!selectedDept) return [];
     const origIdx = openIndex!;
-    const selectedSubSlug = selectedSubByDept[origIdx];
+    const selectedSubSlug = selectedSubByDept[origIdx]
+      ? normalizeSubSlug(selectedDept.slug, selectedSubByDept[origIdx])
+      : undefined;
     const subSpecialtyDoctorMap: Record<string, string[]> = {
       "cardiology": ["alturki", "turki"],
       "nephrology": ["qallaf"],
       "gastroenterology": ["swait", "jaser"],
-      "endocrinology-and-metabolism": ["ramadhan", "alroudhan", "roudhan"],
+      "endocrinology-metabolism": ["ramadhan", "alroudhan", "roudhan"],
       "rheumatology": ["aldei", "dei"],
-      "clinical-nutrition-and-dietetics": ["hachem", "khreis", "salamah"],
+      "clinical-nutrition-dietetics": ["hachem", "khreis", "salamah"],
       "respiratory-clinic-pulmonology": ["alia", "ibrahim"],
       "allergy-and-immunology": ["othman", "yassmin"],
       "cosmetic-gynecology": ["abubakr", "elmardi", "nada", "samar", "nagaty"],
       "gynecologic-oncology": ["nourah-al-ibrahim"],
       "urogynecology": ["abubakr", "elmardi", "nada"],
-      "women-s-health": [],
+      "womens-health": [],
       "physiotherapy": [],
-      "parent-and-childbirth-education": [],
+      "parent-childbirth-education": [],
       "obesity-bariatric-surgery": ["ahmed-al-mulla", "mulla", "humoud", "alrasheedi", "hussein", "faour", "sulaiman", "almazeedi"],
       "breast-surgical-oncology": ["noha", "alsaleh"],
       "abdominal-wall-reconstruction": ["humoud", "alrasheedi", "sarah", "youha"],
@@ -285,7 +279,9 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                   {catDepts.map((dept) => {
                     const origIdx = getOriginalIndex(dept);
                     const isExpanded = openIndex === origIdx;
-                    const selectedSubSlug = selectedSubByDept[origIdx];
+                    const selectedSubSlug = selectedSubByDept[origIdx]
+                      ? normalizeSubSlug(dept.slug, selectedSubByDept[origIdx])
+                      : undefined;
                     return (
                       <motion.div
                         key={dept.name}
@@ -318,7 +314,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                 {lang === "ar" ? dept.descAr : dept.desc}
                               </p>
                               <span className="inline-flex items-center gap-1.5 text-primary font-body text-xs tracking-wide hover:text-accent transition-colors">
-                                {t("learnMore")} <ArrowRight className="w-3.5 h-3.5" />
+                                {t("learnMore")} <ArrowRight className={`w-3.5 h-3.5 shrink-0 ${lang === "ar" ? "rotate-180" : ""}`} />
                               </span>
                             </div>
                           </>
@@ -346,7 +342,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                     }}
                                     className="inline-flex w-full justify-end items-center gap-1.5 text-primary font-body text-xs tracking-wide hover:text-accent transition-colors"
                                   >
-                                    {t("Read More")} <ArrowRight className="w-3.5 h-3.5" />
+                                    {t("learnMore")} <ArrowRight className={`w-3.5 h-3.5 shrink-0 ${lang === "ar" ? "rotate-180" : ""}`} />
                                   </button>
                                 </div>
                               </div>
@@ -380,7 +376,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                   <X className="w-4 h-4 text-muted-foreground" />
                                 </button>
                               </div>
-                              {deptDoctors.length > 0 ? (
+                              {deptDoctors.length > 0 && (
                                 <div className="mt-auto">
                                   <p className="text-accent text-center text-xl tracking-[0.2em] uppercase font-body font-semibold mb-4">{lang === "ar" ? "أطباء القسم" : "Department Doctors"}</p>
                                   <div className="relative max-w-[576px] mx-auto lg:mt-6">
@@ -414,7 +410,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                                 <p className="text-accent text-[9px] tracking-[0.2em] uppercase font-body mb-1">{lang === "ar" ? doc.specialtyAr : doc.specialty}</p>
                                                 <h4 className="text-sm font-serif font-semibold text-foreground group-hover/doc:text-primary transition-colors">{lang === "ar" ? doc.nameAr : doc.name}</h4>
                                                 <p className="text-xs text-muted-foreground font-body mt-0.5 line-clamp-1">{lang === "ar" ? doc.titleAr : doc.title}</p>
-                                                <p className="text-xs text-primary font-body mt-2 inline-flex items-center gap-1">{t("viewProfile")} <ArrowRight className="w-3 h-3" /></p>
+                                                <p className="text-xs text-primary font-body mt-2 inline-flex items-center gap-1">{t("viewProfile")} <ArrowRight className={`w-3 h-3 shrink-0 ${lang === "ar" ? "rotate-180" : ""}`} /></p>
                                               </div>
                                             </motion.div>
                                           </Link>
@@ -435,13 +431,11 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                         }
                                         className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-full font-body text-xs tracking-[0.15em] uppercase hover:bg-primary/90 transition-colors"
                                       >
-                                        {t("learnMore")} <ArrowRight className="w-3.5 h-3.5" />
+                                        {t("learnMore")} <ArrowRight className={`w-3.5 h-3.5 shrink-0 ${lang === "ar" ? "rotate-180" : ""}`} />
                                       </button>
                                     </div>
                                   )}
                                 </div>
-                              ) : (
-                                <p className="text-muted-foreground font-body text-xs italic mt-auto">{lang === "ar" ? "لم يتم تعيين أطباء لهذا القسم بعد" : "No doctors assigned to this department yet."}</p>
                               )}
                               <div className="mt-6 pt-4 border-t border-border/30" />
                             </div>

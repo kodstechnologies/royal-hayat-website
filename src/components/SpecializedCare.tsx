@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { loadDoctors, type Doctor } from "@/data/loadDoctors";
 import { doctorMatchesDepartment, departments as staticDepartments } from "@/data/departments";
+import { getSubSlugForDepartment, normalizeSubSlug } from "@/utils/departmentSubSlug";
 interface ServiceItem {
   num: string;
   name: string;
@@ -107,8 +108,8 @@ const services: ServiceItem[] = [
   },
   {
     num: "10", name: "Intensive Care", nameAr: "العناية المركزة",
-    desc: "Round-the-clock monitoring and care for severe, life-threatening conditions with cutting-edge technology.",
-    descAr: "مراقبة ورعاية على مدار الساعة للحالات الحرجة المهددة للحياة بأحدث التقنيات.",
+    desc: "At Royale Hayat Hospital, our ICU offers round-the-clock monitoring and care for severe, life-threatening conditions with cutting-edge technology.",
+    descAr: "في مستشفى رويال حياة، توفر وحدة العناية المركزة رعاية طبية متقدمة ومراقبة دقيقة على مدار الساعة للحالات الحرجة والمهددة للحياة، باستخدام أحدث التقنيات والأجهزة الطبية لضمان أعلى مستويات الرعاية والأمان.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Intensive+Care/1.jpg",
     department: "Intensive Care",
     subspecialties: [],
@@ -129,19 +130,19 @@ const services: ServiceItem[] = [
     ],
   },
   {
-    num: "12", name: "Center for Diagnostic Imaging", nameAr: "مركز التصوير التشخيصي",
+    num: "12", name: "Center for Diagnostic Imaging", nameAr: "مركز الأشعة التشخيصية",
     desc: "Advanced diagnostic and image-guided therapeutic services combining expert professionals with state-of-the-art technology.",
-    descAr: "خدمات تشخيصية وعلاجية موجهة بالتصوير تجمع بين متخصصين وتقنيات حديثة.",
+    descAr: "في مستشفى رويال حياة، يقدم مركز الأشعة التشخيصية خدمات متقدمة في التشخيص والتدخلات العلاجية الموجهة بالتصوير الطبي، من خلال الجمع بين الخبرات الطبية المتخصصة وأحدث التقنيات لضمان دقة التشخيص وسرعة تقديم الرعاية المناسبة.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Center+for+Diagnostic+Imaging/1.JPG",
     department: "Center for Diagnostic Imaging",
     subspecialties: [
-      { name: "The Abdominal & Women's Imaging", nameAr: "تصوير البطن والمرأة" },
+      { name: "The Abdominal & Women's Imaging", nameAr: "أشعة البطن وتصوير المرأة" },
       { name: "The Breast Imaging", nameAr: "تصوير الثدي" },
-      { name: "The Cardiovascular & Thoracic Imaging", nameAr: "تصوير القلب والصدر" },
-      { name: "The Musculoskeletal Imaging", nameAr: "تصوير العضلات والعظام" },
-      { name: "The Neuroradiology and Head & Neck Imaging", nameAr: "الأشعة العصبية" },
-      { name: "The Pediatric Imaging", nameAr: "تصوير الأطفال" },
-      { name: "The Vascular & Interventional Radiology", nameAr: "الأشعة الوعائية والتدخلية" },
+      { name: "The Cardiovascular & Thoracic Imaging", nameAr: "أشعة القلب والصدر" },
+      { name: "The Musculoskeletal Imaging", nameAr: "أشعة الجهاز العضلي والهيكلي" },
+      { name: "The Neuroradiology and Head & Neck Imaging", nameAr: "الأشعة العصبية وتصوير الرأس والرقبة" },
+      { name: "The Pediatric Imaging", nameAr: "التصوير التشخيصي للأطفال" },
+      { name: "The Vascular & Interventional Radiology", nameAr: "الأشعة التداخلية والأوعية الدموية" },
     ],
   },
   {
@@ -175,8 +176,8 @@ const services: ServiceItem[] = [
   },
   {
     num: "16", name: "Royale Hayat Pharmacy", nameAr: "صيدلية رويال حياة",
-    desc: "Comprehensive pharmacy services ensuring safe and effective medication management for all patients.",
-    descAr: "خدمات صيدلية شاملة تضمن إدارة آمنة وفعالة للأدوية لجميع المرضى.",
+    desc: "Conveniently located on the ground floor, Royale Pharmacy is staffed by highly qualified pharmacists available 24/7 to provide expert guidance for all your medicinal needs. Our pharmacists collaborate closely with clinical and nursing teams to ensure the highest standard of pharmaceutical care.",
+    descAr: "تقع صيدلية مستشفى رويال حياة في الطابق الأرضي، وتعمل على مدار الساعة بإشراف نخبة من الصيادلة المؤهلين لتقديم الاستشارات الدوائية والدعم المتخصص لجميع الاحتياجات العلاجية. كما يتعاون فريق الصيدلة بشكل وثيق مع الكوادر الطبية والتمريضية لضمان أعلى مستويات الرعاية الدوائية.",
     img: "/images/Department/Pharmacy.jpg",
     department: "Royale Hayat Pharmacy",
     subspecialties: [],
@@ -359,12 +360,6 @@ const SpecializedCare = () => {
   const getOriginalIndex = (service: ServiceItem) =>
     sortedServices.findIndex((s) => s.num === service.num);
   const isInFirstSix = (origIdx: number) => origIdx < INITIAL_COUNT;
-  const slugify = (value: string) =>
-    value
-      .toLowerCase()
-      .replace(/&/g, "and")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "");
   const getDepartmentSlug = (service: ServiceItem) => {
     const matchedDept = staticDepartments.find(
       (d) =>
@@ -375,10 +370,8 @@ const SpecializedCare = () => {
   };
   const getSubSlug = (service: ServiceItem, subName: string) => {
     const departmentSlug = getDepartmentSlug(service);
-    if (!departmentSlug) return slugify(subName);
-    const dept = staticDepartments.find((d) => d.slug === departmentSlug);
-    const matchedSub = dept?.subs?.find((sub) => sub.name.toLowerCase() === subName.toLowerCase());
-    return slugify(matchedSub?.name ?? subName);
+    if (!departmentSlug) return getSubSlugForDepartment("", subName);
+    return getSubSlugForDepartment(departmentSlug, subName);
   };
   return (
     <section className="py-16 md:py-20 bg-background" id="services" ref={sectionRef}>
@@ -400,7 +393,10 @@ const SpecializedCare = () => {
           {reorderedServices.map((s) => {
             const origIdx = getOriginalIndex(s);
             const isExpanded = expandedIndex === origIdx;
-            const selectedSubSlug = selectedSubByService[s.num];
+            const departmentSlug = getDepartmentSlug(s);
+            const selectedSubSlug = selectedSubByService[s.num] && departmentSlug
+              ? normalizeSubSlug(departmentSlug, selectedSubByService[s.num])
+              : selectedSubByService[s.num];
             const deptDoctors = (() => {
               const extraTerms: string[] = [];
               if (s.name === "Internal Medicine") {
@@ -416,17 +412,17 @@ const SpecializedCare = () => {
                   "cardiology": ["alturki", "turki"],
                   "nephrology": ["qallaf"],
                   "gastroenterology": ["swait", "jaser"],
-                  "endocrinology-and-metabolism": ["ramadhan", "alroudhan", "roudhan"],
+                  "endocrinology-metabolism": ["ramadhan", "alroudhan", "roudhan"],
                   "rheumatology": ["aldei", "dei"],
-                  "clinical-nutrition-and-dietetics": ["hachem", "khreis", "salamah"],
+                  "clinical-nutrition-dietetics": ["hachem", "khreis", "salamah"],
                   "respiratory-clinic-pulmonology": ["alia", "ibrahim"],
                   "allergy-and-immunology": ["othman", "yassmin"],
                   "cosmetic-gynecology": ["abubakr", "elmardi", "nada", "samar", "nagaty"],
                   "gynecologic-oncology": ["nourah-al-ibrahim"],
                   "urogynecology": ["abubakr", "elmardi", "nada"],
-                  "women-s-health": [],
+                  "womens-health": [],
                   "physiotherapy": [],
-                  "parent-and-childbirth-education": [],
+                  "parent-childbirth-education": [],
                   "obesity-bariatric-surgery": ["ahmed-al-mulla", "mulla", "humoud", "alrasheedi", "hussein", "faour", "sulaiman", "almazeedi"],
                   "breast-surgical-oncology": ["noha", "alsaleh"],
                   "abdominal-wall-reconstruction": ["humoud", "alrasheedi", "sarah", "youha"],
@@ -467,7 +463,6 @@ const SpecializedCare = () => {
                 .slice(0, 3);
             })();
             const showImageCard = isInFirstSix(origIdx);
-            const departmentSlug = getDepartmentSlug(s);
             return (
               <motion.div
                 key={s.num}
@@ -699,7 +694,7 @@ const SpecializedCare = () => {
                                         {lang === "ar" ? doc.titleAr : doc.title}
                                       </p>
                                       <p className="text-xs text-primary font-body mt-2 inline-flex items-center gap-1 transition-colors group-hover/doc:text-accent">
-                                        {t("viewProfile")} <ArrowRight className="w-3 h-3" />
+                                        {t("viewProfile")} <ArrowRight className="w-3 h-3 ltr-icon" />
                                       </p>
                                     </div>
                                   </motion.div>

@@ -20,7 +20,7 @@ import {
   ROOM_SERVICE_PRIVATE_DINING_EN,
 } from "@/utils/patientsProseHyph";
 const PatientsVisitors = () => {
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const tab = searchParams.get("tab");
@@ -342,7 +342,7 @@ const PatientsVisitors = () => {
                         to="/patients-visitors?tab=rooms-package"
                         className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-full font-body text-sm hover:bg-primary/90 transition-colors shadow-md"
                       >
-                        {lang === "ar" ? "اقرأ المزيد" : "Read More"}
+                        {t("learnMore")}
                         <ChevronDown className="w-4 h-4 rotate-[-90deg]" />
                       </Link>
                     </div>

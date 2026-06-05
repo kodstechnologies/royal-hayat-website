@@ -8,7 +8,12 @@ import { useLanguage } from "@/contexts/LanguageContext";
 const HomeHealth = () => {
   const { t, lang } = useLanguage();
   const isAr = lang === "ar";
-  const ltrPhoneClass = "inline-block [direction:ltr] [unicode-bidi:isolate]";
+  const ltrPhoneClass = "inline-block [direction:ltr] [unicode-bidi:isolate] tabular-nums";
+  const arPhoneNumber = (number: string) => (
+    <span className="inline-block [unicode-bidi:bidi-override] [direction:rtl] tabular-nums">
+      {number.split("").reverse().join("")}
+    </span>
+  );
   const rehabServices = isAr ? [
     "صحة المرأة والتعافي بعد الولادة",
     "التأهيل القلبي",
@@ -29,19 +34,19 @@ const HomeHealth = () => {
     "Pediatric rehabilitation",
   ];
   const shortTermServices = isAr ? [
-    "الحقن والرعاية المتعلقة بأطفال الأنابيب",
-    "العلاج الوريدي (تعويض السوائل، المضادات الحيوية)",
+    "الحقن والرعاية المتعلقة بعلاجات الإخصاب",
+    "العلاج الوريدي مثل تعويض السوائل والمضادات الحيوية",
     "العناية بالجروح وتغيير الضمادات",
-    "فحص المصارف وسحب الدم",
-    "رعاية ما بعد الولادة",
+    "متابعة الأنابيب الطبية وسحب عينات الدم",
+    "الرعاية بعد الولادة",
     "إدارة الألم والرعاية التلطيفية",
-    "القسطرة البولية",
-    "تخطيط القلب الكهربائي (ECG)",
-    "تخطيط القلب للجنين (CTG)",
+    "تركيب القسطرة البولية",
+    "تخطيط القلب",
+    "تخطيط نبضات الجنين وتقلصات الرحم",
     "التغذية المعوية والوريدية",
-    "رعاية الفغر",
-    "البخاخات",
-    "مراقبة سكر الدم والعلامات الحيوية",
+    "العناية بفتحات الإخراج الجراحية",
+    "العلاج بجهاز البخار",
+    "متابعة مستوى السكر والعلامات الحيوية",
   ] : [
     "Injections and IVF-related care",
     "IV therapy (fluid replacement, antibiotics)",
@@ -75,7 +80,9 @@ const HomeHealth = () => {
               <Home className="w-8 h-8 text-accent" />
             </div>
             <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">{t("careAtHome")}</p>
-            <h1 className="text-4xl md:text-5xl font-serif text-foreground mb-4">{t("royaleHomeHealth")}</h1>
+            <h1 className="text-4xl md:text-5xl font-serif text-foreground mb-4">
+              {isAr ? "رويال هوم هيلث للرعاية المنزلية" : t("royaleHomeHealth")}
+            </h1>
           </ScrollAnimationWrapper>
         </div>
       </section>
@@ -181,26 +188,22 @@ const HomeHealth = () => {
                       <div className="flex flex-col sm:flex-row gap-3 justify-center">
                         <a
                           href="https://wa.me/96566320717"
-                          className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-full font-body text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-colors"
+                          className={`inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-full font-body text-xs hover:bg-primary/90 transition-colors ${isAr ? "tracking-normal normal-case" : "tracking-[0.2em] uppercase"}`}
                         >
-                          <MessageCircle className="w-4 h-4" />
+                          <MessageCircle className="w-4 h-4 shrink-0" />
                           {isAr ? (
-                            <>
-                              واتساب: <span className={ltrPhoneClass}>+965 66320717</span>
-                            </>
+                            <>واتساب: {arPhoneNumber("66320717 965+")}</>
                           ) : (
                             <>WhatsApp: <span className={ltrPhoneClass}>+965 66320717</span></>
                           )}
                         </a>
                         <a
                           href="tel:+96525360500"
-                          className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-full font-body text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-colors"
+                          className={`inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-full font-body text-xs hover:bg-primary/90 transition-colors ${isAr ? "tracking-normal normal-case" : "tracking-[0.2em] uppercase"}`}
                         >
-                          <Phone className="w-4 h-4" />
+                          <Phone className="w-4 h-4 shrink-0" />
                           {isAr ? (
-                            <>
-                              الهاتف: <span className={ltrPhoneClass}>+965 25360500</span>
-                            </>
+                            <>الهاتف: {arPhoneNumber("25360500 965+")}</>
                           ) : (
                             <>Call: <span className={ltrPhoneClass}>+965 25360500</span></>
                           )}

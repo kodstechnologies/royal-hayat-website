@@ -405,7 +405,7 @@ export const departmentDetails: DepartmentDetail[] = [
     name: "Reproductive Medicine & IVF",
     nameAr: "طب الإنجاب وأطفال الأنابيب",
     intro:
-      "At Royale Hayat Hospital, we blend expertise with cutting-edge technology to offer the most advanced infertility treatments. Our dedicated team of physicians, counselors, and specialists ensures high-quality, compassionate care in a luxurious setting.",
+      "At Royale Hayat Hospital, we blend expertise with cutting-edge technology to offer the most advanced infertility treatments. Our dedicated team of physicians, counsellors, and specialists ensures high-quality, compassionate care in a luxurious setting.",
     introAr:
       "في مستشفى رويال حياة، نجمع بين الخبرة الطبية والتقنيات الحديثة المتقدمة لتقديم أحدث علاجات تأخر الإنجاب، ضمن بيئة علاجية راقية وفريق متخصص من الأطباء والاستشاريين والمرشدين لضمان رعاية طبية وإنسانية عالية الجودة.",
     sections: [
@@ -436,7 +436,7 @@ export const departmentDetails: DepartmentDetail[] = [
   {
     slug: "pediatrics",
     name: "Pediatrics",
-    nameAr: "قسم طب الأطفال",
+    nameAr: "طب الأطفال",
     intro:
       "At Royale Hayat Hospital, we provide world-class pediatric care with warmth and a child-centered approach. Our goal is to support your child's health with expert pediatricians, experienced nurses, and a comforting environment.",
     introAr:
@@ -488,7 +488,7 @@ export const departmentDetails: DepartmentDetail[] = [
         title: "Pediatric Dentistry",
         titleAr: "طب أسنان الأطفال",
         content: "Dental care for infants, children, and teens.",
-        contentAr: "رعاية متكاملة لأسنان الرضع والأطفال والمراهقين.",
+        contentAr: "رعاية متكاملة لأسنان الرضع والأطفال.",
       },
       {
         title: "Newborn Screening",
@@ -626,11 +626,11 @@ export const departmentDetails: DepartmentDetail[] = [
   {
     slug: "internal-medicine",
     name: "Internal Medicine",
-    nameAr: "قسم الباطنية",
+    nameAr: "الأمراض الباطنية",
     intro:
       "At Royale Hayat Hospital, our Internal Medicine Department is your trusted partner for health management. Whether managing chronic conditions or seeking preventive care, we support you at every stage.",
     introAr:
-      "في مستشفى رويال حياة، يُعد قسم الطب الباطني شريكك الموثوق في إدارة الصحة العامة، سواء في التعامل مع الأمراض المزمنة أو تقديم الرعاية الوقائية، مع دعمك في جميع مراحل الرعاية الصحية.",
+      "في مستشفى رويال حياة، يُعد قسم الأمراض الباطنية شريكك الموثوق في إدارة الصحة العامة، سواء في التعامل مع الأمراض المزمنة أو تقديم الرعاية الوقائية، مع دعمك في جميع مراحل الرعاية الصحية.",
     sections: [
       {
         title: "Our Approach",
@@ -671,7 +671,7 @@ export const departmentDetails: DepartmentDetail[] = [
           "فحوصات القلب والأوعية الدموية",
           "تخطيط القلب أثناء الراحة",
           "الفحوصات الإشعاعية",
-          "اختبار الجهد على جهاز المشي",
+          "اختبار الجهد على جهاز المشي.",
         ],
       },
     ],
@@ -769,7 +769,7 @@ export const departmentDetails: DepartmentDetail[] = [
         intro:
           "At Royale Hayat Hospital's Center for Digestive Diseases, we combine world-class expertise with cutting-edge technology to treat a wide range of gastrointestinal conditions.",
         introAr:
-          "في مركز أمراض الجهاز الهضمي في مستشفى رويال حياة، نجمع بين الخبرة الطبية العالمية وأحدث التقنيات لتشخيص وعلاج مجموعة واسعة من أمراض الجهاز الهضمي",
+          "في مركز أمراض الجهاز الهضمي في مستشفى رويال حياة، نجمع بين الخبرة الطبية العالمية وأحدث التقنيات لتشخيص وعلاج مجموعة واسعة من أمراض الجهاز الهضمي.",
         sections: [
           {
             title: "Our Expertise",
@@ -834,7 +834,7 @@ export const departmentDetails: DepartmentDetail[] = [
             title: "Calcium & Bone Health",
             titleAr: "صحة العظام والكالسيوم",
             content: "Diagnosis and treatment of osteoporosis and vitamin D deficiency.",
-            contentAr: "تشخيص وعلاج هشاشة العظام ونقص فيتامين د.",
+            contentAr: "تشخيص وعلاج هشاشة العظام ونقص فيتامين-د.",
           },
           {
             title: "Diabetes Management",
@@ -885,7 +885,7 @@ export const departmentDetails: DepartmentDetail[] = [
             itemsAr: [
               "تقييم آلام المفاصل: تقييم شامل لحالات آلام المفاصل من خلال التاريخ الطبي المفصل والفحص السريري الدقيق",
               "التصوير بالموجات فوق الصوتية العضلية الهيكلية المحمولة: تقنية تشخيصية غير جراحية تساعد على تحديد الحالة بدقة عالية",
-              "الحقن داخل المفاصل: استخدام علاجات متقدمة لتخفيف الألم والالتهاب مثل الكورتيزون, حمض الهيالورونيك, البلازما الغنية بالصفائح الدموية",
+              "الحقن داخل المفاصل: استخدام علاجات متقدمة لتخفيف الألم والالتهاب مثل الكورتيزون، حمض الهيالورونيك، البلازما الغنية بالصفائح الدموية",
               "تشخيص وعلاج أمراض الروماتيزم، إدارة شاملة لمختلف الحالات مثل: الفصال العظمي، التهاب المفاصل الروماتويدي، النقرس، التهاب المفاصل الصدفي، الألم العضلي الليفي، التهاب العضلات، التهاب الأوعية الدموية، والذئبة الحمراء",
               "علاج نقص فيتامين د وهشاشة العظام، تقييم وعلاج اضطرابات العظام ودعم صحة الهيكل العظمي",
               "المتابعة الطبية المستمرة، رعاية طويلة الأمد للحالات المزمنة والمتعددة المرتبطة بأمراض الروماتيزم",
@@ -935,7 +935,7 @@ export const departmentDetails: DepartmentDetail[] = [
   {
     slug: "general-laparoscopic-surgery",
     name: "General & Laparoscopic Surgery",
-    nameAr: "قسم الجراحة العامة والمنظار",
+    nameAr: "الجراحة العامة والمنظار",
     intro:
       "At Royale Hayat Hospital, our General and Laparoscopic Surgery Department offers exceptional care, blending expert skills with advanced technology. Our internationally recognized surgeons focus on precision, safety, and quick recovery.",
     introAr:
@@ -964,7 +964,7 @@ export const departmentDetails: DepartmentDetail[] = [
           "الجراحة بالمنظار ذات التدخل المحدود",
           "جراحة الأورام وعلاج السرطان",
           "جراحة الفتق",
-          "جراحة الأطفال",
+          "جراحة الأطفال.",
         ],
       },
     ],
@@ -1010,7 +1010,7 @@ export const departmentDetails: DepartmentDetail[] = [
             title: "A Holistic Approach",
             titleAr: "نهج علاجي متكامل",
             content:
-              "Recognizing obesity as a complex disease, our comprehensive program integrates medical, behavioral, nutritional, and surgical care. Each patient undergoes a detailed assessment with our multidisciplinary team, ensuring personalized, long-term treatment success.",
+              "Recognizing obesity as a complex disease, our comprehensive program integrates medical, behavioural, nutritional, and surgical care. Each patient undergoes a detailed assessment with our multidisciplinary team, ensuring personalized, long-term treatment success.",
             contentAr:
               "إيمانًا منا بأن السمنة مرض معقّد يتطلب رعاية شاملة، يعتمد برنامجنا على دمج الرعاية الطبية، والسلوكية، والتغذوية، والجراحية ضمن خطة علاجية متكاملة. ويخضع كل مريض لتقييم دقيق من قبل فريق متعدد التخصصات لضمان تصميم خطة علاج شخصية تدعم النجاح على المدى الطويل.",
           },
@@ -1032,7 +1032,7 @@ export const departmentDetails: DepartmentDetail[] = [
           },
           {
             title: "Advanced Minimally Invasive Surgery",
-            titleAr: "جراحات متقدمة طفيفة التوغل",
+            titleAr: "الجراحة المتقدمة بالمنظار",
             content: "Our surgeons are pioneers in FDA-approved laparoscopic techniques, offering:",
             contentAr:
               "يُعتبر أطباؤنا من الرواد في استخدام تقنيات المنظار المعتمدة من هيئة الغذاء والدواء الأمريكية والتي توفر:",
@@ -1095,7 +1095,7 @@ export const departmentDetails: DepartmentDetail[] = [
         sections: [],
       },
       {
-        slug: "nutrition-and-diet-surgery",
+        slug: "clinical-nutrition-dietetics",
         name: "Clinical Nutrition & Dietetics",
         nameAr: "التغذية العلاجية والحمية",
         intro:
@@ -1136,11 +1136,11 @@ export const departmentDetails: DepartmentDetail[] = [
   {
     slug: "plastic-surgery",
     name: "Plastic Surgery & Cosmetology",
-    nameAr: "قسم الجراحة التجميلية والتجميل",
+    nameAr: "الجراحة التجميلية والتجميل",
     intro:
       "At Royale Hayat Hospital, our renowned General and Plastic Surgery & Cosmetology Department is led by internationally certified physicians, offering advanced surgical and non-surgical solutions with precision and discretion. Our all-female medical team is available for those who prefer.",
     introAr:
-      "في مستشفى رويال حياة، يقدم قسم الجراحة العامة والجراحة التجميلية والتجميل رعاية متقدمة تحت إشراف نخبة من الأطباء المعتمدين دوليًا، مع توفير حلول جراحية وغير جراحية دقيقة وذات نتائج طبيعية وبأعلى درجات الخصوصية. كما يتوفر فريق طبي نسائي متكامل لمن يفضل ذلك.",
+      "في مستشفى رويال حياة، يقدم قسم الجراحة التجميلية والتجميل رعاية متقدمة تحت إشراف نخبة من الأطباء المعتمدين دوليًا، مع توفير حلول جراحية وغير جراحية دقيقة وذات نتائج طبيعية وبأعلى درجات الخصوصية. كما يتوفر فريق طبي نسائي متكامل لمن يفضل ذلك.",
     sections: [
       {
         title: "Our Approach",
@@ -1156,10 +1156,10 @@ export const departmentDetails: DepartmentDetail[] = [
         content: "Our Cosmetic Center uses cutting-edge technologies for effective non-surgical treatments:",
         contentAr: "يعتمد مركز التجميل لدينا على أحدث التقنيات الطبية في الإجراءات غير الجراحية، وتشمل:",
         items: [
-          "Thermage (5th Gen): Skin tightening for face and body",
-          "Fraxel Dual (5th Gen): Improves texture, treats scars, and wrinkles",
-          "Laser Hair Removal (10th Gen): Safe for all skin types",
-          "Injectables & Rejuvenation: Botox, fillers, and advanced facials",
+          "Thermage (5th Gen): Skin tightening for face and body.",
+          "Fraxel Dual (5th Gen): Improves texture, treats scars, and wrinkles.",
+          "Laser Hair Removal (10th Gen): Safe for all skin types.",
+          "Injectables & Rejuvenation: Botox, fillers, and advanced facials.",
         ],
         itemsAr: [
           "تقنية ثيرماج الجيل الخامس لشد البشرة للوجه والجسم",
@@ -1195,7 +1195,7 @@ export const departmentDetails: DepartmentDetail[] = [
   {
     slug: "dermatology",
     name: "Dermatology",
-    nameAr: "قسم الجلدية",
+    nameAr: "الأمراض الجلدية",
     intro:
       "At Royale Hayat Hospital, our highly qualified dermatologists provide expert care for all your dermatological needs. We combine clinical excellence with the latest advances to deliver exceptional outcomes for both adults and children.",
     introAr:
@@ -1238,7 +1238,7 @@ export const departmentDetails: DepartmentDetail[] = [
   {
     slug: "ent",
     name: "ENT (Ear, Nose & Throat)",
-    nameAr: "قسم الأنف والأذن والحنجرة",
+    nameAr: "الأنف والأذن والحنجرة",
     intro:
       "At Royale Hayat Hospital, our ENT Department provides expert care for conditions affecting the ear, nose, throat, head, and neck. We offer both medical and surgical expertise for all ages, utilizing the latest technologies for precise diagnosis and optimal outcomes.",
     introAr:
@@ -1248,7 +1248,7 @@ export const departmentDetails: DepartmentDetail[] = [
         title: "Our Services Include:",
         titleAr: "تشمل خدمات القسم:",
         items: [
-          "Pediatric Otolaryngology",
+          "Otolaryngology for all ages",
           "Otology/Neurotology: Hearing and balance disorders",
           "Head and Neck Surgery",
           "Rhinology: Nasal and sinus care",
@@ -1256,7 +1256,7 @@ export const departmentDetails: DepartmentDetail[] = [
           "General ENT Care",
         ],
         itemsAr: [
-          "طب الأنف والأذن والحنجرة للأطفال",
+          "طب الأنف والأذن والحنجرة لجميع الفئات العمرية",
           "أمراض الأذن والسمع والتوازن",
           "جراحة الرأس والرقبة",
           "أمراض الأنف والجيوب الأنفية",
@@ -1301,7 +1301,7 @@ export const departmentDetails: DepartmentDetail[] = [
     intro:
       "At Royale Hayat Hospital, our Family Clinic offers continuous, personalized care for individuals and families of all ages. Our Family Medicine Physicians coordinate all aspects of your health journey with expertise and compassion.",
     introAr:
-      "في مستشفى رويال حياة، تقدم عيادة طب الأسرة رعاية صحية متكاملة ومستمرة للأفراد والعائلات من جميع الأعمار، من خلال نهج يقوم على المتابعة الشخصية والتنسيق الشامل لكل جوانب الرعاية الصحية.",
+      "في مستشفى رويال حياة، تقدم عيادة طب العائلة رعاية صحية متكاملة ومستمرة للأفراد والعائلات من جميع الأعمار، من خلال نهج يقوم على المتابعة الشخصية والتنسيق الشامل لكل جوانب الرعاية الصحية.",
     sections: [
       {
         title: "Why Choose Our Family Clinic?",
@@ -1352,7 +1352,7 @@ export const departmentDetails: DepartmentDetail[] = [
   {
     slug: "dental-clinic",
     name: "Dental Clinic",
-    nameAr: "قسم طب الأسنان",
+    nameAr: "طب الأسنان",
     intro:
       "At Royale Hayat Hospital, our Dental Clinic offers exceptional dental care in a luxurious setting. Our specialized dentists use advanced technology to deliver personalized treatments for all ages, ensuring a seamless, pain-free experience.",
     introAr:
@@ -1363,7 +1363,7 @@ export const departmentDetails: DepartmentDetail[] = [
         titleAr: "تشمل خدمات طب الأسنان:",
         items: [
           "Pediatric Dentistry: Gentle, child-friendly care",
-          "Cosmetic Dentistry: Lumineers, veneers, and esthetic crowns",
+          "Cosmetic Dentistry: Lumineers, veneers, and aesthetic crowns",
           "Crowns & Bridges: Durable restorations for damaged teeth",
           "Teeth Whitening: Professional treatments for a radiant smile",
           "Oral Surgery: Expert procedures, including extractions",
@@ -1393,20 +1393,34 @@ export const departmentDetails: DepartmentDetail[] = [
   {
     slug: "pain-management",
     name: "Pain Management",
-    nameAr: "إدارة الألم",
-    intro: "At Royale Hayat Hospital, our Pain Management Unit enhances quality of life for those with acute or chronic pain. Our comprehensive program offers advanced, compassionate care to help patients regain comfort and functionality.",
+    nameAr: "علاج الألم",
+    intro:
+      "At Royale Hayat Hospital, our Pain Management Unit enhances the quality of life for those with acute or chronic pain. Our comprehensive program offers advanced, compassionate care to help patients regain comfort and functionality.",
+    introAr:
+      "في مستشفى رويال حياة، تهدف وحدة علاج الألم إلى تحسين جودة حياة المرضى الذين يعانون من الألم الحاد أو المزمن، من خلال تقديم رعاية متقدمة وشاملة تجمع بين الخبرة الطبية والنهج الإنساني، لمساعدة المرضى على استعادة الراحة والقدرة الوظيفية.",
     sections: [
       {
         title: "Our Multidisciplinary Team",
-        content: "Comprising board-certified anesthesiologists, internal medicine specialists, and physical therapists, supported by expert psychologists, we provide both outpatient and inpatient consultations tailored to individual needs.",
+        titleAr: "فريق متعدد التخصصات:",
+        content:
+          "Comprising board-certified anesthesiologists, internal medicine specialists, and physical therapists, supported by expert psychologists, we provide both outpatient and inpatient consultations tailored to individual needs.",
+        contentAr:
+          "يضم القسم نخبة من أطباء التخدير المعتمدين، وأطباء الطب الباطني، وأخصائيي العلاج الطبيعي، بالإضافة إلى دعم متخصص من الأخصائيين النفسيين، حيث يتم تقديم استشارات علاجية داخل العيادات الخارجية أو ضمن التنويم حسب احتياج كل حالة بشكل فردي.",
       },
       {
         title: "Our Services Include:",
+        titleAr: "تشمل الخدمات:",
         items: [
-          "Epidural Anesthesia: For labor and delivery comfort.",
-          "Regional Anesthesia: For surgical procedures, including spinal and epidural options.",
-          "General Anesthesia: When required for medical or surgical interventions.",
-          "Chronic Pain Management: Addressing headache, facial pain, neck and back pain, neuropathic pain, joint and rheumatic pain, post-operative pain, and sports injuries.",
+          "Epidural Anesthesia: For labor and delivery comfort",
+          "Regional Anesthesia: For surgical procedures, including spinal and epidural options",
+          "General Anesthesia: When required for medical or surgical interventions",
+          "Chronic Pain Management: Addressing headache, facial pain, neck and back pain, neuropathic pain, joint and rheumatic pain, post-operative pain, and sports injuries",
+        ],
+        itemsAr: [
+          "التخدير فوق الجافية لتخفيف الألم أثناء الولادة",
+          "التخدير الإقليمي مثل التخدير النصفي وفوق الجافية للإجراءات الجراحية",
+          "التخدير العام عند الحاجة للتدخلات الطبية أو الجراحية",
+          "علاج الألم المزمن بما يشمل الصداع وآلام الوجه والرقبة والظهر وآلام الأعصاب وآلام المفاصل والروماتيزم وآلام ما بعد العمليات والإصابات الرياضية",
         ],
       },
     ],
@@ -1414,7 +1428,7 @@ export const departmentDetails: DepartmentDetail[] = [
   {
     slug: "anesthesia",
     name: "Anesthesia",
-    nameAr: "قسم التخدير",
+    nameAr: "التخدير",
     intro:
       "At Royale Hayat Hospital, our Anesthesia Department ensures patient safety and comfort for all surgical and childbirth procedures. We deliver top-tier anesthesia services using the latest techniques and technologies.",
     introAr:
@@ -1506,9 +1520,9 @@ export const departmentDetails: DepartmentDetail[] = [
           "تصوير الثدي",
           "أشعة القلب والصدر",
           "أشعة الجهاز العضلي والهيكلي",
-          "أشعة الدماغ والرأس والرقبة",
-          "أشعة الأطفال",
-          "الأشعة التداخلية وأشعة الأوعية الدموية",
+          "الأشعة العصبية وتصوير الرأس والرقبة",
+          "التصوير التشخيصي للأطفال",
+          "الأشعة التداخلية والأوعية الدموية",
         ],
       },
       {
@@ -1546,7 +1560,7 @@ export const departmentDetails: DepartmentDetail[] = [
       {
         slug: "abdominal-womens-imaging",
         name: "The Abdominal & Women's Imaging",
-        nameAr: "وحدة أشعة البطن وتصوير المرأة",
+        nameAr: "أشعة البطن وتصوير المرأة",
         intro:
           "At Royale Hayat Hospital, our Abdominal & Women's Imaging Unit excels in diagnosing and managing abdominal and pelvic conditions. Our multidisciplinary approach ensures precise diagnosis and optimized care in collaboration with specialists in gastroenterology, gynecology, surgery, urology, and oncology.",
         introAr:
@@ -1591,7 +1605,7 @@ export const departmentDetails: DepartmentDetail[] = [
       {
         slug: "breast-imaging",
         name: "The Breast Imaging",
-        nameAr: "وحدة تصوير الثدي",
+        nameAr: "تصوير الثدي",
         intro:
           "At Royale Hayat Hospital, our Breast Imaging Unit offers advanced, patient-centered diagnostic and interventional services. We provide high-quality breast cancer screenings and a comprehensive range of tools to detect and treat breast conditions.",
         introAr:
@@ -1613,7 +1627,7 @@ export const departmentDetails: DepartmentDetail[] = [
               "تصوير القنوات اللبنية لتقييم إفرازات الحلمة واضطرابات القنوات",
               "التصوير بالموجات فوق الصوتية للثدي خاصة للأنسجة الكثيفة والإجراءات الموجهة",
               "التصوير بالرنين المغناطيسي المتقدم لتقييم دقيق للأنسجة",
-              "الخزعات الموجهة بالتصوير باستخدام الموجات فوق الصوتية أو الرنين المغناطيسي أو التوجيه التجسيمي",
+              "الخزعات الموجهة بالتصوير باستخدام الموجات فوق الصوتية، الرنين المغناطيسي، التوجيه التجسيمي",
               "تحديد موضع الآفات قبل الجراحة بدقة لتسهيل الاستئصال المحدود والحفاظ على الأنسجة",
             ],
           },
@@ -1630,7 +1644,7 @@ export const departmentDetails: DepartmentDetail[] = [
       {
         slug: "cardiovascular-thoracic-imaging",
         name: "The Cardiovascular & Thoracic Imaging",
-        nameAr: "وحدة أشعة القلب والصدر",
+        nameAr: "أشعة القلب والصدر",
         intro:
           "At Royale Hayat Hospital, our Cardiovascular & Thoracic Imaging Unit provides advanced diagnostics for heart and thoracic conditions in adults and children. We specialize in coronary artery disease, heart conditions, valvular disorders, cardiomyopathies, and structural abnormalities.",
         introAr:
@@ -1695,7 +1709,7 @@ export const departmentDetails: DepartmentDetail[] = [
       {
         slug: "musculoskeletal-imaging",
         name: "The Musculoskeletal Imaging",
-        nameAr: "وحدة أشعة الجهاز العضلي والهيكلي",
+        nameAr: "أشعة الجهاز العضلي والهيكلي",
         intro:
           "At Royale Hayat Hospital, our Musculoskeletal Imaging Unit offers advanced imaging services to diagnose and evaluate disorders of the bones, joints, spine, and soft tissues.",
         introAr:
@@ -1766,7 +1780,7 @@ export const departmentDetails: DepartmentDetail[] = [
       {
         slug: "neuroradiology-head-neck-imaging",
         name: "The Neuroradiology and Head & Neck Imaging",
-        nameAr: "وحدة الأشعة العصبية وتصوير الرأس والرقبة",
+        nameAr: "الأشعة العصبية وتصوير الرأس والرقبة",
         intro:
           "At Royale Hayat Hospital, our Neuroradiology and Head & Neck Imaging Unit provides accurate diagnosis for neurological and ENT-related conditions using cutting-edge technologies.",
         introAr:
@@ -1798,6 +1812,7 @@ export const departmentDetails: DepartmentDetail[] = [
             title: "Advanced Imaging Techniques:",
             titleAr: "تقنيات التصوير المتقدمة",
             content: "Our expert neuroradiologists utilize:",
+            contentAr: "يعتمد فريق أخصائيي الأشعة العصبية لدينا على:",
             items: [
               "Diffusion Weighted Imaging (DWI): Early stroke detection",
               "Susceptibility Weighted Imaging (SWI): Detects microbleeds and calcifications",
@@ -1808,11 +1823,11 @@ export const departmentDetails: DepartmentDetail[] = [
             ],
             itemsAr: [
               "التصوير بالانتشار لتشخيص السكتات الدماغية المبكرة",
-              "التصوير الموزون بالحساسية للكشف عن النزيفات الدقيقة والتكلسات",
+              "التصوير بالوزن المغناطيسي الحساسية يكشف عن النزيفات الدقيقة والتكلسات",
               "مطيافية الرنين المغناطيسي لتقييم نشاط الدماغ الأيضي",
               "التصوير بالرنين المغناطيسي الوظيفي لتخطيط الدماغ قبل العمليات الجراحية",
               "تصوير الأوعية الدموية بالرنين المغناطيسي والتصوير المقطعي للأوعية الدماغية والرقبة",
-              "التصوير بالرنين المغناطيسي والطبقي المحوري للعمود الفقري",
+              "التصوير بالرنين المغناطيسي والمقطعي المحوري للعمود الفقري",
             ],
           },
           {
@@ -1844,7 +1859,7 @@ export const departmentDetails: DepartmentDetail[] = [
       {
         slug: "pediatric-imaging",
         name: "The Pediatric Imaging",
-        nameAr: "وحدة تصوير الأطفال",
+        nameAr: "التصوير التشخيصي للأطفال",
         intro:
           "At Royale Hayat Hospital, our Pediatric Imaging Unit caters to the unique diagnostic needs of infants, children, and adolescents. We offer a full range of imaging services, from basic radiography to advanced modalities, ensuring safe and accurate diagnoses.",
         introAr:
@@ -1882,7 +1897,7 @@ export const departmentDetails: DepartmentDetail[] = [
             title: "Expertise in Pediatric Diseases:",
             titleAr: "التخصصات التشخيصية للأطفال",
             content: "Our specialized radiologists collaborate with pediatricians to diagnose:",
-            contentAr: "تتعاون وحدة الأشعة مع أطباء الأطفال لتشخيص مجموعة واسعة من الحالات، بما في ذلك",
+            contentAr: "تتعاون وحدة الأشعة مع أطباء الأطفال لتشخيص مجموعة واسعة من الحالات، بما في ذلك:",
             items: [
               "Congenital anomalies",
               "Infectious diseases",
@@ -1909,7 +1924,7 @@ export const departmentDetails: DepartmentDetail[] = [
       {
         slug: "vascular-interventional-radiology",
         name: "The Vascular & Interventional Radiology",
-        nameAr: "وحدة الأشعة التداخلية والأوعية الدموية",
+        nameAr: "الأشعة التداخلية والأوعية الدموية",
         intro:
           "At Royale Hayat Hospital, our Vascular & Interventional Radiology Unit offers cutting-edge, minimally invasive procedures to diagnose and treat various conditions, prioritizing patient safety, comfort, and rapid recovery.",
         introAr:
@@ -1920,7 +1935,7 @@ export const departmentDetails: DepartmentDetail[] = [
             titleAr: "ما نقدمه",
             content: "Utilizing advanced imaging technologies like Fluoroscopy, CT, and Ultrasound, our expert team performs:",
             contentAr:
-              "باستخدام تقنيات التصوير المتقدمة مثل الأشعة المتحركة والتصوير المقطعي والموجات فوق الصوتية، يقوم فريقنا المتخصص بإجراء مجموعة من الإجراءات الدقيقة، تشمل",
+              "باستخدام تقنيات التصوير المتقدمة مثل الأشعة المتحركة والتصوير المقطعي والموجات فوق الصوتية، يقوم فريقنا المتخصص بإجراء مجموعة من الإجراءات الدقيقة، تشمل:",
             items: [
               "Uterine Fibroid Embolization",
               "Thrombectomy (Clot Removal)",
@@ -1968,7 +1983,7 @@ export const departmentDetails: DepartmentDetail[] = [
             content:
               "Our team excels in image-guided pain management, providing relief with real-time imaging for maximum effectiveness and minimal invasiveness.",
             contentAr:
-              "يتميز الفريق بخبرة عالية في علاج الألم باستخدام التوجيه بالتصوير الطبي المباشر، لتوفير تسكين فعال للألم مع تدخل بسيط وأقل قدر من التدخل الجراحي.",
+              "يتميز الفريق بخبرة عالية في علاج الألم باستخدام التوجيه بالتصوير الطبي المباشر، لتوفير تسكين فعال للألم مع تدخل بسيط وأقل توغل.",
           },
         ],
       },
@@ -1977,7 +1992,7 @@ export const departmentDetails: DepartmentDetail[] = [
   {
     slug: "laboratory-services",
     name: "Laboratory Services",
-    nameAr: "قسم الخدمات المخبرية",
+    nameAr: "الخدمات المخبرية",
     intro:
       "At Royale Hayat Hospital, our state-of-the-art Clinical Laboratory is essential for accurate diagnosis and personalized treatment, offering comprehensive services with some of the region's fastest turnaround times.",
     introAr:
@@ -2016,12 +2031,12 @@ export const departmentDetails: DepartmentDetail[] = [
           "Microbiology: Detection of bacterial, viral, fungal, and parasitic infections",
         ],
         itemsAr: [
-          "بنك الدم ونقل الدم لضمان توفير خدمات نقل الدم بأعلى درجات الأمان والكفاءة.",
-          "الكيمياء الحيوية لتحليل وظائف الأعضاء والكشف عن الأمراض.",
-          "علم الخلايا للكشف المبكر عن السرطان وتشخيص الأمراض.",
-          "فحص الأنسجة للتشخيص الدقيق للحالات المرضية.",
-          "أمراض الدم وإجراء التحاليل المتخصصة لمختلف اضطرابات الدم.",
-          "علم المناعة لتشخيص أمراض المناعة والحساسية.",
+          "بنك الدم ونقل الدم لضمان توفير خدمات نقل الدم بأعلى درجات الأمان والكفاءة",
+          "الكيمياء الحيوية لتحليل وظائف الأعضاء والكشف عن الأمراض",
+          "علم الخلايا للكشف المبكر عن السرطان وتشخيص الأمراض",
+          "فحص الأنسجة للتشخيص الدقيق للحالات المرضية",
+          "أمراض الدم وإجراء التحاليل المتخصصة لمختلف اضطرابات الدم",
+          "علم المناعة لتشخيص أمراض المناعة والحساسية",
           "علم الأحياء الدقيقة للكشف عن العدوى البكتيرية والفيروسية والفطرية والطفيليات",
         ],
       },
@@ -2164,7 +2179,7 @@ export const departmentDetails: DepartmentDetail[] = [
         content:
           "Our home-based rehabilitation programs are designed to restore health, enhance mobility, and improve quality of life across a range of conditions:",
         contentAr:
-          "تم تصميم برامج التأهيل المنزلي للمساعدة في استعادة الصحة وتحسين الحركة وجودة الحياة لمختلف الحالات، وتشمل",
+          "تم تصميم برامج التأهيل المنزلي للمساعدة في استعادة الصحة وتحسين الحركة وجودة الحياة لمختلف الحالات، وتشمل:",
         items: [
           "Women's health, wellness, and recovery",
           "Cardiac rehabilitation",
@@ -2191,7 +2206,7 @@ export const departmentDetails: DepartmentDetail[] = [
         titleAr: "خدمات التمريض المتخصصة",
         content:
           "Our specialized nursing team offers comprehensive medical services in the comfort of your home, including:",
-        contentAr: "يقدم فريق التمريض خدمات طبية متكاملة داخل المنزل تشمل",
+        contentAr: "يقدم فريق التمريض خدمات طبية متكاملة داخل المنزل تشمل:",
         subsections: [
           {
             title: "Short-Term Visits",
@@ -2277,7 +2292,7 @@ export const departmentDetails: DepartmentDetail[] = [
         title: "Our Services Include:",
         titleAr: "خدماتنا تشمل",
         items: [
-          "Urogynecological Disorders Management: Specialized treatment for pelvic health and related conditions",
+          "Urogynecological Disorders Management: Specialized treatment for pelvic health and related conditions.",
           "Pre and Postnatal Care: Physiotherapy support for safe delivery and enhanced postpartum recovery",
           "Pregnancy-Related Discomfort Relief: Expert management of back pain and muscle weakness during pregnancy",
           "Musculoskeletal Management: Care for osteoarthritis, spinal injuries, and joint pain",

@@ -5,7 +5,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useLocation, useNavigate } from "react-router-dom";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { loadDoctors, type Doctor } from "@/data/loadDoctors";
-import { deptDoctorAliases, departments as staticDepartments } from "@/data/departments";
+import { doctorMatchesDepartment, departments as staticDepartments } from "@/data/departments";
 interface ServiceItem {
   num: string;
   name: string;
@@ -335,10 +335,7 @@ const SpecializedCare = () => {
     navigate(path, { state: getSpecializedCareReturnState() });
   };
   const getDeptDoctors = (department: string): Doctor[] => {
-    const aliases = deptDoctorAliases[department] || [department];
-    return doctorCatalog.filter((d) =>
-      aliases.some(a => d.department.includes(a) || d.specialty.includes(a))
-    )
+    return doctorCatalog.filter((d) => doctorMatchesDepartment(department, d))
       .sort((a, b) => a.name.localeCompare(b.name))
       .slice(0, 3);
   };
@@ -405,16 +402,14 @@ const SpecializedCare = () => {
             const isExpanded = expandedIndex === origIdx;
             const selectedSubSlug = selectedSubByService[s.num];
             const deptDoctors = (() => {
-              const aliases = deptDoctorAliases[s.department] || [s.department];
               const extraTerms: string[] = [];
               if (s.name === "Internal Medicine") {
                 extraTerms.push("Nutricare");
               } else if (s.name === "General & Laparoscopic Surgery") {
                 extraTerms.push("Nutricare", "La Cosmetique");
               }
-              const allTerms = [...aliases, ...extraTerms];
               const allDeptDoctors = doctorCatalog.filter((d) =>
-                allTerms.some(a => d.department.includes(a) || d.specialty.includes(a))
+                doctorMatchesDepartment(s.department, d, extraTerms)
               );
               if (selectedSubSlug && s.subspecialties && s.subspecialties.length > 0) {
                 const subSpecialtyDoctorMap: Record<string, string[]> = {

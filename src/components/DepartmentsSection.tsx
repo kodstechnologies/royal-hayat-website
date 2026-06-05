@@ -6,7 +6,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { departments as staticDepartments, type Department, MAIN_CATEGORIES } from "@/data/departments";
 import { loadDoctors, type Doctor } from "@/data/loadDoctors";
-import { deptDoctorAliases } from "@/data/departments";
+import { doctorMatchesDepartment } from "@/data/departments";
 type DepartmentsSectionProps = {
   showPageTitle?: boolean;
 };
@@ -144,10 +144,8 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
     () =>
       Object.fromEntries(
         departments.map((dept) => {
-          const aliases = deptDoctorAliases[dept.name];
-          const matchTerms = aliases && aliases.length > 0 ? aliases : [dept.name];
           const matchedDoctors = doctorCatalog.filter((doc) =>
-            matchTerms.some((alias) => doc.department.includes(alias) || doc.specialty.includes(alias))
+            doctorMatchesDepartment(dept.name, doc)
           );
           return [dept.name, matchedDoctors];
         })
@@ -178,17 +176,14 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
       "abdominal-wall-reconstruction": ["humoud", "alrasheedi", "sarah", "youha"],
       "nutrition-and-diet-surgery": ["hachem", "khreis", "salamah"],
     };
-    const aliases = deptDoctorAliases[selectedDept.name];
-    const matchTerms = aliases && aliases.length > 0 ? aliases : [selectedDept.name];
     const extraTerms: string[] = [];
     if (selectedDept.name === "Internal Medicine") {
       extraTerms.push("Nutricare");
     } else if (selectedDept.name === "General & Laparoscopic Surgery") {
       extraTerms.push("Nutricare", "La Cosmetique");
     }
-    const allTerms = [...matchTerms, ...extraTerms];
     const allDeptDoctors = doctorCatalog.filter((doc) =>
-      allTerms.some((alias) => doc.department.includes(alias) || doc.specialty.includes(alias))
+      doctorMatchesDepartment(selectedDept.name, doc, extraTerms)
     );
     if (selectedSubSlug && selectedDept.subs) {
       const mapKey = Object.keys(subSpecialtyDoctorMap).find((k) => selectedSubSlug.includes(k) || k.includes(selectedSubSlug));

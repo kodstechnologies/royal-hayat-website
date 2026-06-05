@@ -186,7 +186,7 @@ const translations: Translations = {
   leadership: { en: "Leadership Team", ar: "فريق القيادة" },
   leadershipSubtitle: { en: "Leading the Journey to Excellence", ar: "قيادة مسيرة التميّز" },
   leadershipDesc: {
-    en: "Learn more about our visionary leadership team responsible for fulfilling the vision of our Group, managing RHH activities as the leading luxurious healthcare provider in Kuwait, and steering the organization towards a bright future.",
+    en: "Learn more about our visionary leadership team responsible for fulfilling the vision of our Group, managing Royale Hayat Hospital activities as the leading luxurious healthcare provider in Kuwait, and steering the organization towards a bright future.",
     ar: "تعرّفوا على فريقنا القيادي صاحب الرؤية، والمسؤول عن تحقيق تطلعات مجموعة رويال حياة، وإدارة عمليات المستشفى باعتباره أحد أبرز مقدمي الرعاية الصحية الفاخرة في الكويت، وقيادة المؤسسة نحو مستقبل أكثر إشراقًا وتميزًا",
   },
 
@@ -534,7 +534,6 @@ const translations: Translations = {
     en: "Checking your hospital registration…",
     ar: "جارِ التحقق من تسجيلك في المستشفى…",
   },
-  /** TrakCare — RHH integration spec (without "Error:" prefix) */
   patientNotFoundAfterPaci: {
     en: "Patient not found — no match on URN or National ID",
     ar: "لم يتم العثور على المريض — لا يوجد تطابق لرقم الملف أو الرقم المدني",
@@ -686,7 +685,7 @@ const translations: Translations = {
   downloadsDesc: { en: "Download our brochures, guides and informational documents.", ar: "قم بتحميل الكتيبات والأدلة والمستندات المعلوماتية." },
   downloadFile: { en: "Download", ar: "تحميل" },
   birthing_packages: { en: "Birthing Packages for Royale Orchid and Orchid Patients", ar: "باقات الولادة لمرضى رويال أوركيد وأوركيد" },
-  insurance_lightbox: { en: "RHH Insurance Lightbox Poster Report", ar: "تقرير ملصق التأمين الإعلاني" },
+  insurance_lightbox: { en: "Royale Hayat Hospital Insurance Lightbox Poster Report", ar: "تقرير ملصق التأمين الإعلاني" },
 
   internationalPatientLink: { en: "International Patient", ar: "المرضى الدوليون" },
 

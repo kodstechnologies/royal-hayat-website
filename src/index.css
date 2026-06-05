@@ -1,11 +1,10 @@
 @font-face {
   font-family: 'Avenir';
   src:
-    local('Avenir Light'),
-    local('Avenir-Light'),
-    url('/fonts/Avenir-Light.woff2') format('woff2'),
-    url('/fonts/Avenir-Light.woff') format('woff'),
-    url('/fonts/Avenir-Light.otf') format('opentype');
+    url('/fonts/Avenir-Book.woff2') format('woff2'),
+    local('Avenir Book'),
+    local('Avenir-Book'),
+    local('Avenir');
   font-weight: 300;
   font-style: normal;
   font-display: swap;
@@ -14,12 +13,10 @@
 @font-face {
   font-family: 'Avenir';
   src:
+    url('/fonts/Avenir-Book.woff2') format('woff2'),
     local('Avenir Book'),
     local('Avenir-Book'),
-    local('Avenir'),
-    url('/fonts/Avenir-Book.woff2') format('woff2'),
-    url('/fonts/Avenir-Book.woff') format('woff'),
-    url('/fonts/Avenir-Book.otf') format('opentype');
+    local('Avenir');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -28,12 +25,10 @@
 @font-face {
   font-family: 'Avenir';
   src:
-    local('Avenir Medium'),
-    local('Avenir-Medium'),
     url('/fonts/Avenir-Medium.woff2') format('woff2'),
-    url('/fonts/Avenir-Medium.woff') format('woff'),
-    url('/fonts/Avenir-Medium.otf') format('opentype');
-  font-weight: 500 600;
+    local('Avenir Medium'),
+    local('Avenir-Medium');
+  font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
@@ -41,11 +36,20 @@
 @font-face {
   font-family: 'Avenir';
   src:
-    local('Avenir Heavy'),
-    local('Avenir-Heavy'),
+    url('/fonts/Avenir-Medium.woff2') format('woff2'),
+    local('Avenir Medium'),
+    local('Avenir-Medium');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Avenir';
+  src:
     url('/fonts/Avenir-Heavy.woff2') format('woff2'),
-    url('/fonts/Avenir-Heavy.woff') format('woff'),
-    url('/fonts/Avenir-Heavy.otf') format('opentype');
+    local('Avenir Heavy'),
+    local('Avenir-Heavy');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -54,11 +58,9 @@
 @font-face {
   font-family: 'GE Dinar One';
   src:
-    local('GE Dinar One Light'),
-    local('GEDinarOne-Light'),
     url('/fonts/GEDinarOne-Light.woff2') format('woff2'),
-    url('/fonts/GEDinarOne-Light.woff') format('woff'),
-    url('/fonts/GEDinarOne-Light.otf') format('opentype');
+    local('GE Dinar One Light'),
+    local('GEDinarOne-Light');
   font-weight: 300;
   font-style: normal;
   font-display: swap;
@@ -67,12 +69,10 @@
 @font-face {
   font-family: 'GE Dinar One';
   src:
-    local('GE Dinar One Medium'),
-    local('GEDinarOne-Medium'),
     url('/fonts/GEDinarOne-Medium.woff2') format('woff2'),
-    url('/fonts/GEDinarOne-Medium.woff') format('woff'),
-    url('/fonts/GEDinarOne-Medium.otf') format('opentype');
-  font-weight: 400 500;
+    local('GE Dinar One Medium'),
+    local('GEDinarOne-Medium');
+  font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
@@ -80,20 +80,56 @@
 @font-face {
   font-family: 'GE Dinar One';
   src:
-    local('GE Dinar One Medium'),
-    local('GEDinarOne-Medium'),
     url('/fonts/GEDinarOne-Medium.woff2') format('woff2'),
-    url('/fonts/GEDinarOne-Medium.woff') format('woff'),
-    url('/fonts/GEDinarOne-Medium.otf') format('opentype');
-  font-weight: 600 700;
+    local('GE Dinar One Medium'),
+    local('GEDinarOne-Medium');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'GE Dinar One';
+  src:
+    url('/fonts/GEDinarOne-Bold.woff2') format('woff2'),
+    local('GE Dinar One Bold'),
+    local('GEDinarOne-Bold');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'GE Dinar One';
+  src:
+    url('/fonts/GEDinarOne-Bold.woff2') format('woff2'),
+    local('GE Dinar One Bold'),
+    local('GEDinarOne-Bold');
+  font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
   font-family: 'Garamond';
-  src: url('/fonts/Garamond.ttc') format('truetype-collection');
+  src: url('/fonts/Garamond-Regular.woff2') format('woff2');
   font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Garamond';
+  src: url('/fonts/Garamond-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Garamond';
+  src: url('/fonts/Garamond-Bold.woff2') format('woff2');
+  font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
@@ -110,6 +146,23 @@
   [dir="ltr"] p,
   [dir="ltr"] .font-body {
     font-family: 'Avenir', sans-serif;
+  }
+
+  html[lang="en"] h1,
+  html[lang="en"] h2,
+  html[lang="en"] h3,
+  html[lang="en"] h4,
+  html[lang="en"] h5,
+  html[lang="en"] h6,
+  html[lang="en"] .font-serif,
+  [dir="ltr"] h1,
+  [dir="ltr"] h2,
+  [dir="ltr"] h3,
+  [dir="ltr"] h4,
+  [dir="ltr"] h5,
+  [dir="ltr"] h6,
+  [dir="ltr"] .font-serif {
+    font-family: 'Garamond', serif;
   }
 
   html[lang="ar"] {

@@ -10,6 +10,12 @@ import ScrollToTop from "@/components/ScrollToTop";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { loadDoctorById, type Doctor } from "@/data/loadDoctors";
+import type { AppointmentRequestPrefillState } from "@/types/appointmentRequestPrefill";
+
+type AppointmentRequestLocationState = {
+  appointmentRequestPrefill?: AppointmentRequestPrefillState;
+};
+
 const AppointmentRequest = () => {
   const { lang, t } = useLanguage();
   const navigate = useNavigate();
@@ -17,7 +23,10 @@ const AppointmentRequest = () => {
   const [searchParams] = useSearchParams();
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const returnState = (location.state as any) ?? {};
+  const locState = (location.state as AppointmentRequestLocationState | null) ?? {};
+  const prefill = locState.appointmentRequestPrefill ?? {};
+  const identityReadOnly = Boolean(prefill.readOnlyIdentity);
+  const returnState = (location.state as Record<string, unknown>) ?? {};
   const doctorId = searchParams.get("doctor");
   const [prefilledDoctor, setPrefilledDoctor] = useState<Doctor | null>(null);
   useEffect(() => {
@@ -34,8 +43,14 @@ const AppointmentRequest = () => {
     };
   }, [doctorId]);
   const [form, setForm] = useState({
-    fullName: "", phone: "", countryCode: "+965", dateOfBirth: "", gender: "",
-    department: "", preferredDate: "", message: ""
+    fullName: prefill.fullName?.trim() || "",
+    phone: "",
+    countryCode: "+965",
+    dateOfBirth: prefill.dateOfBirth || "",
+    gender: prefill.gender || "",
+    department: "",
+    preferredDate: "",
+    message: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const validate = () => {
@@ -68,7 +83,12 @@ const AppointmentRequest = () => {
             : prefilledDoctor.department
           : undefined,
         preferredDate: form.preferredDate || undefined,
-        additionalNotes: form.message.trim() || undefined,
+        additionalNotes: [
+          prefill.civilId ? `Civil ID: ${prefill.civilId}` : "",
+          form.message.trim(),
+        ]
+          .filter(Boolean)
+          .join(". ") || undefined,
         requestType: "first time visitor request",
       });
       setSubmitted(true);
@@ -210,8 +230,9 @@ const AppointmentRequest = () => {
                 {t("fullName")} <span className="text-destructive">*</span>
               </label>
               <input type="text" value={form.fullName} onChange={(e) => updateField("fullName", e.target.value)}
+                readOnly={identityReadOnly}
                 placeholder={t("enterFullName")}
-                className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 ${errors.fullName ? "border-destructive" : "border-border"}`} />
+                className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 ${errors.fullName ? "border-destructive" : "border-border"} ${identityReadOnly ? "opacity-80 cursor-default" : ""}`} />
               {errors.fullName && <p className="font-body text-xs text-destructive mt-1">{errors.fullName}</p>}
             </div>
             {}
@@ -245,8 +266,9 @@ const AppointmentRequest = () => {
                   type="date"
                   value={form.dateOfBirth}
                   onChange={(e) => updateField("dateOfBirth", e.target.value)}
+                  readOnly={identityReadOnly}
                   max={new Date().toISOString().split("T")[0]}
-                  className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 ${errors.dateOfBirth ? "border-destructive" : "border-border"}`}
+                  className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 ${errors.dateOfBirth ? "border-destructive" : "border-border"} ${identityReadOnly ? "opacity-80 cursor-default" : ""}`}
                 />
                 {errors.dateOfBirth && <p className="font-body text-xs text-destructive mt-1">{errors.dateOfBirth}</p>}
               </div>
@@ -255,7 +277,8 @@ const AppointmentRequest = () => {
                   {t("gender")} <span className="text-destructive">*</span>
                 </label>
                 <select value={form.gender} onChange={(e) => updateField("gender", e.target.value)}
-                  className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 ${errors.gender ? "border-destructive" : "border-border"}`}>
+                  disabled={identityReadOnly}
+                  className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 ${errors.gender ? "border-destructive" : "border-border"} ${identityReadOnly ? "opacity-80 cursor-default" : ""}`}>
                   <option value="">{t("selectGender")}</option>
                   <option value="male">{t("male")}</option>
                   <option value="female">{t("female")}</option>

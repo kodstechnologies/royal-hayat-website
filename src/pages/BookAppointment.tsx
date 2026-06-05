@@ -29,7 +29,7 @@ import { subscribeToIdentityVerification } from "@/api/identitySocket";
 import { extractPatientId } from "@/utils/patientLookupErrors";
 import { identityDateToIso, mapPaciSexToGender } from "@/utils/mapPaciGender";
 import type { AppointmentBookingFallbackState } from "@/types/appointmentBookingFallback";
-import { getBookingTestFailureMessage } from "@/config/bookingTestFailure";
+import type { AppointmentRequestPrefillState } from "@/types/appointmentRequestPrefill";
 import { departments as staticDepts, deptDoctorAliases, MAIN_CATEGORIES } from "@/data/departments";
 import { Calendar as DatePickerCalendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
@@ -423,6 +423,7 @@ const BookAppointment = () => {
   const [showHisFailureModal, setShowHisFailureModal] = useState(false);
   const verifySocketCleanupRef = useRef<(() => void) | null>(null);
   const verificationDoneRef = useRef(false);
+  const hisFailurePrefillRef = useRef<AppointmentRequestPrefillState | null>(null);
   const [verifiedIdentityDetails, setVerifiedIdentityDetails] = useState<VerifiedIdentityDetails | null>(null);
   const [symptomText, setSymptomText] = useState("");
   const [symptomChips, setSymptomChips] = useState<string[]>([]);
@@ -713,20 +714,6 @@ const BookAppointment = () => {
     };
     try {
       if (patientType === "returning" && patientId && selectedSlotId) {
-        const civilIdForTest =
-          nationalId || verifiedIdentityDetails?.civilIdNumber?.replace(/\D/g, "") || "";
-        const testFailureMessage = getBookingTestFailureMessage({
-          civilId: civilIdForTest,
-          doctorId: selectedDoctor,
-          selectedDate,
-          selectedSlot,
-        });
-        if (testFailureMessage) {
-          setBookingError(testFailureMessage);
-          redirectToBookingFallback(testFailureMessage);
-          return;
-        }
-
         const res = await bookAppointment({
           patientId: patientId,
           slotBookingId: selectedSlotId,
@@ -849,6 +836,41 @@ const BookAppointment = () => {
     setVerifiedIdentityDetails(null);
     setShowReturningPatientModal(true);
   };
+  const buildPaciPrefillFromIdentityApi = useCallback(
+    async (civilIdForData: string, pickedName: string): Promise<AppointmentRequestPrefillState> => {
+      const fallback: AppointmentRequestPrefillState = {
+        fullName: pickedName,
+        civilId: civilIdForData,
+        readOnlyIdentity: true,
+      };
+      try {
+        const identityDataResponse = await getIdentityData(civilIdForData);
+        const rawData = (identityDataResponse?.raw || identityDataResponse?.identityData || {}) as Record<
+          string,
+          unknown
+        >;
+        const rawName = (rawData?.name || {}) as Record<string, unknown>;
+        const nameFromRaw = rawData?.name
+          ? (isAr
+              ? String(rawName.arabic || rawName.ar || rawName.english || rawName.en || "")
+              : String(rawName.english || rawName.en || rawName.arabic || rawName.ar || ""))
+          : pickedName;
+        const dobIso = identityDateToIso(rawData?.dateOfBirth);
+        const gender = mapPaciSexToGender(String(rawData?.sex || ""));
+        return {
+          fullName: nameFromRaw || pickedName,
+          dateOfBirth: dobIso || undefined,
+          gender: gender || undefined,
+          civilId: String(rawData?.civilId || civilIdForData),
+          readOnlyIdentity: true,
+        };
+      } catch (err) {
+        console.error("Failed to load PACI identity for appointment request prefill:", err);
+        return fallback;
+      }
+    },
+    [isAr],
+  );
   const loadVerifiedIdentityDetails = useCallback(
     async (civilIdForData: string, pickedName: string) => {
       try {
@@ -889,7 +911,7 @@ const BookAppointment = () => {
         console.error("Failed to load identity details for display:", err);
       }
     },
-    [isAr]
+    [isAr],
   );
   const resetPatientLookupFailure = useCallback(() => {
     verificationDoneRef.current = false;
@@ -916,7 +938,11 @@ const BookAppointment = () => {
     const doctorQuery = selectedDoctor
       ? `?doctor=${encodeURIComponent(selectedDoctor)}`
       : "";
-    navigate(`/appointment-request${doctorQuery}`);
+    const prefill = hisFailurePrefillRef.current;
+    hisFailurePrefillRef.current = null;
+    navigate(`/appointment-request${doctorQuery}`, {
+      state: prefill ? { appointmentRequestPrefill: prefill } : undefined,
+    });
   }, [navigate, resetPatientLookupFailure, selectedDoctor]);
   const finalizeRegisteredPatientAfterPaci = useCallback(
     async (params: {
@@ -946,6 +972,10 @@ const BookAppointment = () => {
         return true;
       } catch (err) {
         console.error("Hospital patient lookup failed:", err);
+        hisFailurePrefillRef.current = await buildPaciPrefillFromIdentityApi(
+          params.civilId,
+          params.pickedName,
+        );
         setNationalIdError("");
         setPatientLookupShowGoBack(false);
         setShowReturningPatientModal(false);
@@ -956,7 +986,7 @@ const BookAppointment = () => {
         setIsConfirmingPatientRecord(false);
       }
     },
-    [loadVerifiedIdentityDetails, resetPatientLookupFailure]
+    [buildPaciPrefillFromIdentityApi, loadVerifiedIdentityDetails, resetPatientLookupFailure],
   );
   const goBackFromPatientLookupModal = () => {
     verificationDoneRef.current = false;
@@ -975,6 +1005,14 @@ const BookAppointment = () => {
     setVerifiedIdentityDetails(null);
     setShowReturningPatientModal(false);
   };
+  useEffect(() => {
+    if (patientType === "returning" && !patientId) {
+      setPatientType(null);
+      setPatientName("");
+      setVerifiedIdentityDetails(null);
+      setVerifiedPersonName(null);
+    }
+  }, [patientType, patientId]);
   const completeVerificationFromStatus = useCallback(
     async (statusData: IdentityStatusResponse) => {
       if (statusData?.status === "pending") return;
@@ -1098,14 +1136,6 @@ const BookAppointment = () => {
     }
   };
   useEffect(() => {
-    if (patientType === "returning" && !patientId) {
-      setPatientType(null);
-      setPatientName("");
-      setVerifiedIdentityDetails(null);
-      setVerifiedPersonName(null);
-    }
-  }, [patientType, patientId]);
-  useEffect(() => {
     if (!verifyOperationId || !showReturningPatientModal || !isWaitingForApproval) {
       verificationDoneRef.current = false;
       return;
@@ -1146,6 +1176,9 @@ const BookAppointment = () => {
     setNationalIdError("");
     setVerifiedPersonName(null);
     setVerifiedIdentityDetails(null);
+    setPatientPhone("");
+    setPatientDob("");
+    setPatientGender("");
   };
   const handleBack = () => {
     if (step === 0 && bookingPath) {
@@ -1658,7 +1691,14 @@ Clinic Code:`;
             </motion.div>
           )}
           {step === 2 && (
-            <motion.div key="s2" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.35 }}>
+            <motion.div
+              key="s2"
+              variants={pageVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              transition={{ duration: 0.35 }}
+            >
               <div className="max-w-3xl mx-auto">
                 {!patientType && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
@@ -1739,7 +1779,7 @@ Clinic Code:`;
                     </div>
                   </div>
                 )}
-                {patientType && <button onClick={() => { setPatientType(null); setNationalId(""); setNationalIdError(""); setVerifiedPersonName(null); setVerifyOperationId(null); setIsWaitingForApproval(false); setVerifiedIdentityDetails(null); }} className="mt-4 font-body text-xs text-muted-foreground hover:text-foreground transition-colors">← {t("changeSelection")}</button>}
+                {patientType && <button onClick={() => { setPatientType(null); setNationalId(""); setNationalIdError(""); setVerifiedPersonName(null); setVerifyOperationId(null); setIsWaitingForApproval(false); setVerifiedIdentityDetails(null); setPatientPhone(""); }} className="mt-4 font-body text-xs text-muted-foreground hover:text-foreground transition-colors">← {t("changeSelection")}</button>}
               </div>
             </motion.div>
           )}
@@ -1835,7 +1875,11 @@ Clinic Code:`;
               <div className="max-w-3xl mx-auto">
                 <div className="bg-popover rounded-2xl p-8 md:p-10 border border-border shadow-sm">
                   <h2 className="font-serif text-xl text-foreground mb-2">
-                    {patientType === "new" ? t("reviewSubmit") : isRequestMode ? t("reviewSubmit") : t("reviewConfirm")}
+                    {patientType === "new"
+                      ? t("reviewSubmit")
+                      : isRequestMode
+                        ? t("reviewSubmit")
+                        : t("reviewConfirm")}
                   </h2>
                   <div className="space-y-5">
                     {[
@@ -1846,7 +1890,23 @@ Clinic Code:`;
                         : []),
                       { label: isAr ? "التاريخ والوقت" : "Date & Time", value: selectedDate && selectedSlot ? `${formattedSelectedDate}  •  ${formatTimeString(selectedSlot)}` : "", icon: Clock },
                       { label: t("patient"), value: patientName.trim() || "—", icon: ClipboardList },
-                      ...(patientType === "new" ? [{ label: t("phone"), value: `${patientCountryCode} ${patientPhone}`, icon: Stethoscope }, { label: isAr ? "تاريخ الميلاد" : "Date of Birth", value: formattedDob, icon: User }, { label: t("gender"), value: patientGender === "male" ? t("male") : t("female"), icon: User }] : [])
+                      ...(patientType === "new"
+                        ? [
+                            { label: t("phone"), value: `${patientCountryCode} ${patientPhone}`, icon: Stethoscope },
+                            {
+                              label: isAr ? "تاريخ الميلاد" : "Date of Birth",
+                              value:
+                                formattedDob ||
+                                (patientDobIso ? patientDobIso.split("-").reverse().join("/") : "—"),
+                              icon: User,
+                            },
+                            {
+                              label: t("gender"),
+                              value: patientGender === "male" ? t("male") : patientGender === "female" ? t("female") : "—",
+                              icon: User,
+                            },
+                          ]
+                        : [])
                     ].map((row) => (
                       <div key={row.label} className="flex items-start gap-4 py-3 border-b border-border last:border-0"><div className="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0"><row.icon className="w-4 h-4 text-accent" /></div><div><p className="font-body text-xs text-muted-foreground uppercase tracking-wider">{row.label}</p><p className="font-body text-sm text-foreground font-medium">{row.value}</p></div></div>
                     ))}
@@ -1999,10 +2059,14 @@ Clinic Code:`;
             <div className="flex justify-center">
               <button
                 type="button"
-                onClick={dismissHisFailureAndGoToRequest}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  dismissHisFailureAndGoToRequest();
+                }}
                 className="min-w-28 bg-primary text-primary-foreground px-6 py-2.5 rounded-lg font-body text-xs tracking-widest uppercase hover:bg-primary/90 transition-colors"
               >
-                OK
+                {isAr ? "موافق" : "OK"}
               </button>
             </div>
           </motion.div>

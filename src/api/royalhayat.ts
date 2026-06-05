@@ -63,12 +63,26 @@ export const getPatient = async (params: {
   nationalid?: string;
   urn?: string;
 }): Promise<PatientLookupResponse> => {
-  const response = await api.get("/api/v1/royal-hayat/patients", { params });
-  const data = response.data as PatientLookupResponse;
-  if (!data?.success) {
-    throw Object.assign(new Error(data?.message || "Patient lookup failed"), {
-      response: { data },
-    });
+  try {
+    const response = await api.get("/api/v1/royal-hayat/patients", { params });
+    const data = response.data as PatientLookupResponse;
+    if (!data?.success) {
+      throw Object.assign(new Error(data?.message || "Patient lookup failed"), {
+        response: { status: response.status, data },
+      });
+    }
+    return data;
+  } catch (error: unknown) {
+    const axiosErr = error as {
+      response?: { status?: number; data?: PatientLookupResponse & { meta?: unknown } };
+      message?: string;
+    };
+    if (axiosErr?.response?.data) {
+      throw Object.assign(
+        new Error(axiosErr.response.data?.message || axiosErr.message || "Patient lookup failed"),
+        { response: axiosErr.response },
+      );
+    }
+    throw error;
   }
-  return data;
 };

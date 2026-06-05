@@ -568,7 +568,7 @@ const translations: Translations = {
   },
   patientLookupGoBack: {
     en: "Go back",
-    ar: "رجوع",
+    ar: "العودة",
   },
   hisFailureCallCenterMessage: {
     en: "We are currently experiencing some technical issues. Kindly share your mobile number, and our call center team will contact you to confirm your appointment.",

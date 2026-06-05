@@ -1,4 +1,4 @@
-import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
+﻿import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -414,7 +414,7 @@ const DepartmentDetail = () => {
               className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary font-body text-sm mb-8 transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
-              {isAr ? "رجوع" : "Go Back"}
+              {isAr ? "العودة" : "Go Back"}
             </button>
           )}
           <ScrollAnimationWrapper>
@@ -425,7 +425,7 @@ const DepartmentDetail = () => {
                   className="inline-flex items-center gap-2 text-accent font-body text-xs tracking-wide mb-4 hover:underline"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
-                  {isAr ? "رجوع" : "Go Back"}
+                  {isAr ? "العودة" : "Go Back"}
                 </button>
               )}
               {fromBookAppointment && (

@@ -335,7 +335,7 @@ export const ar = {
   "patientLookupUnavailable": "نظام تسجيل المرضى غير متاح مؤقتاً. يرجى المحاولة مرة أخرى بعد قليل.",
   "patientLookupFailed": "تعذر التحقق من تسجيلك في المستشفى. يرجى المحاولة مرة أخرى أو التواصل مع الاستقبال.",
   "bookAsFirstTimePatient": "الحجز كمريض لأول مرة",
-  "patientLookupGoBack": "رجوع",
+  "patientLookupGoBack": "العودة",
   "hisFailureCallCenterMessage": "نعتذر عن الإزعاج. نواجه حاليًا بعض المشاكل التقنية. يرجى مشاركة رقم هاتفكم، وسيتواصل معكم أحد موظفي خدمة العملاء لدينا في أقرب وقت لتأكيد موعدكم.",
   "hisFailureRedirectToRequest": "سيتم نقلك إلى شاشة طلب الموعد مع البيانات الموضحة أدناه.",
   "dontSeeInsurance": "لا ترى شركة التأمين الخاصة بك؟",

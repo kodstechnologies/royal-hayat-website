@@ -13,6 +13,9 @@ export type BookingConflictDetails = {
 const SAME_DOCTOR_SAME_DAY_MESSAGE =
   "Patient already has an active booking with this doctor on the same day";
 
+const SAME_DOCTOR_SAME_DAY_MESSAGE_AR =
+  "المريض لديه موعد محجوز مسبقاً مع نفس الطبيب في نفس اليوم";
+
 const cleanBookingMessage = (raw: unknown): string => {
   return String(raw || "")
     .replace(/^Error:\s*/i, "")
@@ -20,9 +23,40 @@ const cleanBookingMessage = (raw: unknown): string => {
     .replace(/care provider/gi, "doctor");
 };
 
+const formatTimeRange = (start?: string, end?: string): string | undefined => {
+  if (!start) return undefined;
+  return end ? `${start}-${end}` : start;
+};
+
 const parseExistingBookingFromMessage = (
   message: string,
 ): Pick<BookingConflictDetails, "existingDoctor" | "existingDate" | "existingTime"> => {
+  const arabicAppointmentDuringTimeSlot = message.match(
+    /موعد\s+مع\s+\(([^)]+)\)[،,]?\s*خلال\s+هذا\s+الوقت\s+\((\d{1,2}:\d{2})(?:\s*-\s*(\d{1,2}:\d{2}))?\)/u,
+  );
+  if (arabicAppointmentDuringTimeSlot) {
+    return {
+      existingDoctor: arabicAppointmentDuringTimeSlot[1]?.trim(),
+      existingTime: formatTimeRange(
+        arabicAppointmentDuringTimeSlot[2]?.trim(),
+        arabicAppointmentDuringTimeSlot[3]?.trim(),
+      ),
+    };
+  }
+
+  const appointmentDuringTimeSlot = message.match(
+    /already has an appointment with\s+(.+?)\s+\((\d{1,2}:\d{2})(?:\s*-\s*(\d{1,2}:\d{2})?)\)\s+during this time slot/i,
+  );
+  if (appointmentDuringTimeSlot) {
+    return {
+      existingDoctor: appointmentDuringTimeSlot[1]?.trim(),
+      existingTime: formatTimeRange(
+        appointmentDuringTimeSlot[2]?.trim(),
+        appointmentDuringTimeSlot[3]?.trim(),
+      ),
+    };
+  }
+
   const withProviderOnDateAtTime = message.match(
     /with\s+(?:doctor\s+|care\s+provider\s+)?(.+?)\s+on\s+(\d{1,2}[/-]\d{1,2}[/-]\d{2,4}|\d{4}-\d{2}-\d{2})\s+(?:at\s+)?(\d{1,2}:\d{2}(?::\d{2})?)/i,
   );
@@ -55,16 +89,45 @@ const parseExistingBookingFromMessage = (
   return {};
 };
 
-const isDuplicateBookingHint = (lower: string): boolean =>
+const isDuplicateBookingHint = (message: string, lower: string): boolean =>
   lower.includes("active booking") ||
   lower.includes("already has an appointment") ||
   lower.includes("already has a booking") ||
+  lower.includes("during this time slot") ||
+  lower.includes("book at a different date or time") ||
   (lower.includes("already has") &&
-    (lower.includes("booking") || lower.includes("appointment")));
+    (lower.includes("booking") || lower.includes("appointment"))) ||
+  message.includes("لديه موعد") ||
+  message.includes("لدي موعد") ||
+  message.includes("خلال هذا الوقت") ||
+  message.includes("يرجى الحجز في تاريخ أو وقت مختلف");
 
-const isSameDoctorSameDayHint = (lower: string): boolean =>
+const isSameDoctorSameDayHint = (message: string, lower: string): boolean =>
   (lower.includes("same doctor") && lower.includes("same day")) ||
-  (lower.includes("this doctor") && lower.includes("same day"));
+  (lower.includes("this doctor") && lower.includes("same day")) ||
+  (message.includes("نفس الطبيب") && message.includes("نفس اليوم"));
+
+const isSameTimeConflictHint = (
+  message: string,
+  lower: string,
+  parsed: Pick<BookingConflictDetails, "existingDoctor" | "existingDate" | "existingTime">,
+): boolean =>
+  lower.includes("same time") ||
+  lower.includes("same day and time") ||
+  lower.includes("during this time slot") ||
+  lower.includes("book at a different date or time") ||
+  message.includes("خلال هذا الوقت") ||
+  message.includes("يرجى الحجز في تاريخ أو وقت مختلف") ||
+  Boolean(parsed.existingDoctor && (parsed.existingDate || parsed.existingTime));
+
+const formatArabicDoctorLabel = (doctor: string): string =>
+  doctor.startsWith("د.") || doctor.startsWith("د ") ? doctor : `د. ${doctor}`;
+
+const formatEnglishTimeSlotConflict = (doctor: string, time: string): string =>
+  `Patient already has an appointment with ${doctor} (${time}) during this time slot. Please book at a different date or time`;
+
+const formatArabicTimeSlotConflict = (doctor: string, time: string): string =>
+  `المريض لديه موعد مع (${formatArabicDoctorLabel(doctor)})، خلال هذا الوقت (${time}). يرجى الحجز في تاريخ أو وقت مختلف`;
 
 export const classifyBookingConflict = (raw: unknown): BookingConflictDetails | null => {
   const message = cleanBookingMessage(raw);
@@ -75,7 +138,7 @@ export const classifyBookingConflict = (raw: unknown): BookingConflictDetails | 
 
   if (
     lower === SAME_DOCTOR_SAME_DAY_MESSAGE.toLowerCase() ||
-    isSameDoctorSameDayHint(lower)
+    isSameDoctorSameDayHint(message, lower)
   ) {
     return {
       code: "DUPLICATE_SAME_DOCTOR_SAME_DAY",
@@ -87,7 +150,7 @@ export const classifyBookingConflict = (raw: unknown): BookingConflictDetails | 
     };
   }
 
-  if (!isDuplicateBookingHint(lower)) {
+  if (!isDuplicateBookingHint(message, lower)) {
     if (parsed.existingDoctor && parsed.existingDate && parsed.existingTime) {
       return {
         code: "DUPLICATE_SAME_TIME_DIFFERENT_DOCTOR",
@@ -98,12 +161,7 @@ export const classifyBookingConflict = (raw: unknown): BookingConflictDetails | 
     return null;
   }
 
-  const isSameTimeConflict =
-    lower.includes("same time") ||
-    lower.includes("same day and time") ||
-    Boolean(parsed.existingDoctor && (parsed.existingDate || parsed.existingTime));
-
-  if (isSameTimeConflict) {
+  if (isSameTimeConflictHint(message, lower, parsed)) {
     return {
       code: "DUPLICATE_SAME_TIME_DIFFERENT_DOCTOR",
       message,
@@ -156,24 +214,28 @@ export const formatBookingConflictAlert = (
   fallback?: { doctorName?: string; date?: string; time?: string },
 ): string => {
   if (conflict.code === "DUPLICATE_SAME_DOCTOR_SAME_DAY") {
-    return isAr
-      ? "لديك موعد محجوز مسبقاً مع نفس الطبيب في نفس اليوم."
-      : conflict.message || SAME_DOCTOR_SAME_DAY_MESSAGE;
+    return isAr ? SAME_DOCTOR_SAME_DAY_MESSAGE_AR : conflict.message || SAME_DOCTOR_SAME_DAY_MESSAGE;
   }
 
   const doctor = conflict.existingDoctor || fallback?.doctorName;
   const date = conflict.existingDate || fallback?.date;
   const time = conflict.existingTime || fallback?.time;
 
+  if (doctor && time) {
+    return isAr
+      ? formatArabicTimeSlotConflict(doctor, time)
+      : formatEnglishTimeSlotConflict(doctor, time);
+  }
+
   if (doctor && date && time) {
     return isAr
-      ? `لديك موعد محجوز مسبقاً مع ${doctor} بتاريخ ${date} الساعة ${time}.`
+      ? `لديك موعد محجوز مسبقاً مع ${formatArabicDoctorLabel(doctor)} بتاريخ ${date} الساعة ${time}.`
       : `You already have an appointment with ${doctor} on ${date} at ${time}.`;
   }
 
   if (doctor && date) {
     return isAr
-      ? `لديك موعد محجوز مسبقاً مع ${doctor} بتاريخ ${date}.`
+      ? `لديك موعد محجوز مسبقاً مع ${formatArabicDoctorLabel(doctor)} بتاريخ ${date}.`
       : `You already have an appointment with ${doctor} on ${date}.`;
   }
 

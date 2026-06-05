@@ -29,7 +29,9 @@ import { subscribeToIdentityVerification } from "@/api/identitySocket";
 import { extractPatientId, getPatientLookupUserMessage } from "@/utils/patientLookupErrors";
 import {
   formatBookingConflictAlert,
+  isAlertOnlyBookingConflict,
   resolveBookingConflict,
+  type BookingConflictDetails,
 } from "@/utils/bookingErrors";
 import { identityDateToIso, mapPaciSexToGender } from "@/utils/mapPaciGender";
 import type { AppointmentBookingFallbackState } from "@/types/appointmentBookingFallback";
@@ -750,7 +752,9 @@ const BookAppointment = () => {
         }
         const messageToShow = formatBookingErrorMessage(rawMessage);
         setBookingError(messageToShow);
-        redirectToBookingFallback(messageToShow);
+        if (!isAlertOnlyBookingConflict(rawMessage, res?.meta)) {
+          redirectToBookingFallback(messageToShow);
+        }
         return;
       }
       if (patientType === "new") {
@@ -791,7 +795,12 @@ const BookAppointment = () => {
       }
       const finalMessage = formatBookingErrorMessage(apiErrorMessage);
       setBookingError(finalMessage);
-      if (patientType === "returning" && patientId && selectedSlotId) {
+      if (
+        patientType === "returning" &&
+        patientId &&
+        selectedSlotId &&
+        !isAlertOnlyBookingConflict(apiErrorMessage, apiMeta)
+      ) {
         redirectToBookingFallback(finalMessage);
       } else {
         setBookingPopupGoHome(false);

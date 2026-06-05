@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
+const PANOEE_IFRAME_ALLOW = "fullscreen; xr-spatial-tracking; xr; accelerometer; gyroscope; autoplay;";
 type HospitalityServicesProps = {
   gardeniaHallImages: string[];
   alJouriHallImages: string[];
@@ -74,6 +75,47 @@ const HospitalityServices = ({
     }, 5000);
     return () => window.clearInterval(timer);
   }, [activeHall, gardeniaHallImages.length]);
+  const CAMELLIA_SUITE_INDEX = 4;
+  const LILY_SUITE_INDEX = 5;
+  const SUITE_360_TOURS: Record<number, { iframeName: string; src: string; titleEn: string; titleAr: string }> = {
+    [CAMELLIA_SUITE_INDEX]: {
+      iframeName: "CAMELIA SUITE",
+      src: "https://tour.panoee.net/iframe/6a216556cb8011ee21bd8532",
+      titleEn: "Camellia Suite 360 Tour",
+      titleAr: "جولة 360 لجناح كاميليا",
+    },
+    [LILY_SUITE_INDEX]: {
+      iframeName: "LILY SUITE",
+      src: "https://tour.panoee.net/iframe/6a216838c64044858c0defbd",
+      titleEn: "Lily Suite 360 Tour",
+      titleAr: "جولة 360 لجناح ليلي",
+    },
+  };
+  const activeSuite360Tour = SUITE_360_TOURS[activeSuite];
+  useEffect(() => {
+    if (activeHall !== "gardenia" && activeHall !== "aljouri" && !activeSuite360Tour) return;
+    const panoIframeName = "tour-embeded";
+    const handleDeviceMotion = (e: DeviceMotionEvent) => {
+      const iframe = document.getElementById(panoIframeName) as HTMLIFrameElement | null;
+      if (!iframe?.contentWindow) return;
+      iframe.contentWindow.postMessage({
+        type: "devicemotion",
+        deviceMotionEvent: {
+          acceleration: { x: e.acceleration?.x, y: e.acceleration?.y, z: e.acceleration?.z },
+          accelerationIncludingGravity: {
+            x: e.accelerationIncludingGravity?.x,
+            y: e.accelerationIncludingGravity?.y,
+            z: e.accelerationIncludingGravity?.z,
+          },
+          rotationRate: { alpha: e.rotationRate?.alpha, beta: e.rotationRate?.beta, gamma: e.rotationRate?.gamma },
+          interval: e.interval,
+          timeStamp: e.timeStamp,
+        },
+      }, "*");
+    };
+    window.addEventListener("devicemotion", handleDeviceMotion);
+    return () => window.removeEventListener("devicemotion", handleDeviceMotion);
+  }, [activeHall, activeSuite]);
   useEffect(() => {
     if (activeHall !== "aljouri" || alJouriHallImages.length <= 1) return;
     const timer = window.setInterval(() => {
@@ -127,7 +169,7 @@ const HospitalityServices = ({
       area: isAr ? "252 متر مربع (130 متر مربع للجناح + 122 متر مربع للقاعة)" : "252 sqm (Suite 130 sqm + Hall 122 sqm)",
       desc: isAr
         ? "يوفر جناح رويال أوركيد تجربة استثنائية فاخرة صُممت خصيصًا للضيوف الذين يبحثون عن أعلى مستويات الخصوصية والراحة والرقي. ويتميز الجناح بتصميم مستوحى من الأناقة الأوروبية الكلاسيكية، مع خدمات ضيافة متكاملة وعناية شخصية فائقة."
-        : "The Royale Orchid Suites offer a truly rarefied experience for those who expect nothing less than the extraordinary. Designed for guests accustomed to the finest things in life, these exclusive suites provide unmatched privacy and comfort within a setting inspired by classic European elegance.",
+        : "The Royale Orchid Suites offer a truly 1 rarefied experience for those who expect nothing less than the extraordinary. Designed for guests accustomed to the finest things in life, these exclusive suites provide unmatched privacy and comfort within a setting inspired by classic European elegance.",
       highlights: isAr
         ? ["خصوصية تامة واهتمام شخصي راقٍ", "تنسيق متكامل بين الخدمات الطبية وخدمات الضيافة", "تفاصيل فاخرة تمنحكم تجربة لا تُنسى لكم ولعائلتكم وضيوفكم", "أثاث فاخر، ومساحات استقبال خاصة، وخدمة طعام راقية داخل الجناح"]
         : ["Complete discretion and personalized attention", "Seamless coordination of healthcare and guest services", "Thoughtful touches that create lasting memories for you, your family, and your guests"],
@@ -423,51 +465,22 @@ const HospitalityServices = ({
           {activeHall === "gardenia" && (
             <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} key="gardenia">
               <div className="grid lg:grid-cols-2 gap-10 items-start">
-                {}
-                <div className="relative">
-                  <div className="relative aspect-[5/4] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
-                    <AnimatePresence initial={false}>
-                      <motion.div
-                        key={`gardenia-${gardeniaSlide}`}
-                        initial={{ x: 36 }}
-                        animate={{ x: 0 }}
-                        exit={{ x: -36 }}
-                        transition={{ duration: 0.35, ease: "easeInOut" }}
-                        className="absolute inset-0"
-                      >
-                        <img
-                          src={gardeniaHallImages[gardeniaSlide]}
-                          alt={isAr ? `قاعة جاردينيا للاحتفالات ${gardeniaSlide + 1}` : `Gardenia Banquet Hall image ${gardeniaSlide + 1}`}
-                          className="w-full h-full object-cover cursor-zoom-in"
-                          loading="lazy"
-                          onClick={() => setLightboxImage(gardeniaHallImages[gardeniaSlide])}
-                        />
-                      </motion.div>
-                    </AnimatePresence>
-                  </div>
-                  <button
-                    onClick={() => setGardeniaSlide((prev) => (prev - 1 + gardeniaHallImages.length) % gardeniaHallImages.length)}
-                    aria-label={isAr ? "السابق" : "Previous"}
-                    disabled={gardeniaHallImages.length <= 1}
-                    className="absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
-                  >
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-                  <button
-                    onClick={() => setGardeniaSlide((prev) => (prev + 1) % gardeniaHallImages.length)}
-                    aria-label={isAr ? "التالي" : "Next"}
-                    disabled={gardeniaHallImages.length <= 1}
-                    className="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
-                  >
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
-                  <div className="flex items-center justify-center gap-3 mt-5">
-                    <span className="font-body text-xs text-muted-foreground tracking-widest">
-                      {String(gardeniaSlide + 1).padStart(2, "0")} / {String(gardeniaHallImages.length).padStart(2, "0")}
-                    </span>
-                  </div>
+                <div className="rounded-2xl overflow-hidden border border-border shadow-md h-[400px]">
+                  <iframe
+                    id="tour-embeded"
+                    name="GARDENIA HALL"
+                    src="https://tour.panoee.net/iframe/6a1ff18fc6404495aa0daee6"
+                    title={isAr ? "جولة 360 لقاعة جاردينيا" : "Gardenia Banquet Hall 360 Tour"}
+                    width="100%"
+                    height="400px"
+                    frameBorder="0"
+                    scrolling="no"
+                    allow={PANOEE_IFRAME_ALLOW}
+                    allowFullScreen
+                    className="w-full h-full"
+                    loading="eager"
+                  />
                 </div>
-                {}
                 <ScrollAnimationWrapper>
                   <div>
                     <h3 className="text-xl font-serif text-foreground mb-4">{isAr ? "قاعة جاردينيا للاحتفالات" : "Gardenia Banquet Hall"}</h3>
@@ -515,15 +528,106 @@ const HospitalityServices = ({
                   </div>
                 </ScrollAnimationWrapper>
               </div>
+              <div className="mt-16 max-w-5xl mx-auto px-4 md:px-12">
+                <div className="relative">
+                  <div className="relative aspect-video rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
+                    <AnimatePresence initial={false}>
+                      <motion.div
+                        key={`gardenia-${gardeniaSlide}`}
+                        initial={{ x: 36 }}
+                        animate={{ x: 0 }}
+                        exit={{ x: -36 }}
+                        transition={{ duration: 0.35, ease: "easeInOut" }}
+                        className="absolute inset-0"
+                      >
+                        <img
+                          src={gardeniaHallImages[gardeniaSlide]}
+                          alt={isAr ? `قاعة جاردينيا للاحتفالات ${gardeniaSlide + 1}` : `Gardenia Banquet Hall image ${gardeniaSlide + 1}`}
+                          className="w-full h-full object-cover cursor-zoom-in"
+                          loading="lazy"
+                          onClick={() => setLightboxImage(gardeniaHallImages[gardeniaSlide])}
+                        />
+                      </motion.div>
+                    </AnimatePresence>
+                  </div>
+                  <button
+                    onClick={() => setGardeniaSlide((prev) => (prev - 1 + gardeniaHallImages.length) % gardeniaHallImages.length)}
+                    aria-label={isAr ? "السابق" : "Previous"}
+                    disabled={gardeniaHallImages.length <= 1}
+                    className="absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={() => setGardeniaSlide((prev) => (prev + 1) % gardeniaHallImages.length)}
+                    aria-label={isAr ? "التالي" : "Next"}
+                    disabled={gardeniaHallImages.length <= 1}
+                    className="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </div>
+                <div className="flex items-center justify-center gap-3 mt-5">
+                  <span className="font-body text-xs text-muted-foreground tracking-widest">
+                    {String(gardeniaSlide + 1).padStart(2, "0")} / {String(gardeniaHallImages.length).padStart(2, "0")}
+                  </span>
+                </div>
+              </div>
             </motion.div>
           )}
           {}
           {activeHall === "aljouri" && (
             <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} key="aljouri">
               <div className="grid lg:grid-cols-2 gap-10 items-start">
-                {}
+                <div className="rounded-2xl overflow-hidden border border-border shadow-md h-[400px]">
+                  <iframe
+                    id="tour-embeded"
+                    name="AL JOURI HALL"
+                    src="https://tour.panoee.net/iframe/6a1fce16c64044079d0da91a"
+                    title={isAr ? "جولة 360 لقاعة الجوري" : "Al Jouri Banquet Hall 360 Tour"}
+                    width="100%"
+                    height="400px"
+                    frameBorder="0"
+                    scrolling="no"
+                    allow={PANOEE_IFRAME_ALLOW}
+                    allowFullScreen
+                    className="w-full h-full"
+                    loading="eager"
+                  />
+                </div>
+                <ScrollAnimationWrapper>
+                  <div>
+                    <h3 className="text-xl font-serif text-foreground mb-4">{isAr ? "قاعة الجوري للاحتفالات" : "Al Jouri Banquet Hall"}</h3>
+                    <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify mb-5">
+                      {isAr
+                        ? "للمناسبات الأكثر خصوصية ودفئًا، توفر قاعة الجوري أجواءً مريحة وراقية، مما يجعلها الخيار الأمثل للتجمعات الصغيرة التي تركز على التواصل والضيافة الراقية."
+                        : "For more intimate occasions, Al Jouri Hall offers a warm and inviting atmosphere, making it the ideal choice for smaller-scale events where personal connection and comfort are paramount."}
+                    </p>
+                    <h4 className="font-serif text-base text-foreground mb-3">{isAr ? "مثالية لـ:" : "Ideal for:"}</h4>
+                    <div className="space-y-2 mb-5">
+                      {(isAr
+                        ? ["الفعاليات حتى 100 ضيف", "التجمعات العائلية والاجتماعات الودية", "جلسات النقاش واللقاءات الخاصة", "ترتيبات الجلوس التقليدية التي تعزز الألفة والراحة"]
+                        : ["Up to 100 guests", "Casual gatherings", "Discussions", "Traditional seating arrangements that foster conversation and warmth"]
+                      ).map((item, i) => (
+                        <div key={i} className="flex items-center gap-3">
+                          <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
+                          <span className="font-body text-sm text-foreground">{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Phone className="w-4 h-4 text-accent" />
+                      <p className="font-body text-sm text-foreground text-justify">
+                        {isAr ? "للحجز والاستفسار:" : "For bookings and more information, please call:"}{" "}
+                        <a href="tel:+96525360573" className="text-accent hover:underline font-semibold">{isAr ? "+965 2536 0573" : "+96525360573"}</a>
+                      </p>
+                    </div>
+                  </div>
+                </ScrollAnimationWrapper>
+              </div>
+              <div className="mt-16 max-w-5xl mx-auto px-4 md:px-12">
                 <div className="relative">
-                  <div className="relative aspect-[5/4] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
+                  <div className="relative aspect-video rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
                     <AnimatePresence initial={false}>
                       <motion.div
                         key={`aljouri-${alJouriSlide}`}
@@ -559,42 +663,12 @@ const HospitalityServices = ({
                   >
                     <ChevronRight className="w-5 h-5" />
                   </button>
-                  <div className="flex items-center justify-center gap-3 mt-5">
-                    <span className="font-body text-xs text-muted-foreground tracking-widest">
-                      {String(alJouriSlide + 1).padStart(2, "0")} / {String(alJouriHallImages.length).padStart(2, "0")}
-                    </span>
-                  </div>
                 </div>
-                {}
-                <ScrollAnimationWrapper>
-                  <div>
-                    <h3 className="text-xl font-serif text-foreground mb-4">{isAr ? "قاعة الجوري للاحتفالات" : "Al Jouri Banquet Hall"}</h3>
-                    <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify mb-5">
-                      {isAr
-                        ? "للمناسبات الأكثر خصوصية ودفئًا، توفر قاعة الجوري أجواءً مريحة وراقية، مما يجعلها الخيار الأمثل للتجمعات الصغيرة التي تركز على التواصل والضيافة الراقية."
-                        : "For more intimate occasions, Al Jouri Hall offers a warm and inviting atmosphere, making it the ideal choice for smaller-scale events where personal connection and comfort are paramount."}
-                    </p>
-                    <h4 className="font-serif text-base text-foreground mb-3">{isAr ? "مثالية لـ:" : "Ideal for:"}</h4>
-                    <div className="space-y-2 mb-5">
-                      {(isAr
-                        ? ["الفعاليات حتى 100 ضيف", "التجمعات العائلية والاجتماعات الودية", "جلسات النقاش واللقاءات الخاصة", "ترتيبات الجلوس التقليدية التي تعزز الألفة والراحة"]
-                        : ["Up to 100 guests", "Casual gatherings", "Discussions", "Traditional seating arrangements that foster conversation and warmth"]
-                      ).map((item, i) => (
-                        <div key={i} className="flex items-center gap-3">
-                          <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
-                          <span className="font-body text-sm text-foreground">{item}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Phone className="w-4 h-4 text-accent" />
-                      <p className="font-body text-sm text-foreground text-justify">
-                        {isAr ? "للحجز والاستفسار:" : "For bookings and more information, please call:"}{" "}
-                        <a href="tel:+96525360573" className="text-accent hover:underline font-semibold">{isAr ? "+965 2536 0573" : "+96525360573"}</a>
-                      </p>
-                    </div>
-                  </div>
-                </ScrollAnimationWrapper>
+                <div className="flex items-center justify-center gap-3 mt-5">
+                  <span className="font-body text-xs text-muted-foreground tracking-widest">
+                    {String(alJouriSlide + 1).padStart(2, "0")} / {String(alJouriHallImages.length).padStart(2, "0")}
+                  </span>
+                </div>
               </div>
             </motion.div>
           )}
@@ -797,7 +871,7 @@ const HospitalityServices = ({
             ))}
           </div>
           <motion.div key={activeSuite} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}>
-            {activeSuite !== 0 ? (
+            {activeSuite !== 0 && !activeSuite360Tour ? (
               <div className="grid lg:grid-cols-2 gap-10 items-start">
                 <div className="relative">
                   <div className="relative aspect-[5/4] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
@@ -899,6 +973,104 @@ const HospitalityServices = ({
                   </div>
                 </div>
               </div>
+            ) : activeSuite360Tour ? (
+              <>
+                <div className="grid lg:grid-cols-2 gap-10 items-start">
+                  <div className="rounded-2xl overflow-hidden border border-border shadow-md h-[400px]">
+                    <iframe
+                      id="tour-embeded"
+                      name={activeSuite360Tour.iframeName}
+                      src={activeSuite360Tour.src}
+                      title={isAr ? activeSuite360Tour.titleAr : activeSuite360Tour.titleEn}
+                      width="100%"
+                      height="400px"
+                      frameBorder="0"
+                      scrolling="no"
+                      allow={PANOEE_IFRAME_ALLOW}
+                      allowFullScreen
+                      className="w-full h-full"
+                      loading="eager"
+                    />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-serif text-foreground mb-2">{currentSuite.name}</h3>
+                    <p className="font-body text-xs text-accent tracking-wide uppercase mb-4">{currentSuite.area}</p>
+                    <p className={`font-body text-sm text-muted-foreground leading-relaxed text-justify ${"desc2" in currentSuite && currentSuite.desc2 ? "mb-4" : "mb-6"}`}>{currentSuite.desc}</p>
+                    {"desc2" in currentSuite && currentSuite.desc2 && (
+                      <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify mb-6">{currentSuite.desc2}</p>
+                    )}
+                    <div className="mb-6 text-justify">
+                      <h4 className="font-serif text-base text-foreground mb-3">
+                        {"amenitiesTitle" in currentSuite && currentSuite.amenitiesTitle
+                          ? currentSuite.amenitiesTitle
+                          : isAr
+                            ? "مرافق وخدمات الجناح"
+                            : "In-Suite Features & Amenities:"}
+                      </h4>
+                      <div className="space-y-2 mb-4">
+                        {currentSuite.amenities.map((a, i) => (
+                          <div key={i} className="flex items-start gap-3">
+                            <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
+                            <span className="font-body text-sm text-foreground">{a}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 mt-6">
+                      <Phone className="w-4 h-4 text-accent" />
+                      <p className="font-body text-sm text-foreground text-justify">
+                        {isAr ? "للحجز والاستفسار:" : "For bookings and more information, please call:"}{" "}
+                        <a href={`tel:${currentSuite.phone}`} className="text-accent hover:underline font-semibold">
+                          {"phoneDisplay" in currentSuite && currentSuite.phoneDisplay ? currentSuite.phoneDisplay : currentSuite.phone}
+                        </a>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-16 max-w-5xl mx-auto px-4 md:px-12">
+                  <div className="relative">
+                    <div className="relative aspect-video rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
+                      <AnimatePresence initial={false}>
+                        <motion.div
+                          key={`suite-${activeSuite}-${suiteSlide}`}
+                          initial={{ x: 36 }}
+                          animate={{ x: 0 }}
+                          exit={{ x: -36 }}
+                          transition={{ duration: 0.35, ease: "easeInOut" }}
+                          className="absolute inset-0"
+                        >
+                          <img
+                            src={activeSuiteImages[suiteSlide]}
+                            alt={isAr ? `صورة ${currentSuite.name} ${suiteSlide + 1}` : `${currentSuite.name} image ${suiteSlide + 1}`}
+                            className="w-full h-full object-cover cursor-zoom-in"
+                            loading="lazy"
+                            onClick={() => setLightboxImage(activeSuiteImages[suiteSlide])}
+                          />
+                        </motion.div>
+                      </AnimatePresence>
+                    </div>
+                    <button
+                      onClick={() => setSuiteSlide((prev) => (prev - 1 + activeSuiteImages.length) % activeSuiteImages.length)}
+                      aria-label={isAr ? "السابق" : "Previous"}
+                      className="absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md"
+                    >
+                      <ChevronLeft className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={() => setSuiteSlide((prev) => (prev + 1) % activeSuiteImages.length)}
+                      aria-label={isAr ? "التالي" : "Next"}
+                      className="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md"
+                    >
+                      <ChevronRight className="w-5 h-5" />
+                    </button>
+                  </div>
+                  <div className="flex items-center justify-center gap-3 mt-5">
+                    <span className="font-body text-xs text-muted-foreground tracking-widest">
+                      {String(suiteSlide + 1).padStart(2, "0")} / {String(activeSuiteImages.length).padStart(2, "0")}
+                    </span>
+                  </div>
+                </div>
+              </>
             ) : (
               <>
                 {}
@@ -911,6 +1083,7 @@ const HospitalityServices = ({
                         width="100%"
                         height="340px"
                         frameBorder="0"
+                        allow={PANOEE_IFRAME_ALLOW}
                         allowFullScreen
                         className="w-full h-full"
                       ></iframe>

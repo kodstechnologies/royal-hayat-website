@@ -340,6 +340,17 @@ html[lang="ar"] h6,
   font-family: 'GE Dinar One', sans-serif !important;
 }
 
+.font-arabic,
+[lang="ar"] {
+  font-family: 'GE Dinar One', sans-serif !important;
+}
+
+html[lang="ar"] .font-body[lang="en"],
+html[lang="ar"] [lang="en"],
+[lang="en"] {
+  font-family: 'Avenir', sans-serif !important;
+}
+
 
 [dir="rtl"] .ltr-icon {
   direction: ltr;

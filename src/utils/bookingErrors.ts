@@ -23,6 +23,16 @@ const cleanBookingMessage = (raw: unknown): string => {
 const parseExistingBookingFromMessage = (
   message: string,
 ): Pick<BookingConflictDetails, "existingDoctor" | "existingDate" | "existingTime"> => {
+  const appointmentDuringTimeSlot = message.match(
+    /already has an appointment with\s+(.+?)\s+\((\d{1,2}:\d{2})(?:\s*-\s*\d{1,2}:\d{2})?\)\s+during this time slot/i,
+  );
+  if (appointmentDuringTimeSlot) {
+    return {
+      existingDoctor: appointmentDuringTimeSlot[1]?.trim(),
+      existingTime: appointmentDuringTimeSlot[2]?.trim(),
+    };
+  }
+
   const withProviderOnDateAtTime = message.match(
     /with\s+(?:doctor\s+|care\s+provider\s+)?(.+?)\s+on\s+(\d{1,2}[/-]\d{1,2}[/-]\d{2,4}|\d{4}-\d{2}-\d{2})\s+(?:at\s+)?(\d{1,2}:\d{2}(?::\d{2})?)/i,
   );
@@ -59,12 +69,24 @@ const isDuplicateBookingHint = (lower: string): boolean =>
   lower.includes("active booking") ||
   lower.includes("already has an appointment") ||
   lower.includes("already has a booking") ||
+  lower.includes("during this time slot") ||
+  lower.includes("book at a different date or time") ||
   (lower.includes("already has") &&
     (lower.includes("booking") || lower.includes("appointment")));
 
 const isSameDoctorSameDayHint = (lower: string): boolean =>
   (lower.includes("same doctor") && lower.includes("same day")) ||
   (lower.includes("this doctor") && lower.includes("same day"));
+
+const isSameTimeConflictHint = (
+  lower: string,
+  parsed: Pick<BookingConflictDetails, "existingDoctor" | "existingDate" | "existingTime">,
+): boolean =>
+  lower.includes("same time") ||
+  lower.includes("same day and time") ||
+  lower.includes("during this time slot") ||
+  lower.includes("book at a different date or time") ||
+  Boolean(parsed.existingDoctor && (parsed.existingDate || parsed.existingTime));
 
 export const classifyBookingConflict = (raw: unknown): BookingConflictDetails | null => {
   const message = cleanBookingMessage(raw);
@@ -98,12 +120,7 @@ export const classifyBookingConflict = (raw: unknown): BookingConflictDetails | 
     return null;
   }
 
-  const isSameTimeConflict =
-    lower.includes("same time") ||
-    lower.includes("same day and time") ||
-    Boolean(parsed.existingDoctor && (parsed.existingDate || parsed.existingTime));
-
-  if (isSameTimeConflict) {
+  if (isSameTimeConflictHint(lower, parsed)) {
     return {
       code: "DUPLICATE_SAME_TIME_DIFFERENT_DOCTOR",
       message,
@@ -175,6 +192,13 @@ export const formatBookingConflictAlert = (
     return isAr
       ? `لديك موعد محجوز مسبقاً مع ${doctor} بتاريخ ${date}.`
       : `You already have an appointment with ${doctor} on ${date}.`;
+  }
+
+  if (doctor && time) {
+    const dateSuffix = date ? (isAr ? ` بتاريخ ${date}` : ` on ${date}`) : "";
+    return isAr
+      ? `لديك موعد محجوز مسبقاً مع ${doctor}${dateSuffix} الساعة ${time}.`
+      : `You already have an appointment with ${doctor}${dateSuffix} at ${time}.`;
   }
 
   return isAr

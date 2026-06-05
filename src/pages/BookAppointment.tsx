@@ -28,9 +28,8 @@ import {
 import { subscribeToIdentityVerification } from "@/api/identitySocket";
 import { extractPatientId, getPatientLookupUserMessage } from "@/utils/patientLookupErrors";
 import {
-  classifyBookingConflict,
   formatBookingConflictAlert,
-  type BookingConflictDetails,
+  resolveBookingConflict,
 } from "@/utils/bookingErrors";
 import { identityDateToIso, mapPaciSexToGender } from "@/utils/mapPaciGender";
 import type { AppointmentBookingFallbackState } from "@/types/appointmentBookingFallback";
@@ -709,15 +708,6 @@ const BookAppointment = () => {
       default: return true;
     }
   };
-  const resolveBookingConflict = useCallback(
-    (raw: unknown, apiMeta?: { conflict?: BookingConflictDetails | null }): BookingConflictDetails | null => {
-      if (apiMeta?.conflict?.code) {
-        return apiMeta.conflict;
-      }
-      return classifyBookingConflict(raw);
-    },
-    [],
-  );
   const showBookingConflictAlert = useCallback(
     (conflict: BookingConflictDetails) => {
       setBookingPopupGoHome(true);
@@ -752,7 +742,7 @@ const BookAppointment = () => {
           setBooked(true);
           return;
         }
-        const rawMessage = res?.message || res?.status || res?.meta?.status;
+        const rawMessage = res?.meta?.status || res?.message || res?.status;
         const conflict = resolveBookingConflict(rawMessage, res?.meta);
         if (conflict) {
           showBookingConflictAlert(conflict);
@@ -788,12 +778,13 @@ const BookAppointment = () => {
       setBooked(true);
     } catch (err: any) {
       console.error("Booking failed:", err);
+      const apiMeta = err?.response?.data?.meta;
       const apiErrorMessage =
+        apiMeta?.status ||
         err?.response?.data?.message ||
         err?.response?.data?.status ||
-        err?.response?.data?.meta?.status ||
         err?.message;
-      const conflict = resolveBookingConflict(apiErrorMessage, err?.response?.data?.meta);
+      const conflict = resolveBookingConflict(apiErrorMessage, apiMeta);
       if (patientType === "returning" && patientId && selectedSlotId && conflict) {
         showBookingConflictAlert(conflict);
         return;

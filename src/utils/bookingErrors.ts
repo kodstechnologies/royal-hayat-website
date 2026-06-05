@@ -55,32 +55,47 @@ const parseExistingBookingFromMessage = (
   return {};
 };
 
+const isDuplicateBookingHint = (lower: string): boolean =>
+  lower.includes("active booking") ||
+  lower.includes("already has an appointment") ||
+  lower.includes("already has a booking") ||
+  (lower.includes("already has") &&
+    (lower.includes("booking") || lower.includes("appointment")));
+
+const isSameDoctorSameDayHint = (lower: string): boolean =>
+  (lower.includes("same doctor") && lower.includes("same day")) ||
+  (lower.includes("this doctor") && lower.includes("same day"));
+
 export const classifyBookingConflict = (raw: unknown): BookingConflictDetails | null => {
   const message = cleanBookingMessage(raw);
   if (!message) return null;
 
   const lower = message.toLowerCase();
-  if (lower === SAME_DOCTOR_SAME_DAY_MESSAGE.toLowerCase()) {
-    return {
-      code: "DUPLICATE_SAME_DOCTOR_SAME_DAY",
-      message: SAME_DOCTOR_SAME_DAY_MESSAGE,
-    };
-  }
-
-  if (!lower.includes("active booking")) {
-    return null;
-  }
-
   const parsed = parseExistingBookingFromMessage(message);
-  const isSameDoctorSameDay =
-    lower.includes("same doctor") && lower.includes("same day");
 
-  if (isSameDoctorSameDay) {
+  if (
+    lower === SAME_DOCTOR_SAME_DAY_MESSAGE.toLowerCase() ||
+    isSameDoctorSameDayHint(lower)
+  ) {
     return {
       code: "DUPLICATE_SAME_DOCTOR_SAME_DAY",
-      message,
+      message:
+        lower === SAME_DOCTOR_SAME_DAY_MESSAGE.toLowerCase()
+          ? SAME_DOCTOR_SAME_DAY_MESSAGE
+          : message,
       ...parsed,
     };
+  }
+
+  if (!isDuplicateBookingHint(lower)) {
+    if (parsed.existingDoctor && parsed.existingDate && parsed.existingTime) {
+      return {
+        code: "DUPLICATE_SAME_TIME_DIFFERENT_DOCTOR",
+        message,
+        ...parsed,
+      };
+    }
+    return null;
   }
 
   const isSameTimeConflict =
@@ -97,6 +112,42 @@ export const classifyBookingConflict = (raw: unknown): BookingConflictDetails | 
   }
 
   return null;
+};
+
+export const resolveBookingConflict = (
+  raw: unknown,
+  apiMeta?: {
+    conflict?: BookingConflictDetails | null;
+    code?: string;
+    status?: string;
+  } | null,
+): BookingConflictDetails | null => {
+  if (apiMeta?.conflict?.code) {
+    return apiMeta.conflict;
+  }
+
+  const metaCode = apiMeta?.code;
+  if (
+    metaCode === "DUPLICATE_SAME_DOCTOR_SAME_DAY" ||
+    metaCode === "DUPLICATE_SAME_TIME_DIFFERENT_DOCTOR"
+  ) {
+    const message =
+      cleanBookingMessage(raw) || cleanBookingMessage(apiMeta?.status) || "";
+    return {
+      code: metaCode,
+      message:
+        metaCode === "DUPLICATE_SAME_DOCTOR_SAME_DAY" && !message
+          ? SAME_DOCTOR_SAME_DAY_MESSAGE
+          : message,
+      ...parseExistingBookingFromMessage(message),
+    };
+  }
+
+  return (
+    classifyBookingConflict(raw) ||
+    classifyBookingConflict(apiMeta?.status) ||
+    null
+  );
 };
 
 export const formatBookingConflictAlert = (
@@ -131,5 +182,11 @@ export const formatBookingConflictAlert = (
     : conflict.message || "You already have an appointment at the same date and time.";
 };
 
-export const isAlertOnlyBookingConflict = (raw: unknown): boolean =>
-  classifyBookingConflict(raw) !== null;
+export const isAlertOnlyBookingConflict = (
+  raw: unknown,
+  apiMeta?: {
+    conflict?: BookingConflictDetails | null;
+    code?: string;
+    status?: string;
+  } | null,
+): boolean => resolveBookingConflict(raw, apiMeta) !== null;

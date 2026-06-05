@@ -57,11 +57,13 @@ const ChairmanMessage = () => {
                     <p className={`font-serif text-xl md:text-2xl text-foreground pt-1 ${rtl}`}>
                       {t("chairmanName")}
                     </p>
-                    {lang === "en" && (
-                      <p className="text-[#816107] font-body text-sm md:text-base leading-relaxed">
-                        {t("chairmanTitle")}
-                      </p>
-                    )}
+                    <p
+                      className={`text-[#816107] font-body text-sm md:text-base leading-relaxed ${
+                        lang === "ar" ? rtl : ""
+                      }`}
+                    >
+                      {t("chairmanTitle")}
+                    </p>
                   </div>
                 </div>
               </ScrollAnimationWrapper>

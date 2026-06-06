@@ -1746,7 +1746,7 @@ export const doctorsWithClinicCodes: DoctorWithClinicCode[] = [
     departmentAr: 'أمراض النساء والولادة',
     departmentClinicCode: 'R002OBG',
     providerCode: 'E1535',
-    hideBooking: true,
+    availableOnline: false,
     title: 'Consultant Obstetrician & Gynaecologist',
     titleAr: 'استشاري أمراض النساء والولادة',
     bio: 'Dr. Zeinab Sholkany M.saad is a specialist in the Obstetrics & Gynecology department at Royale Hayat Hospital.',

@@ -616,9 +616,12 @@ const SpecializedCare = () => {
                         {}
                         {deptDoctors.length > 0 && (
                           <div className="mt-auto">
-                            <p className="text-accent text-xs tracking-[0.2em] uppercase font-body mb-4">
-                              {lang === "ar" ? "أطباؤنا المتخصصون" : "Department Doctors"}
+                            <p className="text-accent text-xs tracking-[0.2em] uppercase font-body mb-3">
+                              {lang === "ar" ? "فريقنا الطبي" : "Our Medical Team"}
                             </p>
+                            <h3 className="text-lg md:text-xl font-serif text-foreground mb-4">
+                              {lang === "ar" ? "أطباء القسم" : "Department Doctors"}
+                            </h3>
                             <div className="relative max-w-[576px] mx-auto">
                               {deptDoctors.length > (isMobile ? 1 : 2) && (
                                 <>
@@ -687,7 +690,7 @@ const SpecializedCare = () => {
                                       <p className="text-accent text-[9px] tracking-[0.2em] uppercase font-body mb-1 line-clamp-1">
                                         {lang === "ar" ? doc.specialtyAr : doc.specialty}
                                       </p>
-                                      <h4 className="text-sm font-serif font-semibold text-foreground group-hover/doc:text-primary transition-colors line-clamp-1">
+                                      <h4 className="text-sm font-serif font-bold text-foreground group-hover/doc:text-primary transition-colors line-clamp-1">
                                         {lang === "ar" ? doc.nameAr : doc.name}
                                       </h4>
                                       <p className="text-xs text-muted-foreground font-body mt-0.5 line-clamp-1">

@@ -430,7 +430,10 @@ const handleAddTestimonial = () => {
                   <h2 className="text-xl md:text-2xl font-serif text-primary font-bold mb-5">
                     {lang === "ar" ? "المؤهلات:" : "QUALIFICATIONS:"}
                   </h2>
-                  <ul className={`space-y-3 list-outside ${lang === "ar" ? "me-6" : "ms-6"}`}>
+                  <ul
+                    dir={lang === "ar" ? "rtl" : "ltr"}
+                    className="space-y-3 list-outside list-disc ps-7 pe-1"
+                  >
                     {(lang === "ar" ? doctor.qualificationsAr : doctor.qualifications).map((q, i) => {
                       const items = lang === "ar" ? doctor.qualificationsAr : doctor.qualifications;
                       const trimmed = q.trim();
@@ -446,11 +449,10 @@ const handleAddTestimonial = () => {
                       return (
                         <li
                           key={i}
-                          dir={lang === "ar" ? "rtl" : undefined}
                           lang={lang === "ar" ? "ar" : "en"}
-                          className={`font-body text-base leading-relaxed ${isHeader
-                          ? `list-none ${lang === "ar" ? "-me-6" : "-ms-6"} font-serif text-lg font-bold text-primary mt-6 mb-2`
-                          : "text-muted-foreground list-disc"
+                          className={`font-body text-base leading-relaxed text-justify ${isHeader
+                          ? "list-none -ps-7 font-serif text-lg font-bold text-primary mt-6 mb-2"
+                          : "text-muted-foreground"
                           }`}>
                           {lang === "ar"
                             ? renderArQualification(isManualBullet ? trimmed.substring(1).trim() : q)
@@ -467,7 +469,10 @@ const handleAddTestimonial = () => {
                 <h2 className="text-xl md:text-2xl font-serif text-primary font-bold mb-5">
                   {lang === "ar" ? "الخبرات:" : "EXPERIENCED IN:"}
                 </h2>
-                <ul className={`space-y-3 list-outside ${lang === "ar" ? "me-6" : "ms-6"}`}>
+                <ul
+                  dir={lang === "ar" ? "rtl" : "ltr"}
+                  className="space-y-3 list-outside list-disc ps-7 pe-1"
+                >
                   {(lang === "ar" ? doctor.expertiseAr : doctor.expertise).map((exp, i) => {
                     const trimmed = exp.trim();
                     const isSubBullet = isExpertiseSubBullet(trimmed);
@@ -488,20 +493,26 @@ const handleAddTestimonial = () => {
                     return (
                       <li
                         key={i}
-                        dir={lang === "ar" ? "rtl" : undefined}
                         lang={lang === "ar" ? "ar" : "en"}
-                        className={`font-body text-base leading-relaxed ${isHeader
-                        ? `list-none ${lang === "ar" ? "-me-6" : "-ms-6"} font-serif text-lg font-bold text-primary mt-6 mb-2${isColonHeader ? "" : " uppercase tracking-wide"}`
+                        className={`font-body text-base leading-relaxed text-justify ${isHeader
+                        ? `-ps-7 list-none font-serif text-lg font-bold text-primary mt-6 mb-2${isColonHeader ? "" : " uppercase tracking-wide"}`
                         : isSubBullet
-                          ? `text-muted-foreground list-none ${lang === "ar" ? "me-10" : "ms-10"} before:content-['–'] before:me-2 before:text-primary`
-                          : "text-muted-foreground list-disc"
+                          ? "list-none ps-12 text-muted-foreground"
+                          : "text-muted-foreground"
                         }`}>
                         {isHeader
                           ? exp
                           : isSubBullet
-                            ? (lang === "ar"
-                              ? renderArQualification(stripExpertiseBullet(exp))
-                              : stripExpertiseBullet(exp))
+                            ? (
+                              <span className="flex items-start gap-2">
+                                <span className="text-primary shrink-0 leading-relaxed">–</span>
+                                <span className="flex-1">
+                                  {lang === "ar"
+                                    ? renderArQualification(stripExpertiseBullet(exp))
+                                    : stripExpertiseBullet(exp)}
+                                </span>
+                              </span>
+                            )
                             : renderExpertiseLine(exp, lang === "ar" ? "ar" : "en")}
                       </li>
                     );

@@ -9,8 +9,22 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { loadDoctors, type Doctor } from "@/data/loadDoctors";
 import { departments, deptDoctorAliases, MAIN_CATEGORIES, type MainCategory } from "@/data/departments";
 import { Input } from "@/components/ui/input";
+
+const isDoctorWithDrTitle = (name: string) => /^dr\.?\s/i.test(name.trim());
+
+const hasArabicDoctorPrefix = (nameAr: string) =>
+  /(?:^|\s)(?:د\.?\s|الدكتور\s|الدكتورة\s|البروفيسور\s+د\.?\s*)/u.test(nameAr.trim());
+
+const formatDoctorDisplayNameAr = (doc: Pick<Doctor, "name" | "nameAr">) => {
+  const nameAr = doc.nameAr.trim();
+  if (!isDoctorWithDrTitle(doc.name)) return nameAr;
+  if (hasArabicDoctorPrefix(nameAr)) return nameAr;
+  return `د. ${nameAr}`;
+};
+
 const DoctorCard = memo(({ doc }: { doc: Doctor }) => {
   const { lang } = useLanguage();
+  const displayName = lang === "ar" ? formatDoctorDisplayNameAr(doc) : doc.name;
   return (
     <Link to={`/doctors/${doc.id}`} className="block w-[280px] min-h-[430px] flex-shrink-0 relative z-0 hover:z-10 snap-center md:snap-start">
       <motion.div
@@ -19,7 +33,7 @@ const DoctorCard = memo(({ doc }: { doc: Doctor }) => {
       >
         <div className="bg-white h-64 flex items-center justify-center relative overflow-hidden shrink-0 rounded-t-2xl">
           {doc.image ? (
-            <img src={doc.image} alt={lang === "ar" ? doc.nameAr : doc.name} className="w-full h-full object-cover object-top" />
+            <img src={doc.image} alt={displayName} className="w-full h-full object-cover object-top" />
           ) : (
             <div className="w-20 h-20 rounded-full bg-popover/20 backdrop-blur-sm flex items-center justify-center border-2 border-popover/30">
               <span className="text-2xl font-serif text-primary-foreground">{doc.initials}</span>
@@ -33,7 +47,7 @@ const DoctorCard = memo(({ doc }: { doc: Doctor }) => {
           <p className="text-accent text-[10px] tracking-[0.2em] uppercase font-body mb-1.5">
             {lang === "ar" ? doc.specialtyAr : doc.specialty}
           </p>
-          <h3 className="text-base font-serif font-bold text-foreground mb-1">{lang === "ar" ? doc.nameAr : doc.name}</h3>
+          <h3 className="text-base font-serif font-bold text-foreground mb-1">{displayName}</h3>
           <p className="text-muted-foreground font-body text-xs mb-3">{lang === "ar" ? doc.titleAr : doc.title}</p>
           {doc.hideBooking !== true && (
             <div className={`flex items-center gap-1.5 mb-2 ${doc.availableOnline !== false ? "text-green-600" : "text-destructive"}`}>
@@ -46,7 +60,7 @@ const DoctorCard = memo(({ doc }: { doc: Doctor }) => {
             </div>
           )}
           <span className="inline-flex items-center gap-1.5 text-primary font-body text-xs tracking-wide group-hover:text-accent transition-colors">
-            {lang === "ar" ? "عرض الملف الشخصي ←" : "View Profile →"}
+            {lang === "ar" ? "عرض الملف الشخصي →" : "View Profile →"}
           </span>
         </div>
       </motion.div>
@@ -183,7 +197,7 @@ const Doctors = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [doctorCatalog, setDoctorCatalog] = useState<Doctor[]>([]);
   const [catalogLoading, setCatalogLoading] = useState(true);
-  const { lang, t } = useLanguage();
+  const { lang } = useLanguage();
   useEffect(() => {
     let cancelled = false;
     void loadDoctors().then((list) => {
@@ -312,9 +326,17 @@ const Doctors = () => {
           )}
           {}
           <div className="text-center mb-12">
-            <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-4">{t("ourTeam")}</p>
-            <h1 className="text-3xl md:text-5xl font-serif text-foreground mb-4">{t("meetOurDoctors")}</h1>
-            <p className="text-muted-foreground font-body max-w-lg mx-auto text-sm md:text-base">{t("findDoctor")}</p>
+            <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-4">
+              {lang === "ar" ? "فريقنا الطبي" : "Our Medical Team"}
+            </p>
+            <h1 className="text-3xl md:text-5xl font-serif text-foreground mb-4">
+              {lang === "ar" ? "تعرف على أطبائنا" : "Meet Our Doctors"}
+            </h1>
+            <p className="text-muted-foreground font-body max-w-lg mx-auto text-sm md:text-base">
+              {lang === "ar"
+                ? "ابحث عن الطبيب المناسب حسب الأعراض أو التخصص الطبي الذي تحتاجه"
+                : "Find the right doctor by symptom or specialty"}
+            </p>
           </div>
           {}
           <div className="max-w-2xl mx-auto mb-14">

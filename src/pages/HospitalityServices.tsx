@@ -11,6 +11,42 @@ import { useSearchParams, Link } from "react-router-dom";
 const PANOEE_IFRAME_ALLOW = "fullscreen; xr-spatial-tracking; xr; accelerometer; gyroscope; autoplay;";
 const PHONE_LINK_CLASS =
   "text-accent hover:underline font-semibold inline-block [direction:ltr] [unicode-bidi:isolate]";
+const LTR_ISOLATE_CLASS = "inline-block [direction:ltr] [unicode-bidi:isolate]";
+
+const renderSetupStyleLabel = (item: string, isAr: boolean) => {
+  if (isAr && item === "- حرف U") {
+    return (
+      <span dir="rtl">
+        {"- حرف "}
+        <span dir="ltr" className={LTR_ISOLATE_CLASS}>
+          U
+        </span>
+      </span>
+    );
+  }
+  return item;
+};
+
+const getColonIndex = (text: string) => {
+  const candidates = [text.indexOf(":"), text.indexOf("؛")].filter((index) => index !== -1);
+  return candidates.length ? Math.min(...candidates) : -1;
+};
+
+const renderColonHeading = (text: string) => {
+  const colonIndex = getColonIndex(text);
+  if (colonIndex === -1) {
+    return <span className="font-bold">{text}</span>;
+  }
+  const label = text.slice(0, colonIndex + 1);
+  const rest = text.slice(colonIndex + 1);
+  return (
+    <>
+      <span className="font-bold">{label}</span>
+      {rest}
+    </>
+  );
+};
+
 const SPA_AR_DESC =
   "إليمنتس سبا بالتعاون مع مجموعة بانيان تري، الحائزة على جوائز عالمية، يقدم تجربة استثنائية تجمع بين فلسفات العناية الشاملة وطقوس الاسترخاء المستوحاة من أعرق التقاليد العلاجية حول العالم، وذلك ضمن أجواء هادئة وفاخرة داخل مستشفى رويال حياة. صُممت تجارب السبا بعناية لتعزيز التوازن الجسدي والذهني واستعادة الحيوية والراحة من خلال مجموعة مختارة من العلاجات الفاخرة وتقنيات العناية المتقدمة.";
 const SPA_AR_SERVICES = [
@@ -209,7 +245,9 @@ const HospitalityServices = ({
     {
       name: isAr ? "جناح رويال أوركيد" : "Royale Orchid Suite",
       tabLabel: isAr ? "رويال اوركيد" : "Royale Orchid",
-      area: isAr ? "252 متر مربع (130 متر مربع للجناح + 122 متر مربع للقاعة)" : "252 sqm (Suite 130 sqm + Hall 122 sqm)",
+      area: isAr
+        ? "متر مربع (130 متر مربع للجناح + 122 متر مربع للقاعة) 252"
+        : "252 sqm (Suite 130 sqm + Hall 122 sqm)",
       desc: isAr
         ? "يوفر جناح رويال أوركيد تجربة استثنائية فاخرة صُممت خصيصًا للضيوف الذين يبحثون عن أعلى مستويات الخصوصية والراحة والرقي. ويتميز الجناح بتصميم مستوحى من الأناقة الأوروبية الكلاسيكية، مع خدمات ضيافة متكاملة وعناية شخصية فائقة."
         : "The Royale Orchid Suites offer a truly 1 rarefied experience for those who expect nothing less than the extraordinary. Designed for guests accustomed to the finest things in life, these exclusive suites provide unmatched privacy and comfort within a setting inspired by classic European elegance.",
@@ -441,7 +479,7 @@ const HospitalityServices = ({
             <h1 className="text-4xl md:text-5xl font-serif text-foreground mb-4">
               {section === "halls" ? (isAr ? "قاعات احتفالات الولادة" : "Birth Celebration Halls")
                 : section === "suites" ? (isAr ? "الأجنحة الفاخرة" : "Exclusive Suites")
-                  : section === "spa" ? (isAr ? "إليمنتس سبا" : "Elements Spa")
+                  : section === "spa" ? "Elements Spa"
                     : section === "cafe" ? (isAr ? "كافيه الليوان بيسترو" : "Al Liwan Bistro")
                       : (isAr ? "خدمات الضيافة" : "Hospitality Services")}
             </h1>
@@ -533,7 +571,7 @@ const HospitalityServices = ({
                         ? "تُعد قاعة جاردينيا الوجهة المثالية لاستضافة الفعاليات المتوسطة والكبيرة، حيث صُممت بعناية لتجمع بين الأناقة، المرونة، والراحة ضمن أجواء راقية ومميزة. حيث تتميز القاعة بسعة تصل إلى 150 ضيفًا بتنسيق المسرح، مما يجعلها خيارًا مثاليًا لمجموعة متنوعة من المناسبات والفعاليات."
                         : "The Gardenia Banquet Hall is our premier venue, thoughtfully designed to accommodate medium to large gatherings in an elegant and versatile setting. With a generous seating capacity of up to 150 guests in a theatre-style configuration, this hall offers an exceptional space for a wide variety of events."}
                     </p>
-                    <h4 className="font-serif text-base text-foreground mb-3">{isAr ? "مثالية لكل من:" : "Ideal for:"}</h4>
+                    <h4 className="font-serif text-base text-foreground mb-3">{renderColonHeading(isAr ? "مثالية لكل من:" : "Ideal for:")}</h4>
                     <div className="space-y-2 mb-5">
                       {(isAr
                         ? ["احتفالات استقبال المواليد", "الندوات الصحية والتوعوية", "المؤتمرات الطبية", "المناسبات العائلية والاحتفالات الخاصة"]
@@ -545,15 +583,15 @@ const HospitalityServices = ({
                         </div>
                       ))}
                     </div>
-                    <h4 className="font-serif text-base text-foreground mb-3">{isAr ? "أنماط الترتيب المتوفرة:" : "Available Setup Styles:"}</h4>
+                    <h4 className="font-serif text-base text-foreground mb-3">{renderColonHeading(isAr ? "أنماط الترتيب المتوفرة:" : "Available Setup Styles:")}</h4>
                     <div className="space-y-2 mb-5">
                       {(isAr
-                        ? ["الديوانية", "المسرح", "حرف U-", "الصفوف الدراسية", "تنسيق الكاباريه", "الطاولات المستديرة"]
+                        ? ["الديوانية", "المسرح", " - U حرف", "الصفوف الدراسية", "تنسيق الكاباريه", "الطاولات المستديرة"]
                         : ["Diwaniya", "Theatre", "U-Shape", "Classroom", "Cabaret", "Round Tables"]
                       ).map((item, i) => (
                         <div key={i} className="flex items-center gap-3">
                           <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
-                          <span className="font-body text-sm text-foreground">{item}</span>
+                          <span className="font-body text-sm text-foreground">{renderSetupStyleLabel(item, isAr)}</span>
                         </div>
                       ))}
                     </div>
@@ -647,7 +685,7 @@ const HospitalityServices = ({
                         ? "للمناسبات الأكثر خصوصية ودفئًا، توفر قاعة الجوري أجواءً مريحة وراقية، مما يجعلها الخيار الأمثل للتجمعات الصغيرة التي تركز على التواصل والضيافة الراقية."
                         : "For more intimate occasions, Al Jouri Hall offers a warm and inviting atmosphere, making it the ideal choice for smaller-scale events where personal connection and comfort are paramount."}
                     </p>
-                    <h4 className="font-serif text-base text-foreground mb-3">{isAr ? "مثالية لـ:" : "Ideal for:"}</h4>
+                    <h4 className="font-serif text-base text-foreground mb-3">{renderColonHeading(isAr ? "مثالية لـ:" : "Ideal for:")}</h4>
                     <div className="space-y-2 mb-5">
                       {(isAr
                         ? ["الفعاليات حتى 100 ضيف", "التجمعات العائلية والاجتماعات الودية", "جلسات النقاش واللقاءات الخاصة", "ترتيبات الجلوس التقليدية التي تعزز الألفة والراحة"]
@@ -815,7 +853,7 @@ const HospitalityServices = ({
                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                   <Sparkles className="w-6 h-6 text-primary" />
                 </div>
-                <h2 className="text-2xl md:text-3xl font-serif text-foreground">{isAr ? "إليمنتس سبا" : "Elements Spa by Banyan Tree"}</h2>
+                <h2 className="text-2xl md:text-3xl font-serif text-foreground">{isAr ? "Elements Spa" : "Elements Spa by Banyan Tree"}</h2>
               </div>
             </div>
             <div className="relative lg:col-start-1 lg:row-start-1 lg:row-span-2">
@@ -871,7 +909,7 @@ const HospitalityServices = ({
                     : "Elements Spa, in collaboration with the award-winning Banyan Tree Hotels & Resorts, brings the essence of time-honored remedies and holistic wellness traditions to Royale Hayat Hospital."}
                 </p>
                 <div className="mb-5">
-                  <h4 className="font-serif text-base text-foreground mb-3">{isAr ? "خدماتنا تشمل" : "Our Services Include:"}</h4>
+                  <h4 className="font-serif text-base text-foreground mb-3">{renderColonHeading(isAr ? "خدماتنا تشمل" : "Our Services Include:")}</h4>
                   <div className="space-y-2">
                     {(isAr ? SPA_AR_SERVICES : SPA_EN_SERVICES).map((item, i) => (
                         <div key={i} className="flex items-center gap-3">
@@ -967,7 +1005,7 @@ const HospitalityServices = ({
                   )}
                   {currentSuite.highlights && (
                     <div className="space-y-2 mb-6 text-justify">
-                      {isAr && <h4 className="font-serif text-base text-foreground mb-2">مميزات الجناح</h4>}
+                      {isAr && <h4 className="font-serif text-base text-foreground mb-2">{renderColonHeading("مميزات الجناح")}</h4>}
                       {currentSuite.highlights.map((h, i) => (
                         <div key={i} className="flex items-center gap-3">
                           <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
@@ -978,7 +1016,7 @@ const HospitalityServices = ({
                   )}
                   {currentSuite.dimensions && (
                     <div className="mb-6 text-justify">
-                      <h4 className="font-serif text-base text-foreground mb-2">{isAr ? "مساحات الجناح" : "Suite Dimensions:"}</h4>
+                      <h4 className="font-serif text-base text-foreground mb-2">{renderColonHeading(isAr ? "مساحات الجناح" : "Suite Dimensions:")}</h4>
                       <div className="space-y-1">
                         {currentSuite.dimensions.map((d, i) => (
                           <div key={i} className="flex items-center gap-3">
@@ -991,11 +1029,13 @@ const HospitalityServices = ({
                   )}
                   <div className="mb-6 text-justify">
                     <h4 className="font-serif text-base text-foreground mb-3">
-                      {"amenitiesTitle" in currentSuite && currentSuite.amenitiesTitle
-                        ? currentSuite.amenitiesTitle
-                        : isAr
-                          ? "مرافق وخدمات الجناح"
-                          : "In-Suite Features & Amenities:"}
+                      {renderColonHeading(
+                        "amenitiesTitle" in currentSuite && currentSuite.amenitiesTitle
+                          ? currentSuite.amenitiesTitle
+                          : isAr
+                            ? "مرافق وخدمات الجناح"
+                            : "In-Suite Features & Amenities:",
+                      )}
                     </h4>
                     <div className="space-y-2 mb-4">
                       {currentSuite.amenities.map((a, i) => (
@@ -1045,11 +1085,13 @@ const HospitalityServices = ({
                     )}
                     <div className="mb-6 text-justify">
                       <h4 className="font-serif text-base text-foreground mb-3">
-                        {"amenitiesTitle" in currentSuite && currentSuite.amenitiesTitle
-                          ? currentSuite.amenitiesTitle
-                          : isAr
-                            ? "مرافق وخدمات الجناح"
-                            : "In-Suite Features & Amenities:"}
+                        {renderColonHeading(
+                          "amenitiesTitle" in currentSuite && currentSuite.amenitiesTitle
+                            ? currentSuite.amenitiesTitle
+                            : isAr
+                              ? "مرافق وخدمات الجناح"
+                              : "In-Suite Features & Amenities:",
+                        )}
                       </h4>
                       <div className="space-y-2 mb-4">
                         {currentSuite.amenities.map((a, i) => (
@@ -1146,7 +1188,7 @@ const HospitalityServices = ({
                     <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify mb-4">{currentSuite.desc}</p>
                     {currentSuite.highlights && (
                       <div className="space-y-2 mb-4">
-                        {isAr && <h4 className="font-serif text-base text-foreground mb-2">مميزات الجناح</h4>}
+                        {isAr && <h4 className="font-serif text-base text-foreground mb-2">{renderColonHeading("مميزات الجناح")}</h4>}
                         {currentSuite.highlights.map((h, i) => (
                           <div key={i} className="flex items-center gap-3">
                             <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
@@ -1160,7 +1202,7 @@ const HospitalityServices = ({
                     )}
                     {currentSuite.dimensions && (
                       <div className="mb-4">
-                        <h4 className="font-serif text-base text-foreground mb-2">{isAr ? "مساحات الجناح" : "Suite Dimensions:"}</h4>
+                        <h4 className="font-serif text-base text-foreground mb-2">{renderColonHeading(isAr ? "مساحات الجناح" : "Suite Dimensions:")}</h4>
                         <div className="space-y-1">
                           {currentSuite.dimensions.map((d, i) => (
                             <div key={i} className="flex items-center gap-3">
@@ -1220,7 +1262,7 @@ const HospitalityServices = ({
                     <p className="font-body text-xs text-accent tracking-wide uppercase mb-4">{currentSuite.area}</p>
                     <div className="mb-6">
                       <h4 className="font-serif text-base text-foreground mb-3">
-                        {isAr ? "مرافق وخدمات الجناح" : "In-Suite Features & Amenities:"}
+                        {renderColonHeading(isAr ? "مرافق وخدمات الجناح" : "In-Suite Features & Amenities:")}
                       </h4>
                       <div className="space-y-2 mb-4">
                         {currentSuite.amenities.map((a, i) => (
@@ -1234,7 +1276,7 @@ const HospitalityServices = ({
                     {currentSuite.hospitality && (
                       <div className="mb-6">
                         <h4 className="font-serif text-base text-foreground mb-2">
-                          {isAr ? "خدمات الضيافة الفاخرة" : "Premium Hospitality Services:"}
+                          {renderColonHeading(isAr ? "خدمات الضيافة الفاخرة" : "Premium Hospitality Services:")}
                         </h4>
                         <div className="space-y-2">
                           {currentSuite.hospitality.map((h, i) => (
@@ -1261,11 +1303,11 @@ const HospitalityServices = ({
             )}
             {currentSuite.hall && (
               <div className="bg-popover border border-border/50 rounded-2xl p-6 mt-16">
-                <h4 className="font-serif text-base text-foreground mb-2">{currentSuite.hall.title}</h4>
+                <h4 className="font-serif text-base text-foreground mb-2">{renderColonHeading(currentSuite.hall.title)}</h4>
                 <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify mb-3">{currentSuite.hall.desc}</p>
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <h5 className="font-serif text-sm text-foreground mb-2">{isAr ? "مواصفات القاعة" : "Hall Specifications:"}</h5>
+                    <h5 className="font-serif text-sm text-foreground mb-2">{renderColonHeading(isAr ? "مواصفات القاعة" : "Hall Specifications:")}</h5>
                     <div className="space-y-1">
                       {currentSuite.hall.specs.map((s, i) => (
                         <div key={i} className="flex items-center gap-3">
@@ -1276,7 +1318,7 @@ const HospitalityServices = ({
                     </div>
                   </div>
                   <div>
-                    <h5 className="font-serif text-sm text-foreground mb-2">{isAr ? "المميزات الفاخرة" : "Premium Features:"}</h5>
+                    <h5 className="font-serif text-sm text-foreground mb-2">{renderColonHeading(isAr ? "المميزات الفاخرة" : "Premium Features:")}</h5>
                     <div className="space-y-1">
                       {currentSuite.hall.features.map((f, i) => (
                         <div key={i} className="flex items-center gap-3">
@@ -1493,7 +1535,7 @@ const HospitalityServices = ({
                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                   <Sparkles className="w-6 h-6 text-primary" />
                 </div>
-                <h2 className="text-2xl md:text-3xl font-serif text-foreground">{isAr ? "إليمنتس سبا" : "Elements Spa by Banyan Tree"}</h2>
+                <h2 className="text-2xl md:text-3xl font-serif text-foreground">{isAr ? "Elements Spa" : "Elements Spa by Banyan Tree"}</h2>
               </div>
             </div>
             <div className="relative lg:col-start-1 lg:row-start-1 lg:row-span-2">
@@ -1549,7 +1591,7 @@ const HospitalityServices = ({
                     : "Elements Spa, in collaboration with the award-winning Banyan Tree Hotels & Resorts, brings the essence of time-honored remedies and holistic wellness traditions to Royale Hayat Hospital."}
                 </p>
                 <div className="mb-5">
-                  <h4 className="font-serif text-base text-foreground mb-3">{isAr ? "خدماتنا تشمل" : "Our Services Include:"}</h4>
+                  <h4 className="font-serif text-base text-foreground mb-3">{renderColonHeading(isAr ? "خدماتنا تشمل" : "Our Services Include:")}</h4>
                   <div className="space-y-2">
                     {(isAr ? SPA_AR_SERVICES : SPA_EN_SERVICES).map((item, i) => (
                         <div key={i} className="flex items-center gap-3">
@@ -1685,7 +1727,7 @@ const HospitalityServices = ({
                   </p>
                 )}
                 <h3 className="font-serif text-base text-foreground mb-3 text-left">
-                  {isAr ? "ما نقدمه" : "What We Offer:"}
+                  {renderColonHeading(isAr ? "ما نقدمه" : "What We Offer:")}
                 </h3>
                 <div className="space-y-2 mb-6 w-full text-justify">
                   {(isAr

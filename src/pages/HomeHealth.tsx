@@ -148,7 +148,7 @@ const HomeHealth = () => {
           <div className="mb-10">
             <div className="flex items-center gap-2 mb-4">
               <Syringe className="w-5 h-5 text-primary" />
-              <h3 className="font-serif text-lg text-foreground">{isAr ? "الزيارات قصيرة المدى" : "Short-Term Visits"}</h3>
+              <h3 className="font-serif text-lg font-bold text-foreground">{isAr ? "الزيارات قصيرة المدى" : "Short-Term Visits"}</h3>
             </div>
             <div className="grid gap-3 max-w-3xl mx-auto">
               {shortTermServices.map((item, i) => (
@@ -164,7 +164,7 @@ const HomeHealth = () => {
           <div>
             <div className="flex items-center gap-2 mb-4">
               <Heart className="w-5 h-5 text-accent" />
-              <h3 className="font-serif text-lg text-foreground">{isAr ? "الزيارات طويلة المدى والرعاية على مدار الساعة" : "Long-Term Visits (24/7 Care)"}</h3>
+              <h3 className="font-serif text-lg font-bold text-foreground">{isAr ? "الزيارات طويلة المدى والرعاية على مدار الساعة" : "Long-Term Visits (24/7 Care)"}</h3>
             </div>
             <div className="grid gap-3 max-w-3xl mx-auto">
               {longTermServices.map((item, i) => (

@@ -676,7 +676,7 @@ const PatientsVisitors = () => {
                         <div className="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
                           <item.icon className="w-4 h-4 text-accent" />
                         </div>
-                        <h4 className="font-serif text-base text-foreground text-start flex-1">{item.title}</h4>
+                        <h4 className={`font-serif text-base text-foreground text-start flex-1 ${isAr ? "!font-bold" : "font-bold"}`}>{item.title}</h4>
                       </div>
                       <p className={mutedProse}>{item.desc}</p>
                     </motion.div>
@@ -694,7 +694,7 @@ const PatientsVisitors = () => {
                         <item.icon className="w-5 h-5 text-primary" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <h4 className="font-serif text-base text-foreground mb-1 text-start">{item.title}</h4>
+                        <h4 className={`font-serif text-base text-foreground mb-1 text-start ${isAr ? "!font-bold" : "font-bold"}`}>{item.title}</h4>
                         <p lang={isAr ? "ar" : "en"} className={isAr ? mutedProse : cardIntroProse}>
                           {item.desc}
                         </p>

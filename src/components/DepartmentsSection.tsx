@@ -107,6 +107,17 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
       },
     });
   };
+  const openAlSafwaProgram = (origIdx: number) => {
+    navigate("/al-safwa", {
+      state: {
+        fromDepartments: true,
+        returnPath: location.pathname,
+        restoreDeptOpenIndex: origIdx,
+        restoreSelectedSubByDept: selectedSubByDept,
+        restoreScrollY: window.scrollY,
+      },
+    });
+  };
   const filteredDepts = departments.filter(dept => {
     const query = searchQuery.toLowerCase();
     return (
@@ -226,7 +237,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
         >
           {showPageTitle && (
             <h1
-              className={`text-4xl md:text-5xl lg:text-6xl font-serif text-foreground mb-4 ${
+              className={`text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-foreground mb-4 ${
                 lang === "ar" ? "dept-rtl-center" : ""
               }`}
             >
@@ -293,7 +304,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                         className={`bg-popover rounded-2xl overflow-hidden border border-border/50 cursor-pointer group transition-all duration-500 ${isExpanded ? "sm:col-span-2 lg:col-span-3" : ""}`}
                         onClick={() => {
                           if (!isExpanded && isAlSafwaDeptSlug(dept.slug)) {
-                            navigate("/al-safwa");
+                            openAlSafwaProgram(origIdx);
                             return;
                           }
                           if (!isExpanded) handleToggle(origIdx);
@@ -335,7 +346,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       if (isAlSafwaDeptSlug(dept.slug)) {
-                                        navigate("/al-safwa");
+                                        openAlSafwaProgram(origIdx);
                                         return;
                                       }
                                       openDepartmentDetail(dept.slug, origIdx);
@@ -378,7 +389,8 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                               </div>
                               {deptDoctors.length > 0 && (
                                 <div className="mt-auto">
-                                  <p className="text-accent text-center text-xl tracking-[0.2em] uppercase font-body font-semibold mb-4">{lang === "ar" ? "أطباء القسم" : "Department Doctors"}</p>
+                                  <p className="text-accent text-center text-xs tracking-[0.2em] uppercase font-body mb-3">{lang === "ar" ? "فريقنا الطبي" : "Our Medical Team"}</p>
+                                  <h3 className="text-center text-lg md:text-xl font-serif text-foreground font-semibold mb-4">{lang === "ar" ? "أطباء القسم" : "Department Doctors"}</h3>
                                   <div className="relative max-w-[576px] mx-auto lg:mt-6">
                                     {deptDoctors.length > 1 && (
                                       <>
@@ -408,7 +420,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                               </div>
                                               <div className="p-3">
                                                 <p className="text-accent text-[9px] tracking-[0.2em] uppercase font-body mb-1">{lang === "ar" ? doc.specialtyAr : doc.specialty}</p>
-                                                <h4 className="text-sm font-serif font-semibold text-foreground group-hover/doc:text-primary transition-colors">{lang === "ar" ? doc.nameAr : doc.name}</h4>
+                                                <h4 className="text-sm font-serif font-bold text-foreground group-hover/doc:text-primary transition-colors">{lang === "ar" ? doc.nameAr : doc.name}</h4>
                                                 <p className="text-xs text-muted-foreground font-body mt-0.5 line-clamp-1">{lang === "ar" ? doc.titleAr : doc.title}</p>
                                                 <p className="text-xs text-primary font-body mt-2 inline-flex items-center gap-1">{t("viewProfile")} <ArrowRight className={`w-3 h-3 shrink-0 ${lang === "ar" ? "rotate-180" : ""}`} /></p>
                                               </div>

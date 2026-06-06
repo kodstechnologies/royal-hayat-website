@@ -3343,7 +3343,6 @@ export const doctors: Doctor[] = [
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/zainab-sholkany.png',
     providerCode: 'E1535',
     clinicCode: 'R002OBG',
-    hideBooking: true,
     name: 'Dr. Zeinab Sholkany M. Saad', nameAr: 'د. زينب شلقاني محمد سعد',
     specialty: 'Obstetrics & Gynecology', specialtyAr: 'أمراض النساء والولادة',
     department: 'Obstetrics & Gynecology', departmentAr: 'أمراض النساء والولادة',

@@ -8,7 +8,7 @@ import {
   type DepartmentDetail as DepartmentDetailData,
   type DepartmentDetailSection,
 } from "@/data/loadDepartmentDetails";
-import { departments as staticDepartments, ROYALE_HAYAT_PHARMACY_DOCTOR_IDS } from "@/data/departments";
+import { departments as staticDepartments, MAIN_CATEGORIES, ROYALE_HAYAT_PHARMACY_DOCTOR_IDS, type MainCategory } from "@/data/departments";
 import { loadDoctors, type Doctor } from "@/data/loadDoctors";
 import { motion } from "framer-motion";
 import { ChevronRight, ChevronLeft, ArrowLeft, ArrowRight, CheckCircle2, ChevronDown, Stethoscope, MessageCircle, Phone, Loader2 } from "lucide-react";
@@ -18,21 +18,71 @@ import { resolveDepartmentBySlug } from "@/utils/resolveDepartmentSlug";
 import { normalizeSubSlug, resolveSubDepartment } from "@/utils/departmentSubSlug";
 const pickDeptText = (lang: string, en: string, ar?: string) => (lang === "ar" && ar ? ar : en);
 
-/** Bold text before the first colon (e.g. "Preconception Planning:") in EN/AR list items. */
-const renderDeptListItem = (item: string) => {
-  const colonIndex = item.indexOf(":");
-  if (colonIndex === -1) {
-    return item;
+const getDeptSubheading = (lang: string, mainCategory: MainCategory | undefined, medicalServicesLabel: string) => {
+  if (lang !== "ar") {
+    return medicalServicesLabel;
   }
-  const label = item.slice(0, colonIndex + 1);
-  const rest = item.slice(colonIndex + 1);
+  if (mainCategory === "Clinical Support Service") {
+    const category = MAIN_CATEGORIES.find((item) => item.key === mainCategory);
+    return category?.labelAr ?? medicalServicesLabel;
+  }
+  return medicalServicesLabel;
+};
+
+const sectionHasArabic = (section: DepartmentDetailSection) =>
+  Boolean(section.titleAr || section.contentAr || section.itemsAr?.length);
+
+const getDeptColonIndex = (text: string) => {
+  const candidates = [text.indexOf(":"), text.indexOf("؛")].filter((index) => index !== -1);
+  return candidates.length ? Math.min(...candidates) : -1;
+};
+
+/** Bold label before the first colon or Arabic semicolon (e.g. "Preconception Planning:"). */
+const renderDeptColonText = (text: string) => {
+  const colonIndex = getDeptColonIndex(text);
+  if (colonIndex === -1) {
+    return text;
+  }
+  const label = text.slice(0, colonIndex + 1);
+  const rest = text.slice(colonIndex + 1);
   return (
     <>
-      <strong className="font-semibold text-foreground">{label}</strong>
+      <strong className="font-bold text-foreground">{label}</strong>
       {rest}
     </>
   );
 };
+
+const renderDeptHeading = (text: string) => {
+  if (getDeptColonIndex(text) === -1) {
+    return <span className="font-bold">{text}</span>;
+  }
+  return renderDeptColonText(text);
+};
+
+const renderDeptListItem = renderDeptColonText;
+
+/** Paragraphs separated by blank lines; wrap text in **markers** for bold emphasis. */
+const renderDeptContent = (content: string) =>
+  content.split("\n\n").map((paragraph, i) => (
+    <span key={i}>
+      {i > 0 && (
+        <>
+          <br />
+          <br />
+        </>
+      )}
+      {paragraph.split(/(\*\*[^*]+\*\*)/g).map((segment, j) =>
+        segment.startsWith("**") && segment.endsWith("**") ? (
+          <strong key={j} className="font-semibold text-foreground">
+            {segment.slice(2, -2)}
+          </strong>
+        ) : (
+          segment
+        )
+      )}
+    </span>
+  ));
 const isAlSafwaDepartment = (slug: string, name: string) =>
   slug.includes("al-safwa") || name.toLowerCase().includes("safwa");
 const DepartmentDoctors = memo(({ doctors, lang }: { doctors: Doctor[]; lang: string }) => {
@@ -79,7 +129,7 @@ const DepartmentDoctors = memo(({ doctors, lang }: { doctors: Doctor[]; lang: st
         <ScrollAnimationWrapper>
           <div className="text-center mb-8">
             <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">
-              {lang === "ar" ? "ÙØ±ÙŠÙ‚Ù†Ø§" : "Our Team"}
+              {lang === "ar" ? "فريقنا الطبي" : "Our Medical Team"}
             </p>
             <h2 className="text-2xl md:text-3xl font-serif text-foreground">
               {lang === "ar" ? "أطباء القسم" : "Department Doctors"}
@@ -150,7 +200,7 @@ const DepartmentDoctors = memo(({ doctors, lang }: { doctors: Doctor[]; lang: st
                 </div>
                 <div className="p-4">
                   <p className="text-accent text-[10px] tracking-[0.2em] uppercase font-body mb-1">{lang === "ar" ? doc.specialtyAr : doc.specialty}</p>
-                  <p className="font-serif text-sm text-foreground group-hover:text-primary transition-colors">{lang === "ar" ? doc.nameAr : doc.name}</p>
+                  <p className="font-serif text-sm font-bold text-foreground group-hover:text-primary transition-colors">{lang === "ar" ? doc.nameAr : doc.name}</p>
                   <p className="font-body text-xs text-muted-foreground mt-1 line-clamp-1">{lang === "ar" ? doc.titleAr : doc.title}</p>
                   <span className="inline-flex items-center gap-1 text-primary font-body text-xs tracking-wide mt-2">
                     {t("viewProfile")} <ArrowRight className={`w-3 h-3 shrink-0 ${lang === "ar" ? "rotate-180" : ""}`} />
@@ -247,7 +297,33 @@ const DepartmentDetail = () => {
     }
     navigate(`/medical-services/${slug}`);
   };
-  const goToAlSafwaProgram = () => navigate("/al-safwa");
+  const goToAlSafwaProgram = () => {
+    if (fromDepartments) {
+      navigate("/al-safwa", {
+        state: {
+          fromDepartments: true,
+          returnPath: navState.returnPath,
+          restoreDeptOpenIndex: navState.restoreDeptOpenIndex,
+          restoreSelectedSubByDept: navState.restoreSelectedSubByDept,
+          restoreScrollY: navState.restoreScrollY,
+        },
+      });
+      return;
+    }
+    if (fromSpecializedCare) {
+      navigate("/al-safwa", {
+        state: {
+          fromSpecializedCare: true,
+          returnPath: navState.returnPath,
+          restoreExpandedIndex: navState.restoreExpandedIndex,
+          restoreSelectedSubByService: navState.restoreSelectedSubByService,
+          restoreScrollY: navState.restoreScrollY,
+        },
+      });
+      return;
+    }
+    navigate("/al-safwa");
+  };
   if (dept === undefined) {
     return (
       <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
@@ -379,7 +455,7 @@ const DepartmentDetail = () => {
             <Link
               to={fromDepartments ? navState.returnPath || "/medical-services" : "/medical-services"}
               state={departmentsListRestoreState}
-              className="hover:text-accent transition-colors"
+              className="hover:text-accent transition-colors font-bold"
             >
               {t("medicalServices")}
             </Link>
@@ -446,8 +522,10 @@ const DepartmentDetail = () => {
                   {isAr ? `العودة إلى ${dept.nameAr}` : `Back to ${dept.name}`}
                 </button>
               )}
-              <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">
-                {activeSub ? pickDeptText(lang, dept.name, dept.nameAr) : t("medicalServices")}
+              <p className="text-accent text-xs tracking-[0.3em] uppercase font-body font-bold mb-3">
+                {activeSub
+                  ? pickDeptText(lang, dept.name, dept.nameAr)
+                  : getDeptSubheading(lang, staticDept?.mainCategory, t("medicalServices"))}
               </p>
               <h1
                 className={`text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-foreground mb-4 ${
@@ -509,7 +587,9 @@ const DepartmentDetail = () => {
       <section className="py-8 md:py-12">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto space-y-8">
-            {displayDept.sections.map((section: DepartmentDetailSection, i) => {
+            {displayDept.sections
+              .filter((section) => lang !== "ar" || sectionHasArabic(section))
+              .map((section: DepartmentDetailSection, i) => {
               const sectionTitle = pickDeptText(lang, section.title, section.titleAr);
               const sectionContent = section.content
                 ? pickDeptText(lang, section.content, section.contentAr)
@@ -543,11 +623,11 @@ const DepartmentDetail = () => {
                   }`}
                 >
                   <h3
-                    className={`font-serif text-lg md:text-xl font-bold text-foreground mb-4 ${
+                    className={`font-serif text-lg md:text-xl text-foreground mb-4 ${
                       isAr ? "dept-detail-rtl" : ""
                     }`}
                   >
-                    {sectionTitle}
+                    {renderDeptHeading(sectionTitle)}
                   </h3>
                   {sectionContent && (
                     <p
@@ -555,7 +635,7 @@ const DepartmentDetail = () => {
                         isAr ? "dept-detail-rtl" : ""
                       }`}
                     >
-                      {sectionContent}
+                      {renderDeptContent(sectionContent)}
                     </p>
                   )}
                   {sectionItems && (
@@ -573,11 +653,11 @@ const DepartmentDetail = () => {
                   {section.subsections?.map((sub, k) => (
                     <div key={k} className={`mt-6 pl-4 border-l-2 border-accent/20 ${isAr ? "dept-detail-rtl" : ""}`}>
                       <h4 className="font-serif text-base text-foreground mb-3">
-                        {pickDeptText(lang, sub.title, sub.titleAr)}
+                        {renderDeptHeading(pickDeptText(lang, sub.title, sub.titleAr))}
                       </h4>
                       {sub.content && (
                         <p className="font-body text-sm text-muted-foreground leading-relaxed mb-3 text-justify">
-                          {pickDeptText(lang, sub.content, sub.contentAr)}
+                          {renderDeptContent(pickDeptText(lang, sub.content, sub.contentAr))}
                         </p>
                       )}
                       {(lang === "ar" && sub.itemsAr?.length ? sub.itemsAr : sub.items) && (
@@ -650,14 +730,16 @@ const DepartmentDetail = () => {
                         >
                           {pickDeptText(lang, sub.intro, sub.introAr)}
                         </p>
-                        {sub.sections.map((section, j) => (
+                        {sub.sections
+                          .filter((section) => lang !== "ar" || sectionHasArabic(section))
+                          .map((section, j) => (
                           <div key={j} className={`mb-4 ${isAr ? "dept-detail-rtl" : ""}`}>
-                            <h4 className="font-serif font-bold text-foreground mb-2">
-                              {pickDeptText(lang, section.title, section.titleAr)}
+                            <h4 className="font-serif text-foreground mb-2">
+                              {renderDeptHeading(pickDeptText(lang, section.title, section.titleAr))}
                             </h4>
                             {section.content && (
                               <p className="font-body text-sm text-muted-foreground leading-relaxed mb-2 whitespace-pre-line text-justify">
-                                {pickDeptText(lang, section.content, section.contentAr)}
+                                {renderDeptContent(pickDeptText(lang, section.content, section.contentAr))}
                               </p>
                             )}
                             {(lang === "ar" && section.itemsAr?.length ? section.itemsAr : section.items) && (

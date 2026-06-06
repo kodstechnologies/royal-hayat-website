@@ -9,7 +9,94 @@ import { loadDoctorById, type Doctor } from "@/data/loadDoctors";
 import { departments, deptDoctorAliases } from "@/data/departments";
 import { getDoctorById, mapApiDoctorRowToDoctor } from "@/api/doctors";
 import { X } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, type ReactNode } from "react";
+
+const ltrIsolateClass = "inline-block [direction:ltr] [unicode-bidi:isolate]";
+
+function renderLtrSpan(content: string) {
+  return (
+    <span dir="ltr" className={ltrIsolateClass}>
+      {content}
+    </span>
+  );
+}
+
+function renderMixedLatinParens(text: string): ReactNode {
+  const parts: ReactNode[] = [];
+  const regex = /(\([A-Za-z][A-Za-z0-9\s]*\))/g;
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+    parts.push(renderLtrSpan(match[0]));
+    lastIndex = regex.lastIndex;
+  }
+
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+
+  return parts.length === 1 ? parts[0] : <>{parts}</>;
+}
+
+function renderYearSuffixLine(text: string): ReactNode | null {
+  const staatsexamen = text.match(/^(.*?)\(Staatsexamen\)\s+(.*?)[)\s]*(1990)\s*$/);
+  if (staatsexamen) {
+    return (
+      <>
+        {staatsexamen[1].trimEnd()}{" "}
+        {renderLtrSpan("(Staatsexamen)")}{" "}
+        {staatsexamen[2].trimEnd()}{" "}
+        {renderLtrSpan(`${staatsexamen[3]} )`)}
+      </>
+    );
+  }
+
+  const facharzt = text.match(/^(.*?)\(Facharzt\)\s+(.*?)[)\s]*(1998)\s*$/);
+  if (facharzt) {
+    return (
+      <>
+        {facharzt[1].trimEnd()}{" "}
+        {renderLtrSpan("(Facharzt)")}{" "}
+        {facharzt[2].trimEnd()}{" "}
+        {renderLtrSpan(`${facharzt[3]} )`)}
+      </>
+    );
+  }
+
+  return null;
+}
+
+function renderArQualification(text: string): ReactNode {
+  const duplex = text.match(/^(شهادة دوبلكس)\s+(?:Sonography\s+2000|2000\s+Sonography)$/);
+  if (duplex) {
+    return (
+      <>
+        {duplex[1]}{" "}
+        {renderLtrSpan("2000 Sonography")}
+      </>
+    );
+  }
+  const mamo = text.match(/^(شهادة)\s+(?:Mamasonography\s+2003|2003\s+Mamasonography)$/);
+  if (mamo) {
+    return (
+      <>
+        {mamo[1]}{" "}
+        {renderLtrSpan("2003 Mamasonography")}
+      </>
+    );
+  }
+  const yearLine = renderYearSuffixLine(text);
+  if (yearLine) return yearLine;
+  if (/\([A-Za-z]/.test(text)) {
+    return renderMixedLatinParens(text);
+  }
+  return text;
+}
+
 const patientFeedback = [
   {
     name: "Sara Al-Mutairi", nameAr: "سارة المطيري",
@@ -236,7 +323,7 @@ const handleAddTestimonial = () => {
                     {lang === "ar" ? doctor.specialtyAr : doctor.specialty}
                   </p>
                   <h1 className="text-2xl font-serif font-bold text-foreground mb-1">{lang === "ar" ? doctor.nameAr : doctor.name}</h1>
-                  <p className="text-muted-foreground font-body text-sm mb-5">{lang === "ar" ? doctor.titleAr : doctor.title}</p>
+                  <p className="text-muted-foreground font-body text-sm mb-5 whitespace-pre-line">{lang === "ar" ? doctor.titleAr : doctor.title}</p>
                   {}
                   {!hideRequestAppointmentButton && (
                     <div
@@ -302,17 +389,23 @@ const handleAddTestimonial = () => {
                   <h2 className="text-xl md:text-2xl font-serif text-primary font-bold mb-5">
                     {lang === "ar" ? "المؤهلات:" : "QUALIFICATIONS:"}
                   </h2>
-                  <ul className="space-y-3 list-outside ml-6">
+                  <ul className={`space-y-3 list-outside ${lang === "ar" ? "me-6" : "ms-6"}`}>
                     {(lang === "ar" ? doctor.qualificationsAr : doctor.qualifications).map((q, i) => {
                       const trimmed = q.trim();
                       const isManualBullet = trimmed.startsWith("•") || trimmed.startsWith("-");
                       const isHeader = !isManualBullet && (trimmed.endsWith(":") || trimmed.endsWith("："));
                       return (
-                        <li key={i} className={`font-body text-base leading-relaxed ${isHeader
-                          ? "list-none -ml-6 font-serif text-lg font-bold text-primary mt-6 mb-2"
+                        <li
+                          key={i}
+                          dir={lang === "ar" ? "rtl" : undefined}
+                          lang={lang === "ar" ? "ar" : "en"}
+                          className={`font-body text-base leading-relaxed ${isHeader
+                          ? `list-none ${lang === "ar" ? "-me-6" : "-ms-6"} font-serif text-lg font-bold text-primary mt-6 mb-2`
                           : "text-muted-foreground list-disc"
                           }`}>
-                          {isManualBullet ? trimmed.substring(1).trim() : q}
+                          {lang === "ar"
+                            ? renderArQualification(isManualBullet ? trimmed.substring(1).trim() : q)
+                            : (isManualBullet ? trimmed.substring(1).trim() : q)}
                         </li>
                       );
                     })}

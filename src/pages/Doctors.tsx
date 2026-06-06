@@ -60,11 +60,11 @@ const departmentDescriptions: Record<string, { en: string; ar: string }> = {
   "Dermatology": { en: "Expert care for all dermatological needs for adults and children. Our dermatologists offer advanced treatments for skin conditions, cosmetic procedures, and laser therapies using the latest diagnostic technologies.", ar: "رعاية متخصصة لجميع احتياجات الأمراض الجلدية للبالغين والأطفال. يقدم أطباء الجلدية لدينا علاجات متقدمة للأمراض الجلدية والإجراءات التجميلية والعلاج بالليزر باستخدام أحدث التقنيات." },
   "Family Medicine": { en: "Continuous, personalized care for individuals and families of all ages. Our family physicians build lasting relationships with patients, managing everything from routine check-ups to chronic disease management.", ar: "رعاية مستمرة ومخصصة للأفراد والعائلات من جميع الأعمار. يبني أطباء الأسرة لدينا علاقات دائمة مع المرضى ويديرون كل شيء من الفحوصات الروتينية إلى إدارة الأمراض المزمنة." },
   "Anesthesia": { en: "Top-tier anesthesia services ensuring patient safety and comfort. Our anesthesiologists provide pre-operative assessments, pain-free surgical experiences, and post-operative pain management using modern monitoring equipment.", ar: "خدمات تخدير عالية المستوى تضمن سلامة وراحة المريض. يقدم أطباء التخدير لدينا تقييمات قبل العملية وتجارب جراحية خالية من الألم وإدارة الألم بعد العملية باستخدام أحدث المعدات." },
-  "Neonatal": { en: "Dedicated care for newborns requiring specialized medical attention. Our neonatal unit provides advanced life support, developmental care, and family-centered services for premature and critically ill infants.", ar: "رعاية مخصصة لحديثي الولادة الذين يحتاجون عناية طبية متخصصة. توفر وحدة حديثي الولادة لدينا دعم الحياة المتقدم والرعاية التنموية والخدمات المتمحورة حول الأسرة للأطفال الخدج والمرضى بشكل حرج." },
+  "Neonatal": { en: "Dedicated care for newborns requiring specialized medical attention. Our neonatal unit provides advanced life support, developmental care, and family-centered services for premature and critically ill infants.", ar: "رعاية متخصصة ومتكاملة لحديثي الولادة الذين يحتاجون إلى عناية طبية دقيقة. يوفر قسم حديثي الولادة لدينا دعمًا متقدمًا لإنقاذ الحياة، ورعاية لنمو وتطور الطفل، إلى جانب خدمات تركز على الأسرة لضمان أفضل رعاية للرضع الخدّج والحالات الحرجة." },
   "Clinical Pharmacy": { en: "Patient-focused pharmaceutical care ensuring safe and effective medication use. Our clinical pharmacists collaborate with medical teams to optimize drug therapy, prevent interactions, and provide medication counseling.", ar: "رعاية صيدلانية تركز على المريض وتضمن استخداماً آمناً وفعالاً للأدوية. يتعاون الصيادلة السريريون لدينا مع الفرق الطبية لتحسين العلاج الدوائي ومنع التفاعلات وتقديم الاستشارات الدوائية." },
   "General Surgery": { en: "Exceptional surgical care combining precision, safety, and rapid recovery. Our surgeons perform a wide range of minimally invasive and laparoscopic procedures including bariatric surgery, hernia repair, and oncological operations.", ar: "رعاية جراحية استثنائية تجمع بين الدقة والأمان والتعافي السريع. يجري جراحونا مجموعة واسعة من العمليات طفيفة التوغل بالمنظار بما في ذلك جراحة السمنة وإصلاح الفتق والعمليات الأورام." },
   "La Cosmetique": { en: "Advanced cosmetic and reconstructive surgery in a luxurious clinical setting. Our board-certified surgeons combine artistry with precision for body contouring, facial rejuvenation, rhinoplasty, and non-surgical aesthetic treatments.", ar: "جراحة تجميلية وترميمية متقدمة في بيئة سريرية فاخرة. يجمع جراحونا المعتمدون بين الفن والدقة لنحت الجسم وتجديد الوجه وتجميل الأنف والعلاجات التجميلية غير الجراحية." },
-  "Pediatric": { en: "World-class pediatric care with warmth and a child-centered approach. From routine wellness visits to specialized treatments, our pediatricians ensure every child receives compassionate, evidence-based medical attention.", ar: "رعاية أطفال عالمية المستوى بدفء ونهج محوره الطفل. من زيارات العافية الروتينية إلى العلاجات المتخصصة، يضمن أطباء الأطفال لدينا حصول كل طفل على رعاية طبية رحيمة قائمة على الأدلة." },
+  "Pediatric": { en: "World-class pediatric care with warmth and a child-centered approach. From routine wellness visits to specialized treatments, our pediatricians ensure every child receives compassionate, evidence-based medical attention.", ar: "رعاية أطفال على مستوى عالمي تجمع بين الدفء الإنساني والنهج المتمحورة حول الطفل. من الزيارات الدورية والفحوصات الوقائية إلى العلاجات التخصصية، يحرص أطباؤنا على تقديم رعاية طبية شاملة ومبنية على الأدلة، تضمن حصول كل طفل على اهتمام طبي متعاطف وعالي الجودة في بيئة آمنة وداعمة." },
   "Radiology": { en: "State-of-the-art diagnostic imaging services including MRI, CT, ultrasound, and interventional radiology. Our radiologists provide accurate, timely interpretations to support clinical decision-making across all departments.", ar: "خدمات تصوير تشخيصي حديثة تشمل الرنين المغناطيسي والتصوير المقطعي والموجات فوق الصوتية والأشعة التداخلية. يقدم أطباء الأشعة لدينا تفسيرات دقيقة وفي الوقت المناسب." },
   "Nutricare": { en: "Personalized clinical nutrition and dietetic services for all ages. Our registered dietitians provide medical nutrition therapy for chronic diseases, weight management, pre/post bariatric surgery diets, and pregnancy nutrition.", ar: "خدمات تغذية سريرية مخصصة لجميع الأعمار. يقدم أخصائيو التغذية المسجلون لدينا العلاج الغذائي الطبي للأمراض المزمنة وإدارة الوزن وأنظمة ما قبل وبعد جراحة السمنة وتغذية الحمل." },
   "Pharmacy": { en: "Full-service hospital pharmacy offering prescription medications, patient counseling, and medication safety. Our pharmacists ensure accurate dispensing and provide expert guidance on medication use and interactions.", ar: "صيدلية مستشفى متكاملة تقدم الأدوية الموصوفة واستشارات المرضى وسلامة الأدوية. يضمن صيادلتنا صرفاً دقيقاً ويقدمون إرشادات متخصصة حول استخدام الأدوية والتفاعلات." },
@@ -80,13 +80,32 @@ const departmentArLabels: Record<string, string> = {
 const DepartmentRow = memo(({ department, departmentAr, docs }: { department: string; departmentAr: string; docs: Doctor[] }) => {
   const { lang } = useLanguage();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+  const [isScrollable, setIsScrollable] = useState(false);
+
+  const updateScrollState = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setIsScrollable(el.scrollWidth > el.clientWidth + 1);
   }, []);
-  const showArrows = docs.length > (isMobile ? 1 : 4);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    updateScrollState();
+
+    const observer = new ResizeObserver(updateScrollState);
+    observer.observe(el);
+    el.addEventListener("scroll", updateScrollState);
+    window.addEventListener("resize", updateScrollState);
+
+    return () => {
+      observer.disconnect();
+      el.removeEventListener("scroll", updateScrollState);
+      window.removeEventListener("resize", updateScrollState);
+    };
+  }, [docs, updateScrollState]);
+
   const scroll = (dir: "left" | "right") => {
     if (scrollRef.current) {
       const isMobile = window.innerWidth < 768;
@@ -110,14 +129,22 @@ const DepartmentRow = memo(({ department, departmentAr, docs }: { department: st
         )}
       </div>
       <div className="relative group/carousel">
-        {showArrows && (
+        {isScrollable && (
           <>
-            <button onClick={() => scroll("left")}
-              className={`absolute -left-2 md:-left-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon`}>
+            <button
+              type="button"
+              aria-label={lang === "ar" ? "التمرير لليسار" : "Scroll left"}
+              onClick={() => scroll("left")}
+              className="absolute left-0 md:left-1 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon"
+            >
               <ChevronLeft className="w-4 h-4" />
             </button>
-            <button onClick={() => scroll("right")}
-              className={`absolute -right-2 md:-right-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon`}>
+            <button
+              type="button"
+              aria-label={lang === "ar" ? "التمرير لليمين" : "Scroll right"}
+              onClick={() => scroll("right")}
+              className="absolute right-0 md:right-1 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon"
+            >
               <ChevronRight className="w-4 h-4" />
             </button>
           </>

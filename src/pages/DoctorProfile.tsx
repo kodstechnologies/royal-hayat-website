@@ -97,6 +97,47 @@ function renderArQualification(text: string): ReactNode {
   return text;
 }
 
+function isExpertiseSubBullet(text: string) {
+  const trimmed = text.trim();
+  return trimmed.startsWith("–") || trimmed.startsWith("—");
+}
+
+function isExpertiseMainBullet(text: string) {
+  const trimmed = text.trim();
+  return trimmed.startsWith("•") || (trimmed.startsWith("-") && !trimmed.startsWith("–"));
+}
+
+function stripExpertiseBullet(text: string) {
+  const trimmed = text.trim();
+  if (isExpertiseSubBullet(trimmed)) return trimmed.substring(1).trim();
+  if (isExpertiseMainBullet(trimmed)) return trimmed.substring(1).trim();
+  return trimmed;
+}
+
+function renderExpertiseLine(text: string, lang: "en" | "ar"): ReactNode {
+  const content = stripExpertiseBullet(text);
+
+  const colonIndex = content.indexOf(":");
+  if (colonIndex === -1 || colonIndex > 80) {
+    return lang === "ar" ? renderArQualification(content) : content;
+  }
+
+  const label = content.slice(0, colonIndex + 1);
+  const rest = content.slice(colonIndex + 1).trimStart();
+
+  return (
+    <>
+      <span className="font-serif font-bold text-primary">{label}</span>
+      {rest ? (
+        <>
+          {" "}
+          {lang === "ar" ? renderArQualification(rest) : rest}
+        </>
+      ) : null}
+    </>
+  );
+}
+
 const patientFeedback = [
   {
     name: "Sara Al-Mutairi", nameAr: "سارة المطيري",
@@ -391,9 +432,17 @@ const handleAddTestimonial = () => {
                   </h2>
                   <ul className={`space-y-3 list-outside ${lang === "ar" ? "me-6" : "ms-6"}`}>
                     {(lang === "ar" ? doctor.qualificationsAr : doctor.qualifications).map((q, i) => {
+                      const items = lang === "ar" ? doctor.qualificationsAr : doctor.qualifications;
                       const trimmed = q.trim();
                       const isManualBullet = trimmed.startsWith("•") || trimmed.startsWith("-");
-                      const isHeader = !isManualBullet && (trimmed.endsWith(":") || trimmed.endsWith("："));
+                      const hasAnyManualBullets = items.some(
+                        (item) => item.trim().startsWith("•") || item.trim().startsWith("-")
+                      );
+                      const isHeader =
+                        !isManualBullet &&
+                        (trimmed.endsWith(":") ||
+                          trimmed.endsWith("：") ||
+                          (hasAnyManualBullets && !isManualBullet));
                       return (
                         <li
                           key={i}
@@ -418,18 +467,40 @@ const handleAddTestimonial = () => {
                 <h2 className="text-xl md:text-2xl font-serif text-primary font-bold mb-5">
                   {lang === "ar" ? "الخبرات:" : "EXPERIENCED IN:"}
                 </h2>
-                <ul className="space-y-3 list-outside ml-6">
+                <ul className={`space-y-3 list-outside ${lang === "ar" ? "me-6" : "ms-6"}`}>
                   {(lang === "ar" ? doctor.expertiseAr : doctor.expertise).map((exp, i) => {
                     const trimmed = exp.trim();
-                    const isManualBullet = trimmed.startsWith("•") || trimmed.startsWith("-");
-                    const hasAnyManualBullets = (lang === "ar" ? doctor.expertiseAr : doctor.expertise).some(item => item.trim().startsWith("•") || item.trim().startsWith("-"));
-                    const isHeader = !isManualBullet && (trimmed.endsWith(":") || trimmed.endsWith("：") || (hasAnyManualBullets && !isManualBullet));
+                    const isSubBullet = isExpertiseSubBullet(trimmed);
+                    const isManualBullet = isExpertiseMainBullet(trimmed) || isSubBullet;
+                    const items = lang === "ar" ? doctor.expertiseAr : doctor.expertise;
+                    const hasAnyManualBullets = items.some(
+                      (item) =>
+                        isExpertiseMainBullet(item.trim()) ||
+                        isExpertiseSubBullet(item.trim())
+                    );
+                    const isHeader =
+                      !isManualBullet &&
+                      (trimmed.endsWith(":") ||
+                        trimmed.endsWith("：") ||
+                        (hasAnyManualBullets && !isManualBullet));
                     return (
-                      <li key={i} className={`font-body text-base leading-relaxed ${isHeader
-                        ? "list-none -ml-6 font-serif text-lg font-bold text-primary mt-6 mb-2 uppercase tracking-wide"
-                        : "text-muted-foreground list-disc"
+                      <li
+                        key={i}
+                        dir={lang === "ar" ? "rtl" : undefined}
+                        lang={lang === "ar" ? "ar" : "en"}
+                        className={`font-body text-base leading-relaxed ${isHeader
+                        ? `list-none ${lang === "ar" ? "-me-6" : "-ms-6"} font-serif text-lg font-bold text-primary mt-6 mb-2 uppercase tracking-wide`
+                        : isSubBullet
+                          ? `text-muted-foreground list-none ${lang === "ar" ? "me-10" : "ms-10"} before:content-['–'] before:me-2 before:text-primary`
+                          : "text-muted-foreground list-disc"
                         }`}>
-                        {isManualBullet ? trimmed.substring(1).trim() : exp}
+                        {isHeader
+                          ? exp
+                          : isSubBullet
+                            ? (lang === "ar"
+                              ? renderArQualification(stripExpertiseBullet(exp))
+                              : stripExpertiseBullet(exp))
+                            : renderExpertiseLine(exp, lang === "ar" ? "ar" : "en")}
                       </li>
                     );
                   })}

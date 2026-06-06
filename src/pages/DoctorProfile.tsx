@@ -483,13 +483,15 @@ const handleAddTestimonial = () => {
                       (trimmed.endsWith(":") ||
                         trimmed.endsWith("：") ||
                         (hasAnyManualBullets && !isManualBullet));
+                    const isColonHeader =
+                      trimmed.endsWith(":") || trimmed.endsWith("：");
                     return (
                       <li
                         key={i}
                         dir={lang === "ar" ? "rtl" : undefined}
                         lang={lang === "ar" ? "ar" : "en"}
                         className={`font-body text-base leading-relaxed ${isHeader
-                        ? `list-none ${lang === "ar" ? "-me-6" : "-ms-6"} font-serif text-lg font-bold text-primary mt-6 mb-2 uppercase tracking-wide`
+                        ? `list-none ${lang === "ar" ? "-me-6" : "-ms-6"} font-serif text-lg font-bold text-primary mt-6 mb-2${isColonHeader ? "" : " uppercase tracking-wide"}`
                         : isSubBullet
                           ? `text-muted-foreground list-none ${lang === "ar" ? "me-10" : "ms-10"} before:content-['–'] before:me-2 before:text-primary`
                           : "text-muted-foreground list-disc"

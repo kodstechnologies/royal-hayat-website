@@ -42,27 +42,27 @@ function renderMixedLatinParens(text: string): ReactNode {
   return parts.length === 1 ? parts[0] : <>{parts}</>;
 }
 
-function renderYearSuffixLine(text: string): ReactNode | null {
-  const staatsexamen = text.match(/^(.*?)\(Staatsexamen\)\s+(.*?)[)\s]*(1990)\s*$/);
+function renderGermanBoardQualification(text: string): ReactNode | null {
+  const staatsexamen = text.match(/^(.*?)\(Staatsexamen\)\s+(.*?)\s+(1990)\s*$/);
   if (staatsexamen) {
     return (
       <>
         {staatsexamen[1].trimEnd()}{" "}
         {renderLtrSpan("(Staatsexamen)")}{" "}
         {staatsexamen[2].trimEnd()}{" "}
-        {renderLtrSpan(`${staatsexamen[3]} )`)}
+        {renderLtrSpan(staatsexamen[3])}
       </>
     );
   }
 
-  const facharzt = text.match(/^(.*?)\(Facharzt\)\s+(.*?)[)\s]*(1998)\s*$/);
+  const facharzt = text.match(/^(.*?)\(Facharzt\)\s+(.*?)\s+(1998)\s*$/);
   if (facharzt) {
     return (
       <>
         {facharzt[1].trimEnd()}{" "}
         {renderLtrSpan("(Facharzt)")}{" "}
         {facharzt[2].trimEnd()}{" "}
-        {renderLtrSpan(`${facharzt[3]} )`)}
+        {renderLtrSpan(facharzt[3])}
       </>
     );
   }
@@ -89,9 +89,9 @@ function renderArQualification(text: string): ReactNode {
       </>
     );
   }
-  const yearLine = renderYearSuffixLine(text);
-  if (yearLine) return yearLine;
   if (/\([A-Za-z]/.test(text)) {
+    const germanBoard = renderGermanBoardQualification(text);
+    if (germanBoard) return germanBoard;
     return renderMixedLatinParens(text);
   }
   return text;

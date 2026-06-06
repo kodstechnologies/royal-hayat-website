@@ -250,7 +250,7 @@ const translations: Translations = {
 
   // Patients & Visitors
   forOurPatients: { en: "For Our Patients", ar: "لمرضانا" },
-  patientsVisitorsDesc: { en: "Everything you need to know for a comfortable and informed experience at Royale Hayat Hospital.", ar: "كل ما تحتاج معرفته لتجربة مريحة ومطلعة في مستشفى رويال حياة." },
+  patientsVisitorsDesc: { en: "", ar: "كل ما تحتاج معرفته لتجربة مريحة ومطلعة في مستشفى رويال حياة." },
   nursing: { en: "Nursing", ar: "التمريض" },
   nursingDesc: { en: "Dedicated nursing care with compassion and expertise.", ar: "رعاية تمريضية متفانية بالرحمة والخبرة." },
   admissionInfo: { en: "Admission Information", ar: "معلومات الدخول إلى المستشفى" },

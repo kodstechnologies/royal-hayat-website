@@ -116,7 +116,7 @@ export const en = {
   "dedicatedCoordinator": "Dedicated Coordinator",
   "exclusiveDiscounts": "Exclusive Discounts",
   "forOurPatients": "For Our Patients",
-  "patientsVisitorsDesc": "Everything you need to know for a comfortable and informed experience at Royale Hayat Hospital.",
+  "patientsVisitorsDesc": "",
   "nursing": "Nursing",
   "nursingDesc": "Dedicated nursing care with compassion and expertise.",
   "admissionInfo": "Admission Information",

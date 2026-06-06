@@ -20,11 +20,11 @@ const TrackerWaveInfantSecurity = () => {
               {lang === "ar" ? "سلامة المواليد" : "Newborn Safety"}
             </p>
             <h1 className="text-4xl md:text-5xl font-serif text-foreground mb-4">
-              {lang === "ar" ? "نظام أمان الرضّع" : "Infant Security System"}
+              {lang === "ar" ? "نظام الحماية المتقدم لحديثي الولادة" : "Infant Security System"}
             </h1>
             <p className="text-muted-foreground font-body text-sm max-w-2xl mx-auto">
               {lang === "ar"
-                ? "في مستشفى رويال حياة، سلامة كل مولود هي أولويتنا القصوى. نستخدم نظام RTLS، وهو نظام مراقبة متطور يعمل في الوقت الفعلي مصمم لتوفير حماية شاملة على مدار الساعة لكل رضيع في رعايتنا."
+                ? "يتم تزويد كل مولود جديد بسوار إلكتروني خفيف وآمن على البشرة، يرتبط بشكل متكامل مع منظومة الأمن المتطورة في مستشفى رويال حياة لضمان أعلى مستويات الحماية والرعاية."
                 : "At Royale Hayat Hospital, the safety of every newborn is our highest priority. We utilize the RTLS, a sophisticated real-time monitoring system designed to provide comprehensive, 24/7 protection for every infant in our care."}
             </p>
           </ScrollAnimationWrapper>
@@ -55,36 +55,36 @@ const TrackerWaveInfantSecurity = () => {
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto">
             <ScrollAnimationWrapper>
-              <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-3">
+              <h2 className={`text-2xl md:text-3xl font-serif text-foreground mb-3 ${lang === "ar" ? "!font-bold" : "font-bold"}`}>
                 {lang === "ar" ? "أمان متقدم للرضّع" : "Advanced Infant Security"}
               </h2>
-              <p className="font-body text-sm text-muted-foreground leading-relaxed mb-8 max-w-2xl">
-                {lang === "ar"
-                  ? "يتم تزويد كل رضيع بعلامة إلكترونية خفيفة الوزن وآمنة على البشرة تتكامل بسلاسة مع البنية التحتية الأمنية على مستوى المستشفى:"
-                  : "Every infant is equipped with a lightweight, skin-safe electronic tag that integrates seamlessly with our hospital-wide security infrastructure:"}
-              </p>
+              {lang !== "ar" && (
+                <p className="font-body text-sm text-muted-foreground leading-relaxed mb-8 max-w-2xl">
+                  Every infant is equipped with a lightweight, skin-safe electronic tag that integrates seamlessly with our hospital-wide security infrastructure:
+                </p>
+              )}
             </ScrollAnimationWrapper>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[
                 {
                   icon: Lock,
-                  title: lang === "ar" ? "حماية محيطية نشطة" : "Active Perimeter Protection",
+                  title: lang === "ar" ? "حماية محيطية فعّالة" : "Active Perimeter Protection",
                   desc: lang === "ar"
-                    ? "يراقب النظام جميع المخارج ونقاط العبور. أي حركة غير مصرح بها نحو المصاعد أو السلالم تؤدي إلى قفل الأبواب فوراً وتنبيهات أمنية عالية الأولوية."
+                    ? "يقوم النظام بمراقبة جميع المخارج ونقاط التنقل داخل المستشفى، حيث يؤدي أي تحرك غير مصرح به باتجاه المصاعد أو السلالم إلى إغلاق فوري للأبواب وإطلاق تنبيهات أمنية عالية الأولوية."
                     : "The system monitors all exits and transit points. Any unauthorized movement toward elevators or stairwells triggers immediate door locks and high-priority security alerts.",
                 },
                 {
                   icon: Shield,
-                  title: lang === "ar" ? "تقنية استشعار العبث" : "Tamper-Sensing Technology",
+                  title: lang === "ar" ? "تقنية كشف العبث" : "Tamper-Sensing Technology",
                   desc: lang === "ar"
-                    ? "توفر علاماتنا الذكية إشعاراً فورياً لمحطة التمريض إذا تم فك أو إزالة السوار دون إذن."
+                    ? "توفر الأساور الذكية إشعارات فورية إلى محطة التمريض في حال محاولة فك أو إزالة السوار دون تصريح."
                     : "Our smart tags provide instant notification to the nursing station if a band is loosened or removed without authorization.",
                 },
                 {
                   icon: Search,
                   title: lang === "ar" ? "خدمات تحديد الموقع في الوقت الفعلي" : "Real-Time Location Services",
                   desc: lang === "ar"
-                    ? "تحافظ الفرق السريرية والأمنية على رؤية مستمرة لموقع كل رضيع من خلال واجهة مراقبة رقمية مركزية."
+                    ? "يتمكن الفريق الطبي والأمني من متابعة موقع كل رضيع بشكل مستمر عبر نظام رقمي مركزي للمراقبة."
                     : "Clinical and security teams maintain constant visibility of every infant's location through a centralized digital monitoring interface.",
                 },
               ].map((item, i) => (
@@ -113,22 +113,22 @@ const TrackerWaveInfantSecurity = () => {
                     <Users className="w-7 h-7 text-primary" />
                   </div>
                   <div>
-                    <h2 className="text-2xl md:text-3xl font-serif text-foreground">
-                      {lang === "ar" ? "مطابقة الأم والرضيع الآلية" : "Automated Mother-Infant Matching"}
+                    <h2 className={`text-2xl md:text-3xl font-serif text-foreground ${lang === "ar" ? "!font-bold" : "font-bold"}`}>
+                      {lang === "ar" ? "المطابقة التلقائية بين الأم والرضيع" : "Automated Mother-Infant Matching"}
                     </h2>
                   </div>
                 </div>
                 <p className="font-body text-sm text-muted-foreground leading-relaxed mb-6">
                   {lang === "ar"
-                    ? "لضمان سلامة الرابطة بين الأم والطفل بشكل مطلق، يستخدم نظامنا الاقتران الرقمي المشفر:"
+                    ? "لضمان أعلى مستويات الأمان والدقة، يعتمد النظام على تقنية الربط الرقمي المشفّر بين الأم وطفلها، مما يتيح:"
                     : "To ensure the absolute integrity of the mother-child bond, our system utilizes encrypted digital pairing:"}
                 </p>
                 <div className="space-y-3">
                   {(lang === "ar"
                     ? [
-                      "يتم ربط الأمهات والرضّع إلكترونياً لضمان أعلى مستويات الدقة والأمان",
-                      "يتم التحقق الفوري من هوية المولود عند كل عملية نقل أو تسليم",
-                      "تنبيهات تلقائية في حال حدوث أي عدم تطابق في النظام",
+                      "ربطًا إلكترونيًا دقيقًا بين الأم والرضيع",
+                      "التحقق الفوري من هوية المولود عند كل عملية نقل أو تسليم",
+                      "تنبيهات تلقائية في حال وجود أي عدم تطابق بالنظام",
                     ]
                     : [
                       "Mothers and infants are electronically linked to ensure the highest levels of accuracy and security",
@@ -152,16 +152,16 @@ const TrackerWaveInfantSecurity = () => {
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto text-center">
             <ScrollAnimationWrapper>
-              <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-8">
-                {lang === "ar" ? "لماذا؟" : "Why?"}
+              <h2 className={`text-2xl md:text-3xl font-serif text-foreground mb-8 ${lang === "ar" ? "!font-bold" : "font-bold"}`}>
+                {lang === "ar" ? "لماذا هذا النظام؟" : "Why?"}
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                 {(lang === "ar"
                   ? [
                     { label: "حماية على مدار الساعة", icon: Shield },
-                    { label: "تتبع في الوقت الفعلي", icon: Radio },
-                    { label: "مطابقة الأم والرضيع", icon: Users },
-                    { label: "استشعار فوري للعبث", icon: Lock },
+                    { label: "تتبع لحظي", icon: Radio },
+                    { label: "مطابقة آمنة بين الأم والرضيع", icon: Users },
+                    { label: "تنبيهات فورية عند العبث", icon: Lock },
                   ]
                   : [
                     { label: "24/7 Protection", icon: Shield },

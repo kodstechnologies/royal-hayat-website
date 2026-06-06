@@ -355,13 +355,16 @@
 
 [dir="rtl"] {
   font-size: 1.05em;
-  letter-spacing: 0.01em;
+  letter-spacing: normal;
   line-height: 1.75;
+  font-variant-ligatures: common-ligatures contextual;
+  -webkit-font-feature-settings: "liga" 1, "calt" 1;
+  font-feature-settings: "liga" 1, "calt" 1;
 }
 
 [dir="rtl"] h1, [dir="rtl"] h2, [dir="rtl"] h3, [dir="rtl"] h4 {
   font-size-adjust: 0.52;
-  letter-spacing: 0.02em;
+  letter-spacing: normal;
 }
 
 [dir="rtl"] p, [dir="rtl"] span, [dir="rtl"] a, [dir="rtl"] li, [dir="rtl"] label, [dir="rtl"] button {
@@ -411,6 +414,21 @@ html[lang="ar"] h6,
 .font-arabic,
 [lang="ar"] {
   font-family: 'GE Dinar One', sans-serif !important;
+  letter-spacing: normal;
+  font-variant-ligatures: common-ligatures contextual;
+  -webkit-font-feature-settings: "liga" 1, "calt" 1;
+  font-feature-settings: "liga" 1, "calt" 1;
+}
+
+/* Letter-spacing breaks Arabic cursive connections on iOS Safari */
+html[lang="ar"] [class*="tracking-"],
+[dir="rtl"] [class*="tracking-"] {
+  letter-spacing: normal !important;
+}
+
+html[lang="ar"] .uppercase,
+[dir="rtl"] .uppercase {
+  text-transform: none;
 }
 
 html[lang="ar"] .font-body[lang="en"],

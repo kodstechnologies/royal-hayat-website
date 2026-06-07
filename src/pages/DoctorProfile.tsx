@@ -366,16 +366,15 @@ const handleAddTestimonial = () => {
                   <h1 className="text-2xl font-serif font-bold text-foreground mb-1">{lang === "ar" ? doctor.nameAr : doctor.name}</h1>
                   <p className="text-muted-foreground font-body text-sm mb-5 whitespace-pre-line">{lang === "ar" ? doctor.titleAr : doctor.title}</p>
                   {}
-                  {!hideRequestAppointmentButton && (
+                  {doctor.hideBooking !== true && !hideRequestAppointmentButton && (
                     <div
-                      className={`flex items-center gap-1.5 mb-4 justify-center ${isRequestOnlyDoctor ? "text-muted-foreground" : "text-green-600"
-                        }`}
+                      className={`flex items-center gap-1.5 mb-4 justify-center ${doctor.availableOnline !== false ? "text-green-600" : "text-destructive"}`}
                     >
-                      <div className={`w-2 h-2 rounded-full ${isRequestOnlyDoctor ? "bg-muted-foreground" : "bg-green-500"}`} />
+                      <div className={`w-2 h-2 rounded-full ${doctor.availableOnline !== false ? "bg-green-500" : "bg-destructive"}`} />
                       <span className="font-body text-xs">
-                        {isRequestOnlyDoctor
-                          ? (lang === "ar" ? "طلب موعد" : "Request Appointment")
-                          : (lang === "ar" ? "متاح للحجز الإلكتروني" : "Book Online")}
+                        {doctor.availableOnline !== false
+                          ? (lang === "ar" ? "متاح للحجز الإلكتروني" : "Book Online")
+                          : (lang === "ar" ? "غير متاح للحجز الإلكتروني" : "Not Available for Online Booking")}
                       </span>
                     </div>
                   )}

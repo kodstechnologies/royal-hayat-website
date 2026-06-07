@@ -502,7 +502,7 @@ const SpecializedCare = () => {
                             <span className="absolute top-3 left-3 text-2xl font-serif text-primary-foreground/80 drop-shadow-lg"></span>
                           </div>
                           <div className="p-4 md:p-5">
-                            <h3 className="text-sm md:text-base font-serif text-foreground mb-2 group-hover:text-primary transition-colors duration-300">
+                            <h3 className="text-sm md:text-base font-serif font-bold text-foreground mb-2 group-hover:text-primary transition-colors duration-300">
                               {lang === "ar" ? s.nameAr : s.name}
                             </h3>
                             <p className="text-muted-foreground font-body text-xs leading-relaxed mb-3 line-clamp-2">
@@ -517,7 +517,7 @@ const SpecializedCare = () => {
                         <div className="p-4 md:p-5 flex items-center gap-3">
                           <span className="text-lg font-serif text-primary/40 flex-shrink-0"></span>
                           <div className="min-w-0">
-                            <h3 className="text-xs md:text-sm font-serif text-foreground group-hover:text-primary transition-colors duration-300 truncate">
+                            <h3 className="text-xs md:text-sm font-serif font-bold text-foreground group-hover:text-primary transition-colors duration-300 truncate">
                               {lang === "ar" ? s.nameAr : s.name}
                             </h3>
                           </div>
@@ -547,7 +547,7 @@ const SpecializedCare = () => {
                           <div className="absolute inset-0 bg-gradient-to-t from-popover via-popover/40 to-transparent" />
                           <div className="absolute bottom-0 left-0 right-0 p-6">
                             <span className="text-4xl font-serif text-primary/60 mb-2 block"></span>
-                            <h3 className="text-xl md:text-2xl font-serif text-foreground mb-2">
+                            <h3 className="text-xl md:text-2xl font-serif font-bold text-foreground mb-2">
                               {lang === "ar" ? s.nameAr : s.name}
                             </h3>
                             <p className="text-muted-foreground font-body text-sm leading-relaxed">

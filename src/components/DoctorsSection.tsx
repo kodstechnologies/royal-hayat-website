@@ -25,13 +25,13 @@ const DoctorCard = ({ doc }: { doc: Doctor }) => {
           )}
           <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-popover/20 backdrop-blur-sm flex items-center justify-center">
             <Stethoscope className="w-3.5 h-3.5 text-primary-foreground" />
-          </div>
+          </div>  
         </div>
         <div className="p-5 flex flex-col flex-grow">
           <p className="text-accent text-[10px] tracking-[0.2em] uppercase font-body mb-1.5">
             {lang === "ar" ? doc.specialtyAr : doc.specialty}
           </p>
-          <h3 className="text-base font-serif text-foreground mb-1">{lang === "ar" ? doc.nameAr : doc.name}</h3>
+          <h3 className="text-base font-serif font-bold text-foreground mb-1">{lang === "ar" ? doc.nameAr : doc.name}</h3>
           <p className="text-muted-foreground font-body text-xs mb-3">{lang === "ar" ? doc.titleAr : doc.title}</p>
           {doc.hideBooking !== true && (
             <div className={`flex items-center gap-1.5 mb-2 ${doc.availableOnline !== false ? "text-green-600" : "text-destructive"}`}>

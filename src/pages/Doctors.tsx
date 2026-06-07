@@ -60,7 +60,7 @@ const DoctorCard = memo(({ doc }: { doc: Doctor }) => {
             </div>
           )}
           <span className="inline-flex items-center gap-1.5 text-primary font-body text-xs tracking-wide group-hover:text-accent transition-colors">
-            {lang === "ar" ? "عرض الملف الشخصي →" : "View Profile →"}
+            {lang === "ar" ? "عرض الملف الشخصي ←" : "View Profile →"}
           </span>
         </div>
       </motion.div>

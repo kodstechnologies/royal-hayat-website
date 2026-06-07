@@ -8,6 +8,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { loadDoctorById, type Doctor } from "@/data/loadDoctors";
 import { departments, deptDoctorAliases } from "@/data/departments";
 import { getDoctorById, mapApiDoctorRowToDoctor } from "@/api/doctors";
+import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
 import { X } from "lucide-react";
 import { useState, useEffect, type ReactNode } from "react";
 
@@ -349,7 +350,7 @@ const handleAddTestimonial = () => {
                 className="bg-popover rounded-2xl overflow-hidden border border-border/50 sticky top-24">
                 <div className="bg-white h-[420px] flex items-center justify-center relative">
                   {doctor.image ? (
-                    <img src={doctor.image} alt={lang === "ar" ? doctor.nameAr : doctor.name} className="w-full h-full object-contain" />
+                    <img src={doctor.image} alt={getDoctorDisplayName(doctor, lang)} className="w-full h-full object-contain" />
                   ) : (
                     <div className="w-28 h-28 rounded-full bg-popover/20 backdrop-blur-sm flex items-center justify-center border-2 border-popover/30">
                       <span className="text-4xl font-serif text-primary-foreground">{doctor.initials}</span>
@@ -363,7 +364,7 @@ const handleAddTestimonial = () => {
                   <p className="text-accent text-xs tracking-[0.2em] uppercase font-body mb-2">
                     {lang === "ar" ? doctor.specialtyAr : doctor.specialty}
                   </p>
-                  <h1 className="text-2xl font-serif font-bold text-foreground mb-1">{lang === "ar" ? doctor.nameAr : doctor.name}</h1>
+                  <h1 className="text-2xl font-serif font-bold text-foreground mb-1">{getDoctorDisplayName(doctor, lang)}</h1>
                   <p className="text-muted-foreground font-body text-sm mb-5 whitespace-pre-line">{lang === "ar" ? doctor.titleAr : doctor.title}</p>
                   {}
                   {doctor.hideBooking !== true && !hideRequestAppointmentButton && (

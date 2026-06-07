@@ -6,8 +6,10 @@ import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Doctor } from "@/data/doctors";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
 const DoctorCard = ({ doc }: { doc: Doctor }) => {
   const { lang } = useLanguage();
+  const displayName = getDoctorDisplayName(doc, lang);
   return (
     <Link to={`/doctors/${doc.id}`} className="block w-[280px] min-h-[430px] flex-shrink-0 relative z-0 hover:z-10 snap-center md:snap-start">
       <motion.div
@@ -17,7 +19,7 @@ const DoctorCard = ({ doc }: { doc: Doctor }) => {
       >
         <div className="bg-white h-64 flex items-center justify-center relative overflow-hidden shrink-0 rounded-t-2xl">
           {doc.image ? (
-            <img src={doc.image} alt={lang === "ar" ? doc.nameAr : doc.name} className="w-full h-full object-cover object-top" />
+            <img src={doc.image} alt={displayName} className="w-full h-full object-cover object-top" />
           ) : (
             <div className="w-20 h-20 rounded-full bg-popover/20 backdrop-blur-sm flex items-center justify-center border-2 border-popover/30">
               <span className="text-2xl font-serif text-primary-foreground">{doc.initials}</span>
@@ -31,7 +33,7 @@ const DoctorCard = ({ doc }: { doc: Doctor }) => {
           <p className="text-accent text-[10px] tracking-[0.2em] uppercase font-body mb-1.5">
             {lang === "ar" ? doc.specialtyAr : doc.specialty}
           </p>
-          <h3 className="text-base font-serif font-bold text-foreground mb-1">{lang === "ar" ? doc.nameAr : doc.name}</h3>
+          <h3 className="text-base font-serif font-bold text-foreground mb-1">{displayName}</h3>
           <p className="text-muted-foreground font-body text-xs mb-3">{lang === "ar" ? doc.titleAr : doc.title}</p>
           {doc.hideBooking !== true && (
             <div className={`flex items-center gap-1.5 mb-2 ${doc.availableOnline !== false ? "text-green-600" : "text-destructive"}`}>

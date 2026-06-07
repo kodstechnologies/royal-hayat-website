@@ -9,22 +9,11 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { loadDoctors, type Doctor } from "@/data/loadDoctors";
 import { departments, deptDoctorAliases, MAIN_CATEGORIES, type MainCategory } from "@/data/departments";
 import { Input } from "@/components/ui/input";
-
-const isDoctorWithDrTitle = (name: string) => /^dr\.?\s/i.test(name.trim());
-
-const hasArabicDoctorPrefix = (nameAr: string) =>
-  /(?:^|\s)(?:د\.?\s|الدكتور\s|الدكتورة\s|البروفيسور\s+د\.?\s*)/u.test(nameAr.trim());
-
-const formatDoctorDisplayNameAr = (doc: Pick<Doctor, "name" | "nameAr">) => {
-  const nameAr = doc.nameAr.trim();
-  if (!isDoctorWithDrTitle(doc.name)) return nameAr;
-  if (hasArabicDoctorPrefix(nameAr)) return nameAr;
-  return `د. ${nameAr}`;
-};
+import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
 
 const DoctorCard = memo(({ doc }: { doc: Doctor }) => {
   const { lang } = useLanguage();
-  const displayName = lang === "ar" ? formatDoctorDisplayNameAr(doc) : doc.name;
+  const displayName = getDoctorDisplayName(doc, lang);
   return (
     <Link to={`/doctors/${doc.id}`} className="block w-[280px] min-h-[430px] flex-shrink-0 relative z-0 hover:z-10 snap-center md:snap-start">
       <motion.div

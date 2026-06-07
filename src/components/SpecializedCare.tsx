@@ -1,4 +1,4 @@
-import { ArrowRight, ChevronLeft, ChevronRight, X, Stethoscope } from "lucide-react";
+﻿import { ArrowRight, ChevronLeft, ChevronRight, X, Stethoscope } from "lucide-react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useRef, useState, useEffect, useMemo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -7,6 +7,7 @@ import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { loadDoctors, type Doctor } from "@/data/loadDoctors";
 import { doctorMatchesDepartment, departments as staticDepartments } from "@/data/departments";
 import { getSubSlugForDepartment, normalizeSubSlug } from "@/utils/departmentSubSlug";
+import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
 interface ServiceItem {
   num: string;
   name: string;
@@ -674,7 +675,7 @@ const SpecializedCare = () => {
                                       {doc.image ? (
                                         <img
                                           src={doc.image}
-                                          alt={lang === "ar" ? doc.nameAr : doc.name}
+                                          alt={getDoctorDisplayName(doc, lang)}
                                           className="w-full h-full object-cover object-top"
                                         />
                                       ) : (
@@ -691,7 +692,7 @@ const SpecializedCare = () => {
                                         {lang === "ar" ? doc.specialtyAr : doc.specialty}
                                       </p>
                                       <h4 className="text-sm font-serif font-bold text-foreground group-hover/doc:text-primary transition-colors line-clamp-1">
-                                        {lang === "ar" ? doc.nameAr : doc.name}
+                                        {getDoctorDisplayName(doc, lang)}
                                       </h4>
                                       <p className="text-xs text-muted-foreground font-body mt-0.5 line-clamp-1">
                                         {lang === "ar" ? doc.titleAr : doc.title}

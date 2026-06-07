@@ -16,6 +16,7 @@ import { useState, useRef, useEffect, memo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { resolveDepartmentBySlug } from "@/utils/resolveDepartmentSlug";
 import { normalizeSubSlug, resolveSubDepartment } from "@/utils/departmentSubSlug";
+import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
 const pickDeptText = (lang: string, en: string, ar?: string) => (lang === "ar" && ar ? ar : en);
 
 const getDeptSubheading = (lang: string, mainCategory: MainCategory | undefined, medicalServicesLabel: string) => {
@@ -186,7 +187,7 @@ const DepartmentDoctors = memo(({ doctors, lang }: { doctors: Doctor[]; lang: st
                   {doc.image ? (
                     <img
                       src={doc.image}
-                      alt={lang === "ar" ? doc.nameAr : doc.name}
+                      alt={getDoctorDisplayName(doc, lang)}
                       className="w-full h-full object-cover object-top"
                     />
                   ) : (
@@ -200,7 +201,7 @@ const DepartmentDoctors = memo(({ doctors, lang }: { doctors: Doctor[]; lang: st
                 </div>
                 <div className="p-4">
                   <p className="text-accent text-[10px] tracking-[0.2em] uppercase font-body mb-1">{lang === "ar" ? doc.specialtyAr : doc.specialty}</p>
-                  <p className="font-serif text-sm font-bold text-foreground group-hover:text-primary transition-colors">{lang === "ar" ? doc.nameAr : doc.name}</p>
+                  <p className="font-serif text-sm font-bold text-foreground group-hover:text-primary transition-colors">{getDoctorDisplayName(doc, lang)}</p>
                   <p className="font-body text-xs text-muted-foreground mt-1 line-clamp-1">{lang === "ar" ? doc.titleAr : doc.title}</p>
                   <span className="inline-flex items-center gap-1 text-primary font-body text-xs tracking-wide mt-2">
                     {t("viewProfile")} <ArrowRight className={`w-3 h-3 shrink-0 ${lang === "ar" ? "rotate-180" : ""}`} />

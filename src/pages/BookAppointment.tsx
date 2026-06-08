@@ -1741,7 +1741,9 @@ Clinic Code:`;
                               <dept.icon className={`w-5 h-5 flex-shrink-0 ${selectedDept === dept.id ? "" : "text-accent"}`} />
                               <div className="min-w-0">
                                 <p className="font-body text-sm font-medium truncate">{isAr ? dept.nameAr : dept.name}</p>
-                                <p className={`font-body text-xs ${selectedDept === dept.id ? "text-primary-foreground/60" : "text-muted-foreground"}`}>{dept.category}</p>
+                                {!isAr && (
+                                  <p className={`font-body text-xs ${selectedDept === dept.id ? "text-primary-foreground/60" : "text-muted-foreground"}`}>{dept.category}</p>
+                                )}
                               </div>
                             </motion.button>
                           ))}
@@ -1801,7 +1803,7 @@ Clinic Code:`;
                                   ? (doc.departmentAr || doc.specialtyAr)
                                   : (doc.department || doc.specialty)}
                               </p>
-                              <h4 className="font-serif text-sm text-foreground mb-0.5 leading-snug">{isAr ? doc.nameAr : doc.name}</h4>
+                              <h4 className="font-serif font-bold text-[1.2rem] text-foreground mb-0.5 leading-snug">{isAr ? doc.nameAr : doc.name}</h4>
                               <p className="text-muted-foreground font-body text-[11px] mb-2 line-clamp-1">{isAr ? doc.specialtyAr : doc.specialty}</p>
                               <div className={`flex items-center gap-1.5 mb-3 ${isDoctorRequestOnly(doc) ? "text-gray-500" : "text-green-600"}`}>
                                 <div className={`w-1.5 h-1.5 rounded-full ${isDoctorRequestOnly(doc) ? "bg-muted-foreground" : "bg-green-500"}`} />

@@ -101,7 +101,7 @@ const leaders = [
   {
     initials: "HG",
     nameEn: "Dr. Hamid Ghaderi",
-    nameAr: "د. حميد قادري",
+    nameAr: "د. حميد القادري",
     roleEn:
       "Head of Anesthesia, ICU & Pain Management\nDeputy Medical Director\nConsultant Anesthesia, ICU & Pain Management",
     roleAr:

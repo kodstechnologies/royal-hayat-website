@@ -8,7 +8,7 @@ import {
   type DepartmentDetail as DepartmentDetailData,
   type DepartmentDetailSection,
 } from "@/data/loadDepartmentDetails";
-import { departments as staticDepartments, MAIN_CATEGORIES, ROYALE_HAYAT_PHARMACY_DOCTOR_IDS, type MainCategory } from "@/data/departments";
+import { departments as staticDepartments, MAIN_CATEGORIES, ROYALE_HAYAT_PHARMACY_DOCTOR_IDS, CLINICAL_PHARMACY_DOCTOR_IDS, type MainCategory } from "@/data/departments";
 import { loadDoctors, type Doctor } from "@/data/loadDoctors";
 import { motion } from "framer-motion";
 import { ChevronRight, ChevronLeft, ArrowLeft, ArrowRight, CheckCircle2, ChevronDown, Stethoscope, MessageCircle, Phone, Loader2 } from "lucide-react";
@@ -380,7 +380,9 @@ const DepartmentDetail = () => {
   const matchingDepts = deptNameToDoctorDept[displayDept.name] || deptNameToDoctorDept[dept.name] || [];
   const baseDeptDoctors = dept.name === "Royale Hayat Pharmacy"
     ? allDoctors.filter((doc) => (ROYALE_HAYAT_PHARMACY_DOCTOR_IDS as readonly string[]).includes(doc.id))
-    : matchingDepts.length > 0
+    : dept.name === "Clinical Pharmacy"
+      ? allDoctors.filter((doc) => (CLINICAL_PHARMACY_DOCTOR_IDS as readonly string[]).includes(doc.id))
+      : matchingDepts.length > 0
       ? allDoctors.filter((doc) => matchingDepts.includes(doc.department))
       : allDoctors.filter((doc) =>
         doc.department.toLowerCase().includes(dept.name.toLowerCase().split(" ")[0]) ||

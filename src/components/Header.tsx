@@ -141,7 +141,7 @@ const Header = () => {
     { label: t("medicalServices"), href: "/medical-services", hasDropdown: "medical", icon: Stethoscope },
     { label: t("hospitalityServices"), href: "/hospitality", hasDropdown: "hospitality", icon: ConciergeBell },
     { label: t("patientsVisitors"), href: "/patients-visitors", hasDropdown: "patients", icon: Users },
-    { label: lang === "ar" ? "اعمل معنا" : "Work With Us", href: "/work-with-us", hasDropdown: "workwithus", icon: Briefcase },
+    { label: lang === "ar" ? "إنضم الينا" : "Work With Us", href: "/work-with-us", hasDropdown: "workwithus", icon: Briefcase },
   ];
   const contactSubLinks = [
     { label: t("bookAppointment"), href: "/book-appointment", icon: Phone, desc: lang === "ar" ? "احجز موعدك مع أطبائنا" : "Schedule your visit with our doctors" },
@@ -173,7 +173,7 @@ const Header = () => {
       { label: "Book Appointment", labelAr: "حجز موعد", type: "Page", typeAr: "صفحة", href: "/book-appointment" },
       { label: "Hospitality Services", labelAr: "خدمات الضيافة", type: "Page", typeAr: "صفحة", href: "/hospitality" },
       { label: "Patients Info", labelAr: "معلومات للمرضى والزوار", type: "Page", typeAr: "صفحة", href: "/patients-visitors" },
-      { label: "Work With Us", labelAr: "اعمل معنا", type: "Page", typeAr: "صفحة", href: "/work-with-us" },
+      { label: "Work With Us", labelAr: "إنضم الينا", type: "Page", typeAr: "صفحة", href: "/work-with-us" },
       { label: "Al Safwa Program", labelAr: "برنامج الصفوة", type: "Page", typeAr: "صفحة", href: "/al-safwa" },
       { label: "Home Health", labelAr: "الرعاية المنزلية", type: "Page", typeAr: "صفحة", href: "/home-health" },
       { label: "Doctors", labelAr: "الأطباء", type: "Page", typeAr: "صفحة", href: "/doctors" },

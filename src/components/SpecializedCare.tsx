@@ -691,7 +691,7 @@ const SpecializedCare = () => {
                                       <p className="text-accent text-[9px] tracking-[0.2em] uppercase font-body mb-1 line-clamp-1">
                                         {lang === "ar" ? doc.specialtyAr : doc.specialty}
                                       </p>
-                                      <h4 className="text-sm font-serif font-bold text-foreground group-hover/doc:text-primary transition-colors line-clamp-1">
+                                      <h4 className="text-[1.2rem] font-serif font-bold text-foreground group-hover/doc:text-primary transition-colors line-clamp-1">
                                         {getDoctorDisplayName(doc, lang)}
                                       </h4>
                                       <p className="text-xs text-muted-foreground font-body mt-0.5 line-clamp-1">

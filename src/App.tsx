@@ -1,4 +1,5 @@
-import { lazy, Suspense } from "react";
+import { Suspense } from "react";
+import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Loader2 } from "lucide-react";
@@ -24,34 +25,34 @@ import {
   workWithUsHospitalityWeekImages,
   workWithUsRhhQuizImages,
 } from "@/data/routeGalleryImages";
-const BookAppointment = lazy(() => import("./pages/BookAppointment.tsx"));
-const HospitalityServices = lazy(() => import("./pages/HospitalityServices.tsx"));
-const PatientsVisitors = lazy(() => import("./pages/PatientsVisitors.tsx"));
-const AlSafwaProgram = lazy(() => import("./pages/AlSafwaProgram.tsx"));
-const HomeHealth = lazy(() => import("./pages/HomeHealth.tsx"));
-const Doctors = lazy(() => import("./pages/Doctors.tsx"));
-const DoctorProfile = lazy(() => import("./pages/DoctorProfile.tsx"));
-const DepartmentDetail = lazy(() => import("./pages/DepartmentDetail.tsx"));
-const Downloads = lazy(() => import("./pages/Downloads.tsx"));
-const Departments = lazy(() => import("./pages/Departments.tsx"));
-const MedicalServices = lazy(() => import("./pages/MedicalServices.tsx"));
-const AboutUs = lazy(() => import("./pages/AboutUs.tsx"));
-const WorkWithUs = lazy(() => import("./pages/WorkWithUs.tsx"));
-const InternationalPatient = lazy(() => import("./pages/InternationalPatient.tsx"));
-const AppointmentRequest = lazy(() => import("./pages/AppointmentRequest.tsx"));
-const AppointmentBookingFallback = lazy(() => import("./pages/AppointmentBookingFallback.tsx"));
-const ContactUs = lazy(() => import("./pages/ContactUs.tsx"));
-const VerifyNationalId = lazy(() => import("./pages/VerifyNationalId.tsx"));
-const FAQ = lazy(() => import("./pages/FAQ.tsx"));
-const MedicalRepVisitBooking = lazy(() => import("./pages/MedicalRepVisitBooking.tsx"));
-const MedicalRecordsRequest = lazy(() => import("./pages/MedicalRecordsRequest.tsx"));
-const TrackerWaveInfantSecurity = lazy(() => import("./pages/TrackerWaveInfantSecurity.tsx"));
-const InRoomEvents = lazy(() => import("./pages/InRoomEvents.tsx"));
-const JobApplication = lazy(() => import("./pages/JobApplication.tsx"));
-const CSR = lazy(() => import("./pages/CSR.tsx"));
-const FifthFloorCafe = lazy(() => import("./pages/FifthFloorCafe.tsx"));
-const NewbornPhotography = lazy(() => import("./pages/NewbornPhotography.tsx"));
-const NotFound = lazy(() => import("./pages/NotFound.tsx"));
+const BookAppointment = lazyWithRetry(() => import("./pages/BookAppointment.tsx"));
+const HospitalityServices = lazyWithRetry(() => import("./pages/HospitalityServices.tsx"));
+const PatientsVisitors = lazyWithRetry(() => import("./pages/PatientsVisitors.tsx"));
+const AlSafwaProgram = lazyWithRetry(() => import("./pages/AlSafwaProgram.tsx"));
+const HomeHealth = lazyWithRetry(() => import("./pages/HomeHealth.tsx"));
+const Doctors = lazyWithRetry(() => import("./pages/Doctors.tsx"));
+const DoctorProfile = lazyWithRetry(() => import("./pages/DoctorProfile.tsx"));
+const DepartmentDetail = lazyWithRetry(() => import("./pages/DepartmentDetail.tsx"));
+const Downloads = lazyWithRetry(() => import("./pages/Downloads.tsx"));
+const Departments = lazyWithRetry(() => import("./pages/Departments.tsx"));
+const MedicalServices = lazyWithRetry(() => import("./pages/MedicalServices.tsx"));
+const AboutUs = lazyWithRetry(() => import("./pages/AboutUs.tsx"));
+const WorkWithUs = lazyWithRetry(() => import("./pages/WorkWithUs.tsx"));
+const InternationalPatient = lazyWithRetry(() => import("./pages/InternationalPatient.tsx"));
+const AppointmentRequest = lazyWithRetry(() => import("./pages/AppointmentRequest.tsx"));
+const AppointmentBookingFallback = lazyWithRetry(() => import("./pages/AppointmentBookingFallback.tsx"));
+const ContactUs = lazyWithRetry(() => import("./pages/ContactUs.tsx"));
+const VerifyNationalId = lazyWithRetry(() => import("./pages/VerifyNationalId.tsx"));
+const FAQ = lazyWithRetry(() => import("./pages/FAQ.tsx"));
+const MedicalRepVisitBooking = lazyWithRetry(() => import("./pages/MedicalRepVisitBooking.tsx"));
+const MedicalRecordsRequest = lazyWithRetry(() => import("./pages/MedicalRecordsRequest.tsx"));
+const TrackerWaveInfantSecurity = lazyWithRetry(() => import("./pages/TrackerWaveInfantSecurity.tsx"));
+const InRoomEvents = lazyWithRetry(() => import("./pages/InRoomEvents.tsx"));
+const JobApplication = lazyWithRetry(() => import("./pages/JobApplication.tsx"));
+const CSR = lazyWithRetry(() => import("./pages/CSR.tsx"));
+const FifthFloorCafe = lazyWithRetry(() => import("./pages/FifthFloorCafe.tsx"));
+const NewbornPhotography = lazyWithRetry(() => import("./pages/NewbornPhotography.tsx"));
+const NotFound = lazyWithRetry(() => import("./pages/NotFound.tsx"));
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

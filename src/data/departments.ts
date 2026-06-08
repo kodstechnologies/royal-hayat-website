@@ -239,7 +239,7 @@ export const deptDoctorAliases: Record<string, string[]> = {
   "Pain Management": ["Pain Management"],
   "Anesthesia": ["Anesthesia", "Anesthesia & Intensive Care"],
   "IVF & Reproductive Medicine": ["IVF", "Reproductive Medicine", "IVF & Reproductive Medicine"],
-  "Intensive Care": ["Intensive Care"],
+  "Intensive Care": ["Intensive Care", "Anesthesia"],
   "Center for Diagnostic Imaging": ["Radiology"],
   "Laboratory Services": ["Laboratory"],
   "Clinical Pharmacy": ["Clinical Pharmacy"],
@@ -254,6 +254,9 @@ export const ROYALE_HAYAT_PHARMACY_DOCTOR_IDS = [
 export const CLINICAL_PHARMACY_DOCTOR_IDS = [
   "dr-mustafa-alfiki",
 ] as const;
+export const PAIN_MANAGEMENT_DOCTOR_IDS = [
+  "dr-hamid-ghaderi",
+] as const;
 export function doctorMatchesDepartment(
   deptName: string,
   doc: { id?: string; department: string; specialty: string },
@@ -264,6 +267,9 @@ export function doctorMatchesDepartment(
   }
   if (deptName === "Clinical Pharmacy") {
     return doc.id != null && (CLINICAL_PHARMACY_DOCTOR_IDS as readonly string[]).includes(doc.id);
+  }
+  if (deptName === "Pain Management") {
+    return doc.id != null && (PAIN_MANAGEMENT_DOCTOR_IDS as readonly string[]).includes(doc.id);
   }
   const aliases = deptDoctorAliases[deptName];
   const matchTerms = [...(aliases && aliases.length > 0 ? aliases : [deptName]), ...extraTerms];

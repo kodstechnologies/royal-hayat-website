@@ -14,6 +14,7 @@ import type { AppointmentRequestPrefillState } from "@/types/appointmentRequestP
 
 type AppointmentRequestLocationState = {
   appointmentRequestPrefill?: AppointmentRequestPrefillState;
+  fromBookAppointment?: boolean;
 };
 
 const AppointmentRequest = () => {
@@ -114,6 +115,17 @@ const AppointmentRequest = () => {
     setForm(prev => ({ ...prev, [field]: value }));
     setErrors(prev => ({ ...prev, [field]: "" }));
   };
+  const handleGoBack = () => {
+    if (doctorId) {
+      navigate(`/doctors/${doctorId}`, { state: returnState });
+      return;
+    }
+    if (locState.appointmentRequestPrefill || locState.fromBookAppointment) {
+      navigate("/book-appointment", { state: returnState });
+      return;
+    }
+    navigate(-1);
+  };
   const formattedDob = form.dateOfBirth ? form.dateOfBirth.split("-").reverse().join("/") : "";
   const genderLabel =
     form.gender === "male"
@@ -185,7 +197,7 @@ const AppointmentRequest = () => {
       </div>
       <div className="container mx-auto px-6 py-8 max-w-2xl">
         <button
-          onClick={() => navigate("/book-appointment", { state: returnState })}
+          onClick={handleGoBack}
           className="inline-flex items-center gap-2 text-accent hover:text-accent/80 transition-colors font-body text-sm mb-6 px-0"
         >
           <ArrowLeft className={`w-4 h-4 ${lang === 'ar' ? 'rotate-180' : ''}`} />

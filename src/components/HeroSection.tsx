@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Volume2, VolumeX } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -203,12 +204,12 @@ const HeroSection = () => {
                 transition={{ duration: 0.4, delay: 0.45 }}
                 className={`flex flex-wrap gap-4 pointer-events-auto ${isAr ? "justify-start" : ""}`}
               >
-                <a
-                  href="/medical-services"
+                <Link
+                  to="/medical-services"
                   className="inline-flex items-center gap-3 border border-secondary text-foreground px-8 py-4 rounded-lg font-body text-sm tracking-widest uppercase hover:bg-secondary/30 transition-all duration-300 hover:scale-[1.03] active:scale-[0.97]"
                 >
                   {t("exploreServices")}
-                </a>
+                </Link>
               </motion.div>
             </div>
           </motion.div>

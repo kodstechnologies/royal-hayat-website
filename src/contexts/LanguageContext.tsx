@@ -780,6 +780,16 @@ const LanguageContext = createContext<LanguageContextType>({
 });
 let arDictCache: Dict | null = null;
 let arLoadPromise: Promise<Dict> | null = null;
+const LANG_STORAGE_KEY = "royale-hayat-lang";
+function readStoredLanguage(): Language {
+  if (typeof window === "undefined") return "en";
+  try {
+    const stored = window.localStorage.getItem(LANG_STORAGE_KEY);
+    return stored === "ar" || stored === "en" ? stored : "en";
+  } catch {
+    return "en";
+  }
+}
 function loadArDict(): Promise<Dict> {
   if (arDictCache) return Promise.resolve(arDictCache);
   if (!arLoadPromise) {
@@ -790,15 +800,28 @@ function loadArDict(): Promise<Dict> {
   }
   return arLoadPromise;
 }
+if (typeof window !== "undefined" && readStoredLanguage() === "ar") {
+  void loadArDict();
+}
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
-  const [lang, setLangState] = useState<Language>("en");
-  const [arDict, setArDict] = useState<Dict | null>(null);
+  const [lang, setLangState] = useState<Language>(readStoredLanguage);
+  const [arDict, setArDict] = useState<Dict | null>(arDictCache);
   const setLang = useCallback((next: Language) => {
     setLangState(next);
+    try {
+      window.localStorage.setItem(LANG_STORAGE_KEY, next);
+    } catch {
+      // ignore storage failures (private browsing, etc.)
+    }
     if (next === "ar") {
       void loadArDict().then(setArDict);
     }
   }, []);
+  useEffect(() => {
+    if (lang === "ar") {
+      void loadArDict().then(setArDict);
+    }
+  }, [lang]);
   const activeDict = lang === "ar" ? arDict ?? en : en;
   const t = useCallback(
     (key: string) => activeDict[key] ?? en[key as TranslationKey] ?? key,

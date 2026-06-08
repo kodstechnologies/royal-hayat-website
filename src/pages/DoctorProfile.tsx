@@ -358,7 +358,7 @@ const handleAddTestimonial = () => {
                       <motion.button
                         whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.97 }}
-                        onClick={() => navigate(`/appointment-request?doctor=${doctor.id}`)}
+                        onClick={() => navigate(`/appointment-request?doctor=${doctor.id}`, { state: bookingReturnState })}
                         className="w-full bg-primary text-primary-foreground py-3 rounded-xl font-body text-sm tracking-wider uppercase hover:bg-primary/90 transition-colors text-center"
                       >
                         {lang === "ar" ? "طلب موعد" : "Request Appointment"}
@@ -377,7 +377,7 @@ const handleAddTestimonial = () => {
                     <motion.button
                       whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.97 }}
-                      onClick={() => navigate(`/appointment-request?doctor=${doctor.id}`)}
+                      onClick={() => navigate(`/appointment-request?doctor=${doctor.id}`, { state: bookingReturnState })}
                       className="w-full bg-primary text-primary-foreground py-3 rounded-xl font-body text-sm tracking-wider uppercase hover:bg-primary/90 transition-colors text-center"
                     >
                       {lang === "ar" ? "طلب موعد" : "Request Appointment"}

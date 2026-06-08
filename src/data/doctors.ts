@@ -982,7 +982,7 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-noha-alsaleh',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/noha-alsaleh.png',
-    name: 'Dr. Noha Alsaleh', nameAr: 'الدكتورة نهى الصالح',
+    name: 'Dr. Noha Alsaleh', nameAr: 'د. نهى الصالح',
     specialty: 'General Surgery', specialtyAr: 'الجراحة العامة',
     department: 'General Surgery', departmentAr: 'الجراحة العامة',
     title: 'Consultant General Surgery and Surgical Oncology',
@@ -3941,7 +3941,7 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-elisavet-angelaki',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/Elisavet1.png',
-    name: 'Dr. Elisavet Angelaki', nameAr: 'الدكتورة إليزافيت أنجيلاكي',
+    name: 'Dr. Elisavet Angelaki', nameAr: 'د. إليزافيت أنجيلاكي',
     specialty: 'IVF', specialtyAr: 'أطفال الأنابيب',
     department: 'Reproductive Medicine & IVF', departmentAr: 'الطب التناسلي وأطفال الأنابيب',
     providerCode: 'PT023',

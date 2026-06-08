@@ -1,4 +1,4 @@
-import { ArrowRight, ChevronLeft, ChevronRight, X, Stethoscope } from "lucide-react";
+﻿import { ArrowRight, ChevronLeft, ChevronRight, X, Stethoscope } from "lucide-react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useRef, useState, useEffect, useMemo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -8,6 +8,7 @@ import { loadDoctors, type Doctor } from "@/data/loadDoctors";
 import { doctorMatchesDepartment, departments as staticDepartments } from "@/data/departments";
 import { getSubSlugForDepartment, normalizeSubSlug } from "@/utils/departmentSubSlug";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
+import { sortDoctorsInDepartment } from "@/utils/sortDoctorsInDepartment";
 interface ServiceItem {
   num: string;
   name: string;
@@ -438,9 +439,7 @@ const SpecializedCare = () => {
                     keywords.some((kw) => doc.id.toLowerCase().includes(kw) || doc.name.toLowerCase().includes(kw))
                   );
                   if (filtered.length > 0) {
-                    return [...filtered].sort((a, b) =>
-                      (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en")
-                    );
+                    return sortDoctorsInDepartment(filtered, s.department, lang);
                   }
                 }
                 const selectedSub = s.subspecialties.find(
@@ -453,15 +452,11 @@ const SpecializedCare = () => {
                     return subKeywords.some((kw) => haystack.includes(kw));
                   });
                   if (filtered.length > 0) {
-                    return [...filtered].sort((a, b) =>
-                      (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en")
-                    );
+                    return sortDoctorsInDepartment(filtered, s.department, lang);
                   }
                 }
               }
-              return [...allDeptDoctors]
-                .sort((a, b) => (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en"))
-                .slice(0, 3);
+              return sortDoctorsInDepartment(allDeptDoctors, s.department, lang).slice(0, 3);
             })();
             const showImageCard = isInFirstSix(origIdx);
             return (

@@ -17,6 +17,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { resolveDepartmentBySlug } from "@/utils/resolveDepartmentSlug";
 import { normalizeSubSlug, resolveSubDepartment } from "@/utils/departmentSubSlug";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
+import { sortDoctorsInDepartment } from "@/utils/sortDoctorsInDepartment";
 const pickDeptText = (lang: string, en: string, ar?: string) => (lang === "ar" && ar ? ar : en);
 
 const getDeptSubheading = (lang: string, mainCategory: MainCategory | undefined, medicalServicesLabel: string) => {
@@ -393,9 +394,7 @@ const DepartmentDetail = () => {
       );
   const deptDoctors = (() => {
     if (!resolvedSubSlug) {
-      return baseDeptDoctors.sort((a, b) =>
-        (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en")
-      );
+      return sortDoctorsInDepartment(baseDeptDoctors, dept.name, lang);
     }
     const subSpecialtyDoctorMap: Record<string, string[]> = {
       "cardiology": ["alturki", "turki"],
@@ -426,9 +425,7 @@ const DepartmentDetail = () => {
         keywords.some((kw) => doc.id.toLowerCase().includes(kw) || doc.name.toLowerCase().includes(kw))
       );
       if (filtered.length > 0) {
-        return [...filtered].sort((a, b) =>
-          (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en")
-        );
+        return sortDoctorsInDepartment(filtered, dept.name, lang);
       }
     }
     if (activeSub) {
@@ -441,14 +438,10 @@ const DepartmentDetail = () => {
         return subKeywords.some((kw) => haystack.includes(kw));
       });
       if (filtered.length > 0) {
-        return [...filtered].sort((a, b) =>
-          (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en")
-        );
+        return sortDoctorsInDepartment(filtered, dept.name, lang);
       }
     }
-    return baseDeptDoctors.sort((a, b) =>
-      (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en")
-    );
+    return sortDoctorsInDepartment(baseDeptDoctors, dept.name, lang);
   })();
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">

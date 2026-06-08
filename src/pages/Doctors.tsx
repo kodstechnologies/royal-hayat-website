@@ -11,6 +11,7 @@ import { loadDoctors, type Doctor } from "@/data/loadDoctors";
 import { departments, deptDoctorAliases, MAIN_CATEGORIES, type MainCategory } from "@/data/departments";
 import { Input } from "@/components/ui/input";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
+import { sortDoctorsInDepartment } from "@/utils/sortDoctorsInDepartment";
 
 const DoctorCard = memo(({ doc }: { doc: Doctor }) => {
   const { lang } = useLanguage();
@@ -265,21 +266,9 @@ const Doctors = () => {
   }, [allDoctors, searchQuery]);
   const isSearching = searchQuery.trim().length > 0;
   const locale = lang === "ar" ? "ar" : "en";
-  const stripTitlePrefix = (name: string) =>
-    name.replace(/^(dr|prof|professor)\.?\s+/i, "").trim();
   const sortedGroupedEntries = useMemo(() => {
     const sortDocsWithinDept = (dept: string, docs: Doctor[]) =>
-      [...docs].sort((a, b) => {
-        const stripTitles =
-          dept === "Anesthesia" || dept === "Anesthesia & Intensive Care";
-        const aKey = stripTitles
-          ? stripTitlePrefix(lang === "ar" ? a.nameAr : a.name)
-          : lang === "ar" ? a.nameAr : a.name;
-        const bKey = stripTitles
-          ? stripTitlePrefix(lang === "ar" ? b.nameAr : b.name)
-          : lang === "ar" ? b.nameAr : b.name;
-        return aKey.localeCompare(bKey, locale);
-      });
+      sortDoctorsInDepartment(docs, dept, lang);
     const orderOf = (dept: string) => doctorDeptOrderIndex.get(dept) ?? DEPT_ORDER_FALLBACK;
     return Object.entries(grouped)
       .filter(([, docs]) => Array.isArray(docs) && docs.length > 0)

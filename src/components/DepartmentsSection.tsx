@@ -9,6 +9,7 @@ import { loadDoctors, type Doctor } from "@/data/loadDoctors";
 import { doctorMatchesDepartment } from "@/data/departments";
 import { getSubSlugForDepartment, normalizeSubSlug } from "@/utils/departmentSubSlug";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
+import { sortDoctorsInDepartment } from "@/utils/sortDoctorsInDepartment";
 type DepartmentsSectionProps = {
   showPageTitle?: boolean;
 };
@@ -199,9 +200,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
           keywords.some((kw) => doc.id.toLowerCase().includes(kw) || doc.name.toLowerCase().includes(kw))
         );
         if (filtered.length > 0) {
-          return [...filtered].sort((a, b) =>
-            (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en")
-          );
+          return sortDoctorsInDepartment(filtered, selectedDept.name, lang);
         }
       }
       const selectedSub = selectedDept.subs.find(
@@ -214,16 +213,12 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
           return subKeywords.some((kw) => haystack.includes(kw));
         });
         if (filtered.length > 0) {
-          return [...filtered].sort((a, b) =>
-            (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en")
-          );
+          return sortDoctorsInDepartment(filtered, selectedDept.name, lang);
         }
       }
     }
     const baseDoctors = deptDoctorsMap[selectedDept.name] || [];
-    return [...baseDoctors].sort((a, b) =>
-      (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en")
-    );
+    return sortDoctorsInDepartment(baseDoctors, selectedDept.name, lang);
   }, [deptDoctorsMap, selectedDept, openIndex, selectedSubByDept, lang]);
   const getOriginalIndex = (dept: Department) =>
     departments.findIndex((d) => d.name === dept.name);

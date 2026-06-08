@@ -50,7 +50,7 @@ const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) =
               {isAr ? "خدمات الضيافة" : "Hospitality Services"}
             </p>
             <h1 className="text-4xl md:text-5xl font-serif text-foreground mb-4">
-              {isAr ? "تجارب الاحتفال داخل الأجنحة" : "In-Suite Celebration Experiences"}
+              {isAr ? "المناسبات داخل الأجنحة" : "In-Suite Celebration Experiences"}
             </h1>
             <p className="text-muted-foreground font-body text-sm max-w-3xl mx-auto leading-relaxed text-justify">
               {isAr

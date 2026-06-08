@@ -1805,9 +1805,9 @@ Clinic Code:`;
                               </p>
                               <h4 className="font-serif font-bold text-[1.2rem] text-foreground mb-0.5 leading-snug">{isAr ? doc.nameAr : doc.name}</h4>
                               <p className="text-muted-foreground font-body text-[11px] mb-2 line-clamp-1">{isAr ? doc.specialtyAr : doc.specialty}</p>
-                              <div className={`flex items-center gap-1.5 mb-3 ${isDoctorRequestOnly(doc) ? "text-gray-500" : "text-green-600"}`}>
-                                <div className={`w-1.5 h-1.5 rounded-full ${isDoctorRequestOnly(doc) ? "bg-muted-foreground" : "bg-green-500"}`} />
-                                <span className="font-body text-[10px]">{isDoctorRequestOnly(doc) ? (isAr ? "غير متاح حالياً" : "Request Appointment") : (isAr ? "متاح للحجز" : "Book Online")}</span>
+                              <div className={`flex items-center gap-1.5 mb-3 ${isDoctorRequestOnly(doc) ? "text-destructive" : "text-green-600"}`}>
+                                <div className={`w-1.5 h-1.5 rounded-full ${isDoctorRequestOnly(doc) ? "bg-destructive" : "bg-green-500"}`} />
+                                <span className="font-body text-[10px]">{isDoctorRequestOnly(doc) ? (isAr ? "غير متاح للحجز الإلكتروني" : "Not Available for Online Booking") : (isAr ? "متاح للحجز" : "Book Online")}</span>
                               </div>
                               <button onClick={(e) => { e.stopPropagation(); const resolvedDeptId = selectedDept ?? resolveDeptIdForDoctor(doc); navigate(`/doctors/${doc.id}`, { state: { fromBookAppointment: true, step, bookingPath: bookingPath ?? "primary", selectedDept: resolvedDeptId, selectedDoctor: doc.id, isRequestMode: isDoctorRequestOnly(doc), canBookSlot: !isDoctorRequestOnly(doc) } }); }} className="mt-auto inline-flex items-center gap-1 text-primary font-body text-xs hover:text-accent transition-colors">{isAr ? "عرض الملف الشخصي ←" : "View Profile →"}</button>
                             </div>

@@ -476,7 +476,7 @@ const Header = () => {
                       </p>
                       <div
                         className={`grid ${item.hasDropdown === "patients" ? "grid-cols-1 xl:grid-cols-2" : "grid-cols-1"} gap-2 ${
-                          item.hasDropdown === "hospitality"
+                          item.hasDropdown === "hospitality" || item.hasDropdown === "patients"
                             ? "max-h-[min(70vh,26rem)] overflow-y-auto overscroll-y-contain pr-1"
                             : ""
                         }`}
@@ -654,7 +654,7 @@ const Header = () => {
                           <div
                             dir={isAr ? "rtl" : "ltr"}
                             className={`py-2 px-4 flex flex-col gap-1 ${
-                              item.hasDropdown === "hospitality"
+                              item.hasDropdown === "hospitality" || item.hasDropdown === "patients"
                                 ? "max-h-[min(55vh,18rem)] overflow-y-auto overscroll-y-contain"
                                 : ""
                             }`}

@@ -55,17 +55,17 @@ export const spaImages = [
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/royal-spaa/DSC09998.JPG"
 ];
 export const cafeImages = [
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/al-liwan-cafe/DSC09215.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/al-liwan-cafe/DSC09120.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/al-liwan-cafe/DSC09115.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/al-liwan-cafe/DSC09126.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/al-liwan-cafe/DSC09207.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/al-liwan-cafe/DSC05535.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/al-liwan-cafe/DSC05536.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/al-liwan-cafe/DSC09202.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/al-liwan-cafe/_DSC4893.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/al-liwan-cafe/_DSC4906.jpg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/al-liwan-cafe/cafe.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a2697920ca7f20f025044db/1780914302990-_DSC4893.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a2697920ca7f20f025044db/1780914304848-_DSC4906.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a2697920ca7f20f025044db/1780914305366-DSC05535.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a2697920ca7f20f025044db/1780914305740-DSC05536.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a2697920ca7f20f025044db/1780914306100-DSC09120.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a2697920ca7f20f025044db/1780914306445-DSC09202.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a2697920ca7f20f025044db/1780914306775-DSC09207.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a2697920ca7f20f025044db/1780914307128-DSC09221.JPG",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a2697920ca7f20f025044db/1780914629284-DSC09115.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a2697920ca7f20f025044db/1780914645495-DSC09120.jpg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a2697920ca7f20f025044db/1780914654870-DSC09126.jpg",
 ];
 export const suiteCarouselImagesByIndex: Record<number, string[]> = {
   1: [

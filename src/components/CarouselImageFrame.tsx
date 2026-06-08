@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
-  isCarouselImageCached,
   markCarouselImageCached,
   preloadCarouselImages,
   preloadImageAsync,
@@ -21,60 +20,77 @@ const CarouselImageFrame = ({
   className = "h-full w-full object-cover",
   onClick,
 }: CarouselImageFrameProps) => {
-  const targetSrc = images[index] ?? "";
-  const [displayIndex, setDisplayIndex] = useState(index);
-  const [loadingNext, setLoadingNext] = useState(false);
+  const [shownIndex, setShownIndex] = useState(index);
+  const [loadingIndex, setLoadingIndex] = useState<number | null>(null);
+  const incomingRef = useRef<HTMLImageElement>(null);
+  const pendingIndexRef = useRef(index);
 
   useEffect(() => {
+    setShownIndex(index);
+    setLoadingIndex(null);
+    pendingIndexRef.current = index;
+    preloadCarouselImages(images, index);
+  }, [images]);
+
+  useEffect(() => {
+    pendingIndexRef.current = index;
     preloadCarouselImages(images, index);
 
-    if (!targetSrc) return;
-
-    if (isCarouselImageCached(targetSrc)) {
-      setDisplayIndex(index);
-      setLoadingNext(false);
+    if (index === shownIndex) {
+      setLoadingIndex(null);
       return;
     }
 
-    let cancelled = false;
-    setLoadingNext(true);
+    const targetSrc = images[index];
+    if (!targetSrc) return;
 
-    void preloadImageAsync(targetSrc).then(() => {
-      if (cancelled) return;
-      markCarouselImageCached(targetSrc);
-      setDisplayIndex(index);
-      setLoadingNext(false);
-    });
+    setLoadingIndex(index);
+    void preloadImageAsync(targetSrc);
+  }, [images, index, shownIndex]);
 
-    return () => {
-      cancelled = true;
-    };
-  }, [images, index, targetSrc]);
+  const promoteIncoming = (loadedIndex: number) => {
+    if (pendingIndexRef.current !== loadedIndex) return;
+    markCarouselImageCached(images[loadedIndex] ?? "");
+    setShownIndex(loadedIndex);
+    setLoadingIndex(null);
+  };
 
-  const displaySrc = images[displayIndex] ?? targetSrc;
+  useEffect(() => {
+    const img = incomingRef.current;
+    if (loadingIndex === null || !img) return;
+    if (img.complete && img.naturalWidth > 0) {
+      promoteIncoming(loadingIndex);
+    }
+  }, [loadingIndex, images]);
+
+  const shownSrc = images[shownIndex] ?? "";
+  const loadingSrc = loadingIndex !== null ? (images[loadingIndex] ?? "") : "";
 
   return (
-    <div className="relative h-full w-full">
-      {loadingNext && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center bg-muted/15" aria-hidden>
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary/30 border-t-primary" />
-        </div>
+    <div className="relative h-full w-full bg-muted">
+      {shownSrc && (
+        <img
+          src={shownSrc}
+          alt={loadingIndex === null ? alt : ""}
+          aria-hidden={loadingIndex !== null}
+          className={`${className} absolute inset-0`}
+          decoding="async"
+          onClick={loadingIndex === null ? onClick : undefined}
+        />
       )}
-      <img
-        src={displaySrc}
-        alt={alt}
-        className={className}
-        loading="eager"
-        decoding="async"
-        onLoad={() => {
-          markCarouselImageCached(displaySrc);
-          if (displayIndex !== index && isCarouselImageCached(targetSrc)) {
-            setDisplayIndex(index);
-            setLoadingNext(false);
-          }
-        }}
-        onClick={onClick}
-      />
+      {loadingSrc && loadingIndex !== null && (
+        <img
+          ref={incomingRef}
+          key={loadingSrc}
+          src={loadingSrc}
+          alt={alt}
+          className={`${className} absolute inset-0 z-[1]`}
+          decoding="async"
+          onLoad={() => promoteIncoming(loadingIndex)}
+          onError={() => promoteIncoming(loadingIndex)}
+          onClick={onClick}
+        />
+      )}
     </div>
   );
 };

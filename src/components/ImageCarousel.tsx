@@ -24,7 +24,7 @@ const ImageCarousel = ({
   altForIndex,
   autoPlay = false,
   aspectClass = "aspect-[5/4]",
-  frameClass = "relative overflow-hidden bg-popover border border-border/50 shadow-lg rounded-2xl",
+  frameClass = "relative overflow-hidden bg-muted border border-border/50 shadow-lg rounded-2xl",
   imageClass = "h-full w-full cursor-zoom-in object-cover",
   onImageClick,
   isAr = false,

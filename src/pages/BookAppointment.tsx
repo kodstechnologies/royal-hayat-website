@@ -1814,8 +1814,8 @@ Clinic Code:`;
                                   <div className={`w-1.5 h-1.5 rounded-full ${doc.availableOnline !== false ? "bg-green-500" : "bg-destructive"}`} />
                                   <span className="font-body text-[10px]">
                                     {doc.availableOnline !== false
-                                      ? (isAr ? "متاح للحجز" : "Book Online")
-                                      : (isAr ? "غير متاح للحجز الإلكتروني" : "Not Available for Online Booking")}
+                                      ? (isAr ? "متاح للحجز اونلاين" : "Book Online")
+                                      : (isAr ? "غير متاح للحجز اونلاين" : "Not Available for Online Booking")}
                                   </span>
                                 </div>
                               )}

@@ -308,8 +308,8 @@ const DoctorProfile = () => {
                       <div className={`w-2 h-2 rounded-full ${doctor.availableOnline !== false ? "bg-green-500" : "bg-destructive"}`} />
                       <span className="font-body text-xs">
                         {doctor.availableOnline !== false
-                          ? (lang === "ar" ? "متاح للحجز الإلكتروني" : "Book Online")
-                          : (lang === "ar" ? "غير متاح للحجز الإلكتروني" : "Not Available for Online Booking")}
+                          ? (lang === "ar" ? "متاح للحجز اونلاين" : "Book Online")
+                          : (lang === "ar" ? "غير متاح للحجز اونلاين" : "Not Available for Online Booking")}
                       </span>
                     </div>
                   )}

@@ -385,8 +385,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                               </div>
                               {deptDoctors.length > 0 && (
                                 <div className="mt-auto">
-                                  <p className="text-accent text-center text-xs tracking-[0.2em] uppercase font-body mb-3">{lang === "ar" ? "فريقنا الطبي" : "Our Medical Team"}</p>
-                                  <h3 className="text-center text-lg md:text-xl font-serif text-foreground font-semibold mb-4">{lang === "ar" ? "أطباء القسم" : "Department Doctors"}</h3>
+                                  <p className="text-accent text-center text-xs tracking-[0.2em] uppercase font-body mb-4">{lang === "ar" ? "فريقنا الطبي" : "Our Medical Team"}</p>
                                   <div className="relative max-w-[576px] mx-auto lg:mt-6">
                                     {deptDoctors.length > 1 && (
                                       <>

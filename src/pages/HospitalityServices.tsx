@@ -773,7 +773,7 @@ const HospitalityServices = ({
       {show("suites") && <section className="py-6 bg-primary/5">
         <div className="container mx-auto px-6 max-w-7xl">
           <ScrollAnimationWrapper>
-            {(showAll || section === "suites") && (
+            {showAll && (
               <>
                 {isAr && <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-2 text-center">تجربة استثنائية</p>}
                 <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-2 text-center">{isAr ? "الأجنحة الفاخرة" : "Exclusive Suites"}</h2>

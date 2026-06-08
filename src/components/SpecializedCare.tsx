@@ -612,12 +612,9 @@ const SpecializedCare = () => {
                         {}
                         {deptDoctors.length > 0 && (
                           <div className="mt-auto">
-                            <p className="text-accent text-xs tracking-[0.2em] uppercase font-body mb-3">
+                            <p className="text-accent text-xs tracking-[0.2em] uppercase font-body mb-4">
                               {lang === "ar" ? "فريقنا الطبي" : "Our Medical Team"}
                             </p>
-                            <h3 className="text-lg md:text-xl font-serif text-foreground mb-4">
-                              {lang === "ar" ? "أطباء القسم" : "Department Doctors"}
-                            </h3>
                             <div className="relative max-w-[576px] mx-auto">
                               {deptDoctors.length > (isMobile ? 1 : 2) && (
                                 <>

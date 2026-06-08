@@ -350,6 +350,8 @@ const translations: Translations = {
   aiRecommendedDepts: { en: "AI Recommended Departments", ar: "أقسام موصى بها" },
   aiMatch: { en: "AI Match", ar: "توصية ذكية" },
   searchDepartments: { en: "Search departments...", ar: "ابحث في الأقسام..." },
+  searchDepartmentOnly: { en: "Search department...", ar: "ابحث عن القسم..." },
+  searchDoctorDepartment: { en: "Search doctor, department...", ar: "ابحث عن الطبيب، القسم..." },
   aiRecommendedDocs: { en: "AI Recommended Doctors", ar: "أطباء موصى بهم" },
   aiPick: { en: "AI Pick", ar: "اختيار ذكي" },
   available: { en: "Available", ar: "متاح" },
@@ -627,8 +629,8 @@ const translations: Translations = {
   privacyPolicy: { en: "Privacy Policy", ar: "سياسة الخصوصية" },
 
   // Chat
-  chatAssistantName: { en: "Royale Hayat Assistant", ar: "مساعد رويال حياة" },
-  aiHealthConcierge: { en: "AI Health Concierge", ar: "كونسيرج صحي ذكي" },
+  chatAssistantName: { en: "Hayat Chat", ar: "حياة شات" },
+  aiHealthConcierge: { en: "Your Smart Health Guide", ar: "دليلك الصحي الذكي" },
   chatPlaceholder: { en: "Ask about appointments, symptoms...", ar: "اسأل عن المواعيد، الأعراض..." },
   chatWelcome: { en: "Hello! I'm your **Royale Hayat AI Health Assistant**.\n\nHow can I help you today? You can ask about appointments, departments, doctors, insurance, or describe your symptoms.", ar: "مرحباً! أنا **مساعد رويال حياة الصحي الذكي**.\n\nكيف يمكنني مساعدتك اليوم؟ يمكنك السؤال عن المواعيد والأقسام والأطباء والتأمين أو وصف أعراضك." },
   chatBookAppt: { en: "Book Appointment", ar: "حجز موعد" },

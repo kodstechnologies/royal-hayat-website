@@ -291,7 +291,7 @@ const Doctors = () => {
               <Input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={lang === "ar" ? "ابحث عن الأعراض، الطبيب، القسم..." : "Search symptoms, doctor, department..."}
+                placeholder={t("searchDoctorDepartment")}
                 className="pl-12 pr-4 py-6 text-base rounded-2xl border-border/60 bg-popover shadow-sm focus:ring-primary"
               />
             </div>

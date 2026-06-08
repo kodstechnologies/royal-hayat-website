@@ -200,7 +200,7 @@ const AppointmentRequest = () => {
                 <img
                   src={prefilledDoctor.image}
                   alt={lang === "ar" ? prefilledDoctor.nameAr : prefilledDoctor.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover object-top"
                 />
               ) : (
                 <span className="text-lg font-serif text-primary-foreground">{prefilledDoctor.initials}</span>

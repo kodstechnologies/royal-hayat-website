@@ -256,7 +256,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={t("searchSymptoms")}
+              placeholder={t("searchDepartmentOnly")}
               className="pl-12 pr-4 py-6 text-base rounded-2xl border-border/60 bg-popover shadow-sm focus:ring-primary"
             />
           </div>

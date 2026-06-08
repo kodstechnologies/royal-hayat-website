@@ -40,8 +40,15 @@ import { departments as staticDepts, deptDoctorAliases, MAIN_CATEGORIES } from "
 import { Calendar as DatePickerCalendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import type { Slot } from "@/api/royalhayat";
+import { filterDoctorsBySearch } from "@/utils/doctorSearch";
+import {
+  SYMPTOM_CHIP_OPTIONS,
+  formatSymptomsForDisplay,
+} from "@/data/symptomChipOptions";
 const DOCTOR_PATH_EXCLUDED_IDS = new Set<string>(["dr-madiha-khisaf", "dr-wael-ibrahim", "dr-fatima-alazemi"]);
 const SKIP_CIVIL_ID_VERIFICATION = false;
+const isDoctorRequestOnly = (doc: Pick<Doctor, "hideBooking" | "availableOnline">) =>
+  doc.hideBooking === true || doc.availableOnline === false;
 type BookingDeptRow = {
   id: string;
   name: string;
@@ -63,18 +70,6 @@ type VerifiedIdentityDetails = {
 const OID = /^[0-9a-fA-F]{24}$/i;
 const GEMINI_TRIAGE_MODEL = "gemini-flash-latest";
 const GEMINI_TRIAGE_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_TRIAGE_MODEL}:generateContent`;
-const SYMPTOM_CHIP_OPTIONS = [
-  "Headache",
-  "Chest Pain",
-  "Fever",
-  "Cough",
-  "Fatigue",
-  "Dizziness",
-  "Nausea",
-  "Back Pain",
-  "Joint Pain",
-  "Shortness of Breath",
-];
 function normalizeSlotDate(value: string): string {
   const trimmed = value.trim();
   if (/^\d{4}-\d{2}-\d{2}/.test(trimmed)) return trimmed.slice(0, 10);
@@ -466,7 +461,7 @@ const BookAppointment = () => {
           ...doc,
           clinicCode: doc.clinicCode || doc.departmentClinicCode
         }));
-        setAllApiDoctors(enrichedDoctors.filter((d) => !d.hideBooking));
+        setAllApiDoctors(enrichedDoctors);
       } catch (err) {
         console.error("Error in static load:", err);
         if (!cancelled) {
@@ -503,7 +498,7 @@ const BookAppointment = () => {
             clinicCode: doc.clinicCode || doc.departmentClinicCode,
           }));
         if (!cancelled) {
-          setDeptDoctorList(filtered.filter(d => !d.hideBooking));
+          setDeptDoctorList(filtered);
         }
       } catch (err) {
         console.error("Error in static doctor filter:", err);
@@ -601,17 +596,23 @@ const BookAppointment = () => {
     if (i === 1 && step > 1) setShowAllDoctors(true);
     setStep(i);
   };
-  const doctors = deptDoctorList.sort((a, b) =>
-    (isAr ? a.nameAr : a.name).localeCompare(isAr ? b.nameAr : b.name, isAr ? "ar" : "en"),
+  const doctors = useMemo(
+    () =>
+      [...filterDoctorsBySearch(deptDoctorList, doctorSearch)].sort((a, b) =>
+        (isAr ? a.nameAr : a.name).localeCompare(isAr ? b.nameAr : b.name, isAr ? "ar" : "en"),
+      ),
+    [deptDoctorList, doctorSearch, isAr],
   );
-  const filteredAllDoctors = allApiDoctors
-    .filter((d) => !DOCTOR_PATH_EXCLUDED_IDS.has(d.id))
-    .filter(
-      (d) =>
-        d.name.toLowerCase().includes(doctorSearch.toLowerCase()) ||
-        d.specialty.toLowerCase().includes(doctorSearch.toLowerCase()),
-    )
-    .sort((a, b) => (isAr ? a.nameAr : a.name).localeCompare(isAr ? b.nameAr : b.name, isAr ? "ar" : "en"));
+  const filteredAllDoctors = useMemo(
+    () =>
+      [...filterDoctorsBySearch(
+        allApiDoctors.filter((d) => !DOCTOR_PATH_EXCLUDED_IDS.has(d.id)),
+        doctorSearch,
+      )].sort((a, b) =>
+        (isAr ? a.nameAr : a.name).localeCompare(isAr ? b.nameAr : b.name, isAr ? "ar" : "en"),
+      ),
+    [allApiDoctors, doctorSearch, isAr],
+  );
   const selectedDeptObj = departmentsList.find((d) => d.id === selectedDept);
   const selectedDoctorObj =
     bookingPath === "doctor"
@@ -1437,7 +1438,7 @@ Clinic Code:`;
                     <Activity className="w-5 h-5 text-accent mt-0.5" />
                     <div>
                       <p className="text-muted-foreground text-xs uppercase tracking-wider">{t("symptoms")}</p>
-                      <p className="text-foreground font-medium">{collectedSymptoms.join(", ")}</p>
+                      <p className="text-foreground font-medium">{formatSymptomsForDisplay(collectedSymptoms, isAr)}</p>
                     </div>
                   </div>
                 )}
@@ -1541,29 +1542,43 @@ Clinic Code:`;
           <div className="bg-popover rounded-2xl p-8 border border-border shadow-sm">
             <div className="flex flex-wrap gap-2 mb-4">
               {SYMPTOM_CHIP_OPTIONS.map((chip) => (
-                <motion.button key={chip} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
+                <motion.button key={chip.value} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
                   onClick={() =>
                     setSymptomChips((prev) => {
-                      const isSelected = prev.includes(chip);
-                      const next = isSelected ? prev.filter((c) => c !== chip) : [...prev, chip];
+                      const isSelected = prev.includes(chip.value);
+                      const next = isSelected ? prev.filter((c) => c !== chip.value) : [...prev, chip.value];
                       setSymptomText((prevText) => {
+                        const chipLabel = isAr ? chip.ar : chip.en;
                         const parts = prevText
                           .split(/[,;\n]+/)
                           .map((s) => s.trim())
                           .filter(Boolean);
                         if (isSelected) {
-                          return parts.filter((p) => p.toLowerCase() !== chip.toLowerCase()).join(", ");
+                          return parts
+                            .filter(
+                              (p) =>
+                                p.toLowerCase() !== chip.value.toLowerCase() &&
+                                p !== chipLabel,
+                            )
+                            .join(", ");
                         }
-                        if (parts.some((p) => p.toLowerCase() === chip.toLowerCase())) return parts.join(", ");
-                        return [...parts, chip].join(", ");
+                        if (
+                          parts.some(
+                            (p) =>
+                              p.toLowerCase() === chip.value.toLowerCase() || p === chipLabel,
+                          )
+                        ) {
+                          return parts.join(", ");
+                        }
+                        return [...parts, chipLabel].join(", ");
                       });
                       return next;
                     })
                   }
-                  className={`px-4 py-2 rounded-full text-xs font-body tracking-wide transition-all duration-200 border ${symptomChips.includes(chip)
+                  className={`px-4 py-2 rounded-full text-xs font-body tracking-wide transition-all duration-200 border ${symptomChips.includes(chip.value)
                     ? "bg-primary text-primary-foreground border-primary shadow-sm"
                     : "bg-background border-border text-muted-foreground hover:border-accent hover:text-accent"
-                    }`}>{chip}</motion.button>
+                    }`}>{isAr ? chip.ar : chip.en}</motion.button>
               ))}
             </div>
             <textarea value={symptomText} onChange={(e) => setSymptomText(e.target.value)}
@@ -1772,7 +1787,7 @@ Clinic Code:`;
                             onClick={() => {
                               const resolvedDeptId = selectedDept ?? resolveDeptIdForDoctor(doc);
                               navigate(`/doctors/${doc.id}`, {
-                                state: { fromBookAppointment: true, step, bookingPath: bookingPath ?? "primary", selectedDept: resolvedDeptId, selectedDoctor: doc.id, isRequestMode: doc.availableOnline === false, canBookSlot: doc.availableOnline !== false }
+                                state: { fromBookAppointment: true, step, bookingPath: bookingPath ?? "primary", selectedDept: resolvedDeptId, selectedDoctor: doc.id, isRequestMode: isDoctorRequestOnly(doc), canBookSlot: !isDoctorRequestOnly(doc) }
                               });
                             }}>
                             <div className="bg-white h-64 flex items-center justify-center relative overflow-hidden shrink-0 rounded-t-2xl">
@@ -1788,13 +1803,11 @@ Clinic Code:`;
                               </p>
                               <h4 className="font-serif text-sm text-foreground mb-0.5 leading-snug">{isAr ? doc.nameAr : doc.name}</h4>
                               <p className="text-muted-foreground font-body text-[11px] mb-2 line-clamp-1">{isAr ? doc.specialtyAr : doc.specialty}</p>
-                              {doc.hideBooking !== true && (
-                                <div className={`flex items-center gap-1.5 mb-3 ${doc.availableOnline !== false ? "text-green-600" : "text-gray-500"}`}>
-                                  <div className={`w-1.5 h-1.5 rounded-full ${doc.availableOnline !== false ? "bg-green-500" : "bg-muted-foreground"}`} />
-                                  <span className="font-body text-[10px]">{doc.availableOnline !== false ? (isAr ? "متاح للحجز" : "Book Online") : (isAr ? "غير متاح حالياً" : "Request Appointment")}</span>
-                                </div>
-                              )}
-                              <button onClick={(e) => { e.stopPropagation(); const resolvedDeptId = selectedDept ?? resolveDeptIdForDoctor(doc); navigate(`/doctors/${doc.id}`, { state: { fromBookAppointment: true, step, bookingPath: bookingPath ?? "primary", selectedDept: resolvedDeptId, selectedDoctor: doc.id, isRequestMode: doc.availableOnline === false, canBookSlot: doc.availableOnline !== false } }); }} className="mt-auto inline-flex items-center gap-1 text-primary font-body text-xs hover:text-accent transition-colors">{isAr ? "عرض الملف الشخصي ←" : "View Profile →"}</button>
+                              <div className={`flex items-center gap-1.5 mb-3 ${isDoctorRequestOnly(doc) ? "text-gray-500" : "text-green-600"}`}>
+                                <div className={`w-1.5 h-1.5 rounded-full ${isDoctorRequestOnly(doc) ? "bg-muted-foreground" : "bg-green-500"}`} />
+                                <span className="font-body text-[10px]">{isDoctorRequestOnly(doc) ? (isAr ? "غير متاح حالياً" : "Request Appointment") : (isAr ? "متاح للحجز" : "Book Online")}</span>
+                              </div>
+                              <button onClick={(e) => { e.stopPropagation(); const resolvedDeptId = selectedDept ?? resolveDeptIdForDoctor(doc); navigate(`/doctors/${doc.id}`, { state: { fromBookAppointment: true, step, bookingPath: bookingPath ?? "primary", selectedDept: resolvedDeptId, selectedDoctor: doc.id, isRequestMode: isDoctorRequestOnly(doc), canBookSlot: !isDoctorRequestOnly(doc) } }); }} className="mt-auto inline-flex items-center gap-1 text-primary font-body text-xs hover:text-accent transition-colors">{isAr ? "عرض الملف الشخصي ←" : "View Profile →"}</button>
                             </div>
                           </motion.div>
                         ))}
@@ -2006,7 +2019,7 @@ Clinic Code:`;
                       { label: t("department"), value: (isAr ? selectedDeptObj?.nameAr : selectedDeptObj?.name) || selectedDoctorObj?.specialty || "", icon: Building2 },
                       { label: t("doctor"), value: (isAr ? selectedDoctorObj?.nameAr : selectedDoctorObj?.name) || "", icon: User },
                       ...(collectedSymptoms.length > 0
-                        ? [{ label: t("symptoms"), value: collectedSymptoms.join(", "), icon: Activity }]
+                        ? [{ label: t("symptoms"), value: formatSymptomsForDisplay(collectedSymptoms, isAr), icon: Activity }]
                         : []),
                       { label: isAr ? "التاريخ والوقت" : "Date & Time", value: selectedDate && selectedSlot ? `${formattedSelectedDate}  •  ${formatTimeString(selectedSlot)}` : "", icon: Clock },
                       { label: t("patient"), value: patientName.trim() || "—", icon: ClipboardList },

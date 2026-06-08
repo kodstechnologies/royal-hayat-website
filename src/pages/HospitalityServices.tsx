@@ -3,6 +3,7 @@ import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
 import ImageCarousel from "@/components/ImageCarousel";
+import { orchidSuiteCarouselImageClass } from "@/data/routeGalleryImages";
 import EventBookingModal from "@/components/EventBookingModal";
 import { Crown, Utensils, Sparkles, Flower2, Coffee, Phone, CheckCircle2, Baby, Image, Video, Bed, Star, X, Gift, UtensilsCrossed, UserCheck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -802,6 +803,7 @@ const HospitalityServices = ({
                   setSlide={setSuiteSlide}
                   altForIndex={(i) => (isAr ? `صورة ${currentSuite.name} ${i + 1}` : `${currentSuite.name} image ${i + 1}`)}
                   autoPlay
+                  imageClass={activeSuite === ORCHID_SUITE_INDEX ? orchidSuiteCarouselImageClass : undefined}
                   onImageClick={setLightboxImage}
                   isAr={isAr}
                 />
@@ -930,6 +932,7 @@ const HospitalityServices = ({
                     altForIndex={(i) => (isAr ? `صورة ${currentSuite.name} ${i + 1}` : `${currentSuite.name} image ${i + 1}`)}
                     autoPlay
                     aspectClass="aspect-video"
+                    imageClass={activeSuite === ORCHID_SUITE_INDEX ? orchidSuiteCarouselImageClass : undefined}
                     onImageClick={setLightboxImage}
                     isAr={isAr}
                   />
@@ -1001,6 +1004,7 @@ const HospitalityServices = ({
                     setSlide={setOrchidSlide}
                     altForIndex={(i) => (isAr ? `صورة ${currentSuite.name} ${i + 1}` : `${currentSuite.name} image ${i + 1}`)}
                     autoPlay={activeSuite === 0}
+                    imageClass={orchidSuiteCarouselImageClass}
                     onImageClick={setLightboxImage}
                     isAr={isAr}
                   />

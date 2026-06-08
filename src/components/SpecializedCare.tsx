@@ -1,4 +1,4 @@
-﻿import { ArrowRight, ChevronLeft, ChevronRight, X, Stethoscope } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight, X, Stethoscope } from "lucide-react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useRef, useState, useEffect, useMemo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";

@@ -10,7 +10,7 @@ import { departments, deptDoctorAliases } from "@/data/departments";
 import { getDoctorById, mapApiDoctorRowToDoctor } from "@/api/doctors";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
 import { patientTestimonials } from "@/data/patientTestimonials";
-import { X } from "lucide-react";
+import AddFeedbackModal from "@/components/AddFeedbackModal";
 import { useState, useEffect, type ReactNode } from "react";
 
 const ltrIsolateClass = "inline-block [direction:ltr] [unicode-bidi:isolate]";
@@ -156,38 +156,7 @@ const DoctorProfile = () => {
   const bookingReturnState = (location.state as any) ?? {};
   const fromBooking = Boolean(bookingReturnState?.fromBookAppointment || bookingReturnState?.step != null);
   const [isTestimonialOpen, setIsTestimonialOpen] = useState(false);
-  const [showThankYou, setShowThankYou] = useState(false);
-  const [testimonialForm, setTestimonialForm] = useState({
-    name: "",
-    comment: "",
-    rating: 0,
-  });
   const [testimonials, setTestimonials] = useState(patientFeedback);
-const handleAddTestimonial = () => {
-  if (!testimonialForm.name || !testimonialForm.comment) return;
-  const newTestimonial = {
-    name: testimonialForm.name,
-    nameAr: testimonialForm.name,
-    rating: testimonialForm.rating,
-    comment: testimonialForm.comment,
-    commentAr: testimonialForm.comment,
-    date: new Date().toLocaleDateString("en-US", {
-      month: "long",
-      year: "numeric",
-    }),
-  };
-  setTestimonials((prev) => [newTestimonial, ...prev]);
-  setTestimonialForm({
-    name: "",
-    comment: "",
-    rating: 5,
-  });
-  setShowThankYou(true);
-  setTimeout(() => {
-    setShowThankYou(false);
-    setIsTestimonialOpen(false);
-  }, 2200);
-};
   const handleGoBack = () => {
     if (fromBooking) {
       navigate("/book-appointment", { state: bookingReturnState });
@@ -498,10 +467,10 @@ const handleAddTestimonial = () => {
         </div>
         <div className="container mx-auto px-6 mb-6 flex justify-end">
           <motion.button
-            whileHover={{ scale: 1.03 }}
+            whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.97 }}
             onClick={() => setIsTestimonialOpen(true)}
-            className="bg-primary text-primary-foreground px-5 py-3 rounded-xl text-sm font-body tracking-wide hover:bg-primary/90 transition-all"
+            className="flex items-center gap-2 rounded-2xl bg-primary px-6 py-3.5 text-sm font-medium tracking-wide text-primary-foreground shadow-lg transition-all duration-300 hover:bg-primary/90 hover:shadow-xl"
           >
             {lang === "ar" ? "إضافة تقييم" : "Add Feedback"}
           </motion.button>
@@ -539,229 +508,30 @@ const handleAddTestimonial = () => {
           </div>
         </div>
       </section>
-      {isTestimonialOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="
-  bg-background/95
-  backdrop-blur-xl
-  w-full
-  max-w-lg
-  rounded-3xl
-  p-8
-  border
-  border-border/50
-  shadow-[0_20px_60px_rgba(0,0,0,0.25)]
-  relative
-"          >
-            {}
-            <button
-              onClick={() => setIsTestimonialOpen(false)}
-              className="absolute top-4 right-4 text-muted-foreground hover:text-foreground"
-            >
-              <X className="w-5 h-5" />
-            </button>
-            <div className="text-center mb-8">
-              <div className="w-16 h-16 mx-auto rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                <Star className="w-8 h-8 text-primary fill-primary/20" />
-              </div>
-              <h2 className="text-3xl font-serif text-primary mb-2">
-                {lang === "ar" ? "إضافة تقييم" : "Add Feedback"}
-              </h2>
-              <p className="text-sm text-muted-foreground font-body">
-                {lang === "ar"
-                  ? "شارك تجربتك مع الطبيب"
-                  : "Share your experience with the doctor"}
-              </p>
-            </div>
-            {}
-            <div className="mb-4">
-              <label className="block text-sm mb-2 font-body">
-                {lang === "ar" ? "الاسم" : "Your Name"}
-              </label>
-              <input
-                type="text"
-                value={testimonialForm.name}
-                onChange={(e) =>
-                  setTestimonialForm({
-                    ...testimonialForm,
-                    name: e.target.value,
-                  })
-                }
-                className="w-full border border-border rounded-xl px-4 py-3 bg-background outline-none focus:border-primary"
-                placeholder={lang === "ar" ? "أدخل الاسم" : "Enter your name"}
-              />
-            </div>
-            {}
-            <div className="mb-4">
-              <label className="block text-sm mb-2 font-body">
-                {lang === "ar" ? "التقييم" : "Feedback"}
-              </label>
-              <textarea
-                rows={4}
-                value={testimonialForm.comment}
-                onChange={(e) =>
-                  setTestimonialForm({
-                    ...testimonialForm,
-                    comment: e.target.value,
-                  })
-                }
-                className="w-full border border-border rounded-xl px-4 py-3 bg-background outline-none focus:border-primary resize-none"
-                placeholder={
-                  lang === "ar"
-                    ? "اكتب رأيك عن الطبيب"
-                    : "Write your feedback about the doctor"
-                }
-              />
-            </div>
-            {}
-            <div className="mb-6">
-              <label className="block text-sm mb-2 font-body">
-                {lang === "ar" ? "التقييم بالنجوم" : "Rating"}
-              </label>
-              <div className="flex items-center gap-2">
-                {Array.from({ length: 5 }).map((_, index) => (
-                  <button
-                    key={index}
-                    type="button"
-                    onClick={() =>
-                      setTestimonialForm({
-                        ...testimonialForm,
-                        rating: index + 1,
-                      })
-                    }
-                  >
-                    <Star
-                      className={`w-6 h-6 transition-all ${index < testimonialForm.rating
-                        ? "text-accent fill-accent"
-                        : "text-border"
-                        }`}
-                    />
-                  </button>
-                ))}
-              </div>
-            </div>
-            {}
-            <button
-              onClick={handleAddTestimonial}
-              className="
-    w-full
-    bg-primary
-    text-primary-foreground
-    py-3.5
-    rounded-2xl
-    font-semibold
-    text-sm
-    tracking-wide
-    flex
-    items-center
-    justify-center
-    gap-2
-    shadow-lg
-    hover:shadow-xl
-    hover:scale-[1.02]
-    hover:bg-primary/90
-    active:scale-[0.98]
-    transition-all
-    duration-300
-  "
-            >
-              <Star className="w-4 h-4 fill-current" />
-              <span className="text-center">
-                {lang === "ar" ? "إرسال التقييم" : "Submit Feedback"}
-              </span>
-            </button>
-            {showThankYou && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                transition={{
-                  duration: 0.45,
-                  type: "spring",
-                  stiffness: 180,
-                }}
-                className="
-      absolute
-      inset-0
-      z-50
-      flex
-      items-center
-      justify-center
-      rounded-3xl
-      bg-background/90
-      backdrop-blur-md
-      px-6
-    "
-              >
-                <div
-                  className="
-        flex
-        items-center
-        gap-4
-        rounded-2xl
-        border
-        border-primary/20
-        bg-primary/10
-        px-6
-        py-5
-        shadow-2xl
-      "
-                >
-                  {}
-                  <motion.div
-                    initial={{ scale: 0, rotate: -180 }}
-                    animate={{ scale: 1, rotate: 0 }}
-                    transition={{
-                      delay: 0.15,
-                      type: "spring",
-                      stiffness: 260,
-                    }}
-                    className="
-          w-12
-          h-12
-          rounded-full
-          bg-primary/15
-          border
-          border-primary/20
-          flex
-          items-center
-          justify-center
-        "
-                  >
-                    <Star className="w-6 h-6 text-primary fill-primary/20" />
-                  </motion.div>
-                  {}
-                  <div>
-                    <motion.p
-                      initial={{ opacity: 0, x: 10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.2 }}
-                      className="text-primary font-semibold text-base"
-                    >
-                      {lang === "ar"
-                        ? "شكراً لك على ملاحظاتك"
-                        : "Thank you for your feedback"}
-                    </motion.p>
-                    <motion.p
-                      initial={{ opacity: 0, x: 10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.3 }}
-                      className="text-muted-foreground text-sm mt-1"
-                    >
-                      {lang === "ar"
-                        ? "نحن نقدر وقتك ومشاركتك"
-                        : "We truly appreciate your response"}
-                    </motion.p>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </motion.div>
-        </div>
-      )}
+      <AddFeedbackModal
+        isOpen={isTestimonialOpen}
+        onClose={() => setIsTestimonialOpen(false)}
+        subtitleEn="Share your experience with the doctor"
+        subtitleAr="شارك تجربتك مع الطبيب"
+        feedbackPlaceholderEn="Write your feedback about the doctor"
+        feedbackPlaceholderAr="اكتب رأيك عن الطبيب"
+        onSubmit={({ name, feedback, stars }) => {
+          setTestimonials((prev) => [
+            {
+              name,
+              nameAr: name,
+              rating: stars,
+              comment: feedback,
+              commentAr: feedback,
+              date: new Date().toLocaleDateString("en-US", {
+                month: "long",
+                year: "numeric",
+              }),
+            },
+            ...prev,
+          ]);
+        }}
+      />
       <Footer />
     </div>
   );

@@ -186,7 +186,7 @@ const Doctors = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [doctorCatalog, setDoctorCatalog] = useState<Doctor[]>([]);
   const [catalogLoading, setCatalogLoading] = useState(true);
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
   useEffect(() => {
     let cancelled = false;
     void loadDoctors().then((list) => {

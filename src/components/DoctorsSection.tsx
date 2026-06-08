@@ -5,13 +5,17 @@ import { motion } from "framer-motion";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Doctor } from "@/data/doctors";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
+import { scrollDoctorCarousel } from "@/utils/doctorCarousel";
 const DoctorCard = ({ doc }: { doc: Doctor }) => {
   const { lang } = useLanguage();
   const displayName = getDoctorDisplayName(doc, lang);
   return (
-    <Link to={`/doctors/${doc.id}`} className="block w-[280px] min-h-[430px] flex-shrink-0 relative z-0 hover:z-10 snap-center md:snap-start">
+    <Link
+      to={`/doctors/${doc.id}`}
+      data-doctor-carousel-card
+      className="relative z-0 block w-[280px] min-h-[430px] flex-shrink-0 snap-center hover:z-10 md:snap-start"
+    >
       <motion.div
         dir={lang === "ar" ? "rtl" : "ltr"}
         whileHover={{ y: -6, boxShadow: "0 20px 40px -12px hsl(var(--primary) / 0.12)" }}
@@ -59,7 +63,6 @@ const DoctorsSection = ({ featuredDoctors }: { featuredDoctors: Doctor[] }) => {
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
   const { lang, t } = useLanguage();
-  const isMobile = useIsMobile();
   const checkScroll = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
@@ -80,13 +83,9 @@ const DoctorsSection = ({ featuredDoctors }: { featuredDoctors: Doctor[] }) => {
   }, [checkScroll, featuredDoctors]);
   const scroll = useCallback((dir: "left" | "right") => {
     if (!scrollRef.current) return;
-    const amount = isMobile ? 280 + 80 : (280 + 24) * 2;
-    scrollRef.current.scrollBy({
-      left: dir === "left" ? -amount : amount,
-      behavior: "smooth",
-    });
+    scrollDoctorCarousel(scrollRef.current, dir);
     setTimeout(checkScroll, 400);
-  }, [isMobile, checkScroll]);
+  }, [checkScroll]);
   const handleManualInteraction = (dir: "left" | "right") => {
     setIsPaused(true);
     scroll(dir);
@@ -160,21 +159,8 @@ const DoctorsSection = ({ featuredDoctors }: { featuredDoctors: Doctor[] }) => {
               ref={scrollRef}
               dir="ltr"
               onScroll={checkScroll}
-              className="doctors-carousel-track flex items-stretch gap-20 md:gap-6 overflow-x-auto pb-8 scroll-smooth snap-x snap-mandatory px-[20px] md:px-0"
-              style={{
-                scrollbarWidth: "none",
-                msOverflowStyle: "none",
-                paddingLeft: "calc((100vw - 280px) / 2)",
-                paddingRight: "calc((100vw - 280px) / 2)",
-              }}
+              className="doctors-carousel-track flex items-stretch gap-4 overflow-x-auto pb-8 scroll-smooth snap-x snap-mandatory max-md:scroll-px-[calc(50%-140px)] max-md:px-[calc(50%-140px)] md:gap-6 md:px-0 md:scroll-px-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
             >
-              {}
-              <style dangerouslySetInnerHTML={{
-                __html: `
-                @media (min-width: 768px) {
-                  .doctors-carousel-track { padding-left: 0 !important; padding-right: 0 !important; }
-                }
-              `}} />
               {featuredDoctors.map((doc) => (
                 <DoctorCard key={doc.id} doc={doc} />
               ))}

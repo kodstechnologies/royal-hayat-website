@@ -18,9 +18,9 @@ export const inRoomEventGalleryImages = [
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/in-room/DSC06052.JPG",
 ];
 export const gardeniaHallImages = [
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/Gardeneria/h7l3psmyyagfq3zbxpfc.jpeg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/Gardeneria/to9pjrjetqhep0hjjuan.jpeg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/Gardeneria/xwtidtktsnjpk3iahoap.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a26a24098ba74d0efcb3060/1780916849614-h7l3psmyyagfq3zbxpfc.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a26a24098ba74d0efcb3060/1780916851526-to9pjrjetqhep0hjjuan.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a26a24098ba74d0efcb3060/1780916851873-xwtidtktsnjpk3iahoap.jpeg",
 ];
 export const alJouriHallImages = [
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/AL-jouri/DSC00056.JPG",
@@ -28,17 +28,37 @@ export const alJouriHallImages = [
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/AL-jouri/DSC08997.JPG",
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/AL-jouri/DSC08998.JPG",
 ];
-export const orchidSuiteImages = [
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/royal-orchid/bopzkiyw2loxlj5feqrq.jpeg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/royal-orchid/d4qb0yqskjhqchdkl7am.jpeg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/royal-orchid/frsyhf8nbgjkgcg434jr.jpeg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/royal-orchid/ifxwoic4djdk7cy9fxgj.jpeg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/royal-orchid/im5vl7sowqrq9gde5mdd.jpeg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/royal-orchid/uefabpbuxb4bg54jgxcf.jpeg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/royal-orchid/uylb3kpbuglecsvdqgdf.jpeg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/royal-orchid/x4w2fqifwses0tjowg9f.jpeg",
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/royal-orchid/zp7qxsiyn7fdhme2vgdq.jpeg",
+const ORCHID_SUITE_CAROUSEL_IMAGES = [
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a26969e0ca7f20f0250444b/1780916327276-DSC08493.jpg1.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a26969e0ca7f20f0250444b/1780916328992-orc3_(1).jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a26969e0ca7f20f0250444b/1780916329425-orc4_(1).jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a26969e0ca7f20f0250444b/1780916329757-orc5_(1).jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a26969e0ca7f20f0250444b/1780916330059-orc6.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a26969e0ca7f20f0250444b/1780916330385-orc7.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a26969e0ca7f20f0250444b/1780916330712-orc8.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a26969e0ca7f20f0250444b/1780916330988-orc9.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a26969e0ca7f20f0250444b/1780916331329-orc10.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a26969e0ca7f20f0250444b/1780916331623-orc11_(1).jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a26969e0ca7f20f0250444b/1780916331974-orch2.jpeg",
 ];
+
+const ROYALE_ORCHID_SUITE_IMAGES = [
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a26a46e98ba74d0efcb3107/1780917646482-frsyhf8nbgjkgcg434jr.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a26a46e98ba74d0efcb3107/1780917649248-ifxwoic4djdk7cy9fxgj.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a26a46e98ba74d0efcb3107/1780917650693-im5vl7sowqrq9gde5mdd.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a26a46e98ba74d0efcb3107/1780917652056-RO-1.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a26a46e98ba74d0efcb3107/1780917653409-RO-2.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a26a46e98ba74d0efcb3107/1780917654327-uefabpbuxb4bg54jgxcf.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a26a46e98ba74d0efcb3107/1780917655207-uylb3kpbuglecsvdqgdf.jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a26a46e98ba74d0efcb3107/1780917656608-zp7qxsiyn7fdhme2vgdq.jpeg",
+];
+
+/** Crop focus upward to de-emphasize neutral floor/background in suite interiors. */
+export const orchidSuiteCarouselImageClass =
+  "h-full w-full cursor-zoom-in object-cover object-[center_32%]";
+
+/** Royale Orchid Suite tab (suites index 0). */
+export const orchidSuiteImages = ROYALE_ORCHID_SUITE_IMAGES;
 export const spaImages = [
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/royal-spaa/DSC09509.JPG",
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/royal-spaa/DSC09603.JPG",
@@ -68,19 +88,7 @@ export const cafeImages = [
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a2697920ca7f20f025044db/1780914654870-DSC09126.jpg",
 ];
 export const suiteCarouselImagesByIndex: Record<number, string[]> = {
-  1: [
-    "https://royal-hayat.s3.eu-central-1.amazonaws.com/royal+-orchid+suites/DSC08493.jpg+(1).jpeg",
-    "https://royal-hayat.s3.eu-central-1.amazonaws.com/royal+-orchid+suites/DSC08502.jpg.jpeg",
-    "https://royal-hayat.s3.eu-central-1.amazonaws.com/royal+-orchid+suites/DSC08561.jpg.jpeg",
-    "https://royal-hayat.s3.eu-central-1.amazonaws.com/royal+-orchid+suites/DSC08506.jpg.jpeg",
-    "https://royal-hayat.s3.eu-central-1.amazonaws.com/royal+-orchid+suites/DSC08588.jpg.jpeg",
-    "https://royal-hayat.s3.eu-central-1.amazonaws.com/royal+-orchid+suites/DSC08570.jpg.jpeg",
-    "https://royal-hayat.s3.eu-central-1.amazonaws.com/royal+-orchid+suites/DSC08554.jpg.jpeg",
-    "https://royal-hayat.s3.eu-central-1.amazonaws.com/royal+-orchid+suites/DSC08513.jpg.jpeg",
-    "https://royal-hayat.s3.eu-central-1.amazonaws.com/royal+-orchid+suites/DSC08517.jpg.jpeg",
-    "https://royal-hayat.s3.eu-central-1.amazonaws.com/royal+-orchid+suites/DSC08534.jpg.jpeg",
-    "https://royal-hayat.s3.eu-central-1.amazonaws.com/royal+-orchid+suites/DSC08608.jpg.jpeg"
-  ],
+  1: ORCHID_SUITE_CAROUSEL_IMAGES,
   2: [
     "https://royal-hayat.s3.eu-central-1.amazonaws.com/Lotus/d81veuqgifhks7mpprut.jpeg",
     "https://royal-hayat.s3.eu-central-1.amazonaws.com/Lotus/emlkwpnph4axlabp5smi.jpeg",

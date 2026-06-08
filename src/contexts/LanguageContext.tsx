@@ -573,8 +573,8 @@ const translations: Translations = {
     ar: "العودة",
   },
   hisFailureCallCenterMessage: {
-    en: "We are currently experiencing some technical issues. Kindly share your mobile number, and our call center team will contact you to confirm your appointment.",
-    ar: "نعتذر عن الإزعاج. نواجه حاليًا بعض المشاكل التقنية. يرجى مشاركة رقم هاتفكم، وسيتواصل معكم أحد موظفي خدمة العملاء لدينا في أقرب وقت لتأكيد موعدكم.",
+    en: "We are currently experiencing some technical issues. Kindly provide your mobile number, and our Call Center team will contact you to confirm your appointment.",
+    ar: "نواجه حالياً بعض المشكلات التقنية. نرجو منكم التكرم بتزويدنا برقم الهاتف، وسيقوم فريق مركز الاتصال بالتواصل معكم لتأكيد موعدكم.",
   },
   hisFailureRedirectToRequest: {
     en: "We're moving you to the Appointment Request screen with the details shown below.",

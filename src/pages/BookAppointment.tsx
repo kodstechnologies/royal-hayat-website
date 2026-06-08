@@ -2189,7 +2189,7 @@ Clinic Code:`;
                 className="font-body text-sm text-foreground leading-relaxed"
               >
                 {hisFailureAllowsRequest
-                  ? t("hisFailureRedirectToRequest")
+                  ? t("hisFailureCallCenterMessage")
                   : hisFailureMessage || t("patientLookupFailed")}
               </p>
             </div>

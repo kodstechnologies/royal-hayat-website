@@ -335,7 +335,7 @@ export const en = {
   "patientLookupFailed": "Could not confirm your hospital registration. Please try again or contact reception.",
   "bookAsFirstTimePatient": "Book as first-time patient",
   "patientLookupGoBack": "Go back",
-  "hisFailureCallCenterMessage": "We are currently experiencing some technical issues. Kindly share your mobile number, and our call center team will contact you to confirm your appointment.",
+  "hisFailureCallCenterMessage": "We are currently experiencing some technical issues. Kindly provide your mobile number, and our Call Center team will contact you to confirm your appointment.",
   "hisFailureRedirectToRequest": "We're moving you to the Appointment Request screen with the details shown below.",
   "bookingFallbackTitle": "Complete Your Appointment Request",
   "bookingFallbackSubtitle": "We could not confirm your booking online. Please add your phone number and date of birth so our call center can confirm your preferred appointment.",

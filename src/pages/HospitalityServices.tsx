@@ -2,8 +2,9 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
+import ImageCarousel from "@/components/ImageCarousel";
 import EventBookingModal from "@/components/EventBookingModal";
-import { Crown, Utensils, Sparkles, Flower2, Coffee, Phone, CheckCircle2, Baby, Image, Video, Bed, Star, ChevronLeft, ChevronRight, X, Gift, UtensilsCrossed, UserCheck } from "lucide-react";
+import { Crown, Utensils, Sparkles, Flower2, Coffee, Phone, CheckCircle2, Baby, Image, Video, Bed, Star, X, Gift, UtensilsCrossed, UserCheck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useEffect, useState } from "react";
@@ -138,22 +139,9 @@ const HospitalityServices = ({
   ];
   const activeSuiteImages = suiteCarouselImagesByIndex[activeSuite] ?? suiteCarouselImagesByIndex[6];
   useEffect(() => {
-    if (activeSuite === 0) return;
-    const timer = window.setInterval(() => {
-      setSuiteSlide((prev) => (prev + 1) % activeSuiteImages.length);
-    }, 5000);
-    return () => window.clearInterval(timer);
-  }, [activeSuite, activeSuiteImages.length]);
-  useEffect(() => {
     setSuiteSlide(0);
+    setOrchidSlide(0);
   }, [activeSuite]);
-  useEffect(() => {
-    if (activeHall !== "gardenia" || gardeniaHallImages.length <= 1) return;
-    const timer = window.setInterval(() => {
-      setGardeniaSlide((prev) => (prev + 1) % gardeniaHallImages.length);
-    }, 5000);
-    return () => window.clearInterval(timer);
-  }, [activeHall, gardeniaHallImages.length]);
   const ORCHID_SUITE_INDEX = 1;
   const LOTUS_SUITE_INDEX = 2;
   const JASMINE_SUITE_INDEX = 3;
@@ -223,48 +211,6 @@ const HospitalityServices = ({
     window.addEventListener("devicemotion", handleDeviceMotion);
     return () => window.removeEventListener("devicemotion", handleDeviceMotion);
   }, [activeHall, activeSuite]);
-  useEffect(() => {
-    if (activeHall !== "aljouri" || alJouriHallImages.length <= 1) return;
-    const timer = window.setInterval(() => {
-      setAlJouriSlide((prev) => (prev + 1) % alJouriHallImages.length);
-    }, 5000);
-    return () => window.clearInterval(timer);
-  }, [activeHall, alJouriHallImages.length]);
-  useEffect(() => {
-    if (activeSuite !== 0) return;
-    const timer = window.setInterval(() => {
-      setOrchidSlide((prev) => (prev + 1) % orchidSuiteImages.length);
-    }, 5000);
-    return () => window.clearInterval(timer);
-  }, [activeSuite, orchidSuiteImages.length]);
-  useEffect(() => {
-    if (spaImages.length <= 1) return;
-    const timer = window.setInterval(() => {
-      setSpaSlide((prev) => (prev + 1) % spaImages.length);
-    }, 5000);
-    return () => window.clearInterval(timer);
-  }, [spaImages.length]);
-  useEffect(() => {
-    if (cafeImages.length <= 1) return;
-    const timer = window.setInterval(() => {
-      setCafeSlide((prev) => (prev + 1) % cafeImages.length);
-    }, 5000);
-    return () => window.clearInterval(timer);
-  }, [cafeImages.length]);
-  useEffect(() => {
-    if (fifthFloorCafeImages.length <= 1) return;
-    const timer = window.setInterval(() => {
-      setFifthCafeSlide((prev) => (prev + 1) % fifthFloorCafeImages.length);
-    }, 5000);
-    return () => window.clearInterval(timer);
-  }, [fifthFloorCafeImages.length]);
-  useEffect(() => {
-    if (babyImages.length <= 1) return;
-    const timer = window.setInterval(() => {
-      setBabySlide((prev) => (prev + 1) % babyImages.length);
-    }, 5000);
-    return () => window.clearInterval(timer);
-  }, [babyImages.length]);
   const hallsNav = [
     { id: "gardenia", label: isAr ? "قاعة جاردينيا للاحتفالات" : "Gardenia Banquet Hall" },
     { id: "aljouri", label: isAr ? "قاعة الجوري للاحتفالات" : "Al Jouri Banquet Hall" },
@@ -639,49 +585,16 @@ const HospitalityServices = ({
                 </ScrollAnimationWrapper>
               </div>
               <div className="mt-16 max-w-5xl mx-auto px-4 md:px-12">
-                <div className="relative">
-                  <div className="relative aspect-video rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
-                    <AnimatePresence initial={false}>
-                      <motion.div
-                        key={`gardenia-${gardeniaSlide}`}
-                        initial={{ x: 36 }}
-                        animate={{ x: 0 }}
-                        exit={{ x: -36 }}
-                        transition={{ duration: 0.35, ease: "easeInOut" }}
-                        className="absolute inset-0"
-                      >
-                        <img
-                          src={gardeniaHallImages[gardeniaSlide]}
-                          alt={isAr ? `قاعة جاردينيا للاحتفالات ${gardeniaSlide + 1}` : `Gardenia Banquet Hall image ${gardeniaSlide + 1}`}
-                          className="w-full h-full object-cover cursor-zoom-in"
-                          loading="lazy"
-                          onClick={() => setLightboxImage(gardeniaHallImages[gardeniaSlide])}
-                        />
-                      </motion.div>
-                    </AnimatePresence>
-                  </div>
-                  <button
-                    onClick={() => setGardeniaSlide((prev) => (prev - 1 + gardeniaHallImages.length) % gardeniaHallImages.length)}
-                    aria-label={isAr ? "السابق" : "Previous"}
-                    disabled={gardeniaHallImages.length <= 1}
-                    className="absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
-                  >
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-                  <button
-                    onClick={() => setGardeniaSlide((prev) => (prev + 1) % gardeniaHallImages.length)}
-                    aria-label={isAr ? "التالي" : "Next"}
-                    disabled={gardeniaHallImages.length <= 1}
-                    className="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
-                  >
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
-                </div>
-                <div className="flex items-center justify-center gap-3 mt-5">
-                  <span className="font-body text-xs text-muted-foreground tracking-widest">
-                    {String(gardeniaSlide + 1).padStart(2, "0")} / {String(gardeniaHallImages.length).padStart(2, "0")}
-                  </span>
-                </div>
+                <ImageCarousel
+                  images={gardeniaHallImages}
+                  slide={gardeniaSlide}
+                  setSlide={setGardeniaSlide}
+                  altForIndex={(i) => (isAr ? `قاعة جاردينيا للاحتفالات ${i + 1}` : `Gardenia Banquet Hall image ${i + 1}`)}
+                  autoPlay={activeHall === "gardenia"}
+                  aspectClass="aspect-video"
+                  onImageClick={setLightboxImage}
+                  isAr={isAr}
+                />
               </div>
             </motion.div>
           )}
@@ -736,49 +649,16 @@ const HospitalityServices = ({
                 </ScrollAnimationWrapper>
               </div>
               <div className="mt-16 max-w-5xl mx-auto px-4 md:px-12">
-                <div className="relative">
-                  <div className="relative aspect-video rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
-                    <AnimatePresence initial={false}>
-                      <motion.div
-                        key={`aljouri-${alJouriSlide}`}
-                        initial={{ x: 36 }}
-                        animate={{ x: 0 }}
-                        exit={{ x: -36 }}
-                        transition={{ duration: 0.35, ease: "easeInOut" }}
-                        className="absolute inset-0"
-                      >
-                        <img
-                          src={alJouriHallImages[alJouriSlide]}
-                          alt={isAr ? `قاعة الجوري للاحتفالات ${alJouriSlide + 1}` : `Al Jouri Banquet Hall image ${alJouriSlide + 1}`}
-                          className="w-full h-full object-cover cursor-zoom-in"
-                          loading="lazy"
-                          onClick={() => setLightboxImage(alJouriHallImages[alJouriSlide])}
-                        />
-                      </motion.div>
-                    </AnimatePresence>
-                  </div>
-                  <button
-                    onClick={() => setAlJouriSlide((prev) => (prev - 1 + alJouriHallImages.length) % alJouriHallImages.length)}
-                    aria-label={isAr ? "السابق" : "Previous"}
-                    disabled={alJouriHallImages.length <= 1}
-                    className="absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
-                  >
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-                  <button
-                    onClick={() => setAlJouriSlide((prev) => (prev + 1) % alJouriHallImages.length)}
-                    aria-label={isAr ? "التالي" : "Next"}
-                    disabled={alJouriHallImages.length <= 1}
-                    className="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
-                  >
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
-                </div>
-                <div className="flex items-center justify-center gap-3 mt-5">
-                  <span className="font-body text-xs text-muted-foreground tracking-widest">
-                    {String(alJouriSlide + 1).padStart(2, "0")} / {String(alJouriHallImages.length).padStart(2, "0")}
-                  </span>
-                </div>
+                <ImageCarousel
+                  images={alJouriHallImages}
+                  slide={alJouriSlide}
+                  setSlide={setAlJouriSlide}
+                  altForIndex={(i) => (isAr ? `قاعة الجوري للاحتفالات ${i + 1}` : `Al Jouri Banquet Hall image ${i + 1}`)}
+                  autoPlay={activeHall === "aljouri"}
+                  aspectClass="aspect-video"
+                  onImageClick={setLightboxImage}
+                  isAr={isAr}
+                />
               </div>
             </motion.div>
           )}
@@ -795,49 +675,15 @@ const HospitalityServices = ({
           </div>
           <div className="grid lg:grid-cols-2 gap-10 items-start">
             <div className="relative order-2 lg:order-2">
-              <div className="relative aspect-[5/4] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
-                <AnimatePresence initial={false}>
-                  <motion.div
-                    key={`cafe-section-${cafeSlide}`}
-                    initial={{ x: 36 }}
-                    animate={{ x: 0 }}
-                    exit={{ x: -36 }}
-                    transition={{ duration: 0.35, ease: "easeInOut" }}
-                    className="absolute inset-0"
-                  >
-                    <img
-                      src={cafeImages[cafeSlide]}
-                      alt={isAr ? `بيسترو الليوان ${cafeSlide + 1}` : `Al Liwan Bistro image ${cafeSlide + 1}`}
-                      className="w-full h-full object-cover cursor-zoom-in"
-                      loading="lazy"
-                      onClick={() => setLightboxImage(cafeImages[cafeSlide])}
-                    />
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-              <>
-                <button
-                  onClick={() => setCafeSlide((prev) => (prev - 1 + cafeImages.length) % cafeImages.length)}
-                  aria-label={isAr ? "السابق" : "Previous"}
-                  disabled={cafeImages.length <= 1}
-                  className="absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-background/95 disabled:hover:text-foreground disabled:hover:border-border"
-                >
-                  <ChevronLeft className="w-5 h-5" />
-                </button>
-                <button
-                  onClick={() => setCafeSlide((prev) => (prev + 1) % cafeImages.length)}
-                  aria-label={isAr ? "التالي" : "Next"}
-                  disabled={cafeImages.length <= 1}
-                  className="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-background/95 disabled:hover:text-foreground disabled:hover:border-border"
-                >
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-              </>
-              <div className="flex items-center justify-center gap-3 mt-5">
-                <span className="font-body text-xs text-muted-foreground tracking-widest">
-                  {String(cafeSlide + 1).padStart(2, "0")} / {String(cafeImages.length).padStart(2, "0")}
-                </span>
-              </div>
+              <ImageCarousel
+                images={cafeImages}
+                slide={cafeSlide}
+                setSlide={setCafeSlide}
+                altForIndex={(i) => (isAr ? `بيسترو الليوان ${i + 1}` : `Al Liwan Bistro image ${i + 1}`)}
+                autoPlay
+                onImageClick={setLightboxImage}
+                isAr={isAr}
+              />
             </div>
             <ScrollAnimationWrapper className="order-3 lg:order-1">
               <div>
@@ -884,50 +730,16 @@ const HospitalityServices = ({
                 <h2 className="text-2xl md:text-3xl font-serif text-foreground">{isAr ? "Elements Spa" : "Elements Spa by Banyan Tree"}</h2>
               </div>
             </div>
-            <div className="relative lg:col-start-1 lg:row-start-1 lg:row-span-2">
-              <div className="relative aspect-[5/4] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
-                <AnimatePresence initial={false}>
-                  <motion.div
-                    key={`spa-section-${spaSlide}`}
-                    initial={{ x: 36 }}
-                    animate={{ x: 0 }}
-                    exit={{ x: -36 }}
-                    transition={{ duration: 0.35, ease: "easeInOut" }}
-                    className="absolute inset-0"
-                  >
-                    <img
-                      src={spaImages[spaSlide]}
-                      alt={isAr ? `سبا إليمنتس ${spaSlide + 1}` : `Elements Spa image ${spaSlide + 1}`}
-                      className="w-full h-full object-cover cursor-zoom-in"
-                      loading="lazy"
-                      onClick={() => setLightboxImage(spaImages[spaSlide])}
-                    />
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-              <>
-                <button
-                  onClick={() => setSpaSlide((prev) => (prev - 1 + spaImages.length) % spaImages.length)}
-                  aria-label={isAr ? "السابق" : "Previous"}
-                  disabled={spaImages.length <= 1}
-                  className="absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-background/95 disabled:hover:text-foreground disabled:hover:border-border"
-                >
-                  <ChevronLeft className="w-5 h-5" />
-                </button>
-                <button
-                  onClick={() => setSpaSlide((prev) => (prev + 1) % spaImages.length)}
-                  aria-label={isAr ? "التالي" : "Next"}
-                  disabled={spaImages.length <= 1}
-                  className="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-background/95 disabled:hover:text-foreground disabled:hover:border-border"
-                >
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-              </>
-              <div className="flex items-center justify-center gap-3 mt-5">
-                <span className="font-body text-xs text-muted-foreground tracking-widest">
-                  {String(spaSlide + 1).padStart(2, "0")} / {String(spaImages.length).padStart(2, "0")}
-                </span>
-              </div>
+            <div className="lg:col-start-1 lg:row-start-1 lg:row-span-2">
+              <ImageCarousel
+                images={spaImages}
+                slide={spaSlide}
+                setSlide={setSpaSlide}
+                altForIndex={(i) => (isAr ? `سبا إليمنتس ${i + 1}` : `Elements Spa image ${i + 1}`)}
+                autoPlay
+                onImageClick={setLightboxImage}
+                isAr={isAr}
+              />
             </div>
             <ScrollAnimationWrapper className="lg:col-start-2 lg:row-start-2">
               <div>
@@ -982,48 +794,17 @@ const HospitalityServices = ({
           </div>
           <motion.div key={activeSuite} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}>
             {activeSuite !== 0 && !activeSuite360Tour ? (
+              
               <div className="grid lg:grid-cols-2 gap-10 items-start">
-                <div className="relative">
-                  <div className="relative aspect-[5/4] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
-                    <AnimatePresence initial={false}>
-                      <motion.div
-                        key={`suite-${activeSuite}-${suiteSlide}`}
-                        initial={{ x: 36 }}
-                        animate={{ x: 0 }}
-                        exit={{ x: -36 }}
-                        transition={{ duration: 0.35, ease: "easeInOut" }}
-                        className="absolute inset-0"
-                      >
-                        <img
-                          src={activeSuiteImages[suiteSlide]}
-                          alt={isAr ? `صورة ${currentSuite.name} ${suiteSlide + 1}` : `${currentSuite.name} image ${suiteSlide + 1}`}
-                          className="w-full h-full object-cover cursor-zoom-in"
-                          loading="lazy"
-                          onClick={() => setLightboxImage(activeSuiteImages[suiteSlide])}
-                        />
-                      </motion.div>
-                    </AnimatePresence>
-                  </div>
-                  <button
-                    onClick={() => setSuiteSlide((prev) => (prev - 1 + activeSuiteImages.length) % activeSuiteImages.length)}
-                    aria-label={isAr ? "السابق" : "Previous"}
-                    className="absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md"
-                  >
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-                  <button
-                    onClick={() => setSuiteSlide((prev) => (prev + 1) % activeSuiteImages.length)}
-                    aria-label={isAr ? "التالي" : "Next"}
-                    className="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md"
-                  >
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
-                  <div className="flex items-center justify-center gap-3 mt-5">
-                    <span className="font-body text-xs text-muted-foreground tracking-widest">
-                      {String(suiteSlide + 1).padStart(2, "0")} / {String(activeSuiteImages.length).padStart(2, "0")}
-                    </span>
-                  </div>
-                </div>
+                <ImageCarousel
+                  images={activeSuiteImages}
+                  slide={suiteSlide}
+                  setSlide={setSuiteSlide}
+                  altForIndex={(i) => (isAr ? `صورة ${currentSuite.name} ${i + 1}` : `${currentSuite.name} image ${i + 1}`)}
+                  autoPlay
+                  onImageClick={setLightboxImage}
+                  isAr={isAr}
+                />
                 <div>
                   <h3 className="text-xl font-serif text-foreground mb-2">{currentSuite.name}</h3>
                   <p className="font-body text-xs text-accent tracking-wide uppercase mb-4">{currentSuite.area}</p>
@@ -1142,47 +923,16 @@ const HospitalityServices = ({
                   </div>
                 </div>
                 <div className="mt-16 max-w-5xl mx-auto px-4 md:px-12">
-                  <div className="relative">
-                    <div className="relative aspect-video rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
-                      <AnimatePresence initial={false}>
-                        <motion.div
-                          key={`suite-${activeSuite}-${suiteSlide}`}
-                          initial={{ x: 36 }}
-                          animate={{ x: 0 }}
-                          exit={{ x: -36 }}
-                          transition={{ duration: 0.35, ease: "easeInOut" }}
-                          className="absolute inset-0"
-                        >
-                          <img
-                            src={activeSuiteImages[suiteSlide]}
-                            alt={isAr ? `صورة ${currentSuite.name} ${suiteSlide + 1}` : `${currentSuite.name} image ${suiteSlide + 1}`}
-                            className="w-full h-full object-cover cursor-zoom-in"
-                            loading="lazy"
-                            onClick={() => setLightboxImage(activeSuiteImages[suiteSlide])}
-                          />
-                        </motion.div>
-                      </AnimatePresence>
-                    </div>
-                    <button
-                      onClick={() => setSuiteSlide((prev) => (prev - 1 + activeSuiteImages.length) % activeSuiteImages.length)}
-                      aria-label={isAr ? "السابق" : "Previous"}
-                      className="absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md"
-                    >
-                      <ChevronLeft className="w-5 h-5" />
-                    </button>
-                    <button
-                      onClick={() => setSuiteSlide((prev) => (prev + 1) % activeSuiteImages.length)}
-                      aria-label={isAr ? "التالي" : "Next"}
-                      className="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md"
-                    >
-                      <ChevronRight className="w-5 h-5" />
-                    </button>
-                  </div>
-                  <div className="flex items-center justify-center gap-3 mt-5">
-                    <span className="font-body text-xs text-muted-foreground tracking-widest">
-                      {String(suiteSlide + 1).padStart(2, "0")} / {String(activeSuiteImages.length).padStart(2, "0")}
-                    </span>
-                  </div>
+                  <ImageCarousel
+                    images={activeSuiteImages}
+                    slide={suiteSlide}
+                    setSlide={setSuiteSlide}
+                    altForIndex={(i) => (isAr ? `صورة ${currentSuite.name} ${i + 1}` : `${currentSuite.name} image ${i + 1}`)}
+                    autoPlay
+                    aspectClass="aspect-video"
+                    onImageClick={setLightboxImage}
+                    isAr={isAr}
+                  />
                 </div>
               </>
             ) : (
@@ -1245,47 +995,15 @@ const HospitalityServices = ({
                 </div>
                 {}
                 <div className="grid lg:grid-cols-2 gap-10 items-start mt-16">
-                  <div className="relative">
-                    <div className="relative aspect-[5/4] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
-                      <AnimatePresence initial={false}>
-                        <motion.div
-                          key={`orchid-${orchidSlide}`}
-                          initial={{ x: 36 }}
-                          animate={{ x: 0 }}
-                          exit={{ x: -36 }}
-                          transition={{ duration: 0.35, ease: "easeInOut" }}
-                          className="absolute inset-0"
-                        >
-                          <img
-                            src={orchidSuiteImages[orchidSlide]}
-                            alt={isAr ? `صورة ${currentSuite.name} ${orchidSlide + 1}` : `${currentSuite.name} image ${orchidSlide + 1}`}
-                            className="w-full h-full object-cover cursor-zoom-in"
-                            loading="lazy"
-                            onClick={() => setLightboxImage(orchidSuiteImages[orchidSlide])}
-                          />
-                        </motion.div>
-                      </AnimatePresence>
-                    </div>
-                    <button
-                      onClick={() => setOrchidSlide((prev) => (prev - 1 + orchidSuiteImages.length) % orchidSuiteImages.length)}
-                      aria-label={isAr ? "السابق" : "Previous"}
-                      className="absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md"
-                    >
-                      <ChevronLeft className="w-5 h-5" />
-                    </button>
-                    <button
-                      onClick={() => setOrchidSlide((prev) => (prev + 1) % orchidSuiteImages.length)}
-                      aria-label={isAr ? "التالي" : "Next"}
-                      className="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md"
-                    >
-                      <ChevronRight className="w-5 h-5" />
-                    </button>
-                    <div className="flex items-center justify-center gap-3 mt-5">
-                      <span className="font-body text-xs text-muted-foreground tracking-widest">
-                        {String(orchidSlide + 1).padStart(2, "0")} / {String(orchidSuiteImages.length).padStart(2, "0")}
-                      </span>
-                    </div>
-                  </div>
+                  <ImageCarousel
+                    images={orchidSuiteImages}
+                    slide={orchidSlide}
+                    setSlide={setOrchidSlide}
+                    altForIndex={(i) => (isAr ? `صورة ${currentSuite.name} ${i + 1}` : `${currentSuite.name} image ${i + 1}`)}
+                    autoPlay={activeSuite === 0}
+                    onImageClick={setLightboxImage}
+                    isAr={isAr}
+                  />
                   <div>
                     <p className="font-body text-xs text-accent tracking-wide uppercase mb-4">{currentSuite.area}</p>
                     <div className="mb-6">
@@ -1376,57 +1094,25 @@ const HospitalityServices = ({
           </div>
           <div className="grid lg:grid-cols-2 gap-10 items-start">
             {}
-            <div className="relative order-1">
-              <div className="relative aspect-[5/4] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
-                <AnimatePresence initial={false}>
-                  <motion.div
-                    key={`inroom-${inRoomSlide}`}
-                    initial={{ x: 36 }}
-                    animate={{ x: 0 }}
-                    exit={{ x: -36 }}
-                    transition={{ duration: 0.35, ease: "easeInOut" }}
-                    className="absolute inset-0"
-                  >
-                    {inRoomEventGalleryImages.length > 0 ? (
-                      <img
-                        src={inRoomEventGalleryImages[inRoomSlide]}
-                        alt={isAr ? `فعالية في الغرفة ${inRoomSlide + 1}` : `In-room event ${inRoomSlide + 1}`}
-                        className="w-full h-full object-cover cursor-zoom-in"
-                        loading="lazy"
-                        onClick={() => setLightboxImage(inRoomEventGalleryImages[inRoomSlide])}
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-muted/30">
-                        <div className="text-center">
-                          <Image className="w-10 h-10 text-muted-foreground/50 mx-auto mb-2" />
-                          <p className="font-body text-xs text-muted-foreground text-justify">{isAr ? "صور قريباً" : "Photos coming soon"}</p>
-                        </div>
-                      </div>
-                    )}
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-              <button
-                onClick={() => setInRoomSlide((prev) => (prev - 1 + inRoomEventGalleryImages.length) % inRoomEventGalleryImages.length)}
-                aria-label={isAr ? "السابق" : "Previous"}
-                disabled={inRoomEventGalleryImages.length <= 1}
-                className="absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <button
-                onClick={() => setInRoomSlide((prev) => (prev + 1) % inRoomEventGalleryImages.length)}
-                aria-label={isAr ? "التالي" : "Next"}
-                disabled={inRoomEventGalleryImages.length <= 1}
-                className="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
-              {inRoomEventGalleryImages.length > 1 && (
-                <div className="flex items-center justify-center gap-3 mt-5">
-                  <span className="font-body text-xs text-muted-foreground tracking-widest">
-                    {String(inRoomSlide + 1).padStart(2, "0")} / {String(inRoomEventGalleryImages.length).padStart(2, "0")}
-                  </span>
+            <div className="order-1">
+              {inRoomEventGalleryImages.length > 0 ? (
+                <ImageCarousel
+                  images={inRoomEventGalleryImages}
+                  slide={inRoomSlide}
+                  setSlide={setInRoomSlide}
+                  altForIndex={(i) => (isAr ? `فعالية في الغرفة ${i + 1}` : `In-room event ${i + 1}`)}
+                  autoPlay
+                  onImageClick={setLightboxImage}
+                  isAr={isAr}
+                />
+              ) : (
+                <div className="relative aspect-[5/4] overflow-hidden rounded-2xl border border-border/50 bg-popover shadow-lg">
+                  <div className="flex h-full w-full items-center justify-center bg-muted/30">
+                    <div className="text-center">
+                      <Image className="mx-auto mb-2 h-10 w-10 text-muted-foreground/50" />
+                      <p className="font-body text-xs text-muted-foreground text-justify">{isAr ? "صور قريباً" : "Photos coming soon"}</p>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
@@ -1566,50 +1252,16 @@ const HospitalityServices = ({
                 <h2 className="text-2xl md:text-3xl font-serif text-foreground">{isAr ? "Elements Spa" : "Elements Spa by Banyan Tree"}</h2>
               </div>
             </div>
-            <div className="relative lg:col-start-1 lg:row-start-1 lg:row-span-2">
-              <div className="relative aspect-[5/4] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
-                <AnimatePresence initial={false}>
-                  <motion.div
-                    key={`spa-showall-${spaSlide}`}
-                    initial={{ x: 36 }}
-                    animate={{ x: 0 }}
-                    exit={{ x: -36 }}
-                    transition={{ duration: 0.35, ease: "easeInOut" }}
-                    className="absolute inset-0"
-                  >
-                    <img
-                      src={spaImages[spaSlide]}
-                      alt={isAr ? `سبا إليمنتس ${spaSlide + 1}` : `Elements Spa image ${spaSlide + 1}`}
-                      className="w-full h-full object-cover cursor-zoom-in"
-                      loading="lazy"
-                      onClick={() => setLightboxImage(spaImages[spaSlide])}
-                    />
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-              <>
-                <button
-                  onClick={() => setSpaSlide((prev) => (prev - 1 + spaImages.length) % spaImages.length)}
-                  aria-label={isAr ? "السابق" : "Previous"}
-                  disabled={spaImages.length <= 1}
-                  className="absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-background/95 disabled:hover:text-foreground disabled:hover:border-border"
-                >
-                  <ChevronLeft className="w-5 h-5" />
-                </button>
-                <button
-                  onClick={() => setSpaSlide((prev) => (prev + 1) % spaImages.length)}
-                  aria-label={isAr ? "التالي" : "Next"}
-                  disabled={spaImages.length <= 1}
-                  className="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-background/95 disabled:hover:text-foreground disabled:hover:border-border"
-                >
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-              </>
-              <div className="flex items-center justify-center gap-3 mt-5">
-                <span className="font-body text-xs text-muted-foreground tracking-widest">
-                  {String(spaSlide + 1).padStart(2, "0")} / {String(spaImages.length).padStart(2, "0")}
-                </span>
-              </div>
+            <div className="lg:col-start-1 lg:row-start-1 lg:row-span-2">
+              <ImageCarousel
+                images={spaImages}
+                slide={spaSlide}
+                setSlide={setSpaSlide}
+                altForIndex={(i) => (isAr ? `سبا إليمنتس ${i + 1}` : `Elements Spa image ${i + 1}`)}
+                autoPlay
+                onImageClick={setLightboxImage}
+                isAr={isAr}
+              />
             </div>
             <ScrollAnimationWrapper className="lg:col-start-2 lg:row-start-2">
               <div>
@@ -1649,49 +1301,15 @@ const HospitalityServices = ({
           </div>
           <div className="grid lg:grid-cols-2 gap-10 items-start">
             <div className="relative order-2 lg:order-1">
-              <div className="relative aspect-[5/4] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
-                <AnimatePresence initial={false}>
-                  <motion.div
-                    key={`cafe-showall-${cafeSlide}`}
-                    initial={{ x: 36 }}
-                    animate={{ x: 0 }}
-                    exit={{ x: -36 }}
-                    transition={{ duration: 0.35, ease: "easeInOut" }}
-                    className="absolute inset-0"
-                  >
-                    <img
-                      src={cafeImages[cafeSlide]}
-                      alt={isAr ? `بيسترو الليوان ${cafeSlide + 1}` : `Al Liwan Bistro image ${cafeSlide + 1}`}
-                      className="w-full h-full object-cover cursor-zoom-in"
-                      loading="lazy"
-                      onClick={() => setLightboxImage(cafeImages[cafeSlide])}
-                    />
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-              <>
-                <button
-                  onClick={() => setCafeSlide((prev) => (prev - 1 + cafeImages.length) % cafeImages.length)}
-                  aria-label={isAr ? "السابق" : "Previous"}
-                  disabled={cafeImages.length <= 1}
-                  className="absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-background/95 disabled:hover:text-foreground disabled:hover:border-border"
-                >
-                  <ChevronLeft className="w-5 h-5" />
-                </button>
-                <button
-                  onClick={() => setCafeSlide((prev) => (prev + 1) % cafeImages.length)}
-                  aria-label={isAr ? "التالي" : "Next"}
-                  disabled={cafeImages.length <= 1}
-                  className="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-background/95 disabled:hover:text-foreground disabled:hover:border-border"
-                >
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-              </>
-              <div className="flex items-center justify-center gap-3 mt-5">
-                <span className="font-body text-xs text-muted-foreground tracking-widest">
-                  {String(cafeSlide + 1).padStart(2, "0")} / {String(cafeImages.length).padStart(2, "0")}
-                </span>
-              </div>
+              <ImageCarousel
+                images={cafeImages}
+                slide={cafeSlide}
+                setSlide={setCafeSlide}
+                altForIndex={(i) => (isAr ? `بيسترو الليوان ${i + 1}` : `Al Liwan Bistro image ${i + 1}`)}
+                autoPlay
+                onImageClick={setLightboxImage}
+                isAr={isAr}
+              />
             </div>
             <ScrollAnimationWrapper className="order-3 lg:order-2">
               <div>
@@ -1773,50 +1391,16 @@ const HospitalityServices = ({
                 </p>
               </div>
             </ScrollAnimationWrapper>
-            <div className="relative order-1 lg:order-2">
-              <div className="relative aspect-[5/4] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
-                <AnimatePresence initial={false}>
-                  <motion.div
-                    key={`fifth-cafe-showall-${fifthCafeSlide}`}
-                    initial={{ x: 36 }}
-                    animate={{ x: 0 }}
-                    exit={{ x: -36 }}
-                    transition={{ duration: 0.35, ease: "easeInOut" }}
-                    className="absolute inset-0"
-                  >
-                    <img
-                      src={fifthFloorCafeImages[fifthCafeSlide]}
-                      alt={isAr ? `${FIFTH_FLOOR_AR_TITLE} ${fifthCafeSlide + 1}` : `The 5th Floor Cafe image ${fifthCafeSlide + 1}`}
-                      className="w-full h-full object-cover cursor-zoom-in"
-                      loading="lazy"
-                      onClick={() => setLightboxImage(fifthFloorCafeImages[fifthCafeSlide])}
-                    />
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-              <>
-                <button
-                  onClick={() => setFifthCafeSlide((prev) => (prev - 1 + fifthFloorCafeImages.length) % fifthFloorCafeImages.length)}
-                  aria-label={isAr ? "السابق" : "Previous"}
-                  disabled={fifthFloorCafeImages.length <= 1}
-                  className="absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-background/95 disabled:hover:text-foreground disabled:hover:border-border"
-                >
-                  <ChevronLeft className="w-5 h-5" />
-                </button>
-                <button
-                  onClick={() => setFifthCafeSlide((prev) => (prev + 1) % fifthFloorCafeImages.length)}
-                  aria-label={isAr ? "التالي" : "Next"}
-                  disabled={fifthFloorCafeImages.length <= 1}
-                  className="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-background/95 disabled:hover:text-foreground disabled:hover:border-border"
-                >
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-              </>
-              <div className="flex items-center justify-center gap-3 mt-5">
-                <span className="font-body text-xs text-muted-foreground tracking-widest">
-                  {String(fifthCafeSlide + 1).padStart(2, "0")} / {String(fifthFloorCafeImages.length).padStart(2, "0")}
-                </span>
-              </div>
+            <div className="order-1 lg:order-2">
+              <ImageCarousel
+                images={fifthFloorCafeImages}
+                slide={fifthCafeSlide}
+                setSlide={setFifthCafeSlide}
+                altForIndex={(i) => (isAr ? `${FIFTH_FLOOR_AR_TITLE} ${i + 1}` : `The 5th Floor Cafe image ${i + 1}`)}
+                autoPlay
+                onImageClick={setLightboxImage}
+                isAr={isAr}
+              />
             </div>
           </div>
         </div>
@@ -1833,48 +1417,16 @@ const HospitalityServices = ({
           </div>
           <div className="grid lg:grid-cols-2 gap-10 items-start">
             {}
-            <div className="relative order-1 lg:order-1">
-              <div className="relative aspect-[5/4] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
-                <AnimatePresence initial={false}>
-                  <motion.div
-                    key={`baby-${babySlide}`}
-                    initial={{ x: 36 }}
-                    animate={{ x: 0 }}
-                    exit={{ x: -36 }}
-                    transition={{ duration: 0.35, ease: "easeInOut" }}
-                    className="absolute inset-0"
-                  >
-                    <img
-                      src={babyImages[babySlide]}
-                      alt={isAr ? `تصوير المواليد ${babySlide + 1}` : `Newborn photography ${babySlide + 1}`}
-                      className="w-full h-full object-cover cursor-zoom-in"
-                      loading="lazy"
-                      onClick={() => setLightboxImage(babyImages[babySlide])}
-                    />
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-              <button
-                onClick={() => setBabySlide((prev) => (prev - 1 + babyImages.length) % babyImages.length)}
-                aria-label={isAr ? "السابق" : "Previous"}
-                disabled={babyImages.length <= 1}
-                className="absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <button
-                onClick={() => setBabySlide((prev) => (prev + 1) % babyImages.length)}
-                aria-label={isAr ? "التالي" : "Next"}
-                disabled={babyImages.length <= 1}
-                className="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
-              <div className="flex items-center justify-center gap-3 mt-5">
-                <span className="font-body text-xs text-muted-foreground tracking-widest">
-                  {String(babySlide + 1).padStart(2, "0")} / {String(babyImages.length).padStart(2, "0")}
-                </span>
-              </div>
+            <div className="order-1 lg:order-1">
+              <ImageCarousel
+                images={babyImages}
+                slide={babySlide}
+                setSlide={setBabySlide}
+                altForIndex={(i) => (isAr ? `تصوير المواليد ${i + 1}` : `Newborn photography ${i + 1}`)}
+                autoPlay
+                onImageClick={setLightboxImage}
+                isAr={isAr}
+              />
             </div>
             {}
             <ScrollAnimationWrapper className="order-2 lg:order-2">

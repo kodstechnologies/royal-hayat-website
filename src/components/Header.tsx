@@ -272,6 +272,9 @@ const Header = () => {
       default: return [];
     }
   };
+  const isScrollableDropdown = (key: string) => key === "hospitality" || key === "patients";
+  const dropdownScrollListClass =
+    "min-h-0 flex-1 overflow-y-auto overscroll-y-contain pe-1 pb-3 scroll-pb-3";
   const BritainFlag = () => (
     <svg viewBox="0 0 60 30" className="w-5 h-3 rounded-sm overflow-hidden" aria-hidden="true">
       <clipPath id="s"><path d="M0,0 v30 h60 v-30 z" /></clipPath>
@@ -457,6 +460,10 @@ const Header = () => {
                       transition={{ duration: 0.2 }}
                       dir={isAr ? "rtl" : "ltr"}
                       className={`absolute top-full mt-2 bg-popover border border-border rounded-2xl shadow-2xl z-[100] p-6 ${
+                        item.hasDropdown && isScrollableDropdown(item.hasDropdown)
+                          ? "flex max-h-[min(78vh,32rem)] flex-col"
+                          : ""
+                      } ${
                         isAr
                           ? "right-0"
                           : item.hasDropdown === "patients"
@@ -471,13 +478,13 @@ const Header = () => {
                             : "min(460px, calc(100vw - 2rem))",
                       }}
                     >
-                      <p className="text-xs tracking-[0.2em] uppercase font-body text-accent mb-4 text-start">
+                      <p className="mb-4 shrink-0 text-start font-body text-xs uppercase tracking-[0.2em] text-accent">
                         {item.hasDropdown === "patients" ? t("patientsVisitorsDropdownTitle") : item.label}
                       </p>
                       <div
                         className={`grid ${item.hasDropdown === "patients" ? "grid-cols-1 xl:grid-cols-2" : "grid-cols-1"} gap-2 ${
-                          item.hasDropdown === "hospitality" || item.hasDropdown === "patients"
-                            ? "max-h-[min(70vh,26rem)] overflow-y-auto overscroll-y-contain pr-1"
+                          item.hasDropdown && isScrollableDropdown(item.hasDropdown)
+                            ? dropdownScrollListClass
                             : ""
                         }`}
                       >
@@ -649,13 +656,13 @@ const Header = () => {
                           animate={{ height: "auto", opacity: 1 }}
                           exit={{ height: 0, opacity: 0 }}
                           transition={{ duration: 0.3, ease: "easeInOut" }}
-                          className="overflow-hidden bg-muted/20 rounded-xl mb-2"
+                          className="mb-2 overflow-hidden rounded-xl bg-muted/20"
                         >
                           <div
                             dir={isAr ? "rtl" : "ltr"}
-                            className={`py-2 px-4 flex flex-col gap-1 ${
-                              item.hasDropdown === "hospitality" || item.hasDropdown === "patients"
-                                ? "max-h-[min(55vh,18rem)] overflow-y-auto overscroll-y-contain"
+                            className={`flex flex-col gap-1 px-4 py-2 ${
+                              item.hasDropdown && isScrollableDropdown(item.hasDropdown)
+                                ? "max-h-[min(58vh,20rem)] overflow-y-auto overscroll-y-contain pb-4 scroll-pb-4"
                                 : ""
                             }`}
                           >

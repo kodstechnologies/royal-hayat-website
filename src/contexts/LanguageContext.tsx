@@ -33,11 +33,11 @@ const translations: Translations = {
   },
   storyP1: {
     en: "At life's most meaningful moments, healthcare should feel deeply human. Since 2006, Royale Hayat Hospital has been celebrating life, beginning as a dedicated women's and children's hospital and growing into Kuwait's leading multi-disciplinary healthcare destination. From birth to lifelong wellness, we deliver world-class medical expertise with compassion, privacy, and comfort at the core.",
-    ar: "في أكثر لحظات الحياة أهمية، يجب أن تكون الرعاية الصحية تجربة إنسانية بامتياز. منذ عام 2006، يواصل مستشفى رويال حياة الاحتفال بالحياة، حيث بدأ كمستشفى متخصص في صحة المرأة والطفل، ثم تطوّر ليصبح الوجهة الطبية الرائدة متعددة التخصصات في الكويت.<br /><br />منذ لحظة الولادة وحتى مراحل العافية المستمرة مدى الحياة، نقدم رعاية طبية عالمية المستوى ممزوجة بالرحمة، والخصوصية، والراحة، لتكون تجربة الرعاية الصحية لدينا أكثر إنسانية وتميّزًا.",
+    ar: "في أعمق لحظات الحياة وأكثرها معنى، ينبغي للرعاية الصحية أن تلامس الإنسان في أعماقه. منذ عام 2006، يحتفي مستشفى رويال حياة بالحياة في كل مراحلها؛ إذ انطلق في مسيرته مستشفىً متخصصاً في رعاية المرأة والطفل، ليتطور اليوم إلى الوجهة الصحية الشاملة الأولى في الكويت. من اللحظة الأولى للميلاد وحتى مسيرة صحة تدوم العمر، نقدّم رعاية طبية عالمية المستوى تتمحور حول الرحمة والخصوصية والراحة.",
   },
   storyP2: {
     en: "Every patient receives personalized, exceptional care in an environment where luxury meets medicine and care goes beyond healing.",
-    ar: "لكل مريض رعاية شخصية استثنائية، في بيئة يلتقي فيها الفخامة بالطب، وتتجاوز فيها العناية حدود الشفاء.",
+    ar: "لكل مريض رعاية شخصية استثنائية، في بيئة تلتقي فيها الفخامة بالطب، وتتجاوز فيها العناية حدود الشفاء.",
   },
 
   // Our History

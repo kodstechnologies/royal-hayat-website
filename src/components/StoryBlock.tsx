@@ -15,7 +15,7 @@ const StoryBlock = () => {
               {t("storyTitle")}
             </h2>
             <p
-              className={`text-muted-foreground font-body text-sm md:text-base leading-relaxed mb-4 text-justify ${
+              className={`text-muted-foreground font-body text-sm md:text-base leading-relaxed mb-4 text-justify whitespace-pre-line ${
                 isAr ? "story-rtl" : ""
               }`}
             >

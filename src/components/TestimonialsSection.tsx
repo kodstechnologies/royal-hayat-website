@@ -3,50 +3,12 @@ import { motion } from "framer-motion";
 import { useRef, useState } from "react";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { useLanguage } from "@/contexts/LanguageContext";
-const testimonials = [
-  {
-    stars: 5,
-    text: "The care I received at Royale Hayat was truly exceptional. From the moment I arrived, the staff treated me with warmth and professionalism. The VIP suite was like a five-star hotel.",
-    textAr: "كانت الرعاية التي تلقيتها في رويال حياة استثنائية حقاً. منذ لحظة وصولي، عاملني الطاقم بدفء واحترافية. كان الجناح الفاخر كفندق خمس نجوم.",
-    name: "Sarah Al-Mutairi", nameAr: "سارة المطيري",
-  },
-  {
-    stars: 5,
-    text: "Dr. Al-Shammari and her team made my pregnancy journey stress-free and comfortable. The neonatal unit gave us complete peace of mind. Highly recommend their maternity services.",
-    textAr: "جعلت د. الشمري وفريقها رحلة حملي خالية من التوتر ومريحة. وحدة حديثي الولادة منحتنا راحة بال تامة. أوصي بشدة بخدمات الأمومة لديهم.",
-    name: "Fatima Al-Rashidi", nameAr: "فاطمة الرشيدي",
-  },
-  {
-    stars: 5,
-    text: "World-class medical care in Kuwait. The international accreditations speak volumes about their quality standards. My entire family trusts Royale Hayat for all our healthcare needs.",
-    textAr: "رعاية طبية عالمية المستوى في الكويت. الاعتمادات الدولية تتحدث عن معايير الجودة لديهم. عائلتي بأكملها تثق في رويال حياة لجميع احتياجاتنا الصحية.",
-    name: "Ahmed Al-Sabah", nameAr: "أحمد الصباح",
-  },
-  {
-    stars: 5,
-    text: "The pediatric department was outstanding. My children felt comfortable and safe. The doctors were incredibly patient and thorough with their examinations.",
-    textAr: "كان قسم الأطفال متميزاً. شعر أطفالي بالراحة والأمان. كان الأطباء صبورين للغاية ودقيقين في فحوصاتهم.",
-    name: "Noura Al-Hajri", nameAr: "نورة الهاجري",
-  },
-  {
-    stars: 5,
-    text: "From consultation to recovery, every step was handled with care and precision. The surgical team was world-class and the post-operative care was exceptional.",
-    textAr: "من الاستشارة إلى التعافي، تم التعامل مع كل خطوة بعناية ودقة. كان الفريق الجراحي عالمي المستوى والرعاية بعد العملية كانت استثنائية.",
-    name: "Mohammed Al-Enezi", nameAr: "محمد العنزي",
-  },
-  {
-    stars: 5,
-    text: "I traveled from abroad specifically for treatment here. The international patient services made everything seamless. Truly a premium healthcare experience.",
-    textAr: "سافرت من الخارج خصيصاً للعلاج هنا. خدمات المرضى الدوليين جعلت كل شيء سلساً. تجربة رعاية صحية فاخرة حقاً.",
-    name: "Layla Hassan", nameAr: "ليلى حسن",
-  },
-];
-const duplicated = [...testimonials, ...testimonials];
+import { patientTestimonials } from "@/data/patientTestimonials";
 const TestimonialsSection = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
   const { lang, t } = useLanguage();
-  const [hospitalFeedbacks, setHospitalFeedbacks] = useState(testimonials);
+  const [hospitalFeedbacks, setHospitalFeedbacks] = useState(patientTestimonials);
   const [showThankYou, setShowThankYou] = useState(false);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const [feedbackForm, setFeedbackForm] = useState({
@@ -119,7 +81,7 @@ const TestimonialsSection = () => {
           transition={{ x: { repeat: Infinity, repeatType: "loop", duration: 40, ease: "linear" } }}
           style={{ animationPlayState: isPaused ? "paused" : "running" }}>
           {[...hospitalFeedbacks, ...hospitalFeedbacks].map((item, i) => (
-            <motion.div key={`${item.name}-${i}`} whileHover={{ y: -6, boxShadow: "0 20px 40px -15px rgba(74,20,35,0.1)" }}
+            <motion.div key={`${item.name}-${item.text.slice(0, 24)}-${i}`} whileHover={{ y: -6, boxShadow: "0 20px 40px -15px rgba(74,20,35,0.1)" }}
               className="bg-background rounded-2xl p-6 md:p-8 border border-border/50 w-[300px] sm:w-[360px] flex-shrink-0">
               <div className="flex gap-1 mb-4">
                 {Array.from({ length: item.stars }).map((_, j) => (

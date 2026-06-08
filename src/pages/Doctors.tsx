@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
+import TestimonialsSection from "@/components/TestimonialsSection";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { loadDoctors, type Doctor } from "@/data/loadDoctors";
 import { departments, deptDoctorAliases, MAIN_CATEGORIES, type MainCategory } from "@/data/departments";
@@ -389,6 +390,7 @@ const Doctors = () => {
           )}
         </div>
       </section>
+      <TestimonialsSection />
       <Footer />
       <ScrollToTop />
     </div>

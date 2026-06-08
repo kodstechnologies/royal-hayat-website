@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -15,6 +15,8 @@ import {
   PATIENT_RIGHTS_EN,
   PATIENT_RESPONSIBILITIES_EN,
 } from "@/utils/patientsProseHyph";
+import LazyViewportImage from "@/components/LazyViewportImage";
+import { getBirthingPackageImages } from "@/data/birthingPackageImages";
 const NURSING_AR_HERO_INTRO =
   "كل ما تحتاجون معرفته لضمان تجربة مريحة وواضحة خلال زيارتكم وإقامتكم في مستشفى رويال حياة.";
 const NURSING_AR_HERO_DETAIL =
@@ -200,6 +202,17 @@ const PatientsVisitors = () => {
   const roomsPdfAr = "https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/RHHBirthingPackagesArb6Jan2026.pdf";
   const sectionClass = "scroll-mt-[calc(var(--header-height,76px)+2rem)]";
   const isAr = lang === "ar";
+  const [isDesktopView, setIsDesktopView] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches,
+  );
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(min-width: 768px)");
+    const onChange = () => setIsDesktopView(mediaQuery.matches);
+    onChange();
+    mediaQuery.addEventListener("change", onChange);
+    return () => mediaQuery.removeEventListener("change", onChange);
+  }, []);
+  const birthingPackageImages = getBirthingPackageImages(lang, isDesktopView ? "desktop" : "mobile");
   const patientsProseLine = "patients-prose-line";
   const bodyProse = `font-body tracking-normal text-[13px] sm:text-sm text-foreground leading-normal md:leading-relaxed text-start [word-break:normal] ${patientsProseLine}`;
   const mutedProse = `font-body tracking-normal text-[13px] sm:text-sm text-muted-foreground leading-normal md:leading-relaxed text-start [word-break:normal] ${patientsProseLine}`;
@@ -448,41 +461,21 @@ const PatientsVisitors = () => {
             )}
             {}
             {show("rooms-package") && <div id="section-rooms-package" className={tab === "rooms-package" ? "flex-1 flex flex-col" : sectionClass}>
-              <ScrollAnimationWrapper className={tab === "rooms-package" ? "flex-1 flex flex-col" : ""}>
-                {tab === "rooms-package" ? (
-                  <div className="w-full">
-                    {}
-                    <div className="hidden md:block w-full space-y-6 px-6 py-6 bg-background">
-                      {(lang === "ar"
-                        ? [1, 2, 3, 4, 5, 6].map(n => `https://royal-hayat.s3.eu-central-1.amazonaws.com/pc-version/birthing-packages-AR/Birthing+Packages+for_PC+Version_AR_${n}.jpg`)
-                        : [1, 2, 3, 4, 5, 6, 7].map(n => `https://royal-hayat.s3.eu-central-1.amazonaws.com/pc-version/birthing-packages-EN/Birthing+Packages+for_PC+Version_Eng_${n}.jpg`)
-                      ).map((src, i) => (
-                        <img
-                          key={i}
-                          src={src}
-                          alt={lang === "ar" ? `باقات الغرف ${i + 1}` : `Birthing Suites Package ${i + 1}`}
-                          className="w-full block rounded-2xl shadow-sm"
-                          loading={i === 0 ? "eager" : "lazy"}
-                        />
-                      ))}
-                    </div>
-                    {}
-                    <div className="md:hidden w-full">
-                      {(lang === "ar"
-                        ? [1, 2, 3, 4, 5, 6, 7].map(n => `https://royal-hayat.s3.eu-central-1.amazonaws.com/mobile-version/birthing-packages-AR/Birthing+Packages+for_Mobile+Version_AR_${n}.jpg`)
-                        : [1, 2, 3, 4, 5, 6, 7].map(n => `https://royal-hayat.s3.eu-central-1.amazonaws.com/mobile-version/birthing-packages-EN/Birthing+Packages+for_Mobile+Version_Eng_${n}.jpg`)
-                      ).map((src, i) => (
-                        <img
-                          key={i}
-                          src={src}
-                          alt={lang === "ar" ? `باقات الغرف ${i + 1}` : `Birthing Suites Package ${i + 1}`}
-                          className="w-full block"
-                          loading={i === 0 ? "eager" : "lazy"}
-                        />
-                      ))}
-                    </div>
+              {tab === "rooms-package" ? (
+                  <div className={`w-full ${isDesktopView ? "space-y-6 px-6 py-6 bg-background" : ""}`}>
+                    {birthingPackageImages.map((src, i) => (
+                      <LazyViewportImage
+                        key={`${isDesktopView ? "desktop" : "mobile"}-${i}-${src}`}
+                        src={src}
+                        alt={lang === "ar" ? `باقات الغرف ${i + 1}` : `Birthing Suites Package ${i + 1}`}
+                        className={isDesktopView ? "w-full block rounded-2xl shadow-sm" : "w-full block"}
+                        rounded={isDesktopView}
+                        priority={i === 0}
+                      />
+                    ))}
                   </div>
-                ) : (
+              ) : (
+                <ScrollAnimationWrapper>
                   <div>
                     {showAll && <div className="flex items-center gap-3 mb-6">
                       <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
@@ -490,20 +483,15 @@ const PatientsVisitors = () => {
                       </div>
                       <h2 className={`text-2xl md:text-3xl font-serif text-foreground ${isAr ? "!font-bold" : "font-bold"}`}>{lang === "ar" ? "باقات أجنحة الولادة" : "Birthing Suites Packages"}</h2>
                     </div>}
-                    {
-}
-                    {}
                     <div className="w-full rounded-2xl shadow-lg bg-white border border-border/30 overflow-hidden mb-6">
                       <img
-                        src={lang === "ar"
-                          ? "/images/Birthing-packages/Birthing Packages for_PC Version_AR jpg/Birthing Packages for_PC Version_AR_1.jpg"
-                          : "/images/Birthing-packages/Birthing Packages for_PC Version_Eng jpg/Birthing Packages for_PC Version_Eng_1.jpg"
-                        }
+                        src={getBirthingPackageImages(lang, "desktop")[0]}
                         alt={lang === "ar" ? "باقات أجنحة الولادة" : "Birthing Suites Packages"}
                         className="w-full block"
+                        loading="lazy"
+                        decoding="async"
                       />
                     </div>
-                    {}
                     <div className="flex justify-center">
                       <Link
                         to="/patients-visitors?tab=rooms-package"
@@ -514,8 +502,8 @@ const PatientsVisitors = () => {
                       </Link>
                     </div>
                   </div>
-                )}
-              </ScrollAnimationWrapper>
+                </ScrollAnimationWrapper>
+              )}
             </div>}
             {}
             {show("international") && <div id="section-international" className={sectionClass}>

@@ -154,9 +154,31 @@ const HospitalityServices = ({
     }, 5000);
     return () => window.clearInterval(timer);
   }, [activeHall, gardeniaHallImages.length]);
+  const ORCHID_SUITE_INDEX = 1;
+  const LOTUS_SUITE_INDEX = 2;
+  const JASMINE_SUITE_INDEX = 3;
   const CAMELLIA_SUITE_INDEX = 4;
   const LILY_SUITE_INDEX = 5;
+  const DAISY_SUITE_INDEX = 6;
   const SUITE_360_TOURS: Record<number, { iframeName: string; src: string; titleEn: string; titleAr: string }> = {
+    [ORCHID_SUITE_INDEX]: {
+      iframeName: "ORCHID SUITE",
+      src: "https://tour.panoee.net/iframe/6a218338c64044b87c0df614",
+      titleEn: "Orchid Suite 360 Tour",
+      titleAr: "جولة 360 لجناح أوركيد",
+    },
+    [LOTUS_SUITE_INDEX]: {
+      iframeName: "LOTUS SUITE",
+      src: "https://tour.panoee.net/iframe/6a218241c64044a5c40df5da",
+      titleEn: "Lotus Suite 360 Tour",
+      titleAr: "جولة 360 لجناح لوتس",
+    },
+    [JASMINE_SUITE_INDEX]: {
+      iframeName: "JASMIN SUITE",
+      src: "https://tour.panoee.net/iframe/6a2181b6cb8011619dbd8b53",
+      titleEn: "Jasmine Suite 360 Tour",
+      titleAr: "جولة 360 لجناح الياسمين",
+    },
     [CAMELLIA_SUITE_INDEX]: {
       iframeName: "CAMELIA SUITE",
       src: "https://tour.panoee.net/iframe/6a216556cb8011ee21bd8532",
@@ -168,6 +190,12 @@ const HospitalityServices = ({
       src: "https://tour.panoee.net/iframe/6a216838c64044858c0defbd",
       titleEn: "Lily Suite 360 Tour",
       titleAr: "جولة 360 لجناح ليلي",
+    },
+    [DAISY_SUITE_INDEX]: {
+      iframeName: "DAISY SUITE",
+      src: "https://tour.panoee.net/iframe/6a252fd8c640443c090e5390",
+      titleEn: "Daisy Suite 360 Tour",
+      titleAr: "جولة 360 لجناح ديزي",
     },
   };
   const activeSuite360Tour = SUITE_360_TOURS[activeSuite];

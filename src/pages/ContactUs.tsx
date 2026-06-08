@@ -8,17 +8,14 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "sonner";
 import axios from "axios";
 import { postEnquiry } from "@/api/enquiry";
+import { departments as departmentsData } from "@/data/departments";
 const ContactUs = () => {
   const { lang } = useLanguage();
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [form, setForm] = useState({ fullName: "", email: "", phone: "", department: "", message: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const departments = [
-    "Obstetrics & Gynecology", "Pediatrics", "Internal Medicine", "Cardiology",
-    "Orthopedics", "Dermatology", "Ophthalmology", "ENT", "Neurology",
-    "General Surgery", "Pulmonology", "Gastroenterology", "General Inquiry"
-  ];
+  const departments = departmentsData.slice(0, 20).map((d) => d.name);
   const validate = () => {
     const e: Record<string, string> = {};
     if (!form.fullName.trim()) e.fullName = lang === "ar" ? "الاسم مطلوب" : "Full name is required";

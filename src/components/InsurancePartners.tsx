@@ -96,7 +96,7 @@ const InsurancePartners = ({ variant = "default" }: InsurancePartnersProps) => {
               {t("trustedBy")}
             </p>
             <h2
-              className="insurance-partners-title text-3xl md:text-4xl font-serif text-foreground w-full"
+              className="insurance-partners-title text-3xl md:text-4xl font-serif font-normal text-foreground w-full"
               style={{ textAlign: "center", textAlignLast: "center" }}
             >
               {t("insurancePartners")}

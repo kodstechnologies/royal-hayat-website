@@ -6,8 +6,10 @@ import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Doctor } from "@/data/doctors";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
 const DoctorCard = ({ doc }: { doc: Doctor }) => {
   const { lang } = useLanguage();
+  const displayName = getDoctorDisplayName(doc, lang);
   return (
     <Link to={`/doctors/${doc.id}`} className="block w-[280px] min-h-[430px] flex-shrink-0 relative z-0 hover:z-10 snap-center md:snap-start">
       <motion.div
@@ -17,7 +19,7 @@ const DoctorCard = ({ doc }: { doc: Doctor }) => {
       >
         <div className="bg-white h-64 flex items-center justify-center relative overflow-hidden shrink-0 rounded-t-2xl">
           {doc.image ? (
-            <img src={doc.image} alt={lang === "ar" ? doc.nameAr : doc.name} className="w-full h-full object-cover object-top" />
+            <img src={doc.image} alt={displayName} className="w-full h-full object-cover object-top" />
           ) : (
             <div className="w-20 h-20 rounded-full bg-popover/20 backdrop-blur-sm flex items-center justify-center border-2 border-popover/30">
               <span className="text-2xl font-serif text-primary-foreground">{doc.initials}</span>
@@ -25,13 +27,13 @@ const DoctorCard = ({ doc }: { doc: Doctor }) => {
           )}
           <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-popover/20 backdrop-blur-sm flex items-center justify-center">
             <Stethoscope className="w-3.5 h-3.5 text-primary-foreground" />
-          </div>
+          </div>  
         </div>
         <div className="p-5 flex flex-col flex-grow">
           <p className="text-accent text-[10px] tracking-[0.2em] uppercase font-body mb-1.5">
             {lang === "ar" ? doc.specialtyAr : doc.specialty}
           </p>
-          <h3 className="text-base font-serif text-foreground mb-1">{lang === "ar" ? doc.nameAr : doc.name}</h3>
+          <h3 className="text-base font-serif font-bold text-foreground mb-1">{displayName}</h3>
           <p className="text-muted-foreground font-body text-xs mb-3">{lang === "ar" ? doc.titleAr : doc.title}</p>
           {doc.hideBooking !== true && (
             <div className={`flex items-center gap-1.5 mb-2 ${doc.availableOnline !== false ? "text-green-600" : "text-destructive"}`}>
@@ -110,9 +112,17 @@ const DoctorsSection = ({ featuredDoctors }: { featuredDoctors: Doctor[] }) => {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 md:mb-14">
           <ScrollAnimationWrapper>
             <div>
-              <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-4">{t("ourTeam")}</p>
-              <h2 className="text-3xl md:text-4xl font-serif text-foreground mb-3">{t("meetOurDoctors")}</h2>
-              <p className="text-muted-foreground font-body text-sm md:text-base max-w-xl">{t("meetOurDoctorsSubtitle")}</p>
+              <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-4">
+                {lang === "ar" ? "فريقنا الطبي" : "Our Medical Team"}
+              </p>
+              <h2 className="text-3xl md:text-4xl font-serif text-foreground mb-3">
+                {lang === "ar" ? "تعرف على أطبائنا" : "Meet Our Doctors"}
+              </h2>
+              <p className="text-muted-foreground font-body text-sm md:text-base max-w-xl">
+                {lang === "ar"
+                  ? "فريق من الأطباء المتخصصين يقدّم رعاية صحية على مستوى عالمي"
+                  : "A team of specialized physicians delivering world-class healthcare"}
+              </p>
             </div>
           </ScrollAnimationWrapper>
           <ScrollAnimationWrapper delay={0.1}>

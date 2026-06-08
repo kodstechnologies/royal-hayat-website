@@ -9,8 +9,11 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { loadDoctors, type Doctor } from "@/data/loadDoctors";
 import { departments, deptDoctorAliases, MAIN_CATEGORIES, type MainCategory } from "@/data/departments";
 import { Input } from "@/components/ui/input";
+import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
+
 const DoctorCard = memo(({ doc }: { doc: Doctor }) => {
   const { lang } = useLanguage();
+  const displayName = getDoctorDisplayName(doc, lang);
   return (
     <Link to={`/doctors/${doc.id}`} className="block w-[280px] min-h-[430px] flex-shrink-0 relative z-0 hover:z-10 snap-center md:snap-start">
       <motion.div
@@ -19,7 +22,7 @@ const DoctorCard = memo(({ doc }: { doc: Doctor }) => {
       >
         <div className="bg-white h-64 flex items-center justify-center relative overflow-hidden shrink-0 rounded-t-2xl">
           {doc.image ? (
-            <img src={doc.image} alt={lang === "ar" ? doc.nameAr : doc.name} className="w-full h-full object-cover object-top" />
+            <img src={doc.image} alt={displayName} className="w-full h-full object-cover object-top" />
           ) : (
             <div className="w-20 h-20 rounded-full bg-popover/20 backdrop-blur-sm flex items-center justify-center border-2 border-popover/30">
               <span className="text-2xl font-serif text-primary-foreground">{doc.initials}</span>
@@ -33,7 +36,7 @@ const DoctorCard = memo(({ doc }: { doc: Doctor }) => {
           <p className="text-accent text-[10px] tracking-[0.2em] uppercase font-body mb-1.5">
             {lang === "ar" ? doc.specialtyAr : doc.specialty}
           </p>
-          <h3 className="text-base font-serif text-foreground mb-1">{lang === "ar" ? doc.nameAr : doc.name}</h3>
+          <h3 className="text-base font-serif font-bold text-foreground mb-1">{displayName}</h3>
           <p className="text-muted-foreground font-body text-xs mb-3">{lang === "ar" ? doc.titleAr : doc.title}</p>
           {doc.hideBooking !== true && (
             <div className={`flex items-center gap-1.5 mb-2 ${doc.availableOnline !== false ? "text-green-600" : "text-destructive"}`}>
@@ -55,16 +58,16 @@ const DoctorCard = memo(({ doc }: { doc: Doctor }) => {
 });
 DoctorCard.displayName = "DoctorCard";
 const departmentDescriptions: Record<string, { en: string; ar: string }> = {
-  "Obstetrics & Gynecology": { en: "Complete maternity care from prenatal through postpartum recovery. Our team provides expert guidance for high-risk pregnancies, minimally invasive gynecological procedures, and comprehensive family planning services.", ar: "رعاية أمومة شاملة من ما قبل الولادة حتى التعافي بعد الولادة. يقدم فريقنا إرشادات متخصصة لحالات الحمل عالية الخطورة وإجراءات نسائية طفيفة التوغل وخدمات تنظيم الأسرة الشاملة." },
+  "Obstetrics & Gynecology": { en: "Complete maternity care from prenatal through postpartum recovery. Our team provides expert guidance for high-risk pregnancies, minimally invasive gynecological procedures, and comprehensive family planning services.", ar: "رعاية شاملة للأم خلال جميع مراحل الحمل، من المتابعة قبل الولادة وحتى التعافي بعد الولادة. يقدم فريقنا الطبي رعاية متخصصة للحمل عالي الخطورة، وإجراءات أمراض النساء طفيفة التوغل، بالإضافة إلى خدمات شاملة لتنظيم الأسرة." },
   "Internal Medicine": { en: "Comprehensive diagnosis and treatment of complex adult diseases. Our internists specialize in managing chronic conditions, preventive health screenings, and coordinating multidisciplinary care for optimal patient outcomes.", ar: "تشخيص وعلاج شامل لأمراض البالغين المعقدة. يتخصص أطباؤنا في إدارة الحالات المزمنة والفحوصات الوقائية وتنسيق الرعاية متعددة التخصصات لتحقيق أفضل النتائج." },
   "Dermatology": { en: "Expert care for all dermatological needs for adults and children. Our dermatologists offer advanced treatments for skin conditions, cosmetic procedures, and laser therapies using the latest diagnostic technologies.", ar: "رعاية متخصصة لجميع احتياجات الأمراض الجلدية للبالغين والأطفال. يقدم أطباء الجلدية لدينا علاجات متقدمة للأمراض الجلدية والإجراءات التجميلية والعلاج بالليزر باستخدام أحدث التقنيات." },
   "Family Medicine": { en: "Continuous, personalized care for individuals and families of all ages. Our family physicians build lasting relationships with patients, managing everything from routine check-ups to chronic disease management.", ar: "رعاية مستمرة ومخصصة للأفراد والعائلات من جميع الأعمار. يبني أطباء الأسرة لدينا علاقات دائمة مع المرضى ويديرون كل شيء من الفحوصات الروتينية إلى إدارة الأمراض المزمنة." },
-  "Anesthesia": { en: "Top-tier anesthesia services ensuring patient safety and comfort. Our anesthesiologists provide pre-operative assessments, pain-free surgical experiences, and post-operative pain management using modern monitoring equipment.", ar: "خدمات تخدير عالية المستوى تضمن سلامة وراحة المريض. يقدم أطباء التخدير لدينا تقييمات قبل العملية وتجارب جراحية خالية من الألم وإدارة الألم بعد العملية باستخدام أحدث المعدات." },
-  "Neonatal": { en: "Dedicated care for newborns requiring specialized medical attention. Our neonatal unit provides advanced life support, developmental care, and family-centered services for premature and critically ill infants.", ar: "رعاية مخصصة لحديثي الولادة الذين يحتاجون عناية طبية متخصصة. توفر وحدة حديثي الولادة لدينا دعم الحياة المتقدم والرعاية التنموية والخدمات المتمحورة حول الأسرة للأطفال الخدج والمرضى بشكل حرج." },
+  "Anesthesia": { en: "Top-tier anesthesia services ensuring patient safety and comfort. Our anesthesiologists provide pre-operative assessments, pain-free surgical experiences, and post-operative pain management using modern monitoring equipment.", ar: "نقدّم خدمات تخدير متقدمة على أعلى مستوى لضمان سلامة المريض وراحته قبل وأثناء وبعد العمليات الجراحية. يقوم أطباء التخدير لدينا بإجراء تقييمات ما قبل العملية، وتوفير تجربة جراحية خالية من الألم، بالإضافة إلى إدارة فعّالة للألم بعد العمليات باستخدام أحدث تقنيات وأجهزة المراقبة الطبية." },
+  "Neonatal": { en: "Dedicated care for newborns requiring specialized medical attention. Our neonatal unit provides advanced life support, developmental care, and family-centered services for premature and critically ill infants.", ar: "رعاية متخصصة ومتكاملة لحديثي الولادة الذين يحتاجون إلى عناية طبية دقيقة. يوفر قسم حديثي الولادة لدينا دعمًا متقدمًا لإنقاذ الحياة، ورعاية لنمو وتطور الطفل، إلى جانب خدمات تركز على الأسرة لضمان أفضل رعاية للرضع الخدّج والحالات الحرجة." },
   "Clinical Pharmacy": { en: "Patient-focused pharmaceutical care ensuring safe and effective medication use. Our clinical pharmacists collaborate with medical teams to optimize drug therapy, prevent interactions, and provide medication counseling.", ar: "رعاية صيدلانية تركز على المريض وتضمن استخداماً آمناً وفعالاً للأدوية. يتعاون الصيادلة السريريون لدينا مع الفرق الطبية لتحسين العلاج الدوائي ومنع التفاعلات وتقديم الاستشارات الدوائية." },
-  "General Surgery": { en: "Exceptional surgical care combining precision, safety, and rapid recovery. Our surgeons perform a wide range of minimally invasive and laparoscopic procedures including bariatric surgery, hernia repair, and oncological operations.", ar: "رعاية جراحية استثنائية تجمع بين الدقة والأمان والتعافي السريع. يجري جراحونا مجموعة واسعة من العمليات طفيفة التوغل بالمنظار بما في ذلك جراحة السمنة وإصلاح الفتق والعمليات الأورام." },
+  "General Surgery": { en: "Exceptional surgical care combining precision, safety, and rapid recovery. Our surgeons perform a wide range of minimally invasive and laparoscopic procedures, including bariatric surgery, hernia repair, and oncological operations.", ar: "رعاية جراحية متميزة تجمع بين الدقة العالية، ومعايير الأمان، وسرعة التعافي. يقدم جراحونا مجموعة واسعة من الإجراءات الجراحية طفيفة التوغل وجراحات المنظار، بما في ذلك جراحات السمنة، وإصلاح الفتق، وجراحات الأورام، وذلك باستخدام أحدث التقنيات الطبية لضمان أفضل النتائج للمرضى." },
   "La Cosmetique": { en: "Advanced cosmetic and reconstructive surgery in a luxurious clinical setting. Our board-certified surgeons combine artistry with precision for body contouring, facial rejuvenation, rhinoplasty, and non-surgical aesthetic treatments.", ar: "جراحة تجميلية وترميمية متقدمة في بيئة سريرية فاخرة. يجمع جراحونا المعتمدون بين الفن والدقة لنحت الجسم وتجديد الوجه وتجميل الأنف والعلاجات التجميلية غير الجراحية." },
-  "Pediatric": { en: "World-class pediatric care with warmth and a child-centered approach. From routine wellness visits to specialized treatments, our pediatricians ensure every child receives compassionate, evidence-based medical attention.", ar: "رعاية أطفال عالمية المستوى بدفء ونهج محوره الطفل. من زيارات العافية الروتينية إلى العلاجات المتخصصة، يضمن أطباء الأطفال لدينا حصول كل طفل على رعاية طبية رحيمة قائمة على الأدلة." },
+  "Pediatric": { en: "World-class pediatric care with warmth and a child-centered approach. From routine wellness visits to specialized treatments, our pediatricians ensure every child receives compassionate, evidence-based medical attention.", ar: "رعاية أطفال على مستوى عالمي تجمع بين الدفء الإنساني والنهج المتمحورة حول الطفل. من الزيارات الدورية والفحوصات الوقائية إلى العلاجات التخصصية، يحرص أطباؤنا على تقديم رعاية طبية شاملة ومبنية على الأدلة، تضمن حصول كل طفل على اهتمام طبي متعاطف وعالي الجودة في بيئة آمنة وداعمة." },
   "Radiology": { en: "State-of-the-art diagnostic imaging services including MRI, CT, ultrasound, and interventional radiology. Our radiologists provide accurate, timely interpretations to support clinical decision-making across all departments.", ar: "خدمات تصوير تشخيصي حديثة تشمل الرنين المغناطيسي والتصوير المقطعي والموجات فوق الصوتية والأشعة التداخلية. يقدم أطباء الأشعة لدينا تفسيرات دقيقة وفي الوقت المناسب." },
   "Nutricare": { en: "Personalized clinical nutrition and dietetic services for all ages. Our registered dietitians provide medical nutrition therapy for chronic diseases, weight management, pre/post bariatric surgery diets, and pregnancy nutrition.", ar: "خدمات تغذية سريرية مخصصة لجميع الأعمار. يقدم أخصائيو التغذية المسجلون لدينا العلاج الغذائي الطبي للأمراض المزمنة وإدارة الوزن وأنظمة ما قبل وبعد جراحة السمنة وتغذية الحمل." },
   "Pharmacy": { en: "Full-service hospital pharmacy offering prescription medications, patient counseling, and medication safety. Our pharmacists ensure accurate dispensing and provide expert guidance on medication use and interactions.", ar: "صيدلية مستشفى متكاملة تقدم الأدوية الموصوفة واستشارات المرضى وسلامة الأدوية. يضمن صيادلتنا صرفاً دقيقاً ويقدمون إرشادات متخصصة حول استخدام الأدوية والتفاعلات." },
@@ -73,16 +76,40 @@ const departmentDescriptions: Record<string, { en: string; ar: string }> = {
   "Laboratory": { en: "Comprehensive clinical laboratory and pathology services with rapid, accurate diagnostic testing. Our team includes histopathologists, microbiologists, and hematologists performing specialized analyses.", ar: "خدمات مختبر سريري وباثولوجي شاملة مع فحوصات تشخيصية سريعة ودقيقة. يضم فريقنا أخصائيي أنسجة وأحياء دقيقة وأمراض دم يجرون تحاليل متخصصة." },
   "ENT (Ear, Nose & Throat)": { en: "Expert care for conditions affecting the ear, nose, throat, head, and neck. Our ENT specialists provide surgical and non-surgical treatments for hearing disorders, sinus conditions, voice disorders, and head & neck tumors.", ar: "رعاية متخصصة لأمراض الأنف والأذن والحنجرة والرأس والرقبة. يقدم أخصائيونا علاجات جراحية وغير جراحية لاضطرابات السمع وأمراض الجيوب الأنفية واضطرابات الصوت وأورام الرأس والرقبة." },
 };
+const departmentArLabels: Record<string, string> = {
+  "Obstetrics & Gynecology": "امراض النساء والولادة",
+  "Neonatal": "طب حديثي الولادة",
+  "Anesthesia": "التخدير",
+};
 const DepartmentRow = memo(({ department, departmentAr, docs }: { department: string; departmentAr: string; docs: Doctor[] }) => {
   const { lang } = useLanguage();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+  const [isScrollable, setIsScrollable] = useState(false);
+
+  const updateScrollState = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setIsScrollable(el.scrollWidth > el.clientWidth + 1);
   }, []);
-  const showArrows = docs.length > (isMobile ? 1 : 4);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    updateScrollState();
+
+    const observer = new ResizeObserver(updateScrollState);
+    observer.observe(el);
+    el.addEventListener("scroll", updateScrollState);
+    window.addEventListener("resize", updateScrollState);
+
+    return () => {
+      observer.disconnect();
+      el.removeEventListener("scroll", updateScrollState);
+      window.removeEventListener("resize", updateScrollState);
+    };
+  }, [docs, updateScrollState]);
+
   const scroll = (dir: "left" | "right") => {
     if (scrollRef.current) {
       const isMobile = window.innerWidth < 768;
@@ -95,7 +122,7 @@ const DepartmentRow = memo(({ department, departmentAr, docs }: { department: st
     <div className="mb-14">
       <div className="max-w-[1192px] mx-auto mb-6">
         <h3 className="text-2xl font-serif font-bold text-foreground mb-3">
-          {lang === "ar" ? departmentAr : department}
+          {lang === "ar" ? (departmentArLabels[department] ?? departmentAr) : department}
         </h3>
         {deptDesc && (
           <div className="bg-popover border border-border/50 rounded-2xl p-4 md:p-5 shadow-sm">
@@ -106,14 +133,22 @@ const DepartmentRow = memo(({ department, departmentAr, docs }: { department: st
         )}
       </div>
       <div className="relative group/carousel">
-        {showArrows && (
+        {isScrollable && (
           <>
-            <button onClick={() => scroll("left")}
-              className={`absolute -left-2 md:-left-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon`}>
+            <button
+              type="button"
+              aria-label={lang === "ar" ? "التمرير لليسار" : "Scroll left"}
+              onClick={() => scroll("left")}
+              className="absolute left-0 md:left-1 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon"
+            >
               <ChevronLeft className="w-4 h-4" />
             </button>
-            <button onClick={() => scroll("right")}
-              className={`absolute -right-2 md:-right-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon`}>
+            <button
+              type="button"
+              aria-label={lang === "ar" ? "التمرير لليمين" : "Scroll right"}
+              onClick={() => scroll("right")}
+              className="absolute right-0 md:right-1 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon"
+            >
               <ChevronRight className="w-4 h-4" />
             </button>
           </>
@@ -151,7 +186,7 @@ const Doctors = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [doctorCatalog, setDoctorCatalog] = useState<Doctor[]>([]);
   const [catalogLoading, setCatalogLoading] = useState(true);
-  const { lang, t } = useLanguage();
+  const { lang } = useLanguage();
   useEffect(() => {
     let cancelled = false;
     void loadDoctors().then((list) => {
@@ -280,9 +315,17 @@ const Doctors = () => {
           )}
           {}
           <div className="text-center mb-12">
-            <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-4">{t("ourTeam")}</p>
-            <h1 className="text-3xl md:text-5xl font-serif text-foreground mb-4">{t("meetOurDoctors")}</h1>
-            <p className="text-muted-foreground font-body max-w-lg mx-auto text-sm md:text-base">{t("findDoctor")}</p>
+            <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-4">
+              {lang === "ar" ? "فريقنا الطبي" : "Our Medical Team"}
+            </p>
+            <h1 className="text-3xl md:text-5xl font-serif text-foreground mb-4">
+              {lang === "ar" ? "تعرف على أطبائنا" : "Meet Our Doctors"}
+            </h1>
+            <p className="text-muted-foreground font-body max-w-lg mx-auto text-sm md:text-base">
+              {lang === "ar"
+                ? "ابحث عن الطبيب المناسب حسب الأعراض أو التخصص الطبي الذي تحتاجه"
+                : "Find the right doctor by symptom or specialty"}
+            </p>
           </div>
           {}
           <div className="max-w-2xl mx-auto mb-14">

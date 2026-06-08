@@ -20,10 +20,10 @@ const ChairmanMessage = () => {
                     />
                     <source
                       media="(min-width: 768px)"
-                      srcSet="https://royal-hayat.s3.eu-central-1.amazonaws.com/chairman/Chairman-web.jpeg"
+                      srcSet="https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a22fff4c88e2e7932620105/1780685325295-chairman-web.png"
                     />
                     <img
-                      src="https://royal-hayat.s3.eu-central-1.amazonaws.com/chairman/Chairman-web.jpeg"
+                      src="https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a22fff4c88e2e7932620105/1780685325295-chairman-web.png"
                       alt={t("chairmanTitle")}
                       className="absolute inset-0 size-full object-cover object-top"
                       loading="eager"
@@ -54,7 +54,7 @@ const ChairmanMessage = () => {
                         {t("chairmanBestWishes")}
                       </p>
                     )}
-                    <p className={`font-serif text-xl md:text-2xl text-foreground pt-1 ${rtl}`}>
+                    <p className={`font-serif text-xl md:text-2xl font-bold text-foreground pt-1 ${rtl}`}>
                       {t("chairmanName")}
                     </p>
                     <p

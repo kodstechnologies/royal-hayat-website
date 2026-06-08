@@ -352,11 +352,60 @@ const EnrollmentModal = ({ isOpen, onClose, t, isAr, onSuccess }: { isOpen: bool
 const AlSafwaProgram = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const fromBookAppointment = Boolean(
-    (location.state as { fromBookAppointment?: boolean } | null)?.fromBookAppointment
-  );
+  const navState = (location.state as {
+    fromBookAppointment?: boolean;
+    fromDepartments?: boolean;
+    fromSpecializedCare?: boolean;
+    returnPath?: string;
+    restoreDeptOpenIndex?: number;
+    restoreSelectedSubByDept?: Record<number, string>;
+    restoreScrollY?: number;
+    restoreExpandedIndex?: number | null;
+    restoreSelectedSubByService?: Record<string, string>;
+  } | null) ?? {};
+  const fromBookAppointment = Boolean(navState.fromBookAppointment);
+  const fromDepartments = Boolean(navState.fromDepartments);
+  const fromSpecializedCare = Boolean(navState.fromSpecializedCare);
+  const showNavigationBack = fromDepartments || fromSpecializedCare;
   const { t, lang } = useLanguage();
   const isAr = lang === "ar";
+  const goBackFromDepartments = () => {
+    navigate(navState.returnPath || "/medical-services", {
+      state: {
+        restoreDeptOpenIndex: navState.restoreDeptOpenIndex,
+        restoreSelectedSubByDept: navState.restoreSelectedSubByDept,
+        restoreScrollY: navState.restoreScrollY,
+      },
+    });
+  };
+  const goBackFromSpecializedCare = () => {
+    navigate(navState.returnPath || "/", {
+      state: {
+        restoreExpandedIndex: navState.restoreExpandedIndex,
+        restoreSelectedSubByService: navState.restoreSelectedSubByService,
+        restoreScrollY: navState.restoreScrollY,
+      },
+    });
+  };
+  const handleNavigationBack = () => {
+    if (fromDepartments) {
+      goBackFromDepartments();
+      return;
+    }
+    if (fromSpecializedCare) {
+      goBackFromSpecializedCare();
+    }
+  };
+  const navigationBackButton = showNavigationBack ? (
+    <button
+      type="button"
+      onClick={handleNavigationBack}
+      className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary font-body text-sm mb-8 transition-colors"
+    >
+      <ArrowLeft className="w-4 h-4" />
+      {isAr ? "العودة" : "Go Back"}
+    </button>
+  ) : null;
   const [showEnrollModal, setShowEnrollModal] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const objectives = isAr ? [
@@ -409,6 +458,9 @@ const AlSafwaProgram = () => {
               {isAr ? "العودة لحجز الموعد" : "Back to book appointment"}
             </button>
           </div>
+        )}
+        {!fromBookAppointment && showNavigationBack && (
+          <div className="container mx-auto px-6 pt-4">{navigationBackButton}</div>
         )}
         <div className="pt-2">
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }}
@@ -480,6 +532,7 @@ const AlSafwaProgram = () => {
               {isAr ? "العودة لحجز الموعد" : "Back to book appointment"}
             </button>
           )}
+          {!fromBookAppointment && navigationBackButton}
           <ScrollAnimationWrapper>
             <div className="text-center max-w-3xl mx-auto">
               <div className="w-20 h-20 rounded-full bg-accent/15 flex items-center justify-center mx-auto mb-6">

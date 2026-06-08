@@ -8,12 +8,9 @@ import { useLanguage } from "@/contexts/LanguageContext";
 const HomeHealth = () => {
   const { t, lang } = useLanguage();
   const isAr = lang === "ar";
-  const ltrPhoneClass = "inline-block [direction:ltr] [unicode-bidi:isolate] tabular-nums";
-  const arPhoneNumber = (number: string) => (
-    <span className="inline-block [unicode-bidi:bidi-override] [direction:rtl] tabular-nums">
-      {number.split("").reverse().join("")}
-    </span>
-  );
+  const ltrPhoneClass = "inline-block [direction:ltr] [unicode-bidi:isolate] tabular-nums tracking-normal";
+  const whatsAppDisplay = "+965 6632 0717";
+  const callDisplay = "+965 2536 0500";
   const rehabServices = isAr ? [
     "صحة المرأة والتعافي بعد الولادة",
     "التأهيل القلبي",
@@ -148,7 +145,7 @@ const HomeHealth = () => {
           <div className="mb-10">
             <div className="flex items-center gap-2 mb-4">
               <Syringe className="w-5 h-5 text-primary" />
-              <h3 className="font-serif text-lg text-foreground">{isAr ? "الزيارات قصيرة المدى" : "Short-Term Visits"}</h3>
+              <h3 className="font-serif text-lg font-bold text-foreground">{isAr ? "الزيارات قصيرة المدى" : "Short-Term Visits"}</h3>
             </div>
             <div className="grid gap-3 max-w-3xl mx-auto">
               {shortTermServices.map((item, i) => (
@@ -164,7 +161,7 @@ const HomeHealth = () => {
           <div>
             <div className="flex items-center gap-2 mb-4">
               <Heart className="w-5 h-5 text-accent" />
-              <h3 className="font-serif text-lg text-foreground">{isAr ? "الزيارات طويلة المدى والرعاية على مدار الساعة" : "Long-Term Visits (24/7 Care)"}</h3>
+              <h3 className="font-serif text-lg font-bold text-foreground">{isAr ? "الزيارات طويلة المدى والرعاية على مدار الساعة" : "Long-Term Visits (24/7 Care)"}</h3>
             </div>
             <div className="grid gap-3 max-w-3xl mx-auto">
               {longTermServices.map((item, i) => (
@@ -192,9 +189,9 @@ const HomeHealth = () => {
                         >
                           <MessageCircle className="w-4 h-4 shrink-0" />
                           {isAr ? (
-                            <>واتساب: {arPhoneNumber("66320717 965+")}</>
+                            <>واتساب: <span className={ltrPhoneClass}>{whatsAppDisplay}</span></>
                           ) : (
-                            <>WhatsApp: <span className={ltrPhoneClass}>+965 66320717</span></>
+                            <>WhatsApp: <span className={ltrPhoneClass}>{whatsAppDisplay}</span></>
                           )}
                         </a>
                         <a
@@ -203,9 +200,9 @@ const HomeHealth = () => {
                         >
                           <Phone className="w-4 h-4 shrink-0" />
                           {isAr ? (
-                            <>الهاتف: {arPhoneNumber("25360500 965+")}</>
+                            <>الهاتف: <span className={ltrPhoneClass}>{callDisplay}</span></>
                           ) : (
-                            <>Call: <span className={ltrPhoneClass}>+965 25360500</span></>
+                            <>Call: <span className={ltrPhoneClass}>{callDisplay}</span></>
                           )}
                         </a>
                       </div>

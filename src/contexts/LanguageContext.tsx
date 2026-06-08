@@ -250,7 +250,7 @@ const translations: Translations = {
 
   // Patients & Visitors
   forOurPatients: { en: "For Our Patients", ar: "لمرضانا" },
-  patientsVisitorsDesc: { en: "Everything you need to know for a comfortable and informed experience at Royale Hayat Hospital.", ar: "كل ما تحتاج معرفته لتجربة مريحة ومطلعة في مستشفى رويال حياة." },
+  patientsVisitorsDesc: { en: "", ar: "كل ما تحتاج معرفته لتجربة مريحة ومطلعة في مستشفى رويال حياة." },
   nursing: { en: "Nursing", ar: "التمريض" },
   nursingDesc: { en: "Dedicated nursing care with compassion and expertise.", ar: "رعاية تمريضية متفانية بالرحمة والخبرة." },
   admissionInfo: { en: "Admission Information", ar: "معلومات الدخول إلى المستشفى" },
@@ -639,7 +639,7 @@ const translations: Translations = {
   chatRoyalHomeHealth: { en: "Royal Home Health", ar: "رويال للرعاية المنزلية" },
   chatGuidedSteps: { en: "Quick steps", ar: "خطوات سريعة" },
   chatNeedHelp: { en: "Need help?", ar: "هل تحتاج مساعدة؟" },
-  chatNeedMoreHelp: { en: "Chat with our agent", ar: "تحدث مع وكيلنا" },
+  chatNeedMoreHelp: { en: "Chat with our agent", ar: "تحدث مع خدمة العملاء" },
   chatAiHighTraffic: {
     en: "Our AI assistant is experiencing high demand right now. Please **try again in a few minutes**, use the quick topic buttons below, or call **+965 2536 0000** for immediate assistance.",
     ar: "مساعدنا الذكي يشهد ضغطاً عالياً حالياً. يرجى **المحاولة مرة أخرى بعد قليل**، أو استخدام الأزرار السريعة أدناه، أو الاتصال على **+965 2536 0000** للمساعدة الفورية.",
@@ -707,7 +707,43 @@ const translations: Translations = {
   disclaimer: { en: "Disclaimer", ar: "إخلاء المسؤولية" },
   exchangeLogin: { en: "Exchange Login", ar: "تسجيل دخول البريد" },
   sitemailLogin: { en: "Sitemail Login", ar: "تسجيل دخول البريد الإلكتروني" },
-  termsPrivacy: { en: "Terms & Privacy", ar: "الشروط والخصوصية" },
+  termsPrivacy: { en: "Terms & Privacy", ar: "الشروط والأحكام وسياسة الخصوصية" },
+  termsPrivacyIntro: {
+    en: "Welcome to the Royale Hayat Hospital website. If you continue to browse and use this website, you are agreeing to comply with and be bound by the following terms and conditions of use, which together with our privacy policy govern our relationship with you in relation to this website. If you disagree with any part of these terms and conditions, please do not use our website.",
+    ar: "مرحبًا بكم في الموقع الإلكتروني لمستشفى رويال حياة. إن استمراركم في تصفح هذا الموقع واستخدامه يعني موافقتكم على الالتزام بالشروط والأحكام التالية، والتي تشكل مع سياسة الخصوصية الإطار المنظم لعلاقتنا بكم فيما يتعلق باستخدام هذا الموقع. وفي حال عدم موافقتكم على أي جزء من هذه الشروط والأحكام، يرجى الامتناع عن استخدام الموقع:",
+  },
+  termsPrivacySubtitle: {
+    en: "The use of this website is subject to the following terms of use:",
+    ar: "يخضع استخدام هذا الموقع للشروط التالية:",
+  },
+  termsPrivacyP1: {
+    en: "The content of the pages of this website is for your general information and use only. It is subject to change without notice. Neither we nor any third parties provide any warranty or guarantee as to the accuracy, timeliness, performance, completeness or suitability of the information and materials found or offered on this website for any particular purpose. You acknowledge that such information and materials may contain inaccuracies or errors and we expressly exclude liability for any such inaccuracies or errors to the fullest extent permitted by law. Your use of any information or materials on this website is entirely at your own risk, for which we shall not be liable. It shall be your own responsibility to ensure that any products, services or information available through this website meet your specific requirements.",
+    ar: "إن المحتوى الوارد في صفحات هذا الموقع مخصص للمعلومات العامة والاستخدام الشخصي فقط، ويجوز تعديله أو تحديثه دون إشعار مسبق.",
+  },
+  termsPrivacyP2: {
+    en: "This website contains material which is owned by or licensed to us. This material includes, but is not limited to, the design, layout, look, appearance and graphics. Reproduction is prohibited other than in accordance with the copyright notice, which forms part of these terms and conditions.",
+    ar: "لا نقدم نحن أو أي طرف ثالث أي ضمانات أو تعهدات بشأن دقة أو حداثة أو أداء أو اكتمال أو ملاءمة المعلومات والمواد المتاحة على هذا الموقع لأي غرض محدد. وتقرون بأن هذه المعلومات والمواد قد تتضمن أخطاء أو سهوًا، ونخلي مسؤوليتنا عن أي أخطاء أو عدم دقة إلى أقصى حد يسمح به القانون.",
+  },
+  termsPrivacyP3: {
+    en: "All trademarks reproduced in this website which are not the property of, or licensed to, the operator are acknowledged on the website. Unauthorized use of this website may give rise to a claim for damages and/or be a criminal offence.",
+    ar: "إن استخدامكم لأي معلومات أو مواد متاحة عبر هذا الموقع يكون على مسؤوليتكم الخاصة بالكامل، ولا نتحمل أي مسؤولية عن ذلك. وتقع على عاتقكم مسؤولية التأكد من أن أي منتجات أو خدمات أو معلومات متاحة من خلال هذا الموقع الذي يلبي احتياجاتكم ومتطلباتكم الخاصة.",
+  },
+  termsPrivacyP4: {
+    en: "From time to time this website may also include links to other websites. These links are provided for your convenience to provide further information. They do not signify that we endorse the website(s). We have no responsibility for the content of the linked website(s).",
+    ar: "يحتوي هذا الموقع على مواد مملوكة لنا أو مرخصة لصالحنا، بما في ذلك على سبيل المثال, التصميم والتنسيق والمظهر العام والرسومات والصور. ويُحظر إعادة إنتاج أي من هذه المواد إلا وفقًا لإشعار حقوق النشر الذي يشكل جزءًا من هذه الشروط والأحكام.",
+  },
+  termsPrivacyP5: {
+    en: "",
+    ar: "جميع العلامات التجارية المعروضة على هذا الموقع، والتي لا تعود ملكيتها أو ترخيصها لمشغل الموقع، يتم الإقرار بحقوق أصحابها عليها.",
+  },
+  termsPrivacyP6: {
+    en: "",
+    ar: "قد يؤدي أي استخدام غير مصرح به لهذا الموقع إلى المطالبة بالتعويضات و/أو اتخاذ إجراءات قانونية قد تصل إلى المسؤولية الجنائية.",
+  },
+  termsPrivacyP7: {
+    en: "",
+    ar: "قد يتضمن هذا الموقع من وقت لآخر روابط لمواقع إلكترونية أخرى بهدف توفير معلومات إضافية لراحتكم. ولا يعني إدراج هذه الروابط أننا نؤيد أو نعتمد محتوى تلك المواقع، كما أننا لا نتحمل أي مسؤولية عن محتوياتها أو سياساتها.",
+  },
   medicalRepVisitBooking: { en: "Medical Rep. Visit Booking", ar: "حجز زيارة مندوب طبي" },
   medicalRecordsRequestForm: { en: "Medical Records Request Form", ar: "نموذج طلب السجلات الطبية" },
 

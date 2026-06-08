@@ -119,11 +119,11 @@ const InternationalPatient = () => {
         </div>
       </section>
       {}
-      <section className="py-16 bg-secondary/20">
+      <section className="py-16 bg-secondary/20" dir={isAr ? "rtl" : "ltr"} lang={isAr ? "ar" : "en"}>
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto">
             <motion.h2 initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-              className="text-2xl md:text-3xl font-serif text-foreground mb-3 text-center">
+              className={`text-2xl md:text-3xl font-serif text-foreground mb-3 text-center ${isAr ? "!font-bold" : "font-bold"}`}>
               {isAr ? "كيف يمكننا مساعدتكم؟" : "How We Help"}
             </motion.h2>
             <motion.p initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
@@ -153,20 +153,27 @@ const InternationalPatient = () => {
           <motion.div initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             className="max-w-xl mx-auto">
             <Phone className="w-6 h-6 text-accent mx-auto mb-3" />
-            <p className="font-body text-sm text-foreground mb-1">{isAr ? "للمواعيد من خارج الكويت يرجى الاتصال على:" : "For appointment from outside Kuwait, please call:"}</p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-2">
-              <a href="tel:+96525360555" className="font-serif text-lg text-accent hover:underline">+965 2536 0555</a>
-              <a href="tel:+96567668208" className="font-serif text-lg text-accent hover:underline">+965 6766 8208</a>
+            {isAr ? (
+              <>
+                <p className="font-body text-sm text-foreground mb-1">للمواعيد من خارج الكويت</p>
+                <p className="font-body text-sm text-muted-foreground mb-2">يرجى الاتصال على:</p>
+              </>
+            ) : (
+              <p className="font-body text-sm text-foreground mb-1">For appointment from outside Kuwait, please call:</p>
+            )}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-2" dir="ltr">
+              <a href="tel:+96525360555" dir="ltr" className="font-serif text-lg text-accent hover:underline inline-block [unicode-bidi:isolate]">+965 2536 0555</a>
+              <a href="tel:+96567668208" dir="ltr" className="font-serif text-lg text-accent hover:underline inline-block [unicode-bidi:isolate]">+965 6766 8208</a>
             </div>
           </motion.div>
         </div>
       </section>
       {}
-      <section className="py-16">
+      <section className="py-16" dir={isAr ? "rtl" : "ltr"} lang={isAr ? "ar" : "en"}>
         <div className="container mx-auto px-6">
           <div className="max-w-2xl mx-auto">
             <motion.div initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-              <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-2 text-center">{isAr ? "الاستفسار الإلكتروني" : "Online Enquiry"}</h2>
+              <h2 className={`text-2xl md:text-3xl font-serif text-foreground mb-2 text-center ${isAr ? "!font-bold" : "font-bold"}`}>{isAr ? "الاستفسار الإلكتروني" : "Online Enquiry"}</h2>
               <p className="font-body text-sm text-muted-foreground text-center mb-8">{isAr ? "للاستفسارات عبر الإنترنت، يرجى تعبئة النموذج التالي:" : "For online enquiries, please fill in the form below."}</p>
             </motion.div>
             <motion.form onSubmit={handleSubmit} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }}
@@ -179,13 +186,13 @@ const InternationalPatient = () => {
                     className="w-full rounded-lg border border-border bg-background px-4 py-2.5 font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
                 </div>
                 <div>
-                  <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "اسم العائلة" : "Last Name"} *</label>
+                  <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "اسم العائلة" : "Last Name *"}</label>
                   <input type="text" value={form.lastName} onChange={e => handleChange("lastName", e.target.value)}
                     className="w-full rounded-lg border border-border bg-background px-4 py-2.5 font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
                 </div>
               </div>
               <div>
-                <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "الهاتف المحمول" : "Mobile"} *</label>
+                <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "رقم الهاتف" : "Mobile"} *</label>
                   <input type="tel" value={form.mobile} onChange={e => handleChange("mobile", e.target.value)}
                   className="w-full rounded-lg border border-border bg-background px-4 py-2.5 font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
               </div>

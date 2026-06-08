@@ -147,8 +147,9 @@ const employees = [
   {
     name: "Rangaa Tara Mahawan",
     nameAr: "رانجا تارا مهاوان",
+    sectorAr: "قطاع الضيافة",
     dept: "Guest Relation Department",
-    deptAr: "قطاع الضيافة",
+    deptAr: "قسم علاقات الضيوف",
     role: "Bell Man - Guest Relations",
     roleAr: "موظف استقبال الضيوف – قسم علاقات الضيوف",
     image:
@@ -165,6 +166,7 @@ const employees = [
   {
     name: "Mohammad Niyaz Salam",
     nameAr: "محمد نياز سلام",
+    sectorAr: "",
     dept: "Call Center Department",
     deptAr: "قسم خدمة العملاء",
     role: "Guest Services Operator - Call Center",
@@ -352,7 +354,7 @@ const WorkWithUs = ({
                 lang={isAr ? "ar" : "en"}
                 className={isAr ? "text-right" : "text-left"}
               >
-              <h1 className="text-4xl md:text-5xl font-serif text-primary mb-6 leading-tight">
+              <h1 className={`text-4xl md:text-5xl font-serif text-primary mb-6 leading-tight ${isAr ? "!font-bold" : "font-bold"}`}>
                 {isAr
                   ? "الحياة في مستشفى رويال حياة"
                   : "Life at Royale Hayat Hospital"}
@@ -360,7 +362,7 @@ const WorkWithUs = ({
               <div className="work-body-copy space-y-4 font-body tracking-normal text-[13px] sm:text-sm text-foreground leading-relaxed text-start">
                 <p>
                   {isAr
-                    ? "في مستشفى رويال حياة، نؤمن بفكرة بسيطة: قد ينسى الناس ما قلناه، لكنهم لن ينسوا أبداً كيف جعلناهم يشعرون كمرضى، أو أفراد عائلة، أو زملاء."
+                    ? "في مستشفى رويال حياة، نؤمن بأن الناس قد ينسون ما قلناه، لكنهم لن ينسوا أبدًا كيف جعلناهم يشعرون كمرضى، أو أفراد عائلة، أو زملاء عمل."
                     : "At Royale Hayat Hospital, we hold a simple belief: people may forget what we said, but they will never forget how we made them feel as patients, family members, or colleagues."}
                 </p>
                 <p>
@@ -384,7 +386,7 @@ const WorkWithUs = ({
         <section className="py-14 bg-background">
           <div className="container mx-auto px-3 md:px-6 max-w-none md:max-w-5xl lg:max-w-6xl">
             <ScrollAnimationWrapper>
-              <h2 className="text-2xl md:text-3xl font-serif text-foreground text-center mb-3 text-pretty px-1">
+              <h2 className={`text-2xl md:text-3xl font-serif text-foreground text-center mb-3 text-pretty px-1 ${isAr ? "!font-bold" : "font-bold"}`}>
                 {isAr ? "وعدنا لموظفينا" : "‘Our People Promise’"}
               </h2>
               <p className="text-center !text-center text-accent font-body text-sm mb-8 italic text-pretty px-1">
@@ -404,9 +406,15 @@ const WorkWithUs = ({
                     : "We invest deliberately in learning and development, through continuous training, exposure to international standards, collaboration across disciplines, and opportunities to grow with confidence."}
                 </p>
                 <p>
-                  {isAr
-                    ? "فنحن نؤمن بأن التميّز يُبنى بالتعلم، ويستمر بالثقة. ووعدنا بسيط: سندعم تطوركم، ونقدّر جهودكم، ونرافقكم في بناء مسيرة مهنية تفتخرون بها."
-                    : "We believe excellence is built through learning—and sustained through trust. Our promise is simple: we will help you grow, we will recognize your effort, and we will walk with you as you build a career you can be proud of."}
+                  {isAr ? (
+                    <>
+                      فنحن نؤمن بأن التميّز يُبنى بالتعلم، ويستمر بالثقة. ووعدنا بسيط:
+                      <br />
+                      سندعم تطوركم، ونقدّر جهودكم، ونرافقكم في بناء مسيرة مهنية تفتخرون بها.
+                    </>
+                  ) : (
+                    "We believe excellence is built through learning—and sustained through trust. Our promise is simple: we will help you grow, we will recognize your effort, and we will walk with you as you build a career you can be proud of."
+                  )}
                 </p>
               </div>
             </ScrollAnimationWrapper>
@@ -418,7 +426,7 @@ const WorkWithUs = ({
         <section className="py-14 bg-secondary/10">
           <div className="container mx-auto px-3 md:px-6 max-w-none md:max-w-5xl lg:max-w-6xl">
             <ScrollAnimationWrapper>
-              <h2 className="text-2xl md:text-3xl font-serif text-foreground text-center mb-8 text-pretty px-1">
+              <h2 className={`text-2xl md:text-3xl font-serif text-foreground text-center mb-8 text-pretty px-1 ${isAr ? "!font-bold" : "font-bold"}`}>
                 {isAr ? "معًا… حيث ننتمي" : "‘Where We Belong Together.’"}
               </h2>
               <div dir={isAr ? "rtl" : "ltr"} lang={isAr ? "ar" : "en"} className={cultureNarrativeClass}>
@@ -434,9 +442,14 @@ const WorkWithUs = ({
                 </p>
                 <p>
                   {isAr
-                    ? "وفي رويال حياة، لا تمر الجهود والإنجازات دون تقدير، لأن الامتنان جزء أساسي من ثقافتنا، والرعاية تستحق أن تُحتفى بها. هنا، العمل ليس مجرد وظيفة، بل مكان تشعر فيه بالتقدير والانتماء."
+                    ? "وفي رويال حياة، لا تمر الجهود والإنجازات دون تقدير، لأن الامتنان جزء أساسي من ثقافتنا، والرعاية تستحق أن تُحتفى بها."
                     : "Effort and excellence never go unnoticed here because appreciation matters, and care deserves recognition. At Royale Hayat, it is more than work; it is a place to belong and be valued."}
                 </p>
+                {isAr && (
+                  <p>
+                    هنا، العمل ليس مجرد وظيفة، بل مكان تشعر فيه بالتقدير والانتماء.
+                  </p>
+                )}
               </div>
             </ScrollAnimationWrapper>
           </div>
@@ -453,7 +466,7 @@ const WorkWithUs = ({
               {
 }
               <div className="mt-4 space-y-2">
-                <h3 className="text-xl md:text-4xl font-serif text-foreground">
+                <h3 className={`text-xl md:text-4xl font-serif text-foreground ${isAr ? "!font-bold" : "font-bold"}`}>
                   {isAr ? "أفضل موظفي شهر أبريل" : "Employees of the Month"}{" "}
                 </h3>
               </div>
@@ -487,7 +500,12 @@ const WorkWithUs = ({
                       />
                     </div>
                     <div className="flex-1 p-6 md:p-8">
-                      <h3 className="font-serif text-2xl text-foreground mb-1">
+                      {isAr && employees[empIndex].sectorAr && (
+                        <p className="font-body text-xs text-muted-foreground uppercase tracking-wide mb-2">
+                          {employees[empIndex].sectorAr}
+                        </p>
+                      )}
+                      <h3 className={`font-serif text-2xl text-foreground mb-1 ${isAr ? "!font-bold" : "font-bold"}`}>
                         {isAr
                           ? employees[empIndex].nameAr
                           : employees[empIndex].name}
@@ -568,7 +586,7 @@ const WorkWithUs = ({
         <LifePhotoCarousel
           title={
             isAr
-              ? "أنشطة الموظفين — بطولة الكرة الطائرة"
+              ? "أنشطة الموظفين | بطولة الكرة الطائرة"
               : "Staff Activities — Volley Ball Tournament"
           }
           subtitle={

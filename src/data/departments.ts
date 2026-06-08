@@ -34,8 +34,8 @@ export const departments: Department[] = [
   {
     id: 1, icon: Heart, category: "Women's Health", mainCategory: "Clinical Speciality",
     name: "Obstetrics & Gynecology", nameAr: "أمراض النساء والولادة", slug: "obstetrics-gynecology",
-    desc: "Complete maternity care from prenatal through postpartum recovery, supported by healthcare professionals.",
-    descAr: "رعاية أمومة شاملة من ما قبل الولادة حتى التعافي بعدها، بدعم من أكثر من 600 متخصص.",
+    desc: "Complete maternity care from prenatal through postpartum recovery. Our team provides expert guidance for high-risk pregnancies, minimally invasive gynecological procedures, and comprehensive family planning services.",
+    descAr: "رعاية شاملة للأم خلال جميع مراحل الحمل، من المتابعة قبل الولادة وحتى التعافي بعد الولادة. يقدم فريقنا الطبي رعاية متخصصة للحمل عالي الخطورة، وإجراءات أمراض النساء طفيفة التوغل، بالإضافة إلى خدمات شاملة لتنظيم الأسرة.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Obstetrics+%26+Gynecology/2.JPG",
     clinicCode: "R002OBG",
     subs: [
@@ -174,7 +174,7 @@ export const departments: Department[] = [
   },
   {
     id: 15, icon: Microscope, category: "Diagnostics", mainCategory: "Clinical Support Service",
-    name: "Center for Diagnostic Imaging", nameAr: "مركز الأشعة التشخيصية", slug: "center-for-diagnostic-imaging",
+    name: "Center for Diagnostic Imaging", nameAr: "الأشعة التشخيصية", slug: "center-for-diagnostic-imaging",
     desc: "Advanced diagnostic and image-guided therapeutic services combining expert professionals with state-of-the-art technology.",
     descAr: "في مستشفى رويال حياة، يقدم مركز الأشعة التشخيصية خدمات متقدمة في التشخيص والتدخلات العلاجية الموجهة بالتصوير الطبي، من خلال الجمع بين الخبرات الطبية المتخصصة وأحدث التقنيات لضمان دقة التشخيص وسرعة تقديم الرعاية المناسبة.",
     img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/department/Department+Photos/Department+Photos/Center+for+Diagnostic+Imaging/1.JPG",

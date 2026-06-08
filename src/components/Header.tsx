@@ -552,14 +552,14 @@ const Header = () => {
             <Link
               to="/book-appointment"
               onClick={handleBookAppointmentClick}
-              className={`hidden sm:inline-flex items-center justify-center h-8 md:h-9 bg-primary text-primary-foreground rounded-full font-body tracking-wide hover:bg-primary/90 transition-colors duration-300 ${lang === "ar" ? "px-2.5 text-[9px]" : "px-3.5 text-[11px]"
+              className={`hidden lg:inline-flex items-center justify-center h-8 md:h-9 bg-primary text-primary-foreground rounded-full font-body tracking-wide hover:bg-primary/90 transition-colors duration-300 ${lang === "ar" ? "px-2.5 text-[9px]" : "px-3.5 text-[11px]"
                 }`}
             >
               {t("bookAppointment")}
             </Link>
             <button
               onClick={() => setShowMedRecordsModal(true)}
-              className={`hidden md:inline-flex items-center justify-center h-8 md:h-9 rounded-full font-body tracking-wide border border-border text-foreground hover:bg-background transition-colors duration-300 ${lang === "ar" ? "px-2.5 text-[9px]" : "px-3.5 text-[11px]"
+              className={`hidden lg:inline-flex items-center justify-center h-8 md:h-9 rounded-full font-body tracking-wide border border-border text-foreground hover:bg-background transition-colors duration-300 ${lang === "ar" ? "px-2.5 text-[9px]" : "px-3.5 text-[11px]"
                 }`}
             >
               {t("login")}

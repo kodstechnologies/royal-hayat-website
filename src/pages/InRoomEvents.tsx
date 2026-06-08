@@ -167,7 +167,7 @@ const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) =
                   icon: UtensilsCrossed,
                   title: isAr ? "ضيافة ومأكولات فاخرة" : "Gourmet Catering",
                   desc: isAr
-                    ? "استمتعوا بتجربة طعام راقية تضم تشكيلة مختارة من الأطباق المُعدة بعناية من مطابخنا المتخصصة. من المقبلات الفاخرة إلى الحلويات الراقية، نحرص على تقديم تجربة ضيافة استثنائية ترضي جميع الأذواق."
+                    ? "استمتعوا بتجربة طعام راقية تضم تشكيلة مختارة من الأطباق المُعدة بعناية من مطابخنا المتخصصة.\n\nمن المقبلات الفاخرة إلى الحلويات الراقية، نحرص على تقديم تجربة ضيافة استثنائية ترضي جميع الأذواق."
                     : "Enjoy a selection of specially crafted dishes from our top-tier kitchen. From exquisite appetizers to delectable desserts, we deliver an exceptional dining experience.",
                 },
                 {
@@ -184,7 +184,7 @@ const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) =
                       <item.icon className="w-6 h-6 text-primary" />
                     </div>
                     <h3 className="font-serif text-lg text-foreground mb-2">{item.title}</h3>
-                    <p className="font-body text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+                    <p className="font-body text-sm text-muted-foreground leading-relaxed whitespace-pre-line">{item.desc}</p>
                   </div>
                 </ScrollAnimationWrapper>
               ))}
@@ -271,7 +271,8 @@ const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) =
             <div className="flex flex-col items-center gap-4">
               <a
                 href="tel:+96525360573"
-                className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-full font-body text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-colors"
+                dir="ltr"
+                className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-full font-body text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-colors [direction:ltr] [unicode-bidi:isolate]"
               >
                 <Phone className="w-4 h-4" />
                 <span className={ltrPhoneClass}>+965 2536 0573</span>
@@ -281,7 +282,7 @@ const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) =
                 onClick={() => setEventBookingOpen(true)}
                 className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-full font-body text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-colors"
               >
-                {isAr ? "اضغط لحجز مناسبتك" : "Book your Event Online"}
+                {isAr ? "احجز مناسبتك اليوم" : "Book your Event Online"}
               </button>
             </div>
           </ScrollAnimationWrapper>

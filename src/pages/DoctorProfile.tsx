@@ -8,8 +8,137 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { loadDoctorById, type Doctor } from "@/data/loadDoctors";
 import { departments, deptDoctorAliases } from "@/data/departments";
 import { getDoctorById, mapApiDoctorRowToDoctor } from "@/api/doctors";
+import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
 import { X } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, type ReactNode } from "react";
+
+const ltrIsolateClass = "inline-block [direction:ltr] [unicode-bidi:isolate]";
+
+function renderLtrSpan(content: string) {
+  return (
+    <span dir="ltr" className={ltrIsolateClass}>
+      {content}
+    </span>
+  );
+}
+
+function renderMixedLatinParens(text: string): ReactNode {
+  const parts: ReactNode[] = [];
+  const regex = /(\([A-Za-z][A-Za-z0-9\s]*\))/g;
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+    parts.push(renderLtrSpan(match[0]));
+    lastIndex = regex.lastIndex;
+  }
+
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+
+  return parts.length === 1 ? parts[0] : <>{parts}</>;
+}
+
+function renderGermanBoardQualification(text: string): ReactNode | null {
+  const staatsexamen = text.match(/^(.*?)\(Staatsexamen\)\s+(.*?)\s+(1990)\s*$/);
+  if (staatsexamen) {
+    return (
+      <>
+        {staatsexamen[1].trimEnd()}{" "}
+        {renderLtrSpan("(Staatsexamen)")}{" "}
+        {staatsexamen[2].trimEnd()}{" "}
+        {renderLtrSpan(staatsexamen[3])}
+      </>
+    );
+  }
+
+  const facharzt = text.match(/^(.*?)\(Facharzt\)\s+(.*?)\s+(1998)\s*$/);
+  if (facharzt) {
+    return (
+      <>
+        {facharzt[1].trimEnd()}{" "}
+        {renderLtrSpan("(Facharzt)")}{" "}
+        {facharzt[2].trimEnd()}{" "}
+        {renderLtrSpan(facharzt[3])}
+      </>
+    );
+  }
+
+  return null;
+}
+
+function renderArQualification(text: string): ReactNode {
+  const duplex = text.match(/^(شهادة دوبلكس)\s+(?:Sonography\s+2000|2000\s+Sonography)$/);
+  if (duplex) {
+    return (
+      <>
+        {duplex[1]}{" "}
+        {renderLtrSpan("2000 Sonography")}
+      </>
+    );
+  }
+  const mamo = text.match(/^(شهادة)\s+(?:Mamasonography\s+2003|2003\s+Mamasonography)$/);
+  if (mamo) {
+    return (
+      <>
+        {mamo[1]}{" "}
+        {renderLtrSpan("2003 Mamasonography")}
+      </>
+    );
+  }
+  if (/\([A-Za-z]/.test(text)) {
+    const germanBoard = renderGermanBoardQualification(text);
+    if (germanBoard) return germanBoard;
+    return renderMixedLatinParens(text);
+  }
+  return text;
+}
+
+function isExpertiseSubBullet(text: string) {
+  const trimmed = text.trim();
+  return trimmed.startsWith("–") || trimmed.startsWith("—");
+}
+
+function isExpertiseMainBullet(text: string) {
+  const trimmed = text.trim();
+  return trimmed.startsWith("•") || (trimmed.startsWith("-") && !trimmed.startsWith("–"));
+}
+
+function stripExpertiseBullet(text: string) {
+  const trimmed = text.trim();
+  if (isExpertiseSubBullet(trimmed)) return trimmed.substring(1).trim();
+  if (isExpertiseMainBullet(trimmed)) return trimmed.substring(1).trim();
+  return trimmed;
+}
+
+function renderExpertiseLine(text: string, lang: "en" | "ar"): ReactNode {
+  const content = stripExpertiseBullet(text);
+
+  const colonIndex = content.indexOf(":");
+  if (colonIndex === -1 || colonIndex > 80) {
+    return lang === "ar" ? renderArQualification(content) : content;
+  }
+
+  const label = content.slice(0, colonIndex + 1);
+  const rest = content.slice(colonIndex + 1).trimStart();
+
+  return (
+    <>
+      <span className="font-serif font-bold text-primary">{label}</span>
+      {rest ? (
+        <>
+          {" "}
+          {lang === "ar" ? renderArQualification(rest) : rest}
+        </>
+      ) : null}
+    </>
+  );
+}
+
 const patientFeedback = [
   {
     name: "Sara Al-Mutairi", nameAr: "سارة المطيري",
@@ -183,9 +312,9 @@ const handleAddTestimonial = () => {
   const isOnlineAvailable = !isRequestOnlyDoctor;
   const canBookSlot = bookingReturnState?.canBookSlot ?? isOnlineAvailable;
   const hideRequestAppointmentButton = [
-    "Dr. Mirvat Sameer Ghanem",
-    "Dr. Mustafa Alfiki",
-  ].includes(doctor.name);
+    "dr-mirvat-sameer-ghanem",
+    "dr-mustafa-alfiki",
+  ].includes(doctor.id);
   const inferredDept = departments.find((d) => {
     const aliases = deptDoctorAliases[d.name] || [d.name];
     return aliases.some((a) => doctor.department.includes(a) || doctor.specialty.includes(a));
@@ -221,7 +350,7 @@ const handleAddTestimonial = () => {
                 className="bg-popover rounded-2xl overflow-hidden border border-border/50 sticky top-24">
                 <div className="bg-white h-[420px] flex items-center justify-center relative">
                   {doctor.image ? (
-                    <img src={doctor.image} alt={lang === "ar" ? doctor.nameAr : doctor.name} className="w-full h-full object-contain" />
+                    <img src={doctor.image} alt={getDoctorDisplayName(doctor, lang)} className="w-full h-full object-contain" />
                   ) : (
                     <div className="w-28 h-28 rounded-full bg-popover/20 backdrop-blur-sm flex items-center justify-center border-2 border-popover/30">
                       <span className="text-4xl font-serif text-primary-foreground">{doctor.initials}</span>
@@ -235,19 +364,18 @@ const handleAddTestimonial = () => {
                   <p className="text-accent text-xs tracking-[0.2em] uppercase font-body mb-2">
                     {lang === "ar" ? doctor.specialtyAr : doctor.specialty}
                   </p>
-                  <h1 className="text-2xl font-serif text-foreground mb-1">{lang === "ar" ? doctor.nameAr : doctor.name}</h1>
-                  <p className="text-muted-foreground font-body text-sm mb-5">{lang === "ar" ? doctor.titleAr : doctor.title}</p>
+                  <h1 className="text-2xl font-serif font-bold text-foreground mb-1">{getDoctorDisplayName(doctor, lang)}</h1>
+                  <p className="text-muted-foreground font-body text-sm mb-5 whitespace-pre-line">{lang === "ar" ? doctor.titleAr : doctor.title}</p>
                   {}
-                  {!hideRequestAppointmentButton && (
+                  {doctor.hideBooking !== true && !hideRequestAppointmentButton && (
                     <div
-                      className={`flex items-center gap-1.5 mb-4 justify-center ${isRequestOnlyDoctor ? "text-muted-foreground" : "text-green-600"
-                        }`}
+                      className={`flex items-center gap-1.5 mb-4 justify-center ${doctor.availableOnline !== false ? "text-green-600" : "text-destructive"}`}
                     >
-                      <div className={`w-2 h-2 rounded-full ${isRequestOnlyDoctor ? "bg-muted-foreground" : "bg-green-500"}`} />
+                      <div className={`w-2 h-2 rounded-full ${doctor.availableOnline !== false ? "bg-green-500" : "bg-destructive"}`} />
                       <span className="font-body text-xs">
-                        {isRequestOnlyDoctor
-                          ? (lang === "ar" ? "طلب موعد" : "Request Appointment")
-                          : (lang === "ar" ? "متاح للحجز الإلكتروني" : "Book Online")}
+                        {doctor.availableOnline !== false
+                          ? (lang === "ar" ? "متاح للحجز الإلكتروني" : "Book Online")
+                          : (lang === "ar" ? "غير متاح للحجز الإلكتروني" : "Not Available for Online Booking")}
                       </span>
                     </div>
                   )}
@@ -302,17 +430,33 @@ const handleAddTestimonial = () => {
                   <h2 className="text-xl md:text-2xl font-serif text-primary font-bold mb-5">
                     {lang === "ar" ? "المؤهلات:" : "QUALIFICATIONS:"}
                   </h2>
-                  <ul className="space-y-3 list-outside ml-6">
+                  <ul
+                    dir={lang === "ar" ? "rtl" : "ltr"}
+                    className="space-y-3 list-outside list-disc ps-7 pe-1"
+                  >
                     {(lang === "ar" ? doctor.qualificationsAr : doctor.qualifications).map((q, i) => {
+                      const items = lang === "ar" ? doctor.qualificationsAr : doctor.qualifications;
                       const trimmed = q.trim();
                       const isManualBullet = trimmed.startsWith("•") || trimmed.startsWith("-");
-                      const isHeader = !isManualBullet && (trimmed.endsWith(":") || trimmed.endsWith("："));
+                      const hasAnyManualBullets = items.some(
+                        (item) => item.trim().startsWith("•") || item.trim().startsWith("-")
+                      );
+                      const isHeader =
+                        !isManualBullet &&
+                        (trimmed.endsWith(":") ||
+                          trimmed.endsWith("：") ||
+                          (hasAnyManualBullets && !isManualBullet));
                       return (
-                        <li key={i} className={`font-body text-base leading-relaxed ${isHeader
-                          ? "list-none -ml-6 font-serif text-lg font-bold text-primary mt-6 mb-2"
-                          : "text-muted-foreground list-disc"
+                        <li
+                          key={i}
+                          lang={lang === "ar" ? "ar" : "en"}
+                          className={`font-body text-base leading-relaxed text-justify ${isHeader
+                          ? "list-none -ps-7 font-serif text-lg font-bold text-primary mt-6 mb-2"
+                          : "text-muted-foreground"
                           }`}>
-                          {isManualBullet ? trimmed.substring(1).trim() : q}
+                          {lang === "ar"
+                            ? renderArQualification(isManualBullet ? trimmed.substring(1).trim() : q)
+                            : (isManualBullet ? trimmed.substring(1).trim() : q)}
                         </li>
                       );
                     })}
@@ -325,18 +469,51 @@ const handleAddTestimonial = () => {
                 <h2 className="text-xl md:text-2xl font-serif text-primary font-bold mb-5">
                   {lang === "ar" ? "الخبرات:" : "EXPERIENCED IN:"}
                 </h2>
-                <ul className="space-y-3 list-outside ml-6">
+                <ul
+                  dir={lang === "ar" ? "rtl" : "ltr"}
+                  className="space-y-3 list-outside list-disc ps-7 pe-1"
+                >
                   {(lang === "ar" ? doctor.expertiseAr : doctor.expertise).map((exp, i) => {
                     const trimmed = exp.trim();
-                    const isManualBullet = trimmed.startsWith("•") || trimmed.startsWith("-");
-                    const hasAnyManualBullets = (lang === "ar" ? doctor.expertiseAr : doctor.expertise).some(item => item.trim().startsWith("•") || item.trim().startsWith("-"));
-                    const isHeader = !isManualBullet && (trimmed.endsWith(":") || trimmed.endsWith("：") || (hasAnyManualBullets && !isManualBullet));
+                    const isSubBullet = isExpertiseSubBullet(trimmed);
+                    const isManualBullet = isExpertiseMainBullet(trimmed) || isSubBullet;
+                    const items = lang === "ar" ? doctor.expertiseAr : doctor.expertise;
+                    const hasAnyManualBullets = items.some(
+                      (item) =>
+                        isExpertiseMainBullet(item.trim()) ||
+                        isExpertiseSubBullet(item.trim())
+                    );
+                    const isHeader =
+                      !isManualBullet &&
+                      (trimmed.endsWith(":") ||
+                        trimmed.endsWith("：") ||
+                        (hasAnyManualBullets && !isManualBullet));
+                    const isColonHeader =
+                      trimmed.endsWith(":") || trimmed.endsWith("：");
                     return (
-                      <li key={i} className={`font-body text-base leading-relaxed ${isHeader
-                        ? "list-none -ml-6 font-serif text-lg font-bold text-primary mt-6 mb-2 uppercase tracking-wide"
-                        : "text-muted-foreground list-disc"
+                      <li
+                        key={i}
+                        lang={lang === "ar" ? "ar" : "en"}
+                        className={`font-body text-base leading-relaxed text-justify ${isHeader
+                        ? `-ps-7 list-none font-serif text-lg font-bold text-primary mt-6 mb-2${isColonHeader ? "" : " uppercase tracking-wide"}`
+                        : isSubBullet
+                          ? "list-none ps-12 text-muted-foreground"
+                          : "text-muted-foreground"
                         }`}>
-                        {isManualBullet ? trimmed.substring(1).trim() : exp}
+                        {isHeader
+                          ? exp
+                          : isSubBullet
+                            ? (
+                              <span className="flex items-start gap-2">
+                                <span className="text-primary shrink-0 leading-relaxed">–</span>
+                                <span className="flex-1">
+                                  {lang === "ar"
+                                    ? renderArQualification(stripExpertiseBullet(exp))
+                                    : stripExpertiseBullet(exp)}
+                                </span>
+                              </span>
+                            )
+                            : renderExpertiseLine(exp, lang === "ar" ? "ar" : "en")}
                       </li>
                     );
                   })}

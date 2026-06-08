@@ -142,7 +142,7 @@ export const departmentDetails: DepartmentDetail[] = [
             content:
               "Take control of your health with our gender-specific programs, designed to support you at every life stage. Schedule your consultation today at 25360000 and partner with a physician dedicated to your lifelong well-being.\n\nYour health, your future—let's take the next step together.",
             contentAr:
-              "امنحي صحتك الأولوية من خلال برامجنا المتخصصة المصممة لدعم المرأة في كل مرحلة من مراحل الحياة. احجزي موعدك اليوم على الرقم 25360000 وابدئي رحلتك مع فريق طبي يلتزم برعايتك وصحتك على المدى الطويل.\n\nصحتكِ اليوم… هي مستقبلُكِ غدًا",
+              "امنحي صحتك الأولوية من خلال برامجنا المتخصصة المصممة لدعم المرأة في كل مرحلة من مراحل الحياة. احجزي موعدك اليوم على الرقم 25360000 وابدئي رحلتك مع فريق طبي يلتزم برعايتك وصحتك على المدى الطويل.\n\n**صحتكِ اليوم… هي مستقبلُكِ غدًا**",
           },
         ],
       },
@@ -252,37 +252,32 @@ export const departmentDetails: DepartmentDetail[] = [
               "علاج اضطرابات المسالك البولية النسائية: رعاية متخصصة لعلاج سلس البول، هبوط أعضاء الحوض، التشنج المهبلي، وآلام الدورة الشهرية",
               "الرعاية قبل وبعد الولادة: برامج علاج طبيعي تساعد على التحضير لولادة آمنة وتسريع التعافي بعد الولادة",
               "تخفيف آلام ومضاعفات الحمل: علاج مشكلات الحمل الشائعة مثل آلام الظهر، تورم الساقين، وضعف العضلات",
+              "علاج مشكلات الجهاز العضلي الهيكلي: رعاية متخصصة لحالات خشونة المفاصل، تيبس الكتف، وإصابات العمود الفقري، وآلام عصب عرق النسا.",
+              "العلاج الطبيعي التنفسي: جلسات علاجية لتحسين التنفس والتخفيف من ضيق التنفس خلال الحمل وبعد الولادة.",
+              "العناية بالندبات بعد الولادة القيصرية: تقنيات علاجية للمساعدة في تقليل الألم وتحسين التئام الندبات واستعادة مرونة الأنسجة.",
+              "إعادة التأهيل بعد العمليات الجراحية: برامج تأهيلية بعد عمليات السمنة أو الجراحات التجميلية لدعم التعافي وتحسين النتائج العلاجية.",
+              "إعادة التأهيل بعد جراحات الثدي: علاج طبيعي يهدف إلى استعادة الحركة وتقليل الألم بعد العمليات الجراحية الخاصة بالثدي.",
             ],
           },
           {
             title: "Musculoskeletal Management",
-            titleAr: "علاج مشكلات الجهاز العضلي الهيكلي",
             content: "Care for osteoarthritis, frozen shoulder, spinal injuries, and sciatic pain.",
-            contentAr: "رعاية متخصصة لحالات خشونة المفاصل، تيبس الكتف، وإصابات العمود الفقري، وآلام عصب عرق النسا.",
           },
           {
             title: "Pulmonary Physiotherapy",
-            titleAr: "العلاج الطبيعي التنفسي",
             content: "Breathing therapy for pregnancy and postpartum breathlessness.",
-            contentAr: "جلسات علاجية لتحسين التنفس والتخفيف من ضيق التنفس خلال الحمل وبعد الولادة.",
           },
           {
             title: "Scar Management After Cesarean",
-            titleAr: "العناية بالندبات بعد الولادة القيصرية",
             content: "Techniques to reduce pain and enhance healing.",
-            contentAr: "تقنيات علاجية للمساعدة في تقليل الألم وتحسين التئام الندبات واستعادة مرونة الأنسجة.",
           },
           {
             title: "Post-Surgical Rehabilitation",
-            titleAr: "إعادة التأهيل بعد العمليات الجراحية",
             content: "Care following bariatric or cosmetic surgery to promote healing.",
-            contentAr: "برامج تأهيلية بعد عمليات السمنة أو الجراحات التجميلية لدعم التعافي وتحسين النتائج العلاجية.",
           },
           {
             title: "Breast Surgery Rehabilitation",
-            titleAr: "إعادة التأهيل بعد جراحات الثدي",
             content: "Therapy to restore movement and reduce pain after breast surgery.",
-            contentAr: "علاج طبيعي يهدف إلى استعادة الحركة وتقليل الألم بعد العمليات الجراحية الخاصة بالثدي.",
           },
         ],
       },
@@ -1494,7 +1489,7 @@ export const departmentDetails: DepartmentDetail[] = [
   {
     slug: "center-for-diagnostic-imaging",
     name: "Center for Diagnostic Imaging",
-    nameAr: "مركز الأشعة التشخيصية",
+    nameAr: "الأشعة التشخيصية",
     intro:
       "At Royale Hayat Hospital, our Center for Diagnostic Imaging offers advanced diagnostic and image-guided therapeutic services. Combining expert professionals with state-of-the-art technology, we ensure accurate diagnoses and timely care.",
     introAr:
@@ -1983,7 +1978,7 @@ export const departmentDetails: DepartmentDetail[] = [
             content:
               "Our team excels in image-guided pain management, providing relief with real-time imaging for maximum effectiveness and minimal invasiveness.",
             contentAr:
-              "يتميز الفريق بخبرة عالية في علاج الألم باستخدام التوجيه بالتصوير الطبي المباشر، لتوفير تسكين فعال للألم مع تدخل بسيط وأقل توغل.",
+              "يتميز الفريق بخبرة عالية في علاج الألم باستخدام التوجيه بالتصوير الطبي المباشر، لتوفير تسكين فعال للألم مع تدخل بسيط وأقل قدر من التدخل الجراحي.",
           },
         ],
       },

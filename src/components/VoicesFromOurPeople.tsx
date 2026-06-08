@@ -49,7 +49,7 @@ const VoicesFromOurPeople = () => {
             <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-4 !text-center">
               {isAr ? "كلمات من فريقنا" : "Testimonials"}
             </p>
-            <h2 className="text-3xl md:text-4xl font-serif text-foreground">
+            <h2 className={`text-3xl md:text-4xl font-serif text-foreground ${isAr ? "!font-bold" : "font-bold"}`}>
               {isAr ? "أصوات من فريقنا" : "Voices from Our People"}
             </h2>
           </div>

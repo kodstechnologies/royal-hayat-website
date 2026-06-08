@@ -11,7 +11,8 @@ import { loadDoctors, type Doctor } from "@/data/loadDoctors";
 import { departments, deptDoctorAliases, MAIN_CATEGORIES, type MainCategory } from "@/data/departments";
 import { Input } from "@/components/ui/input";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
-import { scrollDoctorCarousel } from "@/utils/doctorCarousel";
+import { sortDoctorsInDepartment } from "@/utils/sortDoctorsInDepartment";
+import { getDoctorCarouselScrollState, scrollDoctorCarousel } from "@/utils/doctorCarousel";
 
 const DoctorCard = memo(({ doc }: { doc: Doctor }) => {
   const { lang } = useLanguage();
@@ -90,36 +91,53 @@ const departmentArLabels: Record<string, string> = {
 const DepartmentRow = memo(({ department, departmentAr, docs }: { department: string; departmentAr: string; docs: Doctor[] }) => {
   const { lang } = useLanguage();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [isScrollable, setIsScrollable] = useState(false);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
 
   const updateScrollState = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
-    setIsScrollable(el.scrollWidth > el.clientWidth + 1);
+    const { canScrollLeft: left, canScrollRight: right } = getDoctorCarouselScrollState(el);
+    setCanScrollLeft(left);
+    setCanScrollRight(right);
   }, []);
 
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
 
-    updateScrollState();
+    const scheduleUpdate = () => {
+      window.requestAnimationFrame(updateScrollState);
+    };
 
-    const observer = new ResizeObserver(updateScrollState);
+    scheduleUpdate();
+    const delayedChecks = [
+      window.setTimeout(scheduleUpdate, 150),
+      window.setTimeout(scheduleUpdate, 600),
+    ];
+
+    const observer = new ResizeObserver(scheduleUpdate);
     observer.observe(el);
-    el.addEventListener("scroll", updateScrollState);
-    window.addEventListener("resize", updateScrollState);
+    Array.from(el.children).forEach((child) => observer.observe(child));
+
+    el.addEventListener("scroll", updateScrollState, { passive: true });
+    el.addEventListener("load", scheduleUpdate, true);
+    window.addEventListener("resize", scheduleUpdate);
 
     return () => {
+      delayedChecks.forEach((timer) => window.clearTimeout(timer));
       observer.disconnect();
       el.removeEventListener("scroll", updateScrollState);
-      window.removeEventListener("resize", updateScrollState);
+      el.removeEventListener("load", scheduleUpdate, true);
+      window.removeEventListener("resize", scheduleUpdate);
     };
   }, [docs, updateScrollState]);
 
   const scroll = (dir: "left" | "right") => {
-    if (scrollRef.current) {
-      scrollDoctorCarousel(scrollRef.current, dir);
-    }
+    const el = scrollRef.current;
+    if (!el) return;
+    scrollDoctorCarousel(el, dir);
+    window.setTimeout(updateScrollState, 400);
   };
   const deptDesc = departmentDescriptions[department];
   return (
@@ -136,33 +154,39 @@ const DepartmentRow = memo(({ department, departmentAr, docs }: { department: st
           </div>
         )}
       </div>
-      <div className="relative group/carousel">
-        {isScrollable && (
-          <>
-            <button
-              type="button"
-              aria-label={lang === "ar" ? "التمرير لليسار" : "Scroll left"}
-              onClick={() => scroll("left")}
-              className="absolute left-0 md:left-1 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <button
-              type="button"
-              aria-label={lang === "ar" ? "التمرير لليمين" : "Scroll right"}
-              onClick={() => scroll("right")}
-              className="absolute right-0 md:right-1 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </>
-        )}
-        {}
+      <div className="relative" dir="ltr">
+        <button
+          type="button"
+          aria-label={lang === "ar" ? "التمرير لليسار" : "Scroll left"}
+          onClick={() => scroll("left")}
+          disabled={!canScrollLeft}
+          className={`absolute left-0 sm:-left-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground transition-all shadow-md ltr-icon pointer-events-auto ${
+            !canScrollLeft
+              ? "opacity-0 pointer-events-none"
+              : "opacity-100 hover:bg-primary hover:text-primary-foreground hover:border-primary"
+          }`}
+        >
+          <ChevronLeft className="w-5 h-5" />
+        </button>
+        <button
+          type="button"
+          aria-label={lang === "ar" ? "التمرير لليمين" : "Scroll right"}
+          onClick={() => scroll("right")}
+          disabled={!canScrollRight}
+          className={`absolute right-0 sm:-right-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground transition-all shadow-md ltr-icon pointer-events-auto ${
+            !canScrollRight
+              ? "opacity-0 pointer-events-none"
+              : "opacity-100 hover:bg-primary hover:text-primary-foreground hover:border-primary"
+          }`}
+        >
+          <ChevronRight className="w-5 h-5" />
+        </button>
         <div className="max-w-[1192px] mx-auto overflow-hidden">
           <div
             ref={scrollRef}
             dir="ltr"
-            className="flex items-stretch gap-4 overflow-x-auto pb-8 scroll-smooth snap-x snap-mandatory max-md:scroll-px-[calc(50%-140px)] max-md:px-[calc(50%-140px)] md:gap-6 md:px-0 md:scroll-px-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+            onScroll={updateScrollState}
+            className="doctors-carousel-track flex w-full items-stretch gap-4 overflow-x-auto pb-8 scroll-smooth snap-x snap-mandatory max-md:scroll-px-[calc(50%-140px)] max-md:px-[calc(50%-140px)] md:gap-6 md:px-0 md:scroll-px-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
           >
             {docs.map((doc) => (
               <DoctorCard key={doc.id} doc={doc} />

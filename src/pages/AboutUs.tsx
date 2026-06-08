@@ -101,7 +101,7 @@ const leaders = [
   {
     initials: "HG",
     nameEn: "Dr. Hamid Ghaderi",
-    nameAr: "د. حميد قادري",
+    nameAr: "د. حميد القادري",
     roleEn:
       "Head of Anesthesia, ICU & Pain Management\nDeputy Medical Director\nConsultant Anesthesia, ICU & Pain Management",
     roleAr:
@@ -318,7 +318,7 @@ const AboutUs = () => {
                     const hasHtml = intro.includes("<") && intro.includes(">");
                     return (
                       <p
-                        className="text-muted-foreground font-body text-sm md:text-base leading-relaxed"
+                        className="text-muted-foreground font-body text-sm md:text-base leading-relaxed whitespace-pre-line"
                         {...(hasHtml ? { dangerouslySetInnerHTML: { __html: intro } } : {})}
                       >
                         {!hasHtml ? intro : null}

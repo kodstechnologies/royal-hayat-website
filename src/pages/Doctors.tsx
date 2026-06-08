@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
+import TestimonialsSection from "@/components/TestimonialsSection";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { loadDoctors, type Doctor } from "@/data/loadDoctors";
 import { departments, deptDoctorAliases, MAIN_CATEGORIES, type MainCategory } from "@/data/departments";
@@ -36,7 +37,7 @@ const DoctorCard = memo(({ doc }: { doc: Doctor }) => {
           <p className="text-accent text-[10px] tracking-[0.2em] uppercase font-body mb-1.5">
             {lang === "ar" ? doc.specialtyAr : doc.specialty}
           </p>
-          <h3 className="text-base font-serif font-bold text-foreground mb-1">{displayName}</h3>
+          <h3 className="text-[1.2rem] font-serif font-bold text-foreground mb-1">{displayName}</h3>
           <p className="text-muted-foreground font-body text-xs mb-3">{lang === "ar" ? doc.titleAr : doc.title}</p>
           {doc.hideBooking !== true && (
             <div className={`flex items-center gap-1.5 mb-2 ${doc.availableOnline !== false ? "text-green-600" : "text-destructive"}`}>
@@ -389,6 +390,7 @@ const Doctors = () => {
           )}
         </div>
       </section>
+      <TestimonialsSection />
       <Footer />
       <ScrollToTop />
     </div>

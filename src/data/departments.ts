@@ -249,8 +249,10 @@ export const deptDoctorAliases: Record<string, string[]> = {
   "Physiotherapy": ["Physiotherapy"],
 };
 export const ROYALE_HAYAT_PHARMACY_DOCTOR_IDS = [
-  "dr-mustafa-alfiki",
   "dr-mirvat-sameer-ghanem",
+] as const;
+export const CLINICAL_PHARMACY_DOCTOR_IDS = [
+  "dr-mustafa-alfiki",
 ] as const;
 export function doctorMatchesDepartment(
   deptName: string,
@@ -259,6 +261,9 @@ export function doctorMatchesDepartment(
 ): boolean {
   if (deptName === "Royale Hayat Pharmacy") {
     return doc.id != null && (ROYALE_HAYAT_PHARMACY_DOCTOR_IDS as readonly string[]).includes(doc.id);
+  }
+  if (deptName === "Clinical Pharmacy") {
+    return doc.id != null && (CLINICAL_PHARMACY_DOCTOR_IDS as readonly string[]).includes(doc.id);
   }
   const aliases = deptDoctorAliases[deptName];
   const matchTerms = [...(aliases && aliases.length > 0 ? aliases : [deptName]), ...extraTerms];

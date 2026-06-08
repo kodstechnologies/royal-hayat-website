@@ -421,7 +421,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                               </div>
                                               <div className="p-3">
                                                 <p className="text-accent text-[9px] tracking-[0.2em] uppercase font-body mb-1">{lang === "ar" ? doc.specialtyAr : doc.specialty}</p>
-                                                <h4 className="text-sm font-serif font-bold text-foreground group-hover/doc:text-primary transition-colors">{getDoctorDisplayName(doc, lang)}</h4>
+                                                <h4 className="text-[1.2rem] font-serif font-bold text-foreground group-hover/doc:text-primary transition-colors">{getDoctorDisplayName(doc, lang)}</h4>
                                                 <p className="text-xs text-muted-foreground font-body mt-0.5 line-clamp-1">{lang === "ar" ? doc.titleAr : doc.title}</p>
                                                 <p className="text-xs text-primary font-body mt-2 inline-flex items-center gap-1">{t("viewProfile")} <ArrowRight className={`w-3 h-3 shrink-0 ${lang === "ar" ? "rotate-180" : ""}`} /></p>
                                               </div>
@@ -450,7 +450,6 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                   )}
                                 </div>
                               )}
-                              <div className="mt-6 pt-4 border-t border-border/30" />
                             </div>
                           </motion.div>
                         )}

@@ -2,6 +2,7 @@ import api from "./axiosInstance";
 import type { Doctor } from "@/data/doctors";
 import type { DoctorWithClinicCode } from "@/data/doctorsWithClinicCodes";
 import { departments as staticDepts, deptDoctorAliases } from "@/data/departments";
+import { resolveDoctorArabicName } from "@/utils/doctorDisplayName";
 
 /** Distinct department ObjectIds that have at least one active doctor. */
 export async function getDoctorDepartmentIds(): Promise<string[]> {
@@ -61,7 +62,13 @@ export function mapApiDoctorRowToDoctor(
 ): Doctor {
   const id = String(row._id ?? row.doctorId ?? "");
   const name = String(row.name ?? "");
-  const nameAr = String(row.nameAr ?? name);
+  const providerCode =
+    typeof row.doctorId === "string" && row.doctorId.trim() ? row.doctorId.trim() : undefined;
+  const nameAr = resolveDoctorArabicName({
+    id: providerCode ?? id,
+    name,
+    nameAr: String(row.nameAr ?? name),
+  });
 
   const depRaw = row.department;
   let resolvedDeptEn = departmentNameEn;
@@ -113,8 +120,6 @@ export function mapApiDoctorRowToDoctor(
   const bioAr = String(row.bioAr ?? bio);
   const image = typeof row.image === "string" ? row.image : "";
   const isActive = row.isActive !== false;
-  const providerCode =
-    typeof row.doctorId === "string" && row.doctorId.trim() ? row.doctorId.trim() : undefined;
 
   return {
     id,

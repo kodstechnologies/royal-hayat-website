@@ -9,6 +9,7 @@ import { loadDoctorById, type Doctor } from "@/data/loadDoctors";
 import { departments, deptDoctorAliases } from "@/data/departments";
 import { getDoctorById, mapApiDoctorRowToDoctor } from "@/api/doctors";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
+import { patientTestimonials } from "@/data/patientTestimonials";
 import { X } from "lucide-react";
 import { useState, useEffect, type ReactNode } from "react";
 
@@ -139,50 +140,14 @@ function renderExpertiseLine(text: string, lang: "en" | "ar"): ReactNode {
   );
 }
 
-const patientFeedback = [
-  {
-    name: "Sara Al-Mutairi", nameAr: "سارة المطيري",
-    rating: 5,
-    comment: "Exceptional care and professionalism. I felt genuinely listened to and my treatment was thoroughly explained at every step.",
-    commentAr: "رعاية استثنائية واحترافية. شعرت بأنه يتم الاستماع إلي حقاً وتم شرح علاجي بدقة في كل خطوة.",
-    date: "March 2025"
-  },
-  {
-    name: "Ahmed Al-Rashidi", nameAr: "أحمد الرشيدي",
-    rating: 5,
-    comment: "One of the best medical experiences I've had. The doctor was incredibly knowledgeable and took the time to answer all my questions.",
-    commentAr: "واحدة من أفضل التجارب الطبية التي مررت بها. كان الطبيب على دراية كبيرة وأخذ الوقت للإجابة على جميع أسئلتي.",
-    date: "February 2025"
-  },
-  {
-    name: "Fatima Hassan", nameAr: "فاطمة حسن",
-    rating: 4,
-    comment: "Very professional and caring. The entire team made me feel comfortable and at ease throughout my visit.",
-    commentAr: "احترافية ورعاية عالية. جعلني الفريق بأكمله أشعر بالراحة والاطمئنان طوال زيارتي.",
-    date: "January 2025"
-  },
-  {
-    name: "Nora Al-Sabah", nameAr: "نورة الصباح",
-    rating: 5,
-    comment: "World-class treatment in a beautiful facility. The doctor's attention to detail was remarkable.",
-    commentAr: "علاج عالمي في منشأة جميلة. كان اهتمام الطبيب بالتفاصيل رائعاً.",
-    date: "December 2024"
-  },
-  {
-    name: "Mohammed Al-Enezi", nameAr: "محمد العنزي",
-    rating: 5,
-    comment: "I traveled from abroad for this doctor and it was absolutely worth it. Truly exceptional medical expertise.",
-    commentAr: "سافرت من الخارج لهذا الطبيب وكان الأمر يستحق تماماً. خبرة طبية استثنائية حقاً.",
-    date: "November 2024"
-  },
-  {
-    name: "Layla Al-Dhafiri", nameAr: "ليلى الظفيري",
-    rating: 4,
-    comment: "The follow-up care was just as impressive as the initial consultation. They truly care about long-term outcomes.",
-    commentAr: "كانت رعاية المتابعة مثيرة للإعجاب تماماً مثل الاستشارة الأولى. إنهم يهتمون حقاً بالنتائج طويلة المدى.",
-    date: "October 2024"
-  },
-];
+const patientFeedback = patientTestimonials.map((item) => ({
+  name: item.name,
+  nameAr: item.nameAr,
+  rating: item.stars,
+  comment: item.text,
+  commentAr: item.textAr,
+  date: "",
+}));
 const DoctorProfile = () => {
   const { id } = useParams<{ id: string }>();
   const { lang, t } = useLanguage();
@@ -555,7 +520,9 @@ const handleAddTestimonial = () => {
                     </div>
                     <div>
                       <p className="font-body text-sm font-medium text-foreground">{lang === "ar" ? fb.nameAr : fb.name}</p>
-                      <p className="font-body text-[10px] text-muted-foreground">{fb.date}</p>
+                      {fb.date ? (
+                        <p className="font-body text-[10px] text-muted-foreground">{fb.date}</p>
+                      ) : null}
                     </div>
                   </div>
                   <p className="text-muted-foreground font-body text-xs leading-relaxed italic line-clamp-5">

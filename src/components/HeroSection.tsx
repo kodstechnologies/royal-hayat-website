@@ -64,6 +64,25 @@ const HeroSection = () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     setIsVisible(false);
   }, []);
+
+  const renderHeroDesc = () => {
+    const description = t("heroDesc");
+    const hospitalName = isAr ? "مستشفى رويال حياة" : "Royale Hayat Hospital";
+
+    if (!description.includes(hospitalName)) {
+      return description;
+    }
+
+    const [before, after] = description.split(hospitalName);
+    return (
+      <>
+        {before}
+        <strong className="font-semibold">{hospitalName}</strong>
+        {after}
+      </>
+    );
+  };
+
   return (
     <section
       ref={sectionRef}
@@ -158,21 +177,21 @@ const HeroSection = () => {
                 transition={{ duration: 0.4, delay: 0.3 }}
                 className={`font-body leading-relaxed mb-3 max-lg:mb-4 md:mb-5 max-w-xl whitespace-pre-line ${
                   isAr
-                    ? "text-start text-sm sm:text-base md:text-lg text-[hsl(337,30%,26%)]"
+                    ? "text-start text-sm sm:text-base md:text-lg text-muted-foreground"
                     : "text-left text-sm md:text-base text-muted-foreground"
                 }`}
               >
-                {t("heroDesc")}
+                {renderHeroDesc()}
               </motion.p>
               {t("heroTagline") ? (
                 <motion.p
                   initial={{ opacity: 0, y: 14 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.38 }}
-                  className={`font-serif mb-5 max-lg:mb-6 md:mb-8 max-w-xl ${
+                  className={`font-serif mb-5 max-lg:mb-6 md:mb-8 max-w-xl text-burgundy ${
                     isAr
-                      ? "text-start text-base md:text-lg lg:text-xl text-gray-800"
-                      : "text-base md:text-xl text-gray-700"
+                      ? "text-start text-base md:text-lg lg:text-xl"
+                      : "text-base md:text-xl"
                   }`}
                 >
                   {t("heroTagline")}

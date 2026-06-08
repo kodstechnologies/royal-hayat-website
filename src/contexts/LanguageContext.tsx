@@ -33,11 +33,11 @@ const translations: Translations = {
   },
   storyP1: {
     en: "At life's most meaningful moments, healthcare should feel deeply human. Since 2006, Royale Hayat Hospital has been celebrating life, beginning as a dedicated women's and children's hospital and growing into Kuwait's leading multi-disciplinary healthcare destination. From birth to lifelong wellness, we deliver world-class medical expertise with compassion, privacy, and comfort at the core.",
-    ar: "في أكثر لحظات الحياة أهمية، يجب أن تكون الرعاية الصحية تجربة إنسانية بامتياز. منذ عام 2006، يواصل مستشفى رويال حياة الاحتفال بالحياة، حيث بدأ كمستشفى متخصص في صحة المرأة والطفل، ثم تطوّر ليصبح الوجهة الطبية الرائدة متعددة التخصصات في الكويت.<br /><br />منذ لحظة الولادة وحتى مراحل العافية المستمرة مدى الحياة، نقدم رعاية طبية عالمية المستوى ممزوجة بالرحمة، والخصوصية، والراحة، لتكون تجربة الرعاية الصحية لدينا أكثر إنسانية وتميّزًا.",
+    ar: "في أعمق لحظات الحياة وأكثرها معنى، ينبغي للرعاية الصحية أن تلامس الإنسان في أعماقه. منذ عام 2006، يحتفي مستشفى رويال حياة بالحياة في كل مراحلها؛ إذ انطلق في مسيرته مستشفىً متخصصاً في رعاية المرأة والطفل، ليتطور اليوم إلى الوجهة الصحية الشاملة الأولى في الكويت. من اللحظة الأولى للميلاد وحتى مسيرة صحة تدوم العمر، نقدّم رعاية طبية عالمية المستوى تتمحور حول الرحمة والخصوصية والراحة.",
   },
   storyP2: {
     en: "Every patient receives personalized, exceptional care in an environment where luxury meets medicine and care goes beyond healing.",
-    ar: "لكل مريض رعاية شخصية استثنائية، في بيئة يلتقي فيها الفخامة بالطب، وتتجاوز فيها العناية حدود الشفاء.",
+    ar: "لكل مريض رعاية شخصية استثنائية، في بيئة تلتقي فيها الفخامة بالطب، وتتجاوز فيها العناية حدود الشفاء.",
   },
 
   // Our History
@@ -494,7 +494,7 @@ const translations: Translations = {
     ar: "في عام 2006، تصورت ما اعتقد الكثيرون أنه مستحيل — رؤية قليلون يمكنهم تخيلها، إبداع بُني بالإيمان والعزيمة والحب.حلمت بجمع الخبرة الطبية العالمية مع الرحمة والخصوصية والراحة، وتقديم رعاية شخصية حقيقية في بيئة يلتقي فيها الفخامة بالطب المتقدم.اليوم، بعد ما يقرب من عقدين، يقف ذلك الحلم أمامكم كمؤسسة عظيمة نفخر بتسميتها مستشفى رويال حياة."
   },
   chairmanName: { en: "Pradeep K Handa", ar: "براديب ك. هاندا" },
-  chairmanTitle: { en: "Chairman, Royale Hayat Executive Board", ar: "رئيس المجلس التنفيذي، مستشفى رويال حياة" },
+  chairmanTitle: { en: "Chairman, Royale Hayat Executive Board", ar: "رئيس مجلس الإدارة" },
   chairmanFullMessage: { en: "We have thoughtfully shaped an environment where every detail is considered, and every interaction is carefully curated. We believe that at its core, the very idea of a hospital is rooted in hospitality the act of caring for people with warmth, dignity, and respect. This philosophy defines The Royale Hayat Experience, where advanced healthcare is delivered with attentiveness, discretion, and a deeply personalized touch.\n\nAt the heart of our philosophy lies a commitment to patient care that goes beyond expectation. Every experience is thoughtfully designed to reflect ·a level of attention and refinement that ensures each individual feels valued, respected, and exceptionally cared for at every stage of their journey.\n\nOur distinction is built upon the strength of our team our physicians, nurses, and clinical professionals whose expertise, dedication, and quiet commitment to excellence define who we are.Being recognized as the Best Hospital in Kuwait for 16 years reflects their contribution and the enduring trust of our patients and community.\n\nAs we look ahead, our focus remains clear to continue advancing healthcare through innovation and adeeply personalized approach, while preserving the warmth, attentiveness, and human connection that define us. On behalf of our entire team, we look forward to welcoming you not just as a patient, but as part of our extended family and ensuring your journey is defined by comfort, confidence, and exceptional care.", ar: "وراء هذا الجو الفندقي الفاخر تكمن تقنيات متقدمة وبنية تحتية عالمية وفريق من الأطباء والممرضين والمهنيين السريريين المتميزين المكرسين لتقديم رعاية استثنائية. كل تفصيل مصمم ليس فقط لإراحة الحواس بل لدعم أعلى معايير التميز الطبي وسلامة المرضى.\n\nللعائلات التي تبدأ رحلتها أو تنميها، نحن نفهم مدى ثمينة كل لحظة. من الحمل والرعاية قبل الولادة إلى الولادة ودعم ما بعد الولادة، تسير فرقنا المتمرسة بجانبك بالرحمة والمهارة والاهتمام الثابت.\n\nتم الاعتراف بمستشفى رويال حياة كأفضل مستشفى في الكويت على مدار الـ 15 عامًا الماضية، حيث يمزج الضيافة مع التميز السريري بطريقة فريدة حقاً. هذا ما نفخر بتسميته \"تجربة رويال حياة\" — حيث يلتقي الدفء بالخبرة وتتعايش الفخامة بسلاسة مع الرعاية الصحية المتقدمة.\n\nنيابة عن فريقنا بأكمله، نتطلع إلى الترحيب بكم — ليس فقط كمريض، بل كجزء من عائلتنا الممتدة — وضمان أن إقامتكم تتميز بالراحة والثقة والرعاية الاستثنائية." },
   chairmanClosingEn: { en: "Royale Hayat Hospital ...your destination for better health and to celebrate life!", ar: "مستشفى رويال حياة ...وجهتك لصحة أفضل والاحتفاء بالحياة!" },
 
@@ -696,7 +696,7 @@ const translations: Translations = {
   internationalPatientLink: { en: "International Patient", ar: "المرضى الدوليون" },
 
   // Work With Us
-  workWithUs: { en: "Work With Us", ar: "اعمل معنا" },
+  workWithUs: { en: "Work With Us", ar: "إنضم الينا" },
 
   // Al Safwa
   eliteHealthcare: { en: "Elite Healthcare", ar: "رعاية صحية متميزة" },

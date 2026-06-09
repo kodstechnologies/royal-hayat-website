@@ -16,16 +16,18 @@ import { getDoctorCarouselScrollState, scrollDoctorCarousel, syncDoctorCarouselI
 
 const DoctorCard = memo(({ doc }: { doc: Doctor }) => {
   const { lang } = useLanguage();
+  const isAr = lang === "ar";
   const displayName = getDoctorDisplayName(doc, lang);
   return (
     <Link
       to={`/doctors/${doc.id}`}
       data-doctor-carousel-card
+      dir={isAr ? "rtl" : "ltr"}
       className="relative z-0 block w-[280px] min-h-[430px] flex-shrink-0 snap-center hover:z-10 md:snap-start"
     >
       <motion.div
         whileHover={{ y: -6, boxShadow: "0 20px 40px -12px hsl(var(--primary) / 0.12)" }}
-        className="bg-popover rounded-2xl border border-border/50 group cursor-pointer w-full h-full flex flex-col transition-all duration-300 "
+        className="bg-popover rounded-2xl border border-border/50 group cursor-pointer w-full h-full flex flex-col transition-all duration-300"
       >
         <div className="bg-white h-64 flex items-center justify-center relative overflow-hidden shrink-0 rounded-t-2xl">
           {doc.image ? (
@@ -35,28 +37,42 @@ const DoctorCard = memo(({ doc }: { doc: Doctor }) => {
               <span className="text-2xl font-serif text-primary-foreground">{doc.initials}</span>
             </div>
           )}
-          <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-popover/20 backdrop-blur-sm flex items-center justify-center">
+          <div
+            className={`absolute top-3 w-7 h-7 rounded-full bg-popover/20 backdrop-blur-sm flex items-center justify-center ${
+              isAr ? "left-3" : "right-3"
+            }`}
+          >
             <Stethoscope className="w-3.5 h-3.5 text-primary-foreground" />
           </div>
         </div>
-        <div className="p-5 flex flex-col flex-grow">
-          <p className="text-accent text-[10px] tracking-[0.2em] uppercase font-body mb-1.5">
-            {lang === "ar" ? doc.specialtyAr : doc.specialty}
+        <div className="p-5 flex flex-col flex-grow text-start items-start">
+          <p
+            className={`text-accent text-[10px] tracking-[0.2em] font-body mb-1.5 w-full ${
+              isAr ? "" : "uppercase"
+            }`}
+          >
+            {isAr ? doc.specialtyAr : doc.specialty}
           </p>
-          <h3 className="text-[1.2rem] font-serif font-bold text-foreground mb-1">{displayName}</h3>
-          <p className="text-muted-foreground font-body text-xs mb-3">{lang === "ar" ? doc.titleAr : doc.title}</p>
+          <h3 className="text-[1.2rem] font-serif font-bold text-foreground mb-1 w-full">{displayName}</h3>
+          <p className="text-muted-foreground font-body text-xs mb-3 w-full">
+            {isAr ? doc.titleAr : doc.title}
+          </p>
           {doc.hideBooking !== true && (
-            <div className={`flex items-center gap-1.5 mb-2 ${doc.availableOnline !== false ? "text-green-600" : "text-destructive"}`}>
+            <div
+              className={`flex items-center gap-1.5 mb-2 w-full ${
+                doc.availableOnline !== false ? "text-green-600" : "text-destructive"
+              }`}
+            >
               <div className={`w-1.5 h-1.5 rounded-full ${doc.availableOnline !== false ? "bg-green-500" : "bg-destructive"}`} />
               <span className="font-body text-[10px]">
                 {doc.availableOnline !== false
-                  ? (lang === "ar" ? "متاح للحجز اونلاين" : "Book Online")
-                  : (lang === "ar" ? "غير متاح للحجز اونلاين" : "Not Available for Online Booking")}
+                  ? (isAr ? "متاح للحجز اونلاين" : "Book Online")
+                  : (isAr ? "غير متاح للحجز اونلاين" : "Not Available for Online Booking")}
               </span>
             </div>
           )}
           <span className="inline-flex items-center gap-1.5 text-primary font-body text-xs tracking-wide group-hover:text-accent transition-colors">
-            {lang === "ar" ? "عرض الملف الشخصي ←" : "View Profile →"}
+            {isAr ? "عرض الملف الشخصي ←" : "View Profile →"}
           </span>
         </div>
       </motion.div>

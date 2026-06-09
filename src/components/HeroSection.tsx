@@ -70,18 +70,32 @@ const HeroSection = () => {
     const description = t("heroDesc");
     const hospitalName = isAr ? "مستشفى رويال حياة" : "Royale Hayat Hospital";
 
-    if (!description.includes(hospitalName)) {
-      return description;
-    }
+    const renderText = (text: string) => {
+      if (!text.includes(hospitalName)) {
+        return text;
+      }
 
-    const [before, after] = description.split(hospitalName);
-    return (
-      <>
-        {before}
-        <strong className="font-semibold">{hospitalName}</strong>
-        {after}
-      </>
-    );
+      const [before, after] = text.split(hospitalName);
+      return (
+        <>
+          {before}
+          <strong className="font-semibold">{hospitalName}</strong>
+          {after}
+        </>
+      );
+    };
+
+    return description.split("\n\n").map((paragraph, index) => (
+      <span key={index}>
+        {index > 0 && (
+          <>
+            <br />
+            <br />
+          </>
+        )}
+        {renderText(paragraph)}
+      </span>
+    ));
   };
 
   return (
@@ -176,7 +190,7 @@ const HeroSection = () => {
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.3 }}
-                className={`font-body leading-relaxed mb-3 max-lg:mb-4 md:mb-5 max-w-xl whitespace-pre-line ${
+                className={`font-body leading-relaxed mb-3 max-lg:mb-4 md:mb-5 max-w-xl ${
                   isAr
                     ? "text-start text-sm sm:text-base md:text-lg text-muted-foreground"
                     : "text-left text-sm md:text-base text-muted-foreground"

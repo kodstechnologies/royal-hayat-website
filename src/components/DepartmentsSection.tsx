@@ -14,6 +14,27 @@ type DepartmentsSectionProps = {
   showPageTitle?: boolean;
 };
 const isAlSafwaDeptSlug = (slug: string) => slug.includes("al-safwa");
+const CLINICAL_NUTRITION_SUB_SLUG = "clinical-nutrition-dietetics";
+const isClinicalNutritionSubSpecialty = (dept: Department, selectedSubSlug?: string) => {
+  if (!selectedSubSlug) return false;
+  const normalized = normalizeSubSlug(dept.slug, selectedSubSlug);
+  if (normalized === CLINICAL_NUTRITION_SUB_SLUG) return true;
+  return dept.subs?.some(
+    (sub) =>
+      sub.name === "Clinical Nutrition & Dietetics" &&
+      getSubSlugForDepartment(dept.slug, sub.name) === normalized
+  );
+};
+const shouldShowDepartmentDoctorsHeading = (dept: Department, selectedSubSlug?: string) => {
+  if (dept.name === "Clinical Pharmacy") return false;
+  if (
+    (dept.name === "General & Laparoscopic Surgery" || dept.name === "Internal Medicine") &&
+    isClinicalNutritionSubSpecialty(dept, selectedSubSlug)
+  ) {
+    return false;
+  }
+  return true;
+};
 type DeptRestoreState = {
   restoreDeptOpenIndex?: number;
   restoreSelectedSubByDept?: Record<number, string>;
@@ -386,6 +407,11 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                               {deptDoctors.length > 0 && (
                                 <div className="mt-auto">
                                   <p className="text-accent text-center text-xs tracking-[0.2em] uppercase font-body mb-4">{lang === "ar" ? "فريقنا الطبي" : "Our Medical Team"}</p>
+                                  {shouldShowDepartmentDoctorsHeading(dept, selectedSubSlug) && (
+                                    <h3 className="text-center text-lg md:text-xl font-serif text-foreground font-semibold mb-4 uppercase">
+                                      {t("departmentDoctors")}
+                                    </h3>
+                                  )}
                                   <div className="relative max-w-[576px] mx-auto lg:mt-6">
                                     {deptDoctors.length > 1 && (
                                       <>

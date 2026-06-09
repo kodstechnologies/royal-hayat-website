@@ -94,8 +94,7 @@ const DepartmentDoctors = memo(({ doctors, lang }: { doctors: Doctor[]; lang: st
   const isPausedRef = useRef(false);
   const scroll = (dir: "left" | "right") => {
     if (scrollRef.current) {
-      const isMobile = window.innerWidth < 768;
-      const amount = isMobile ? (280 + 80) : (280 + 24);
+      const amount = 280 + 24;
       scrollRef.current.scrollBy({ left: dir === "left" ? -amount : amount, behavior: "smooth" });
       isPausedRef.current = true;
       setTimeout(() => { isPausedRef.current = false; }, 5000);
@@ -112,8 +111,7 @@ const DepartmentDoctors = memo(({ doctors, lang }: { doctors: Doctor[]; lang: st
     autoSlideRef.current = setInterval(() => {
       if (isPausedRef.current || !scrollRef.current) return;
       const el = scrollRef.current;
-      const isMob = window.innerWidth < 768;
-      const cardWidth = isMob ? (280 + 80) : (280 + 24);
+      const cardWidth = 280 + 24;
       if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 4) {
         el.scrollTo({ left: 0, behavior: "smooth" });
       } else {
@@ -159,30 +157,17 @@ const DepartmentDoctors = memo(({ doctors, lang }: { doctors: Doctor[]; lang: st
           <div
             ref={scrollRef}
             dir="ltr"
-            className={`flex gap-20 md:gap-6 overflow-x-auto pb-8 scroll-smooth snap-x snap-mandatory px-[20px] md:px-0 detail-doctor-carousel ${doctors.length <= 2 ? 'md:justify-center' : 'md:justify-start'}`}
+            className="flex w-full gap-6 overflow-x-auto pb-8 scroll-smooth snap-x snap-mandatory detail-doctor-carousel justify-center"
             style={{
               scrollbarWidth: "none",
               msOverflowStyle: "none",
             }}
           >
-            <style dangerouslySetInnerHTML={{
-              __html: `
-              .detail-doctor-carousel {
-                padding-left: calc((100vw - 280px) / 2);
-                padding-right: calc((100vw - 280px) / 2);
-              }
-              @media (min-width: 768px) {
-                .detail-doctor-carousel {
-                  padding-left: 0 !important;
-                  padding-right: 0 !important;
-                }
-              }
-            `}} />
             {doctors.slice(0, 12).map((doc) => (
               <Link
                 key={doc.id}
                 to={`/doctors/${doc.id}`}
-                className="w-[280px] md:w-[280px] bg-popover border border-border/50 rounded-2xl overflow-hidden hover:border-primary/30 hover:shadow-md transition-all group flex-shrink-0 snap-center md:snap-start"
+                className="w-[280px] md:w-[280px] bg-popover border border-border/50 rounded-2xl overflow-hidden hover:border-primary/30 hover:shadow-md transition-all group flex-shrink-0 snap-center"
               >
                 <div className="bg-white h-56 flex items-center justify-center relative">
                   {doc.image ? (

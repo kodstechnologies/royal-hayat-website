@@ -231,7 +231,10 @@ const Doctors = () => {
       });
     });
     const pharmacyIdx = departments.findIndex((d) => d.name === "Royale Hayat Pharmacy");
-    if (pharmacyIdx >= 0) m.set("Pharmacy", pharmacyIdx);
+    if (pharmacyIdx >= 0) {
+      m.set("Pharmacy", pharmacyIdx);
+      m.set("Clinical Pharmacy", pharmacyIdx + 0.5);
+    }
     return m;
   }, []);
   const DEPT_ORDER_FALLBACK = 100_000;

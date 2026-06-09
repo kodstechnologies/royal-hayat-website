@@ -12,7 +12,7 @@ export type FeedbackFormData = {
 type AddFeedbackModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: FeedbackFormData) => void;
+  onSubmit: (data: FeedbackFormData) => void | Promise<void>;
   subtitleEn?: string;
   subtitleAr?: string;
   feedbackPlaceholderEn?: string;
@@ -52,15 +52,19 @@ const AddFeedbackModal = ({
     };
   }, [isOpen]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!form.name.trim() || !form.feedback.trim()) return;
-    onSubmit(form);
-    setForm({ name: "", feedback: "", stars: 5 });
-    setShowThankYou(true);
-    window.setTimeout(() => {
-      setShowThankYou(false);
-      onClose();
-    }, 2000);
+    try {
+      await onSubmit(form);
+      setForm({ name: "", feedback: "", stars: 5 });
+      setShowThankYou(true);
+      window.setTimeout(() => {
+        setShowThankYou(false);
+        onClose();
+      }, 2000);
+    } catch {
+      // Parent handles error feedback (e.g. toast).
+    }
   };
 
   if (!isOpen) return null;

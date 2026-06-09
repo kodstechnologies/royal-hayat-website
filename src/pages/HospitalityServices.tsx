@@ -568,7 +568,7 @@ const HospitalityServices = ({
                     </div>
                     <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify mb-5">
                       {isAr
-                        ? "بفضل تصميمها المرن، وديكورها الأنيق، وخدماتها المخصصة، تضمن قاعة جاردينيا تجربة استثنائية راقية ومتكاملة لجميع مناسباتكم."
+                        ? "بفضل تصميمها المرن، وديكورها الأنيق، وخدماتها المخصصة، تضمن قاعة جاردينيا تجربة استثنائية راقية ومتكاملة لجميع مناسباتكم"
                         : "With its flexible layout, stunning interior, and personalized service, the Gardenia Banquet Hall guarantees a refined and seamless experience for your event."}
                     </p>
                     <div className="flex items-center gap-2">

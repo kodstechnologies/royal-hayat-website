@@ -1,10 +1,28 @@
 import { Star, MessageCircleHeart } from "lucide-react";
 import { motion } from "framer-motion";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import axios from "axios";
+import { toast } from "sonner";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { patientTestimonials } from "@/data/patientTestimonials";
+import { patientTestimonials, type PatientTestimonial } from "@/data/patientTestimonials";
 import AddFeedbackModal from "./AddFeedbackModal";
+import {
+  createHospitalFeedback,
+  extractHospitalFeedbackRecord,
+  getAllHospitalFeedbacks,
+  type HospitalFeedbackRecord,
+} from "@/api/feedback";
+
+const mapHospitalFeedbackToTestimonial = (
+  record: HospitalFeedbackRecord,
+): PatientTestimonial => ({
+  name: record.userName || record.arabicUserName || "",
+  nameAr: record.arabicUserName || record.userName || "",
+  text: record.feedback || record.arabicFeedback || "",
+  textAr: record.arabicFeedback || record.feedback || "",
+  stars: record.stars,
+});
 
 const TestimonialsSection = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -12,6 +30,31 @@ const TestimonialsSection = () => {
   const { lang, t } = useLanguage();
   const [hospitalFeedbacks, setHospitalFeedbacks] = useState(patientTestimonials);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    getAllHospitalFeedbacks()
+      .then((feedbacks) => {
+        if (cancelled) return;
+
+        const visible = feedbacks
+          .filter((fb) => fb.shownOnWebsite !== false)
+          .map(mapHospitalFeedbackToTestimonial)
+          .filter((item) => item.text || item.textAr);
+
+        if (visible.length > 0) {
+          setHospitalFeedbacks(visible);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to load hospital feedbacks:", error);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <section className="py-24 bg-popover overflow-hidden">
@@ -73,17 +116,41 @@ const TestimonialsSection = () => {
       <AddFeedbackModal
         isOpen={isFeedbackOpen}
         onClose={() => setIsFeedbackOpen(false)}
-        onSubmit={({ name, feedback, stars }) => {
-          setHospitalFeedbacks((prev) => [
-            {
-              stars,
-              text: feedback,
-              textAr: feedback,
-              name,
-              nameAr: name,
-            },
-            ...prev,
-          ]);
+        onSubmit={async ({ name, feedback, stars }) => {
+          try {
+            const response = await createHospitalFeedback(
+              {
+                userName: name,
+                arabicUserName: name,
+                feedback,
+                arabicFeedback: feedback,
+                stars,
+              },
+              { addedBy: "patient" },
+            );
+
+            const record = extractHospitalFeedbackRecord(response);
+            if (record && record.shownOnWebsite !== false) {
+              setHospitalFeedbacks((prev) => [
+                mapHospitalFeedbackToTestimonial(record),
+                ...prev,
+              ]);
+            }
+          } catch (error) {
+            const backendMessage =
+              axios.isAxiosError(error)
+                ? error.response?.data?.message ||
+                  error.response?.data?.error ||
+                  error.message
+                : null;
+            toast.error(
+              backendMessage ||
+                (lang === "ar"
+                  ? "تعذر إرسال التقييم. يرجى المحاولة مرة أخرى."
+                  : "Failed to submit feedback. Please try again."),
+            );
+            throw error;
+          }
         }}
       />
     </section>

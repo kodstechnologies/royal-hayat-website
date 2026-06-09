@@ -8,10 +8,18 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { loadDoctorById, type Doctor } from "@/data/loadDoctors";
 import { departments, deptDoctorAliases } from "@/data/departments";
 import { getDoctorById, mapApiDoctorRowToDoctor } from "@/api/doctors";
+import {
+  createDoctorFeedbackByName,
+  extractDoctorFeedbackRecord,
+  getDoctorFeedbacksByDoctorName,
+  type DoctorFeedbackRecord,
+} from "@/api/feedback";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
 import { patientTestimonials } from "@/data/patientTestimonials";
 import AddFeedbackModal from "@/components/AddFeedbackModal";
 import { useState, useEffect, type ReactNode } from "react";
+import axios from "axios";
+import { toast } from "sonner";
 
 const ltrIsolateClass = "inline-block [direction:ltr] [unicode-bidi:isolate]";
 
@@ -140,14 +148,47 @@ function renderExpertiseLine(text: string, lang: "en" | "ar"): ReactNode {
   );
 }
 
-const patientFeedback = patientTestimonials.map((item) => ({
-  name: item.name,
-  nameAr: item.nameAr,
-  rating: item.stars,
-  comment: item.text,
-  commentAr: item.textAr,
-  date: "",
-}));
+type ProfileFeedback = {
+  name: string;
+  nameAr: string;
+  rating: number;
+  comment: string;
+  commentAr: string;
+  date: string;
+};
+
+const formatFeedbackDate = (createdAt?: string) => {
+  if (!createdAt) return "";
+  const parsed = new Date(createdAt);
+  if (Number.isNaN(parsed.getTime())) return "";
+  return parsed.toLocaleDateString("en-US", {
+    month: "long",
+    year: "numeric",
+  });
+};
+
+const mapDoctorFeedbackToProfile = (
+  record: DoctorFeedbackRecord,
+): ProfileFeedback => ({
+  name: record.userName || record.arabicUserName || "",
+  nameAr: record.arabicUserName || record.userName || "",
+  rating: record.stars,
+  comment: record.feedback || record.arabicFeedback || "",
+  commentAr: record.arabicFeedback || record.feedback || "",
+  date: formatFeedbackDate(record.createdAt),
+});
+
+const staticProfileFeedback: ProfileFeedback[] = patientTestimonials.map(
+  (item) => ({
+    name: item.name,
+    nameAr: item.nameAr,
+    rating: item.stars,
+    comment: item.text,
+    commentAr: item.textAr,
+    date: "",
+  }),
+);
+
 const DoctorProfile = () => {
   const { id } = useParams<{ id: string }>();
   const { lang, t } = useLanguage();
@@ -156,7 +197,10 @@ const DoctorProfile = () => {
   const bookingReturnState = (location.state as any) ?? {};
   const fromBooking = Boolean(bookingReturnState?.fromBookAppointment || bookingReturnState?.step != null);
   const [isTestimonialOpen, setIsTestimonialOpen] = useState(false);
-  const [testimonials, setTestimonials] = useState(patientFeedback);
+  const [testimonials, setTestimonials] = useState<ProfileFeedback[]>(
+    staticProfileFeedback,
+  );
+  const [feedbackLoading, setFeedbackLoading] = useState(false);
   const handleGoBack = () => {
     if (fromBooking) {
       navigate("/book-appointment", { state: bookingReturnState });
@@ -215,6 +259,40 @@ const DoctorProfile = () => {
     enabled: !!id && localResolved && !localDoctor,
   });
   const doctor = localDoctor || apiDoctor;
+
+  useEffect(() => {
+    if (!doctor?.name) return;
+
+    let cancelled = false;
+    setTestimonials(staticProfileFeedback);
+    setFeedbackLoading(true);
+
+    getDoctorFeedbacksByDoctorName(doctor.name)
+      .then((feedbacks) => {
+        if (cancelled) return;
+
+        const apiFeedbacks = feedbacks
+          .filter((fb) => fb.shownOnWebsite !== false)
+          .map(mapDoctorFeedbackToProfile)
+          .filter((item) => item.comment || item.commentAr);
+
+        setTestimonials([...apiFeedbacks, ...staticProfileFeedback]);
+      })
+      .catch((error) => {
+        console.error("Failed to load doctor feedbacks:", error);
+        if (!cancelled) {
+          setTestimonials(staticProfileFeedback);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setFeedbackLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [doctor?.name]);
+
   if (!localResolved || apiLoading) {
     return (
       <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
@@ -469,6 +547,18 @@ const DoctorProfile = () => {
           </motion.button>
         </div>
         <div className="relative overflow-hidden">
+          {feedbackLoading ? (
+            <div className="absolute right-6 top-0 z-10">
+              <Loader2 className="w-5 h-5 text-primary animate-spin" />
+            </div>
+          ) : null}
+          {testimonials.length === 0 ? (
+            <p className="px-6 text-center font-body text-sm text-muted-foreground">
+              {lang === "ar"
+                ? "لا توجد آراء للمرضى بعد. كن أول من يشارك تجربته."
+                : "No patient feedback yet. Be the first to share your experience."}
+            </p>
+          ) : (
           <div className={`flex gap-5 w-max hover:[animation-play-state:paused] ${lang === "ar" ? "animate-[feedbackMarqueeRtl_30s_linear_infinite]" : "animate-[feedbackMarquee_30s_linear_infinite]"}`}>
             {[...testimonials, ...testimonials].map((fb, i) => (
               <div
@@ -499,6 +589,7 @@ const DoctorProfile = () => {
               </div>
             ))}
           </div>
+          )}
         </div>
       </section>
       <AddFeedbackModal
@@ -508,21 +599,44 @@ const DoctorProfile = () => {
         subtitleAr="شارك تجربتك مع الطبيب"
         feedbackPlaceholderEn="Write your feedback about the doctor"
         feedbackPlaceholderAr="اكتب رأيك عن الطبيب"
-        onSubmit={({ name, feedback, stars }) => {
-          setTestimonials((prev) => [
-            {
-              name,
-              nameAr: name,
-              rating: stars,
-              comment: feedback,
-              commentAr: feedback,
-              date: new Date().toLocaleDateString("en-US", {
-                month: "long",
-                year: "numeric",
-              }),
-            },
-            ...prev,
-          ]);
+        onSubmit={async ({ name, feedback, stars }) => {
+          if (!doctor?.name) return;
+
+          try {
+            const response = await createDoctorFeedbackByName(
+              {
+                doctorName: doctor.name,
+                userName: name,
+                arabicUserName: name,
+                feedback,
+                arabicFeedback: feedback,
+                stars,
+              },
+              { addedBy: "patient" },
+            );
+
+            const record = extractDoctorFeedbackRecord(response);
+            if (record && record.shownOnWebsite !== false) {
+              setTestimonials((prev) => [
+                mapDoctorFeedbackToProfile(record),
+                ...prev,
+              ]);
+            }
+          } catch (error) {
+            const backendMessage =
+              axios.isAxiosError(error)
+                ? error.response?.data?.message ||
+                  error.response?.data?.error ||
+                  error.message
+                : null;
+            toast.error(
+              backendMessage ||
+                (lang === "ar"
+                  ? "تعذر إرسال التقييم. يرجى المحاولة مرة أخرى."
+                  : "Failed to submit feedback. Please try again."),
+            );
+            throw error;
+          }
         }}
       />
       <style>{`

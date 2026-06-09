@@ -25,7 +25,7 @@ const Index = () => {
         img.src = doc.image;
       }
     });
-  }, [featuredDoctors]);
+  }, []);
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)] max-lg:pt-[var(--header-height,7.5rem)] [&_.text-accent]:text-[#816107]">
       <Header />

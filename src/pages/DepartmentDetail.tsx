@@ -559,7 +559,6 @@ const DepartmentDetail = () => {
           </nav>
         </div>
       </div>
-      {}
       <section className="py-12 md:py-16 bg-primary/5">
         <div className="container mx-auto px-6">
           {fromDepartments && (
@@ -624,8 +623,6 @@ const DepartmentDetail = () => {
           </ScrollAnimationWrapper>
         </div>
       </section>
-      {}
-      {}
       {!activeSub && (
         <section className="container mx-auto px-6 py-8 flex justify-center">
           <div
@@ -662,7 +659,6 @@ const DepartmentDetail = () => {
           </div>
         </section>
       )}
-      {}
       <section className="py-8 md:py-12">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto space-y-8">
@@ -759,10 +755,8 @@ const DepartmentDetail = () => {
           </div>
         </div>
       </section>
-      {}
       {
 }
-      {}
       {!activeSub && dept.subDepartments && dept.subDepartments.length > 0 && (
         <section className="py-12 bg-secondary/10">
           <div className="container mx-auto px-6">
@@ -848,7 +842,6 @@ const DepartmentDetail = () => {
           </div>
         </section>
       )}
-      {}
       {deptDoctors.length > 0 && (
         <DepartmentDoctors
           doctors={deptDoctors}
@@ -861,7 +854,6 @@ const DepartmentDetail = () => {
           )}
         />
       )}
-      {}
       {dept.slug === "home-health" && !activeSub && (
         <section className="pb-12">
           <div className="container mx-auto px-6">

@@ -278,7 +278,6 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
             {t("deptCount")}
           </p>
         </motion.div>
-        {}
         <div className="max-w-2xl mx-auto mb-12">
           <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
@@ -296,7 +295,6 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
             if (catDepts.length === 0) return null;
             return (
               <div key={cat.key}>
-                {}
                 <div className="flex items-center gap-4 mb-6">
                   <div className="h-px flex-1 bg-border/50" />
                   <h3 className="text-base md:text-lg font-body font-bold tracking-[0.2em] md:tracking-[0.25em] uppercase text-accent whitespace-nowrap px-1">

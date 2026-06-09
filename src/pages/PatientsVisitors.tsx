@@ -259,7 +259,6 @@ const PatientsVisitors = () => {
       className="min-h-screen bg-background pt-[var(--header-height,56px)] overflow-x-hidden flex flex-col patients-prose-root [&_.text-accent]:text-[#816107]"
     >
       <Header />
-      {}
       <section className={`bg-primary/5 ${tab === "rooms-package" ? "py-6 md:py-8" : "py-10 md:py-16 lg:py-20"}`}>
         <div className="container mx-auto px-3 md:px-6 text-center">
           <ScrollAnimationWrapper>
@@ -290,7 +289,6 @@ const PatientsVisitors = () => {
           </ScrollAnimationWrapper>
         </div>
       </section>
-      {}
       <section className={tab === "rooms-package" ? "flex-1 flex flex-col py-0" : "py-8 md:py-12 lg:py-16"}>
         <div className={tab === "rooms-package" ? "w-full flex-1 flex flex-col" : "container mx-auto px-3 md:px-6"}>
           <div
@@ -300,7 +298,6 @@ const PatientsVisitors = () => {
                 : "max-w-6xl mx-auto space-y-10 md:space-y-16 lg:space-y-20 patients-page-content"
             }
           >
-            {}
             {show("nursing") && <div id="section-nursing" className={sectionClass}>
               <ScrollAnimationWrapper>
                 {showAll && <div className="flex items-center gap-3 mb-6">
@@ -351,7 +348,6 @@ const PatientsVisitors = () => {
                 </div>
               </ScrollAnimationWrapper>
             </div>}
-            {}
             {show("insurance") && <div id="section-insurance" className={sectionClass}>
               <ScrollAnimationWrapper>
                 {showAll && <div className="flex items-center gap-3 mb-6">
@@ -459,7 +455,6 @@ const PatientsVisitors = () => {
             {show("insurance") && (
               <InsurancePartners variant="patients-insurance" />
             )}
-            {}
             {show("rooms-package") && <div id="section-rooms-package" className={tab === "rooms-package" ? "flex-1 flex flex-col" : sectionClass}>
               {tab === "rooms-package" ? (
                   <div className={`w-full ${isDesktopView ? "space-y-6 px-6 py-6 bg-background" : ""}`}>
@@ -505,7 +500,6 @@ const PatientsVisitors = () => {
                 </ScrollAnimationWrapper>
               )}
             </div>}
-            {}
             {show("international") && <div id="section-international" className={sectionClass}>
               <ScrollAnimationWrapper>
                 <div className="flex items-center gap-3 mb-6">
@@ -538,7 +532,6 @@ const PatientsVisitors = () => {
                 </Link>
               </ScrollAnimationWrapper>
             </div>}
-            {}
             {show("admission") && <div id="section-admission" className={sectionClass}>
               <ScrollAnimationWrapper>
                 {showAll && <div className="flex items-center gap-3 mb-6">
@@ -638,7 +631,6 @@ const PatientsVisitors = () => {
                 </div>
               </ScrollAnimationWrapper>
             </div>}
-            {}
             {show("during-stay") && <div id="section-during-stay" className={sectionClass}>
               <ScrollAnimationWrapper>
                 <div
@@ -707,7 +699,6 @@ const PatientsVisitors = () => {
                 </div>
               </ScrollAnimationWrapper>
             </div>}
-            {}
             {show("bill-of-rights") && <div id="section-bill-of-rights" className={sectionClass}>
               <ScrollAnimationWrapper>
                 <div
@@ -757,7 +748,6 @@ const PatientsVisitors = () => {
                 </div>
               </ScrollAnimationWrapper>
             </div>}
-            {}
             {show("trackerwave") && <div id="section-trackerwave" className={sectionClass}>
               <ScrollAnimationWrapper>
                 <div className="flex items-center gap-3 mb-6">

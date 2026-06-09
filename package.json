@@ -13,7 +13,8 @@
     "fetch-fonts": "node scripts/fetch-fonts-from-reference.mjs",
     "postinstall": "node scripts/prepare-fonts.mjs",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "generate:doctor-search-index": "tsx scripts/generate-doctors-search-index.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

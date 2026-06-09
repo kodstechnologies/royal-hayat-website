@@ -93,7 +93,6 @@ const InternationalPatient = () => {
           </motion.div>
         </div>
       </section>
-      {}
       <section className="py-16">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto space-y-6">
@@ -118,7 +117,6 @@ const InternationalPatient = () => {
           </div>
         </div>
       </section>
-      {}
       <section className="py-16 bg-secondary/20" dir={isAr ? "rtl" : "ltr"} lang={isAr ? "ar" : "en"}>
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto">
@@ -147,7 +145,6 @@ const InternationalPatient = () => {
           </div>
         </div>
       </section>
-      {}
       <section className="py-12 bg-primary/5">
         <div className="container mx-auto px-6 text-center">
           <motion.div initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
@@ -168,7 +165,6 @@ const InternationalPatient = () => {
           </motion.div>
         </div>
       </section>
-      {}
       <section className="py-16" dir={isAr ? "rtl" : "ltr"} lang={isAr ? "ar" : "en"}>
         <div className="container mx-auto px-6">
           <div className="max-w-2xl mx-auto">

@@ -26,7 +26,6 @@ const NewbornPhotography = () => {
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107]">
       <Header />
-      {}
       <section className="py-8 md:py-10 bg-primary/5">
         <div className="container mx-auto px-6 text-center">
           <ScrollAnimationWrapper>
@@ -42,11 +41,9 @@ const NewbornPhotography = () => {
           </ScrollAnimationWrapper>
         </div>
       </section>
-      {}
       <section className="py-10">
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-10 items-start">
-            {}
             <div className="relative">
               <div className="relative aspect-[5/4] rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
                 <AnimatePresence initial={false}>
@@ -90,7 +87,6 @@ const NewbornPhotography = () => {
                 </span>
               </div>
             </div>
-            {}
             <ScrollAnimationWrapper className="h-full flex items-start pt-2 md:pt-4">
               <div className="w-full text-left">
                 {
@@ -120,7 +116,6 @@ const NewbornPhotography = () => {
           </div>
         </div>
       </section>
-      {}
       <AnimatePresence>
         {lightbox && (
           <motion.div

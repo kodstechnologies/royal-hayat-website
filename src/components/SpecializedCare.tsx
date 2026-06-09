@@ -532,7 +532,6 @@ const SpecializedCare = () => {
                       className="flex flex-col lg:flex-row"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      {}
                       <div className="lg:w-2/5 relative">
                         <div className="relative h-72 lg:h-full min-h-[380px] overflow-hidden">
                           <img
@@ -564,9 +563,7 @@ const SpecializedCare = () => {
                           </div>
                         </div>
                       </div>
-                      {}
                       <div className="lg:w-3/5 p-6 lg:p-8 flex flex-col">
-                        {}
                         <div className="flex justify-between items-start mb-6">
                           <div>
                             {s.subspecialties.length > 0 && (
@@ -609,7 +606,6 @@ const SpecializedCare = () => {
                             <X className="w-4 h-4 text-muted-foreground" />
                           </button>
                         </div>
-                        {}
                         {deptDoctors.length > 0 && (
                           <div className="mt-auto">
                             <p className="text-accent text-xs tracking-[0.2em] uppercase font-body mb-4">
@@ -717,7 +713,6 @@ const SpecializedCare = () => {
             );
           })}
         </div>
-        {}
         <motion.div
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}

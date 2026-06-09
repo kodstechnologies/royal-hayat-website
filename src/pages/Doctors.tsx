@@ -320,7 +320,6 @@ const Doctors = () => {
               <span className="sr-only">Loading doctors...</span>
             </div>
           )}
-          {}
           <div className="text-center mb-12">
             <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-4">
               {lang === "ar" ? "فريقنا الطبي" : "Our Medical Team"}
@@ -334,7 +333,6 @@ const Doctors = () => {
                 : "Find the right doctor by symptom or specialty"}
             </p>
           </div>
-          {}
           <div className="max-w-2xl mx-auto mb-14">
             <div className="relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
@@ -346,7 +344,6 @@ const Doctors = () => {
               />
             </div>
           </div>
-          {}
           {isSearching ? (
             <div>
               <h3 className="text-lg font-serif text-foreground mb-6">
@@ -373,7 +370,6 @@ const Doctors = () => {
                 if (!entries || entries.length === 0) return null;
                 return (
                   <div key={cat.key}>
-                    {}
                     <div className="flex items-center gap-4 mb-10">
                       <div className="h-px flex-1 bg-border/50" />
                       <h2 className="text-base md:text-lg font-body font-bold tracking-[0.2em] md:tracking-[0.25em] uppercase text-accent whitespace-nowrap px-1">

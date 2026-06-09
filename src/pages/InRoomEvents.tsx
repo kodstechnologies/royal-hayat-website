@@ -37,7 +37,6 @@ const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) =
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
       <Header />
-      {}
       <section className="py-16 md:py-20 bg-primary/5">
         <div className="container mx-auto px-6 text-center">
           <ScrollAnimationWrapper>
@@ -58,7 +57,6 @@ const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) =
           </ScrollAnimationWrapper>
         </div>
       </section>
-      {}
       <section className="py-12 md:py-16">
         <div className="container mx-auto px-6">
           <div className="max-w-5xl mx-auto">
@@ -93,7 +91,6 @@ const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) =
           </div>
         </div>
       </section>
-      {}
       <section className="py-12 md:py-16 bg-secondary/10">
         <div className="container mx-auto px-6">
           <div className="max-w-5xl mx-auto">
@@ -145,7 +142,6 @@ const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) =
           </div>
         </div>
       </section>
-      {}
       <section className="py-12 md:py-16">
         <div className="container mx-auto px-6">
           <div className="max-w-6xl mx-auto w-full">
@@ -184,7 +180,6 @@ const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) =
           </div>
         </div>
       </section>
-      {}
       <section className="py-12 md:py-16 bg-primary/5">
         <div className="container mx-auto px-6">
           <div className="max-w-5xl mx-auto">
@@ -209,7 +204,6 @@ const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) =
           </div>
         </div>
       </section>
-      {}
       <section className="py-12 md:py-16">
         <div className="container mx-auto px-6 text-center">
           <ScrollAnimationWrapper>

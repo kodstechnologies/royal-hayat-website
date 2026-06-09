@@ -48,7 +48,6 @@ const CSR = () => {
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
       <Header />
-      {}
       <section className="pt-16 pb-12 md:pt-24 md:pb-16 bg-primary/5">
         <div className="container mx-auto px-6 text-center">
           <ScrollAnimationWrapper>
@@ -62,7 +61,6 @@ const CSR = () => {
           </ScrollAnimationWrapper>
         </div>
       </section>
-      {}
       <section className="pb-16 bg-primary/5">
         <div className="container mx-auto px-6">
           <motion.div
@@ -88,7 +86,6 @@ const CSR = () => {
           </div>
         </div>
       </section>
-      {}
       <section className="py-16 bg-background">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto space-y-10">

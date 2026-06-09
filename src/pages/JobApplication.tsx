@@ -143,7 +143,6 @@ const JobApplication = () => {
       <Header />
       <section className="py-10 md:py-14">
         <div className="container mx-auto px-6 max-w-6xl">
-          {}
           <div className="flex items-center gap-2 text-sm font-body mb-8">
             <Link to="/" className="text-primary hover:text-accent transition-colors">{isAr ? "الرئيسية" : "Home"}</Link>
             <ChevronRight className="w-4 h-4 text-muted-foreground" />
@@ -152,14 +151,12 @@ const JobApplication = () => {
             <span className="text-muted-foreground">{isAr ? "تقديم" : "Apply"}</span>
           </div>
           <div className="grid lg:grid-cols-3 gap-10">
-            {}
             <div className="lg:col-span-2">
               <h1 className="text-3xl md:text-4xl font-serif text-foreground mb-6 uppercase leading-tight">{job.title}</h1>
               <p className="font-body text-base text-muted-foreground leading-relaxed mb-8 text-justify">{job.desc}</p>
               <Link to="/work-with-us?section=positions" className="text-primary hover:text-accent font-body text-sm underline underline-offset-4 inline-block mb-10">
                 {isAr ? "عرض جميع الوظائف المتاحة" : "View All open positions"}
               </Link>
-              {}
               <div className="mb-8">
                 <h2 className="font-serif text-sm uppercase tracking-widest text-muted-foreground mb-4">{isAr ? "المهام والمسؤوليات" : "Duties and Responsibilities"}</h2>
                 <ul className="space-y-3">
@@ -171,7 +168,6 @@ const JobApplication = () => {
                   ))}
                 </ul>
               </div>
-              {}
               <div className="mb-8">
                 <h2 className="font-serif text-sm uppercase tracking-widest text-muted-foreground mb-4">{isAr ? "المتطلبات" : "Requirements"}</h2>
                 <ul className="space-y-3">
@@ -184,9 +180,7 @@ const JobApplication = () => {
                 </ul>
               </div>
             </div>
-            {}
             <div className="lg:col-span-1 space-y-6">
-              {}
               <div className="space-y-3">
                 <Button onClick={() => {
                   setShowForm(true);
@@ -202,7 +196,6 @@ const JobApplication = () => {
                   {isAr ? "شارك الآن" : "Share Now"}
                 </Button>
               </div>
-              {}
               <div className="bg-popover border border-border/50 rounded-2xl p-6 space-y-5">
                 <p className="font-serif text-lg text-foreground">{job.date}</p>
                 <div>
@@ -220,7 +213,6 @@ const JobApplication = () => {
               </div>
             </div>
           </div>
-          {}
           {showForm && (
             <div
               ref={formRef}

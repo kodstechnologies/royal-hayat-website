@@ -40,7 +40,6 @@ const FAQ = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      {}
       <section className="pt-40 pb-16 bg-primary">
         <div className="container mx-auto px-6 text-center">
           <ScrollAnimationWrapper>
@@ -49,7 +48,6 @@ const FAQ = () => {
           </ScrollAnimationWrapper>
         </div>
       </section>
-      {}
       {activeTab === 'faq' && (
         <section className="py-20" id="faq">
           <div className="container mx-auto px-6 max-w-3xl">
@@ -77,7 +75,6 @@ const FAQ = () => {
           </div>
         </section>
       )}
-      {}
       {activeTab === 'disclaimer' && (
         <section className="py-20 bg-background" id="disclaimer">
           <div className="container mx-auto px-6 max-w-3xl">
@@ -88,7 +85,6 @@ const FAQ = () => {
           </div>
         </section>
       )}
-      {}
       {activeTab === 'terms' && (
         <section className="py-20 bg-background" id="terms">
           <div className="container mx-auto px-6 max-w-3xl">

@@ -26,9 +26,7 @@ const FifthFloorCafe = () => {
   }, []);
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107]">
-      <Header />
-      {}
-      <section className="py-8 md:py-10 bg-primary/5">
+      <Header />      <section className="py-8 md:py-10 bg-primary/5">
         <div className="container mx-auto px-6 text-center">
           <ScrollAnimationWrapper>
             <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">
@@ -42,9 +40,7 @@ const FifthFloorCafe = () => {
             </p>
           </ScrollAnimationWrapper>
         </div>
-      </section>
-      {}
-      <section className="py-6 md:py-8 bg-background">
+      </section>      <section className="py-6 md:py-8 bg-background">
         <div className="container mx-auto px-6">
           <ScrollAnimationWrapper>
             <div className="max-w-5xl mx-auto">
@@ -64,9 +60,7 @@ const FifthFloorCafe = () => {
             </div>
           </ScrollAnimationWrapper>
         </div>
-      </section>
-      {}
-      <section className="py-10">
+      </section>      <section className="py-10">
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="w-full">
             <ScrollAnimationWrapper>

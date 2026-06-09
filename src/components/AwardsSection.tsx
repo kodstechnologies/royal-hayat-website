@@ -39,7 +39,6 @@ const AwardsSection = () => {
           </div>
         </ScrollAnimationWrapper>
         <div className="relative flex flex-col lg:flex-row gap-6 max-w-6xl mx-auto items-stretch">
-          {}
           <AnimatePresence mode="wait">
             <motion.div
               key={activeIndex}
@@ -68,9 +67,7 @@ const AwardsSection = () => {
               </p>
             </motion.div>
           </AnimatePresence>
-          {}
           <div className="flex-1 flex flex-col gap-4 md:gap-5">
-            {}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-5 flex-1">
               {otherAwards.map((a, i) => (
                 <ScrollAnimationWrapper key={a.name + i} delay={i * 0.05} className="h-full">
@@ -92,7 +89,6 @@ const AwardsSection = () => {
                 </ScrollAnimationWrapper>
               ))}
             </div>
-            {}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-5">
               {otherAwards.map((a, i) => {
                 const icons = [Shield, Award, Star];
@@ -120,7 +116,6 @@ const AwardsSection = () => {
             </div>
           </div>
         </div>
-        {}
         <div className="flex items-center justify-center gap-3 mt-10">
           <div className="flex gap-1.5">
             {awards.map((_, i) => (

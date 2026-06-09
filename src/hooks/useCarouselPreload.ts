@@ -34,13 +34,10 @@ export function preloadImageAsync(url: string): Promise<void> {
 }
 
 type PreloadCarouselOptions = {
-  /** How many slides ahead of the active index to prefetch (default 2). */
   nextLookahead?: number;
-  /** How many slides behind the active index to prefetch (default 1). */
   prevLookahead?: number;
 };
 
-/** Preload active slide plus upcoming neighbors for smooth navigation. */
 export function preloadCarouselImages(
   images: string[],
   activeIndex: number,

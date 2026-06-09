@@ -1671,7 +1671,6 @@ Clinic Code:`;
               );
             })}
           </div>
-          {}
           <div className="flex items-center justify-start mt-8">
             <button onClick={() => { setSymptomResults(null); }} className="flex items-center gap-2 text-muted-foreground font-body text-sm hover:text-foreground transition-colors">
               <ArrowLeft className="w-4 h-4" /> {t("previous")}

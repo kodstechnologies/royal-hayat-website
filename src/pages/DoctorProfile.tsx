@@ -272,13 +272,11 @@ const DoctorProfile = () => {
       <Header />
       <section className="py-12 md:py-20">
         <div className="container mx-auto px-4 md:px-6">
-          {}
           <button onClick={handleGoBack} className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary font-body text-sm mb-8 transition-colors">
             <ArrowLeft className="w-4 h-4" />
             {lang === "ar" ? "العودة" : "Go Back"}
           </button>
           <div className="grid md:grid-cols-3 gap-10">
-            {}
             <div className="md:col-span-1">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                 className="bg-popover rounded-2xl overflow-hidden border border-border/50 sticky top-24">
@@ -300,7 +298,6 @@ const DoctorProfile = () => {
                   </p>
                   <h1 className="text-2xl font-serif font-bold text-foreground mb-1">{getDoctorDisplayName(doctor, lang)}</h1>
                   <p className="text-muted-foreground font-body text-sm mb-5 whitespace-pre-line text-start">{lang === "ar" ? doctor.titleAr : doctor.title}</p>
-                  {}
                   {doctor.hideBooking !== true && !hideRequestAppointmentButton && (
                     <div
                       className={`flex items-center gap-1.5 mb-4 justify-center ${doctor.availableOnline !== false ? "text-green-600" : "text-destructive"}`}
@@ -355,9 +352,7 @@ const DoctorProfile = () => {
                 </div>
               </motion.div>
             </div>
-            {}
             <div className="md:col-span-2 space-y-10">
-              {}
               {doctor.qualifications && doctor.qualifications.length > 0 && (
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
                   className="bg-popover rounded-2xl border border-border/50 p-5 md:p-6 shadow-sm">
@@ -397,7 +392,6 @@ const DoctorProfile = () => {
                   </ul>
                 </motion.div>
               )}
-              {}
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
                 className="bg-popover rounded-2xl border border-border/50 p-5 md:p-6 shadow-sm">
                 <h2 className="text-xl md:text-2xl font-serif text-primary font-bold mb-5">
@@ -457,7 +451,6 @@ const DoctorProfile = () => {
           </div>
         </div>
       </section>
-      {}
       <section className="py-12 bg-background overflow-hidden">
         <div className="container mx-auto px-6 mb-6">
           <h2 className="text-xl font-serif text-foreground flex items-center gap-2">

@@ -519,7 +519,6 @@ const AlSafwaProgram = () => {
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
       <Header />
-      {}
       <section className="py-20 bg-primary/5">
         <div className="container mx-auto px-6">
           {fromBookAppointment && (
@@ -549,7 +548,6 @@ const AlSafwaProgram = () => {
           </ScrollAnimationWrapper>
         </div>
       </section>
-      {}
       <section className="py-16">
         <div className="container mx-auto px-6 max-w-4xl">
           <ScrollAnimationWrapper>
@@ -569,7 +567,6 @@ const AlSafwaProgram = () => {
           </ScrollAnimationWrapper>
         </div>
       </section>
-      {}
       <section className="py-16 bg-primary/5">
         <div className="container mx-auto px-6 max-w-4xl">
           <ScrollAnimationWrapper>
@@ -591,7 +588,6 @@ const AlSafwaProgram = () => {
           </div>
         </div>
       </section>
-      {}
       <section className="py-16">
         <div className="container mx-auto px-6 max-w-4xl">
           <ScrollAnimationWrapper>
@@ -613,7 +609,6 @@ const AlSafwaProgram = () => {
           </div>
         </div>
       </section>
-      {}
       <section className="py-16 bg-primary/5">
         <div className="container mx-auto px-6 max-w-4xl">
           <ScrollAnimationWrapper>
@@ -633,7 +628,6 @@ const AlSafwaProgram = () => {
           </ScrollAnimationWrapper>
         </div>
       </section>
-      {}
       <section className="py-16">
         <div className="container mx-auto px-6 max-w-4xl">
           <ScrollAnimationWrapper>
@@ -655,7 +649,6 @@ const AlSafwaProgram = () => {
           </div>
         </div>
       </section>
-      {}
       <section className="py-20 bg-primary/5">
         <div className="container mx-auto px-6">
           <ScrollAnimationWrapper>

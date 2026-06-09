@@ -329,11 +329,9 @@ const WorkWithUs = ({
       className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107] [&_p]:text-start [&_li]:text-start"
     >
       <Header />
-      {}
       {showSection("culture") && (
         <section className="py-0 bg-primary/5 overflow-x-clip">
           <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_0.7fr] gap-0 items-stretch lg:items-start">
-            {}
             <div
               dir="ltr"
               className="work-culture-hero-wrap relative w-full min-w-0 bg-background lg:h-auto"
@@ -347,7 +345,6 @@ const WorkWithUs = ({
                 }
               />
             </div>
-            {}
             <ScrollAnimationWrapper className="flex w-full flex-col justify-center px-4 py-10 sm:px-6 md:px-14 md:py-12 lg:px-16 lg:self-center lg:py-12 2xl:py-16">
               <div
                 dir={isAr ? "rtl" : "ltr"}
@@ -381,7 +378,6 @@ const WorkWithUs = ({
           </div>
         </section>
       )}
-      {}
       {showSection("culture") && (
         <section className="py-14 bg-background">
           <div className="container mx-auto px-3 md:px-6 max-w-none md:max-w-5xl lg:max-w-6xl">
@@ -421,7 +417,6 @@ const WorkWithUs = ({
           </div>
         </section>
       )}
-      {}
       {showSection("culture") && (
         <section className="py-14 bg-secondary/10">
           <div className="container mx-auto px-3 md:px-6 max-w-none md:max-w-5xl lg:max-w-6xl">
@@ -455,7 +450,6 @@ const WorkWithUs = ({
           </div>
         </section>
       )}
-      {}
       {showSection("culture") && (
         <section className="py-16 bg-secondary/10">
           <div className="container mx-auto px-3 md:px-6">
@@ -542,7 +536,6 @@ const WorkWithUs = ({
                   </div>
                 </motion.div>
               </AnimatePresence>
-              {}
               {employees.length > 1 && (
                 <>
                   <button
@@ -570,7 +563,6 @@ const WorkWithUs = ({
                   </button>
                 </>
               )}
-              {}
               <div className="flex items-center justify-center gap-3 mt-5">
                 <span className="font-body text-xs text-muted-foreground tracking-widest">
                   {String(empIndex + 1).padStart(2, "0")} /{" "}
@@ -581,7 +573,6 @@ const WorkWithUs = ({
           </div>
         </section>
       )}
-      {}
       {showSection("culture") && (
         <LifePhotoCarousel
           title={
@@ -600,7 +591,6 @@ const WorkWithUs = ({
           )}
         />
       )}
-      {}
       {showSection("culture") && (
         <>
           <LifePhotoCarousel
@@ -634,9 +624,7 @@ const WorkWithUs = ({
           />
         </>
       )}
-      {}
       {showSection("culture") && <VoicesFromOurPeople />}
-      {}
       {showSection("culture") && (
         <section className="py-12 bg-background text-center">
           <div className="container mx-auto px-3 md:px-6">
@@ -653,7 +641,6 @@ const WorkWithUs = ({
           </div>
         </section>
       )}
-      {}
       {showSection("positions") && (
         <section className="py-16 bg-secondary/10" id="open-positions">
           <div className="container mx-auto px-3 md:px-6">
@@ -675,7 +662,6 @@ const WorkWithUs = ({
                 </p>
               </div>
             </ScrollAnimationWrapper>
-            {}
             <div className="flex items-center gap-2 mb-8">
               <button
                 onClick={() => scrollCategories("left")}
@@ -711,7 +697,6 @@ const WorkWithUs = ({
                 <ChevronRight className="w-5 h-5" />
               </button>
             </div>
-            {}
             <div className="max-w-5xl mx-auto space-y-5">
               {filtered.map((pos) => {
                 const originalIndex = positions.findIndex(

@@ -490,8 +490,8 @@ const IntelligentBooking = () => {
                       </div>
                       {patientErrors.phone && <p className="font-body text-xs text-destructive mt-1">{patientErrors.phone}</p>}
                     </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div className="min-w-0">
                         <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
                           {t("age")} <span className="text-destructive">*</span>
                         </label>
@@ -501,13 +501,13 @@ const IntelligentBooking = () => {
                           className={`w-full px-4 py-3 rounded-xl border bg-muted/20 font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all ${patientErrors.age ? "border-destructive" : "border-border"}`} />
                         {patientErrors.age && <p className="font-body text-xs text-destructive mt-1">{patientErrors.age}</p>}
                       </div>
-                      <div>
+                      <div className="min-w-0">
                         <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
                           {t("gender")} <span className="text-destructive">*</span>
                         </label>
                         <select value={patientGender}
                           onChange={(e) => { setPatientGender(e.target.value); setPatientErrors(prev => ({ ...prev, gender: "" })); }}
-                          className={`w-full px-4 py-3 rounded-xl border bg-muted/20 font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all ${patientErrors.gender ? "border-destructive" : "border-border"}`}>
+                          className={`w-full min-w-0 max-w-full px-4 py-3 rounded-xl border bg-muted/20 font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all ${patientErrors.gender ? "border-destructive" : "border-border"}`}>
                           <option value="">{t("selectGender")}</option>
                           <option value="male">{t("male")}</option>
                           <option value="female">{t("female")}</option>

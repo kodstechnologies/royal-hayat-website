@@ -292,8 +292,8 @@ const AppointmentRequest = () => {
               {errors.phone && <p className="font-body text-xs text-destructive mt-1">{errors.phone}</p>}
             </div>
             {}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="min-w-0">
                 <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
                   {lang === "ar" ? "تاريخ الميلاد" : "Date of Birth"} <span className="text-destructive">*</span>
                 </label>
@@ -303,17 +303,17 @@ const AppointmentRequest = () => {
                   onChange={(e) => updateField("dateOfBirth", e.target.value)}
                   readOnly={identityReadOnly}
                   max={new Date().toISOString().split("T")[0]}
-                  className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 ${errors.dateOfBirth ? "border-destructive" : "border-border"} ${identityReadOnly ? "opacity-80 cursor-default" : ""}`}
+                  className={`w-full min-w-0 max-w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 ${errors.dateOfBirth ? "border-destructive" : "border-border"} ${identityReadOnly ? "opacity-80 cursor-default" : ""}`}
                 />
                 {errors.dateOfBirth && <p className="font-body text-xs text-destructive mt-1">{errors.dateOfBirth}</p>}
               </div>
-              <div>
+              <div className="min-w-0">
                 <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
                   {t("gender")} <span className="text-destructive">*</span>
                 </label>
                 <select value={form.gender} onChange={(e) => updateField("gender", e.target.value)}
                   disabled={identityReadOnly}
-                  className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 ${errors.gender ? "border-destructive" : "border-border"} ${identityReadOnly ? "opacity-80 cursor-default" : ""}`}>
+                  className={`w-full min-w-0 max-w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 ${errors.gender ? "border-destructive" : "border-border"} ${identityReadOnly ? "opacity-80 cursor-default" : ""}`}>
                   <option value="">{t("selectGender")}</option>
                   <option value="male">{t("male")}</option>
                   <option value="female">{t("female")}</option>

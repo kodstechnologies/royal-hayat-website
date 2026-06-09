@@ -161,8 +161,8 @@ const PatientDetailsStep = ({
                 <p className="font-body text-xs text-destructive mt-1">{patientErrors.phone}</p>
               )}
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="min-w-0">
                 <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
                   {isAr ? "تاريخ الميلاد" : "Date of Birth"} <span className="text-destructive">*</span>
                 </label>
@@ -174,7 +174,7 @@ const PatientDetailsStep = ({
                     setPatientDob(e.target.value);
                     setPatientErrors((prev) => ({ ...prev, dob: "" }));
                   }}
-                  className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all ${
+                  className={`w-full min-w-0 max-w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all ${
                     patientErrors.dob ? "border-destructive" : "border-border"
                   }`}
                 />
@@ -182,7 +182,7 @@ const PatientDetailsStep = ({
                   <p className="font-body text-xs text-destructive mt-1">{patientErrors.dob}</p>
                 )}
               </div>
-              <div>
+              <div className="min-w-0">
                 <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
                   {t("gender")} <span className="text-destructive">*</span>
                 </label>
@@ -192,7 +192,7 @@ const PatientDetailsStep = ({
                     setPatientGender(e.target.value);
                     setPatientErrors((prev) => ({ ...prev, gender: "" }));
                   }}
-                  className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all ${
+                  className={`w-full min-w-0 max-w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all ${
                     patientErrors.gender ? "border-destructive" : "border-border"
                   }`}
                 >

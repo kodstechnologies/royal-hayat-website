@@ -144,7 +144,7 @@ const VerifyNationalId = () => {
         socketUnsubscribeRef.current = null;
         const payload: StartIdentityPayload = {
           civilId: nationalId.trim(),
-          serviceName: { ar: "تجربة", en: "Service Test" },
+          serviceName: { ar: "طلب موعد", en: "Appointment Request" },
           reason: { ar: "تجربة", en: "test" }
         };
         const startData = await startIdentityVerification(payload);

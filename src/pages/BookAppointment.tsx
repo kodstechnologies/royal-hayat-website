@@ -1196,7 +1196,7 @@ const BookAppointment = () => {
     try {
       const response = await startIdentityVerification({
         civilId,
-        serviceName: { ar: "تجربة", en: "Service Test" },
+        serviceName: { ar: "طلب موعد", en: "Appointment Request" },
         reason: { ar: "تجربة", en: "test" },
       });
       if (response?.success === false) {

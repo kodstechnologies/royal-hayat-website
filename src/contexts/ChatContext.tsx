@@ -62,6 +62,40 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     prevLangRef.current = lang;
     if (isOpen) resetChat();
   }, [lang, isOpen, resetChat]);
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const scrollY = window.scrollY;
+    const { body, documentElement } = document;
+    const prevBody = {
+      position: body.style.position,
+      top: body.style.top,
+      left: body.style.left,
+      right: body.style.right,
+      overflow: body.style.overflow,
+      width: body.style.width,
+    };
+    const prevHtmlOverflow = documentElement.style.overflow;
+
+    body.style.position = "fixed";
+    body.style.top = `-${scrollY}px`;
+    body.style.left = "0";
+    body.style.right = "0";
+    body.style.width = "100%";
+    body.style.overflow = "hidden";
+    documentElement.style.overflow = "hidden";
+
+    return () => {
+      body.style.position = prevBody.position;
+      body.style.top = prevBody.top;
+      body.style.left = prevBody.left;
+      body.style.right = prevBody.right;
+      body.style.overflow = prevBody.overflow;
+      body.style.width = prevBody.width;
+      documentElement.style.overflow = prevHtmlOverflow;
+      window.scrollTo(0, scrollY);
+    };
+  }, [isOpen]);
   return (
     <ChatContext.Provider
       value={{

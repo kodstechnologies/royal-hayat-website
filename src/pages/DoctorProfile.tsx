@@ -268,7 +268,7 @@ const DoctorProfile = () => {
     });
   };
   return (
-    <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
+    <div id="doctor-profile-page" className="min-h-screen bg-background pt-[var(--header-height,56px)]">
       <Header />
       <section className="py-12 md:py-20">
         <div className="container mx-auto px-4 md:px-6">
@@ -299,7 +299,7 @@ const DoctorProfile = () => {
                     {lang === "ar" ? doctor.specialtyAr : doctor.specialty}
                   </p>
                   <h1 className="text-2xl font-serif font-bold text-foreground mb-1">{getDoctorDisplayName(doctor, lang)}</h1>
-                  <p className="text-muted-foreground font-body text-sm mb-5 whitespace-pre-line">{lang === "ar" ? doctor.titleAr : doctor.title}</p>
+                  <p className="text-muted-foreground font-body text-sm mb-5 whitespace-pre-line text-start">{lang === "ar" ? doctor.titleAr : doctor.title}</p>
                   {}
                   {doctor.hideBooking !== true && !hideRequestAppointmentButton && (
                     <div
@@ -384,7 +384,7 @@ const DoctorProfile = () => {
                         <li
                           key={i}
                           lang={lang === "ar" ? "ar" : "en"}
-                          className={`font-body text-base leading-relaxed text-justify ${isHeader
+                          className={`font-body text-base leading-relaxed text-start ${isHeader
                           ? "list-none -ps-7 font-serif text-lg font-bold text-primary mt-6 mb-2"
                           : "text-muted-foreground"
                           }`}>
@@ -428,7 +428,7 @@ const DoctorProfile = () => {
                       <li
                         key={i}
                         lang={lang === "ar" ? "ar" : "en"}
-                        className={`font-body text-base leading-relaxed text-justify ${isHeader
+                        className={`font-body text-base leading-relaxed text-start ${isHeader
                         ? `-ps-7 list-none font-serif text-lg font-bold text-primary mt-6 mb-2${isColonHeader ? "" : " uppercase tracking-wide"}`
                         : isSubBullet
                           ? "list-none ps-12 text-muted-foreground"
@@ -532,6 +532,20 @@ const DoctorProfile = () => {
           ]);
         }}
       />
+      <style>{`
+        @media (max-width: 767px) {
+          #doctor-profile-page .whitespace-pre-line,
+          #doctor-profile-page li {
+            text-align: start !important;
+            text-align-last: start !important;
+            text-justify: auto !important;
+            word-spacing: normal !important;
+            letter-spacing: normal !important;
+            -webkit-hyphens: manual !important;
+            hyphens: manual !important;
+          }
+        }
+      `}</style>
       <Footer />
     </div>
   );

@@ -2,10 +2,17 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
-import { CheckCircle2, ChevronLeft, ChevronRight } from "lucide-react";
+import ImageCarousel from "@/components/ImageCarousel";
+import { preloadCarouselImages } from "@/hooks/useCarouselPreload";
+import { CheckCircle2 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
+
+const cafeCarouselImages = [
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/fifth-floor/WhatsApp+Image+2026-06-02+at+2.17.44+PM+(1).jpeg",
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/fifth-floor/WhatsApp+Image+2026-06-02+at+2.17.44+PM.jpeg",
+];
+
 const FifthFloorCafe = () => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
@@ -13,17 +20,10 @@ const FifthFloorCafe = () => {
   const menuItems = isAr
     ? ["قهوة مختصة طازجة", "تشكيلة من الساندويتشات", "سلطات طازجة", "حلويات شهية"]
     : ["Freshly brewed specialty coffee", "A selection of sandwiches", "Fresh salads", "Indulgent desserts"];
-  const cafeCarouselImages = [
-    "https://royal-hayat.s3.eu-central-1.amazonaws.com/fifth-floor/WhatsApp+Image+2026-06-02+at+2.17.44+PM+(1).jpeg",
-    "https://royal-hayat.s3.eu-central-1.amazonaws.com/fifth-floor/WhatsApp+Image+2026-06-02+at+2.17.44+PM.jpeg",
-  ];
+
   useEffect(() => {
-    if (cafeCarouselImages.length <= 1) return;
-    const timer = window.setInterval(() => {
-      setActiveSlide((prev) => (prev + 1) % cafeCarouselImages.length);
-    }, 4500);
-    return () => window.clearInterval(timer);
-  }, [cafeCarouselImages.length]);
+    preloadCarouselImages(cafeCarouselImages, 0);
+  }, []);
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107]">
       <Header />
@@ -47,43 +47,20 @@ const FifthFloorCafe = () => {
       <section className="py-6 md:py-8 bg-background">
         <div className="container mx-auto px-6">
           <ScrollAnimationWrapper>
-            <div className="relative max-w-5xl mx-auto">
-              <div className="relative aspect-[16/10] md:aspect-[16/8] rounded-2xl overflow-hidden border border-border/50 shadow-lg bg-popover">
-                <AnimatePresence mode="wait">
-                  <motion.img
-                    key={`fifth-floor-cafe-${activeSlide}`}
-                    src={cafeCarouselImages[activeSlide]}
-                    alt={isAr ? `كافيه الطابق الخامس ${activeSlide + 1}` : `The 5th Floor Cafe ${activeSlide + 1}`}
-                    className="absolute inset-0 w-full h-full object-cover"
-                    initial={{ opacity: 0.2 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0.2 }}
-                    transition={{ duration: 0.35 }}
-                    loading="lazy"
-                  />
-                </AnimatePresence>
-              </div>
-              <button
-                type="button"
-                onClick={() => setActiveSlide((prev) => (prev - 1 + cafeCarouselImages.length) % cafeCarouselImages.length)}
-                aria-label={isAr ? "الصورة السابقة" : "Previous image"}
-                className="absolute -left-3 md:-left-5 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground transition-colors shadow-md"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveSlide((prev) => (prev + 1) % cafeCarouselImages.length)}
-                aria-label={isAr ? "الصورة التالية" : "Next image"}
-                className="absolute -right-3 md:-right-5 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground transition-colors shadow-md"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
-              <div className="flex items-center justify-center mt-4">
-                <span className="font-body text-xs text-muted-foreground tracking-widest">
-                  {String(activeSlide + 1).padStart(2, "0")} / {String(cafeCarouselImages.length).padStart(2, "0")}
-                </span>
-              </div>
+            <div className="max-w-5xl mx-auto">
+              <ImageCarousel
+                images={cafeCarouselImages}
+                slide={activeSlide}
+                setSlide={setActiveSlide}
+                altForIndex={(i) =>
+                  isAr ? `كافيه الطابق الخامس ${i + 1}` : `The 5th Floor Cafe ${i + 1}`
+                }
+                autoPlay={cafeCarouselImages.length > 1}
+                aspectClass="aspect-[16/10] md:aspect-[16/8]"
+                frameClass="relative overflow-hidden rounded-2xl border border-border/50 bg-muted shadow-lg"
+                imageClass="h-full w-full object-cover"
+                isAr={isAr}
+              />
             </div>
           </ScrollAnimationWrapper>
         </div>

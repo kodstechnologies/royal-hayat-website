@@ -3,7 +3,9 @@ import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
 import EventBookingModal from "@/components/EventBookingModal";
-import { Sparkles, Phone, CheckCircle2, Gift, UtensilsCrossed, UserCheck, ChevronLeft, ChevronRight, ImageIcon, X } from "lucide-react";
+import ImageCarousel from "@/components/ImageCarousel";
+import { preloadCarouselImages } from "@/hooks/useCarouselPreload";
+import { Sparkles, Phone, CheckCircle2, Gift, UtensilsCrossed, UserCheck, ImageIcon, X } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -27,14 +29,10 @@ const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) =
     return () => window.removeEventListener("keydown", onKey);
   }, [lightboxImage]);
   useEffect(() => {
-    if (topCarouselImages.length <= 1) return;
-    const timer = window.setInterval(() => {
-      setActiveSlide((prev) => (prev + 1) % topCarouselImages.length);
-    }, 5000);
-    return () => window.clearInterval(timer);
-  }, [topCarouselImages.length]);
-  useEffect(() => {
     setActiveSlide(0);
+    if (topCarouselImages.length > 0) {
+      preloadCarouselImages(topCarouselImages, 0);
+    }
   }, [topCarouselImages]);
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
@@ -64,79 +62,34 @@ const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) =
       <section className="py-12 md:py-16">
         <div className="container mx-auto px-6">
           <div className="max-w-5xl mx-auto">
-            <div className="relative">
-              <div className="relative aspect-video rounded-2xl overflow-hidden bg-popover border border-border/50 shadow-lg">
-                <AnimatePresence initial={false} mode="wait">
-                  {topCarouselImages.length > 0 ? (
-                    <motion.img
-                      key={`in-room-events-${activeSlide}`}
-                      src={topCarouselImages[activeSlide]}
-                      alt={isAr ? `صورة فعالية ${activeSlide + 1}` : `In-room event image ${activeSlide + 1}`}
-                      initial={{ x: 36 }}
-                      animate={{ x: 0 }}
-                      exit={{ x: -36 }}
-                      transition={{ duration: 0.35, ease: "easeInOut" }}
-                      className="absolute inset-0 w-full h-full object-cover cursor-zoom-in"
-                      loading="lazy"
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => setLightboxImage(topCarouselImages[activeSlide])}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          e.preventDefault();
-                          setLightboxImage(topCarouselImages[activeSlide]);
-                        }
-                      }}
-                    />
-                  ) : (
-                    <motion.div
-                      key="in-room-events-empty"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="absolute inset-0 w-full h-full flex items-center justify-center bg-muted/30"
-                    >
-                      <div className="text-center">
-                        <ImageIcon className="w-16 h-16 text-muted-foreground/50 mx-auto mb-3" />
-                        <p className="font-serif text-lg text-foreground mb-1">
-                          {isAr ? "معرض الفعاليات" : "In-Room Events Gallery"}
-                        </p>
-                        <p className="font-body text-sm text-muted-foreground">
-                          {isAr ? "سيتم إضافة الصور قريباً" : "Photos coming soon"}
-                        </p>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-              {topCarouselImages.length > 1 && (
-                <>
-                  <button
-                    onClick={() =>
-                      setActiveSlide((prev) => (prev - 1 + topCarouselImages.length) % topCarouselImages.length)
-                    }
-                    aria-label={isAr ? "السابق" : "Previous"}
-                    className="absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon"
-                  >
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-                  <button
-                    onClick={() => setActiveSlide((prev) => (prev + 1) % topCarouselImages.length)}
-                    aria-label={isAr ? "التالي" : "Next"}
-                    className="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon"
-                  >
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
-                </>
-              )}
-              {topCarouselImages.length > 1 && (
-                <div className="flex items-center justify-center gap-3 mt-5">
-                  <span className="font-body text-xs text-muted-foreground tracking-widest">
-                    {String(activeSlide + 1).padStart(2, "0")} / {String(topCarouselImages.length).padStart(2, "0")}
-                  </span>
+            {topCarouselImages.length > 0 ? (
+              <ImageCarousel
+                images={topCarouselImages}
+                slide={activeSlide}
+                setSlide={setActiveSlide}
+                altForIndex={(i) =>
+                  isAr ? `صورة فعالية ${i + 1}` : `In-room event image ${i + 1}`
+                }
+                autoPlay={topCarouselImages.length > 1}
+                aspectClass="aspect-video"
+                frameClass="relative overflow-hidden rounded-2xl border border-border/50 bg-muted shadow-lg"
+                imageClass="h-full w-full cursor-zoom-in object-cover"
+                onImageClick={(src) => setLightboxImage(src)}
+                isAr={isAr}
+              />
+            ) : (
+              <div className="relative aspect-video rounded-2xl overflow-hidden border border-border/50 bg-muted/30 shadow-lg flex items-center justify-center">
+                <div className="text-center">
+                  <ImageIcon className="w-16 h-16 text-muted-foreground/50 mx-auto mb-3" />
+                  <p className="font-serif text-lg text-foreground mb-1">
+                    {isAr ? "معرض الفعاليات" : "In-Room Events Gallery"}
+                  </p>
+                  <p className="font-body text-sm text-muted-foreground">
+                    {isAr ? "سيتم إضافة الصور قريباً" : "Photos coming soon"}
+                  </p>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       </section>

@@ -435,26 +435,28 @@ const ChatButton = () => {
             </div>
             <div className="p-2.5 border-t border-border/50 shrink-0">
               <form
+                dir="ltr"
                 onSubmit={(e) => {
                   e.preventDefault();
                   handleSend();
                 }}
-                className="flex items-center gap-2"
+                className="grid grid-cols-[minmax(0,1fr)_2.5rem] items-center gap-2"
               >
                 <input
                   type="text"
+                  dir="auto"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder={t("chatPlaceholder")}
                   disabled={isTyping || isStreaming}
-                  className="flex-1 bg-secondary/20 rounded-xl px-4 py-2.5 text-sm font-body text-foreground placeholder:text-muted-foreground/50 outline-none focus:ring-1 focus:ring-accent/50 transition-all disabled:opacity-60"
+                  className="min-w-0 w-full bg-secondary/20 rounded-xl px-4 py-2.5 text-sm font-body text-foreground placeholder:text-muted-foreground/50 outline-none focus:ring-1 focus:ring-accent/50 transition-all disabled:opacity-60"
                 />
                 <button
                   type="submit"
                   disabled={!input.trim() || isTyping || isStreaming}
-                  className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-40"
+                  className="size-10 rounded-xl bg-primary p-0 leading-none flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-40"
                 >
-                  <Send className="w-4 h-4" />
+                  <Send className="size-4 shrink-0" aria-hidden />
                 </button>
               </form>
             </div>

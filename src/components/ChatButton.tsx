@@ -139,11 +139,14 @@ const ChatButton = () => {
     const anchor = (e.target as HTMLElement).closest("a");
     if (!anchor) return;
     const href = anchor.getAttribute("href");
-    if (!href || href.startsWith("http") || href.startsWith("mailto:") || href.startsWith("tel:")) {
+    if (!href) return;
+    if (href.startsWith("http") || href.startsWith("mailto:") || href.startsWith("tel:")) {
+      closeChat();
       return;
     }
     e.preventDefault();
     navigate(href);
+    closeChat();
   };
   const handleTopicSelect = (topic: ChatTopic) => {
     const label = t(topic.labelKey);
@@ -273,6 +276,7 @@ const ChatButton = () => {
           href={WHATSAPP_URL}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={closeChat}
           className={`inline-flex shrink-0 items-center justify-center gap-2.5 whitespace-nowrap text-sm font-body font-semibold px-5 py-3 min-h-[44px] rounded-xl border shadow-sm transition-all ${styles}`}
         >
           <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#25D366] text-white">

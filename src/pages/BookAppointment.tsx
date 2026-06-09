@@ -530,7 +530,14 @@ const BookAppointment = () => {
     });
   }, []);
   useEffect(() => {
-    if (booked) scrollBookingViewToTop();
+    if (!booked) return;
+    scrollBookingViewToTop();
+    const t1 = window.setTimeout(scrollBookingViewToTop, 0);
+    const t2 = window.setTimeout(scrollBookingViewToTop, 100);
+    return () => {
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+    };
   }, [booked, scrollBookingViewToTop]);
   useEffect(() => {
     scrollBookingViewToTop();

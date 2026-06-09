@@ -297,7 +297,7 @@ const translations: Translations = {
     ar: "في أكثر لحظات الحياة عمقاً ومعنى، ينبغي للرعاية الصحية أن تكون إنسانية حقاً.",
   },
   heroDesc: {
-    en: "In 2006, a different vision took shape. We set out to create a healthcare destination where patients would feel cared for in every sense, from the very first step inside to the moment they returned home. A space where healing would be serene, and every interaction would be attentive and respectful.\n\nThis vision became Royale Hayat Hospital.",
+    en: "In 2006, a different vision took shape. We set out to create a healthcare destination where patients would feel cared for in every sense, from the\nvery first step inside to the moment they returned home. A space where\nhealing would be serene, and every interaction would be attentive and respectful.\n\nThis vision became Royale Hayat Hospital.",
     ar: "في عام 2006، وُلدت رؤية مختلفة. رؤية جديدة تهدف إلى إنشاء وجهة صحية يشعر فيها المرضى بالرعاية الحقيقية بكل تفاصيلها، منذ اللحظة الأولى لدخولهم وحتى عودتهم إلى منازلهم. مكان يجمع بين العلاج والسكينة، حيث تُقدَّم كل تجربة بعناية واحترام واهتمام صادق.\n\nومن هنا، انطلقت قصة مستشفى رويال حياة",
   },
   heroTagline: { en: "A hospital experience unlike any other.", ar: "تجربة مستشفى لا مثيل لها." },

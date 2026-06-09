@@ -124,11 +124,13 @@ const ChatButton = () => {
     setSelectedTopicId,
     closeChat,
   } = useChat();
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const streamAbortRef = useRef<AbortController | null>(null);
   const [isStreaming, setIsStreaming] = useState(false);
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const container = messagesContainerRef.current;
+    if (!container) return;
+    container.scrollTo({ top: container.scrollHeight, behavior: "smooth" });
   }, [messages, isTyping, helpStage]);
   useEffect(() => {
     return () => {
@@ -303,7 +305,7 @@ const ChatButton = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.25 }}
-            className={`fixed bottom-20 md:bottom-24 ${isRtl ? "left-4 md:left-6" : "right-4 md:right-6"} z-50 w-[calc(100vw-32px)] md:w-[400px] max-h-[70vh] md:max-h-[580px] bg-background rounded-2xl shadow-2xl border border-border/50 flex flex-col overflow-hidden`}
+            className={`fixed z-50 ${isRtl ? "left-4 md:left-6" : "right-4 md:right-6"} top-[calc(var(--header-height,56px)+0.5rem)] bottom-[calc(5.25rem+env(safe-area-inset-bottom,0px))] w-[calc(100vw-32px)] md:w-[400px] max-h-[calc(100dvh-var(--header-height,56px)-6rem-env(safe-area-inset-bottom,0px))] bg-background rounded-2xl shadow-2xl border border-border/50 flex flex-col overflow-hidden`}
           >
             <div className="bg-primary px-5 py-4 flex items-center gap-3 shrink-0">
               <div className="w-9 h-9 rounded-full bg-accent/20 flex items-center justify-center">
@@ -325,7 +327,10 @@ const ChatButton = () => {
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 min-h-0">
+            <div
+              ref={messagesContainerRef}
+              className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 space-y-4 min-h-0"
+            >
               {messages.map((msg, i) => {
                 const isEmptyStreamingAssistant =
                   isStreaming &&
@@ -405,7 +410,6 @@ const ChatButton = () => {
                   )}
                 </div>
               )}
-              <div ref={messagesEndRef} />
             </div>
             <div className="p-3 border-t border-border/50 shrink-0">
               <form

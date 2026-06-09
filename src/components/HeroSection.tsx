@@ -93,7 +93,12 @@ const HeroSection = () => {
             <br />
           </>
         )}
-        {renderText(paragraph)}
+        {paragraph.split("\n").map((line, lineIndex) => (
+          <span key={lineIndex}>
+            {lineIndex > 0 && <br />}
+            {renderText(line)}
+          </span>
+        ))}
       </span>
     ));
   };

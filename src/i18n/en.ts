@@ -155,7 +155,7 @@ export const en = {
   "everyStage": "Every Stage,",
   "everyAge": "Every Age.",
   "heroIntro": "At life's most meaningful moments, healthcare should feel deeply human.",
-  "heroDesc": "In 2006, a different vision took shape. We set out to create a healthcare destination where patients would feel cared for in every sense, from the very first step inside to the moment they returned home. A space where healing would be serene, and every interaction would be attentive and respectful.\n\nThis vision became Royale Hayat Hospital.",
+  "heroDesc": "In 2006, a different vision took shape. We set out to create a healthcare destination where patients would feel cared for in every sense, from the\nvery first step inside to the moment they returned home. A space where\nhealing would be serene, and every interaction would be attentive and respectful.\n\nThis vision became Royale Hayat Hospital.",
   "heroTagline": "A hospital experience unlike any other.",
   "bookAnAppointment": "Book an Appointment",
   "exploreServices": "Explore Services",

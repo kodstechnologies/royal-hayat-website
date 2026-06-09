@@ -24,6 +24,21 @@ const AppointmentRequest = () => {
   const [searchParams] = useSearchParams();
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  useEffect(() => {
+    if (!submitted) return;
+    const scrollToTop = () => {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    };
+    scrollToTop();
+    const t1 = window.setTimeout(scrollToTop, 0);
+    const t2 = window.setTimeout(scrollToTop, 100);
+    return () => {
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+    };
+  }, [submitted]);
   const locState = (location.state as AppointmentRequestLocationState | null) ?? {};
   const prefill = locState.appointmentRequestPrefill ?? {};
   const identityReadOnly = Boolean(prefill.readOnlyIdentity);

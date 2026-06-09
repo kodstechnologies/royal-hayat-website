@@ -2288,11 +2288,11 @@ export const departmentDetails: DepartmentDetail[] = [
         titleAr: "خدماتنا تشمل",
         items: [
           "Urogynecological Disorders Management: Specialized treatment for pelvic health and related conditions.",
-          "Pre and Postnatal Care: Physiotherapy support for safe delivery and enhanced postpartum recovery",
-          "Pregnancy-Related Discomfort Relief: Expert management of back pain and muscle weakness during pregnancy",
+          "Pre and Postnatal Care: Physiotherapy support for safe delivery and enhanced postpartum recovery.",
+          "Pregnancy-Related Discomfort Relief: Expert management of back pain and muscle weakness during pregnancy.",
           "Musculoskeletal Management: Care for osteoarthritis, spinal injuries, and joint pain",
-          "Pulmonary Physiotherapy: Breathing therapy and respiratory support",
-          "Post-Surgical Rehabilitation: Specialized recovery care following surgical procedures",
+          "Pulmonary Physiotherapy: Breathing therapy and respiratory support.",
+          "Post-Surgical Rehabilitation: Specialized recovery care following surgical procedures.",
         ],
         itemsAr: [
           "علاج اضطرابات أمراض النساء والمسالك البولية المرتبطة بصحة الحوض",

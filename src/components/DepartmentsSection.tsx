@@ -10,6 +10,7 @@ import { doctorMatchesDepartment } from "@/data/departments";
 import { getSubSlugForDepartment, normalizeSubSlug } from "@/utils/departmentSubSlug";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
 import { sortDoctorsInDepartment } from "@/utils/sortDoctorsInDepartment";
+import { scrollDoctorCarousel } from "@/utils/doctorCarousel";
 type DepartmentsSectionProps = {
   showPageTitle?: boolean;
 };
@@ -152,12 +153,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
   });
   const scrollDoctors = (direction: "left" | "right") => {
     if (doctorScrollRef.current) {
-      const isMobile = window.innerWidth < 768;
-      const amount = isMobile ? (280 + 80) : (280 + 16);
-      doctorScrollRef.current.scrollBy({
-        left: direction === "left" ? -amount : amount,
-        behavior: "smooth",
-      });
+      scrollDoctorCarousel(doctorScrollRef.current, direction);
     }
   };
   const handleToggle = (index: number) => {
@@ -240,7 +236,12 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
     }
     const baseDoctors = deptDoctorsMap[selectedDept.name] || [];
     return sortDoctorsInDepartment(baseDoctors, selectedDept.name, lang);
-  }, [deptDoctorsMap, selectedDept, openIndex, selectedSubByDept, lang]);
+  }, [deptDoctorsMap, selectedDept, openIndex, selectedSubByDept, lang, doctorCatalog]);
+  useEffect(() => {
+    if (doctorScrollRef.current) {
+      doctorScrollRef.current.scrollTo({ left: 0, behavior: "auto" });
+    }
+  }, [openIndex, selectedSubByDept, deptDoctors]);
   const getOriginalIndex = (dept: Department) =>
     departments.findIndex((d) => d.name === dept.name);
   return (
@@ -318,7 +319,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                         initial={{ opacity: 0, y: 30, scale: 0.97 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         transition={{ duration: 0.4, delay: 0.05, ease: [0.25, 0.46, 0.45, 0.94] }}
-                        className={`bg-popover rounded-2xl overflow-hidden border border-border/50 cursor-pointer group transition-all duration-500 ${isExpanded ? "sm:col-span-2 lg:col-span-3" : ""}`}
+                        className={`bg-popover rounded-2xl border border-border/50 cursor-pointer group transition-all duration-500 ${isExpanded ? "sm:col-span-2 lg:col-span-3 overflow-visible" : "overflow-hidden"}`}
                         onClick={() => {
                           if (!isExpanded && isAlSafwaDeptSlug(dept.slug)) {
                             openAlSafwaProgram(origIdx);
@@ -406,35 +407,49 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                               </div>
                               {deptDoctors.length > 0 && (
                                 <div className="mt-auto">
-                                  <p className="text-accent text-center text-xs tracking-[0.2em] uppercase font-body mb-4">{lang === "ar" ? "فريقنا الطبي" : "Our Medical Team"}</p>
+                                  <p className="text-accent text-center text-xs tracking-[0.2em] uppercase font-body mb-4">
+                                    {lang === "ar" ? "فريقنا الطبي" : "Our Medical Team"}
+                                  </p>
                                   {shouldShowDepartmentDoctorsHeading(dept, selectedSubSlug) && (
-                                    <h3 className="text-center text-lg md:text-xl font-serif text-foreground font-semibold mb-4 uppercase">
+                                    <h3 className="text-center text-lg md:text-xl font-serif text-foreground font-semibold mb-4">
                                       {t("departmentDoctors")}
                                     </h3>
                                   )}
-                                  <div className="relative max-w-[576px] mx-auto lg:mt-6">
-                                    {deptDoctors.length > 1 && (
-                                      <>
-                                        <button onClick={() => scrollDoctors("left")} className="absolute -left-4 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon"><ChevronLeft className="w-4 h-4" /></button>
-                                        <button onClick={() => scrollDoctors("right")} className="absolute -right-4 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon"><ChevronRight className="w-4 h-4" /></button>
-                                      </>
-                                    )}
-                                    <div className="overflow-hidden">
-                                      <div ref={doctorScrollRef}
-                                        className={`flex gap-20 md:gap-4 overflow-x-auto pb-6 scroll-smooth snap-x snap-mandatory px-[20px] md:px-0 dept-doctor-carousel ${deptDoctors.length <= 2 ? 'lg:justify-center' : 'lg:justify-start'}`}
-                                        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
-                                        <style dangerouslySetInnerHTML={{ __html: `.dept-doctor-carousel{padding-left:calc((100vw - 280px)/2);padding-right:calc((100vw - 280px)/2)}@media(min-width:1024px){.dept-doctor-carousel{padding-left:0!important;padding-right:0!important}}` }} />
+                                  <div className="relative mx-auto w-full lg:mt-6" dir="ltr">
+                                    <div className="flex items-center justify-center gap-3">
+                                      {deptDoctors.length > 1 && (
+                                        <button
+                                          type="button"
+                                          onClick={() => scrollDoctors("left")}
+                                          aria-label={lang === "ar" ? "التمرير لليسار" : "Scroll left"}
+                                          className="hidden md:flex shrink-0 w-8 h-8 rounded-full border border-border bg-background/90 backdrop-blur-sm items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon"
+                                        >
+                                          <ChevronLeft className="w-4 h-4" />
+                                        </button>
+                                      )}
+                                      <div
+                                        className={`overflow-hidden shrink-0 ${
+                                          deptDoctors.length === 1
+                                            ? "w-[min(100%,280px)]"
+                                            : "w-[min(100%,280px)] md:w-[576px]"
+                                        }`}
+                                      >
+                                        <div
+                                          ref={doctorScrollRef}
+                                          className="dept-doctor-carousel flex gap-4 overflow-x-auto pt-2 pb-6 scroll-smooth snap-x snap-mandatory justify-start max-md:scroll-px-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+                                        >
                                         {deptDoctors.map((doc) => (
                                           <Link
                                             to={`/doctors/${doc.id}`}
                                             key={doc.id}
+                                            data-doctor-carousel-card
                                             onClick={(e) => {
                                               e.preventDefault();
                                               openDoctorProfile(doc.id, origIdx);
                                             }}
-                                            className="flex-shrink-0 w-[280px] snap-center md:snap-start"
+                                            className="relative z-0 block w-[280px] shrink-0 snap-center md:snap-start hover:z-10"
                                           >
-                                            <motion.div whileHover={{ y: -6, boxShadow: "0 20px 40px -12px rgba(74,20,35,0.12)" }} className="bg-background rounded-2xl overflow-hidden border border-border/50 group/doc cursor-pointer h-full">
+                                            <motion.div whileHover={{ y: -4, boxShadow: "0 20px 40px -12px rgba(74,20,35,0.12)" }} className="bg-background rounded-2xl overflow-hidden border border-border/50 group/doc cursor-pointer h-full">
                                               <div className="bg-white h-48 flex items-center justify-center relative overflow-hidden">
                                                 {doc.image ? <img src={doc.image} alt={getDoctorDisplayName(doc, lang)} className="w-full h-full object-cover object-top" /> : <div className="w-14 h-14 rounded-full bg-popover/20 backdrop-blur-sm flex items-center justify-center border-2 border-popover/30"><span className="text-lg font-serif text-primary-foreground">{doc.initials}</span></div>}
                                                 <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-popover/20 backdrop-blur-sm flex items-center justify-center"><Stethoscope className="w-3 h-3 text-primary-foreground" /></div>
@@ -448,8 +463,39 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                             </motion.div>
                                           </Link>
                                         ))}
+                                        </div>
                                       </div>
+                                      {deptDoctors.length > 1 && (
+                                        <button
+                                          type="button"
+                                          onClick={() => scrollDoctors("right")}
+                                          aria-label={lang === "ar" ? "التمرير لليمين" : "Scroll right"}
+                                          className="hidden md:flex shrink-0 w-8 h-8 rounded-full border border-border bg-background/90 backdrop-blur-sm items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon"
+                                        >
+                                          <ChevronRight className="w-4 h-4" />
+                                        </button>
+                                      )}
                                     </div>
+                                    {deptDoctors.length > 1 && (
+                                      <div className="mt-2 flex justify-center gap-3 md:hidden">
+                                        <button
+                                          type="button"
+                                          onClick={() => scrollDoctors("left")}
+                                          aria-label={lang === "ar" ? "التمرير لليسار" : "Scroll left"}
+                                          className="w-8 h-8 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon"
+                                        >
+                                          <ChevronLeft className="w-4 h-4" />
+                                        </button>
+                                        <button
+                                          type="button"
+                                          onClick={() => scrollDoctors("right")}
+                                          aria-label={lang === "ar" ? "التمرير لليمين" : "Scroll right"}
+                                          className="w-8 h-8 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon"
+                                        >
+                                          <ChevronRight className="w-4 h-4" />
+                                        </button>
+                                      </div>
+                                    )}
                                   </div>
                                   {dept.subs && dept.subs.length > 0 && selectedSubSlug && (
                                     <div className="mt-4 text-center">

@@ -49,6 +49,19 @@ export function getActiveDoctorCarouselIndex(container: HTMLElement) {
   const cards = getCards(container);
   if (!cards.length) return 0;
 
+  if (!isMobileCarousel()) {
+    const scrollLeft = container.scrollLeft;
+    let leadingIndex = 0;
+    for (let i = 0; i < cards.length; i++) {
+      if (cards[i].offsetLeft <= scrollLeft + 8) {
+        leadingIndex = i;
+      } else {
+        break;
+      }
+    }
+    return leadingIndex;
+  }
+
   const scrollCenter = container.scrollLeft + container.clientWidth / 2;
   let activeIndex = 0;
   let minDistance = Number.POSITIVE_INFINITY;
@@ -110,43 +123,50 @@ function waitForScrollSettle(container: HTMLElement) {
   });
 }
 
-async function runCarouselStep(container: HTMLElement, delta: number) {
+async function runCarouselSteps(container: HTMLElement, totalDelta: number) {
   const state = getState(container);
   const cards = getCards(container);
-  if (!cards.length) return;
+  if (!cards.length || totalDelta === 0) return;
 
-  const currentIndex = state.animating ? state.activeIndex : getActiveDoctorCarouselIndex(container);
-  const nextIndex = Math.max(0, Math.min(cards.length - 1, currentIndex + delta));
-  if (nextIndex === currentIndex) return;
+  const sign = totalDelta > 0 ? 1 : -1;
+  let remaining = Math.abs(totalDelta);
 
-  state.activeIndex = nextIndex;
   state.animating = true;
+  let currentIndex = getActiveDoctorCarouselIndex(container);
 
-  const behavior: ScrollBehavior = isMobileCarousel() ? "auto" : "smooth";
-  snapToIndex(container, nextIndex, behavior);
+  while (remaining > 0) {
+    const nextIndex = Math.max(0, Math.min(cards.length - 1, currentIndex + sign));
+    if (nextIndex === currentIndex) break;
 
-  await waitForScrollSettle(container);
+    currentIndex = nextIndex;
+    state.activeIndex = nextIndex;
 
-  snapToIndex(container, nextIndex, "auto");
+    const behavior: ScrollBehavior = isMobileCarousel() ? "auto" : "smooth";
+    snapToIndex(container, nextIndex, behavior);
+    await waitForScrollSettle(container);
+    snapToIndex(container, nextIndex, "auto");
+    remaining -= 1;
+  }
 
   state.animating = false;
 
   if (state.pendingSteps !== 0) {
-    const step = state.pendingSteps > 0 ? 1 : -1;
-    state.pendingSteps -= step;
-    await runCarouselStep(container, step);
+    const pending = state.pendingSteps;
+    state.pendingSteps = 0;
+    await runCarouselSteps(container, pending);
   }
 }
 
 export function scrollDoctorCarousel(
   container: HTMLElement,
   direction: "left" | "right",
+  step = 1,
 ) {
   const state = getState(container);
   const cards = getCards(container);
   if (!cards.length) return;
 
-  const delta = direction === "left" ? -1 : 1;
+  const delta = (direction === "left" ? -1 : 1) * Math.max(1, step);
 
   if (state.animating) {
     state.pendingSteps = Math.max(
@@ -156,7 +176,7 @@ export function scrollDoctorCarousel(
     return;
   }
 
-  void runCarouselStep(container, delta);
+  void runCarouselSteps(container, delta);
 }
 
 export function syncDoctorCarouselIndex(container: HTMLElement) {

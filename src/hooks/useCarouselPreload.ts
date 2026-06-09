@@ -33,18 +33,37 @@ export function preloadImageAsync(url: string): Promise<void> {
   return promise;
 }
 
-/** Preload active slide plus neighbors (prev + next) for smooth navigation. */
-export function preloadCarouselImages(images: string[], activeIndex: number) {
+type PreloadCarouselOptions = {
+  /** How many slides ahead of the active index to prefetch (default 2). */
+  nextLookahead?: number;
+  /** How many slides behind the active index to prefetch (default 1). */
+  prevLookahead?: number;
+};
+
+/** Preload active slide plus upcoming neighbors for smooth navigation. */
+export function preloadCarouselImages(
+  images: string[],
+  activeIndex: number,
+  options: PreloadCarouselOptions = {},
+) {
   if (images.length === 0) return;
 
+  const nextLookahead = options.nextLookahead ?? 2;
+  const prevLookahead = options.prevLookahead ?? 1;
   const indices = new Set<number>([activeIndex]);
+
   if (images.length > 1) {
-    indices.add((activeIndex + 1) % images.length);
-    indices.add((activeIndex - 1 + images.length) % images.length);
+    for (let step = 1; step <= nextLookahead; step++) {
+      indices.add((activeIndex + step) % images.length);
+    }
+    for (let step = 1; step <= prevLookahead; step++) {
+      indices.add((activeIndex - step + images.length) % images.length);
+    }
   }
 
   indices.forEach((index) => {
-    void preloadImageAsync(images[index]);
+    const url = images[index];
+    if (url) void preloadImageAsync(url);
   });
 }
 

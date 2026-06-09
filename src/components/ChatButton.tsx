@@ -6,6 +6,9 @@ import { formatChatMessageHtml } from "@/utils/chatMessageFormat";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useChat } from "@/contexts/ChatContext";
+import { cn } from "@/lib/utils";
+
+const NEST_HUB_MEDIA_QUERY = "(min-width: 1024px) and (max-height: 600px)";
 const WHATSAPP_URL =
   "https://api.whatsapp.com/send?phone=96525360000&text=chat%20with%20patient%20care";
 const WhatsAppIcon = ({ className }: { className?: string }) => (
@@ -127,6 +130,14 @@ const ChatButton = () => {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const streamAbortRef = useRef<AbortController | null>(null);
   const [isStreaming, setIsStreaming] = useState(false);
+  const [isNestHubViewport, setIsNestHubViewport] = useState(false);
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(NEST_HUB_MEDIA_QUERY);
+    const updateViewport = () => setIsNestHubViewport(mediaQuery.matches);
+    updateViewport();
+    mediaQuery.addEventListener("change", updateViewport);
+    return () => mediaQuery.removeEventListener("change", updateViewport);
+  }, []);
   useEffect(() => {
     const container = messagesContainerRef.current;
     if (!container) return;
@@ -305,10 +316,13 @@ const ChatButton = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.25 }}
-            className={`fixed z-40 flex flex-col overflow-hidden bg-background rounded-2xl shadow-2xl border border-border/50
-              max-xl:inset-x-4 max-xl:top-[calc(var(--header-height,56px)+0.75rem)] max-xl:bottom-[max(5rem,calc(env(safe-area-inset-bottom,0px)+4.5rem))]
-              xl:bottom-24 xl:top-auto xl:w-[400px] xl:max-h-[min(580px,calc(100dvh-var(--header-height,56px)-7rem))]
-              ${isRtl ? "xl:left-6" : "xl:right-6"}`}
+            className={cn(
+              "fixed z-50 w-[calc(100vw-32px)] md:w-[400px] bg-background rounded-2xl shadow-2xl border border-border/50 flex flex-col overflow-hidden",
+              isRtl ? "left-4 md:left-6" : "right-4 md:right-6",
+              isNestHubViewport
+                ? "top-[calc(var(--header-height,56px)+0.5rem)] bottom-[calc(5.25rem+env(safe-area-inset-bottom,0px))] max-h-[calc(100dvh-var(--header-height,56px)-6rem-env(safe-area-inset-bottom,0px))]"
+                : "bottom-[calc(5.25rem+env(safe-area-inset-bottom,0px))] h-auto max-h-[min(580px,calc(100dvh-var(--header-height,56px)-6.5rem-env(safe-area-inset-bottom,0px)))]",
+            )}
           >
             <div className="bg-primary px-5 py-4 flex items-center gap-3 shrink-0">
               <div className="w-9 h-9 rounded-full bg-accent/20 flex items-center justify-center">
@@ -332,7 +346,12 @@ const ChatButton = () => {
             </div>
             <div
               ref={messagesContainerRef}
-              className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 space-y-4 min-h-0"
+              className={cn(
+                "overflow-y-auto overscroll-contain px-4 py-3 space-y-3",
+                isNestHubViewport
+                  ? "flex-1 min-h-0"
+                  : "max-h-[min(420px,calc(100dvh-var(--header-height,56px)-12rem-env(safe-area-inset-bottom,0px)))]",
+              )}
             >
               {messages.map((msg, i) => {
                 const isEmptyStreamingAssistant =
@@ -414,7 +433,7 @@ const ChatButton = () => {
                 </div>
               )}
             </div>
-            <div className="p-3 border-t border-border/50 shrink-0">
+            <div className="p-2.5 border-t border-border/50 shrink-0">
               <form
                 onSubmit={(e) => {
                   e.preventDefault();

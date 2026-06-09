@@ -321,7 +321,7 @@ const ChatButton = () => {
               isRtl ? "left-4 md:left-6" : "right-4 md:right-6",
               isNestHubViewport
                 ? "top-[calc(var(--header-height,56px)+0.5rem)] bottom-[calc(5.25rem+env(safe-area-inset-bottom,0px))] max-h-[calc(100dvh-var(--header-height,56px)-6rem-env(safe-area-inset-bottom,0px))]"
-                : "bottom-[calc(5.25rem+env(safe-area-inset-bottom,0px))] h-auto max-h-[min(580px,calc(100dvh-var(--header-height,56px)-6.5rem-env(safe-area-inset-bottom,0px)))]",
+                : "bottom-[calc(5.25rem+env(safe-area-inset-bottom,0px))] h-[min(580px,calc(100dvh-var(--header-height,56px)-6.5rem-env(safe-area-inset-bottom,0px)))] max-h-[min(580px,calc(100dvh-var(--header-height,56px)-6.5rem-env(safe-area-inset-bottom,0px)))]",
             )}
           >
             <div className="bg-primary px-5 py-4 flex items-center gap-3 shrink-0">
@@ -346,12 +346,8 @@ const ChatButton = () => {
             </div>
             <div
               ref={messagesContainerRef}
-              className={cn(
-                "overflow-y-auto overscroll-contain px-4 py-3 space-y-3",
-                isNestHubViewport
-                  ? "flex-1 min-h-0"
-                  : "max-h-[min(420px,calc(100dvh-var(--header-height,56px)-12rem-env(safe-area-inset-bottom,0px)))]",
-              )}
+              className="flex-1 min-h-0 overflow-y-auto overscroll-contain touch-pan-y px-4 py-3 space-y-3 [-webkit-overflow-scrolling:touch]"
+              onTouchMove={(e) => e.stopPropagation()}
             >
               {messages.map((msg, i) => {
                 const isEmptyStreamingAssistant =

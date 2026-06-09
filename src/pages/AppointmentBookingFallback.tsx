@@ -314,16 +314,18 @@ const AppointmentBookingFallback = () => {
                 <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
                   {isAr ? "تاريخ الميلاد" : "Date of Birth"} <span className="text-destructive">*</span>
                 </label>
-                <input
-                  type="date"
-                  value={dateOfBirth}
-                  max={new Date().toISOString().split("T")[0]}
-                  onChange={(e) => {
-                    setDateOfBirth(e.target.value);
-                    setErrors((prev) => ({ ...prev, dateOfBirth: "" }));
-                  }}
-                  className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 ${errors.dateOfBirth ? "border-destructive" : "border-border"}`}
-                />
+                <div className="date-input-wrap">
+                  <input
+                    type="date"
+                    value={dateOfBirth}
+                    max={new Date().toISOString().split("T")[0]}
+                    onChange={(e) => {
+                      setDateOfBirth(e.target.value);
+                      setErrors((prev) => ({ ...prev, dateOfBirth: "" }));
+                    }}
+                    className={`form-date-input w-full min-w-0 max-w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 ${errors.dateOfBirth ? "border-destructive" : "border-border"}`}
+                  />
+                </div>
                 {errors.dateOfBirth && (
                   <p className="font-body text-xs text-destructive mt-1">{errors.dateOfBirth}</p>
                 )}

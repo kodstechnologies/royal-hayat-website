@@ -166,18 +166,20 @@ const PatientDetailsStep = ({
                 <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
                   {isAr ? "تاريخ الميلاد" : "Date of Birth"} <span className="text-destructive">*</span>
                 </label>
-                <input
-                  type="date"
-                  value={patientDob}
-                  max={new Date().toISOString().split("T")[0]}
-                  onChange={(e) => {
-                    setPatientDob(e.target.value);
-                    setPatientErrors((prev) => ({ ...prev, dob: "" }));
-                  }}
-                  className={`w-full min-w-0 max-w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all ${
-                    patientErrors.dob ? "border-destructive" : "border-border"
-                  }`}
-                />
+                <div className="date-input-wrap">
+                  <input
+                    type="date"
+                    value={patientDob}
+                    max={new Date().toISOString().split("T")[0]}
+                    onChange={(e) => {
+                      setPatientDob(e.target.value);
+                      setPatientErrors((prev) => ({ ...prev, dob: "" }));
+                    }}
+                    className={`form-date-input w-full min-w-0 max-w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all ${
+                      patientErrors.dob ? "border-destructive" : "border-border"
+                    }`}
+                  />
+                </div>
                 {patientErrors.dob && (
                   <p className="font-body text-xs text-destructive mt-1">{patientErrors.dob}</p>
                 )}

@@ -297,7 +297,7 @@ const translations: Translations = {
     ar: "في أكثر لحظات الحياة عمقاً ومعنى، ينبغي للرعاية الصحية أن تكون إنسانية حقاً.",
   },
   heroDesc: {
-    en: "In 2006, a different vision took shape. We set out to create a healthcare destination where patients would feel cared for in every sense, from the very first step inside to the moment they returned home. A space where healing would be serene, and every interaction would be attentive and respectful.\n\nThis vision became Royale Hayat Hospital.",
+    en: "In 2006, a different vision took shape. We set out to create a healthcare destination where patients would feel cared for in every sense, from the\nvery first step inside to the moment they returned home. A space where\nhealing would be serene, and every interaction would be attentive and respectful.\n\nThis vision became Royale Hayat Hospital.",
     ar: "في عام 2006، وُلدت رؤية مختلفة. رؤية جديدة تهدف إلى إنشاء وجهة صحية يشعر فيها المرضى بالرعاية الحقيقية بكل تفاصيلها، منذ اللحظة الأولى لدخولهم وحتى عودتهم إلى منازلهم. مكان يجمع بين العلاج والسكينة، حيث تُقدَّم كل تجربة بعناية واحترام واهتمام صادق.\n\nومن هنا، انطلقت قصة مستشفى رويال حياة",
   },
   heroTagline: { en: "A hospital experience unlike any other.", ar: "تجربة مستشفى لا مثيل لها." },
@@ -780,6 +780,16 @@ const LanguageContext = createContext<LanguageContextType>({
 });
 let arDictCache: Dict | null = null;
 let arLoadPromise: Promise<Dict> | null = null;
+const LANG_STORAGE_KEY = "royale-hayat-lang";
+function readStoredLanguage(): Language {
+  if (typeof window === "undefined") return "en";
+  try {
+    const stored = window.localStorage.getItem(LANG_STORAGE_KEY);
+    return stored === "ar" || stored === "en" ? stored : "en";
+  } catch {
+    return "en";
+  }
+}
 function loadArDict(): Promise<Dict> {
   if (arDictCache) return Promise.resolve(arDictCache);
   if (!arLoadPromise) {
@@ -790,15 +800,28 @@ function loadArDict(): Promise<Dict> {
   }
   return arLoadPromise;
 }
+if (typeof window !== "undefined" && readStoredLanguage() === "ar") {
+  void loadArDict();
+}
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
-  const [lang, setLangState] = useState<Language>("en");
-  const [arDict, setArDict] = useState<Dict | null>(null);
+  const [lang, setLangState] = useState<Language>(readStoredLanguage);
+  const [arDict, setArDict] = useState<Dict | null>(arDictCache);
   const setLang = useCallback((next: Language) => {
     setLangState(next);
+    try {
+      window.localStorage.setItem(LANG_STORAGE_KEY, next);
+    } catch {
+      // ignore storage failures (private browsing, etc.)
+    }
     if (next === "ar") {
       void loadArDict().then(setArDict);
     }
   }, []);
+  useEffect(() => {
+    if (lang === "ar") {
+      void loadArDict().then(setArDict);
+    }
+  }, [lang]);
   const activeDict = lang === "ar" ? arDict ?? en : en;
   const t = useCallback(
     (key: string) => activeDict[key] ?? en[key as TranslationKey] ?? key,

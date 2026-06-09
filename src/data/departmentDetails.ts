@@ -1302,11 +1302,11 @@ export const departmentDetails: DepartmentDetail[] = [
         title: "Why Choose Our Family Clinic?",
         titleAr: "لماذا تختار عيادة طب الأسرة:",
         items: [
-          "One Point of Contact: Your dedicated physician manages your care, including specialist referrals and medication management",
-          "Whole-Family Care: From children to seniors, we provide preventive care, routine check-ups, and chronic disease management",
-          "Coordinated Care: Enjoy a seamless health journey with a coordinated plan, avoiding unnecessary treatments and ensuring timely follow-ups",
-          "Health Maintenance & Prevention: Focus on disease prevention and wellness through lifestyle counselling, screenings, and education",
-          "Guidance & Support: Your physician evaluates and guides you to the appropriate care, saving time and reducing stress",
+          "One Point of Contact: Your dedicated physician manages your care, including specialist referrals and medication management.",
+          "Whole-Family Care: From children to seniors, we provide preventive care, routine check-ups, and chronic disease management.",
+          "Coordinated Care: Enjoy a seamless health journey with a coordinated plan, avoiding unnecessary treatments and ensuring timely follow-ups.",
+          "Health Maintenance & Prevention: Focus on disease prevention and wellness through lifestyle counselling, screenings, and education.",
+          "Guidance & Support: Your physician evaluates and guides you to the appropriate care, saving time and reducing stress.",
         ],
         itemsAr: [
           "نقطة اتصال واحدة حيث يتولى طبيبك الخاص إدارة جميع جوانب رعايتك الصحية بما في ذلك الإحالات إلى التخصصات الأخرى وإدارة الأدوية",
@@ -2288,11 +2288,11 @@ export const departmentDetails: DepartmentDetail[] = [
         titleAr: "خدماتنا تشمل",
         items: [
           "Urogynecological Disorders Management: Specialized treatment for pelvic health and related conditions.",
-          "Pre and Postnatal Care: Physiotherapy support for safe delivery and enhanced postpartum recovery",
-          "Pregnancy-Related Discomfort Relief: Expert management of back pain and muscle weakness during pregnancy",
+          "Pre and Postnatal Care: Physiotherapy support for safe delivery and enhanced postpartum recovery.",
+          "Pregnancy-Related Discomfort Relief: Expert management of back pain and muscle weakness during pregnancy.",
           "Musculoskeletal Management: Care for osteoarthritis, spinal injuries, and joint pain",
-          "Pulmonary Physiotherapy: Breathing therapy and respiratory support",
-          "Post-Surgical Rehabilitation: Specialized recovery care following surgical procedures",
+          "Pulmonary Physiotherapy: Breathing therapy and respiratory support.",
+          "Post-Surgical Rehabilitation: Specialized recovery care following surgical procedures.",
         ],
         itemsAr: [
           "علاج اضطرابات أمراض النساء والمسالك البولية المرتبطة بصحة الحوض",

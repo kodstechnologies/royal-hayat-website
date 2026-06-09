@@ -153,7 +153,7 @@ export const departments: Department[] = [
     name: "Dental Clinic", nameAr: "طب الأسنان", slug: "dental-clinic",
     desc: "Exceptional dental care in a luxurious setting with specialized dentists using advanced technology for all ages.",
     descAr: "رعاية أسنان متكاملة ضمن بيئة راقية، مع أطباء متخصصين وأحدث التقنيات لجميع الفئات العمرية.",
-    img: "/images/Department/Dental.jpg",
+    img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a26b876f25fc9ca16d4cf74/1780922709717-Dental.jpeg",
     clinicCode: "R002DEN",
   },
   {
@@ -200,7 +200,7 @@ export const departments: Department[] = [
     name: "Royale Hayat Pharmacy", nameAr: "صيدلية رويال حياة", slug: "royale-hayat-pharmacy",
     desc: "Conveniently located on the ground floor, Royale Pharmacy is staffed by highly qualified pharmacists available 24/7 to provide expert guidance for all your medicinal needs. Our pharmacists collaborate closely with clinical and nursing teams to ensure the highest standard of pharmaceutical care.",
     descAr: "تقع صيدلية مستشفى رويال حياة في الطابق الأرضي، وتعمل على مدار الساعة بإشراف نخبة من الصيادلة المؤهلين لتقديم الاستشارات الدوائية والدعم المتخصص لجميع الاحتياجات العلاجية. كما يتعاون فريق الصيدلة بشكل وثيق مع الكوادر الطبية والتمريضية لضمان أعلى مستويات الرعاية الدوائية.",
-    img: "/images/Department/Pharmacy.jpg",
+    img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a26b876f25fc9ca16d4cf74/1780922706831-Pharmacy.jpeg",
   },
   {
     id: 19, icon: Shield, category: "Premium", mainCategory: "Clinical Support Service",
@@ -214,7 +214,7 @@ export const departments: Department[] = [
     name: "Royale Home Health", nameAr: "رويال هوم هيلث للرعاية المنزلية", slug: "home-health",
     desc: "Royale Home Health is an exclusive extension of Royale Hayat Hospital, offering exceptional health and wellness support delivered directly to your home.",
     descAr: "تُعد خدمات الرعاية الصحية المنزلية في مستشفى رويال حياة امتدادًا حصريًا لخدمات المستشفى، حيث توفر رعاية صحية وعلاجية متكاملة داخل المنزل، تجمع بين الجودة الطبية العالية ومستوى الضيافة والرعاية الراقية التي تتميز بها رويال حياة. ويشرف على هذه الخدمات فريق متعدد التخصصات من الكوادر الطبية المؤهلة لتقديم رعاية شخصية وإنسانية وفق أعلى المعايير العالمية.",
-    img: "/images/Department/home-health.jpg",
+    img: "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a26b876f25fc9ca16d4cf74/1780922709062-RHH_health.jpeg",
   },
   {
     id: 22, icon: Activity, category: "Physiotherapy", mainCategory: "Home Care Service",
@@ -239,7 +239,7 @@ export const deptDoctorAliases: Record<string, string[]> = {
   "Pain Management": ["Pain Management"],
   "Anesthesia": ["Anesthesia", "Anesthesia & Intensive Care"],
   "IVF & Reproductive Medicine": ["IVF", "Reproductive Medicine", "IVF & Reproductive Medicine"],
-  "Intensive Care": ["Intensive Care"],
+  "Intensive Care": ["Intensive Care", "Anesthesia"],
   "Center for Diagnostic Imaging": ["Radiology"],
   "Laboratory Services": ["Laboratory"],
   "Clinical Pharmacy": ["Clinical Pharmacy"],
@@ -254,6 +254,9 @@ export const ROYALE_HAYAT_PHARMACY_DOCTOR_IDS = [
 export const CLINICAL_PHARMACY_DOCTOR_IDS = [
   "dr-mustafa-alfiki",
 ] as const;
+export const PAIN_MANAGEMENT_DOCTOR_IDS = [
+  "dr-hamid-ghaderi",
+] as const;
 export function doctorMatchesDepartment(
   deptName: string,
   doc: { id?: string; department: string; specialty: string },
@@ -264,6 +267,9 @@ export function doctorMatchesDepartment(
   }
   if (deptName === "Clinical Pharmacy") {
     return doc.id != null && (CLINICAL_PHARMACY_DOCTOR_IDS as readonly string[]).includes(doc.id);
+  }
+  if (deptName === "Pain Management") {
+    return doc.id != null && (PAIN_MANAGEMENT_DOCTOR_IDS as readonly string[]).includes(doc.id);
   }
   const aliases = deptDoctorAliases[deptName];
   const matchTerms = [...(aliases && aliases.length > 0 ? aliases : [deptName]), ...extraTerms];

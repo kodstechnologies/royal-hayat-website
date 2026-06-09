@@ -13,6 +13,7 @@ import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import type { DoctorWithClinicCode as Doctor } from "@/data/doctorsWithClinicCodes";
 import { loadDoctorsWithClinicCodes } from "@/data/loadDoctorsWithClinicCodes";
+import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
 import { departmentsWithDoctors, getDepartmentsWithClinicCodes } from "@/data/departmentWithDoctors";
 import { createAppointmentRequest } from "@/api/appointmentRequest";
 import {
@@ -529,7 +530,14 @@ const BookAppointment = () => {
     });
   }, []);
   useEffect(() => {
-    if (booked) scrollBookingViewToTop();
+    if (!booked) return;
+    scrollBookingViewToTop();
+    const t1 = window.setTimeout(scrollBookingViewToTop, 0);
+    const t2 = window.setTimeout(scrollBookingViewToTop, 100);
+    return () => {
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+    };
   }, [booked, scrollBookingViewToTop]);
   useEffect(() => {
     scrollBookingViewToTop();
@@ -716,7 +724,7 @@ const BookAppointment = () => {
       setBookingPopupGoHome(true);
       setBookingPopupMessage(
         formatBookingConflictAlert(conflict, isAr, {
-          doctorName: isAr ? selectedDoctorObj?.nameAr : selectedDoctorObj?.name,
+          doctorName: selectedDoctorObj ? getDoctorDisplayName(selectedDoctorObj, isAr ? "ar" : "en") : undefined,
           date: formattedSelectedDate || selectedDate,
           time: formatTimeString(selectedSlot) || selectedSlot || "",
         }),
@@ -1044,7 +1052,10 @@ const BookAppointment = () => {
     const prefill = hisFailurePrefillRef.current;
     hisFailurePrefillRef.current = null;
     navigate(`/appointment-request${doctorQuery}`, {
-      state: prefill ? { appointmentRequestPrefill: prefill } : undefined,
+      state: {
+        ...(prefill ? { appointmentRequestPrefill: prefill } : {}),
+        fromBookAppointment: true,
+      },
     });
   }, [dismissHisFailureModal, navigate, resetPatientLookupFailure, selectedDoctor]);
   const finalizeRegisteredPatientAfterPaci = useCallback(
@@ -1793,7 +1804,7 @@ Clinic Code:`;
                               });
                             }}>
                             <div className="bg-white h-64 flex items-center justify-center relative overflow-hidden shrink-0 rounded-t-2xl">
-                              {doc.image ? <img src={doc.image} alt={isAr ? doc.nameAr : doc.name} className="w-full h-full object-cover object-top" /> : <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center"><span className="text-xl font-serif text-primary">{doc.initials}</span></div>}
+                              {doc.image ? <img src={doc.image} alt={getDoctorDisplayName(doc, isAr ? "ar" : "en")} className="w-full h-full object-cover object-top" /> : <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center"><span className="text-xl font-serif text-primary">{doc.initials}</span></div>}
                               <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center shadow-sm"><Stethoscope className="w-3.5 h-3.5 text-primary" /></div>
                               {selectedDoctor === doc.id && <div className="absolute top-3 left-3 w-6 h-6 rounded-full bg-primary flex items-center justify-center"><CheckCircle2 className="w-4 h-4 text-primary-foreground" /></div>}
                             </div>
@@ -1803,12 +1814,18 @@ Clinic Code:`;
                                   ? (doc.departmentAr || doc.specialtyAr)
                                   : (doc.department || doc.specialty)}
                               </p>
-                              <h4 className="font-serif font-bold text-[1.2rem] text-foreground mb-0.5 leading-snug">{isAr ? doc.nameAr : doc.name}</h4>
+                              <h4 className="font-serif font-bold text-[1.2rem] text-foreground mb-0.5 leading-snug">{getDoctorDisplayName(doc, isAr ? "ar" : "en")}</h4>
                               <p className="text-muted-foreground font-body text-[11px] mb-2 line-clamp-1">{isAr ? doc.specialtyAr : doc.specialty}</p>
-                              <div className={`flex items-center gap-1.5 mb-3 ${isDoctorRequestOnly(doc) ? "text-gray-500" : "text-green-600"}`}>
-                                <div className={`w-1.5 h-1.5 rounded-full ${isDoctorRequestOnly(doc) ? "bg-muted-foreground" : "bg-green-500"}`} />
-                                <span className="font-body text-[10px]">{isDoctorRequestOnly(doc) ? (isAr ? "غير متاح حالياً" : "Request Appointment") : (isAr ? "متاح للحجز" : "Book Online")}</span>
-                              </div>
+                              {doc.hideBooking !== true && (
+                                <div className={`flex items-center gap-1.5 mb-3 ${doc.availableOnline !== false ? "text-green-600" : "text-destructive"}`}>
+                                  <div className={`w-1.5 h-1.5 rounded-full ${doc.availableOnline !== false ? "bg-green-500" : "bg-destructive"}`} />
+                                  <span className="font-body text-[10px]">
+                                    {doc.availableOnline !== false
+                                      ? (isAr ? "متاح للحجز اونلاين" : "Book Online")
+                                      : (isAr ? "غير متاح للحجز اونلاين" : "Not Available for Online Booking")}
+                                  </span>
+                                </div>
+                              )}
                               <button onClick={(e) => { e.stopPropagation(); const resolvedDeptId = selectedDept ?? resolveDeptIdForDoctor(doc); navigate(`/doctors/${doc.id}`, { state: { fromBookAppointment: true, step, bookingPath: bookingPath ?? "primary", selectedDept: resolvedDeptId, selectedDoctor: doc.id, isRequestMode: isDoctorRequestOnly(doc), canBookSlot: !isDoctorRequestOnly(doc) } }); }} className="mt-auto inline-flex items-center gap-1 text-primary font-body text-xs hover:text-accent transition-colors">{isAr ? "عرض الملف الشخصي ←" : "View Profile →"}</button>
                             </div>
                           </motion.div>
@@ -1834,7 +1851,7 @@ Clinic Code:`;
               exit="exit"
               transition={{ duration: 0.35 }}
             >
-              <div className="max-w-3xl mx-auto">
+              <div className="max-w-3xl mx-auto min-w-0">
                 {!patientType && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
                     <motion.button whileHover={{ y: -4 }} whileTap={{ scale: 0.98 }} onClick={() => { setNationalId(""); setNationalIdError(""); setVerifiedPersonName(null); setVerifyOperationId(null); setIsWaitingForApproval(false); setPatientLookupShowGoBack(false); setPatientErrors({}); setPatientName(""); setPatientId(null); setVerifiedIdentityDetails(null); openReturningPatientModal(); }} className="bg-popover rounded-2xl p-8 border border-border text-center transition-all hover:border-primary/40">
@@ -1864,11 +1881,11 @@ Clinic Code:`;
                           <input type="tel" value={patientPhone} onChange={(e) => { setPatientPhone(e.target.value.replace(/\D/g, "").slice(0, 8)); setPatientErrors(prev => ({ ...prev, phone: "" })); }} inputMode="numeric" maxLength={8} pattern="\d{8}" placeholder={t("phonePlaceholder")} className={`min-w-0 flex-1 w-full px-3 sm:px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all ${patientErrors.phone ? "border-destructive" : "border-border"}`} />
                         </div>{patientErrors.phone && <p className="font-body text-xs text-destructive mt-1">{patientErrors.phone}</p>}
                       </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="min-w-0">
                           <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "تاريخ الميلاد" : "Date of Birth"} <span className="text-destructive">*</span></label>
-                          <input type="date" value={patientDob} max={new Date().toISOString().split("T")[0]} onChange={(e) => { setPatientDob(e.target.value); setPatientErrors(prev => ({ ...prev, dob: "" })); }} className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all ${patientErrors.dob ? "border-destructive" : "border-border"}`} />{patientErrors.dob && <p className="font-body text-xs text-destructive mt-1">{patientErrors.dob}</p>}</div>
-                        <div><label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{t("gender")} <span className="text-destructive">*</span></label><select value={patientGender} onChange={(e) => { setPatientGender(e.target.value); setPatientErrors(prev => ({ ...prev, gender: "" })); }} className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all ${patientErrors.gender ? "border-destructive" : "border-border"}`}><option value="">{t("selectGender")}</option><option value="male">{t("male")}</option><option value="female">{t("female")}</option></select>{patientErrors.gender && <p className="font-body text-xs text-destructive mt-1">{patientErrors.gender}</p>}</div>
+                          <div className="date-input-wrap"><input type="date" value={patientDob} max={new Date().toISOString().split("T")[0]} onChange={(e) => { setPatientDob(e.target.value); setPatientErrors(prev => ({ ...prev, dob: "" })); }} className={`form-date-input w-full min-w-0 max-w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all ${patientErrors.dob ? "border-destructive" : "border-border"}`} /></div>{patientErrors.dob && <p className="font-body text-xs text-destructive mt-1">{patientErrors.dob}</p>}</div>
+                        <div className="min-w-0"><label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{t("gender")} <span className="text-destructive">*</span></label><select value={patientGender} onChange={(e) => { setPatientGender(e.target.value); setPatientErrors(prev => ({ ...prev, gender: "" })); }} className={`w-full min-w-0 max-w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all ${patientErrors.gender ? "border-destructive" : "border-border"}`}><option value="">{t("selectGender")}</option><option value="male">{t("male")}</option><option value="female">{t("female")}</option></select>{patientErrors.gender && <p className="font-body text-xs text-destructive mt-1">{patientErrors.gender}</p>}</div>
                       </div>
                     </div>
                   </div>
@@ -1934,7 +1951,7 @@ Clinic Code:`;
                       </div>
                       <div className="flex gap-2 items-center">
                         <span className="text-muted-foreground">{isAr ? "الطبيب:" : "Doctor:"}</span>
-                        <span className="font-semibold text-foreground">{isAr ? selectedDoctorObj?.nameAr : selectedDoctorObj?.name}</span>
+                        <span className="font-semibold text-foreground">{selectedDoctorObj ? getDoctorDisplayName(selectedDoctorObj, isAr ? "ar" : "en") : ""}</span>
                       </div>
                     </div>
                   )}
@@ -2019,7 +2036,7 @@ Clinic Code:`;
                   <div className="space-y-5">
                     {[
                       { label: t("department"), value: (isAr ? selectedDeptObj?.nameAr : selectedDeptObj?.name) || selectedDoctorObj?.specialty || "", icon: Building2 },
-                      { label: t("doctor"), value: (isAr ? selectedDoctorObj?.nameAr : selectedDoctorObj?.name) || "", icon: User },
+                      { label: t("doctor"), value: (selectedDoctorObj ? getDoctorDisplayName(selectedDoctorObj, isAr ? "ar" : "en") : "") || "", icon: User },
                       ...(collectedSymptoms.length > 0
                         ? [{ label: t("symptoms"), value: formatSymptomsForDisplay(collectedSymptoms, isAr), icon: Activity }]
                         : []),

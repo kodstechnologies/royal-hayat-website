@@ -8,15 +8,17 @@ import {
   type DepartmentDetail as DepartmentDetailData,
   type DepartmentDetailSection,
 } from "@/data/loadDepartmentDetails";
-import { departments as staticDepartments, MAIN_CATEGORIES, ROYALE_HAYAT_PHARMACY_DOCTOR_IDS, CLINICAL_PHARMACY_DOCTOR_IDS, type MainCategory } from "@/data/departments";
+import { departments as staticDepartments, MAIN_CATEGORIES, ROYALE_HAYAT_PHARMACY_DOCTOR_IDS, CLINICAL_PHARMACY_DOCTOR_IDS, PAIN_MANAGEMENT_DOCTOR_IDS, type MainCategory } from "@/data/departments";
 import { loadDoctors, type Doctor } from "@/data/loadDoctors";
 import { motion } from "framer-motion";
 import { ChevronRight, ChevronLeft, ArrowLeft, ArrowRight, CheckCircle2, ChevronDown, Stethoscope, MessageCircle, Phone, Loader2 } from "lucide-react";
-import { useState, useRef, useEffect, memo } from "react";
+import { useState, useRef, useEffect, useMemo, memo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { resolveDepartmentBySlug } from "@/utils/resolveDepartmentSlug";
 import { normalizeSubSlug, resolveSubDepartment } from "@/utils/departmentSubSlug";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
+import { sortDoctorsInDepartment } from "@/utils/sortDoctorsInDepartment";
+import { scrollDoctorCarousel } from "@/utils/doctorCarousel";
 const pickDeptText = (lang: string, en: string, ar?: string) => (lang === "ar" && ar ? ar : en);
 
 const getDeptSubheading = (lang: string, mainCategory: MainCategory | undefined, medicalServicesLabel: string) => {
@@ -86,101 +88,149 @@ const renderDeptContent = (content: string) =>
   ));
 const isAlSafwaDepartment = (slug: string, name: string) =>
   slug.includes("al-safwa") || name.toLowerCase().includes("safwa");
-const DepartmentDoctors = memo(({ doctors, lang }: { doctors: Doctor[]; lang: string }) => {
+const CLINICAL_NUTRITION_SUB_SLUG = "clinical-nutrition-dietetics";
+const isClinicalNutritionSubSpecialty = (
+  deptName: string,
+  deptSlug: string,
+  subSlug?: string,
+  activeSubName?: string,
+) => {
+  if (activeSubName === "Clinical Nutrition & Dietetics") return true;
+  if (!subSlug) return false;
+  const normalized = normalizeSubSlug(deptSlug, subSlug);
+  return normalized === CLINICAL_NUTRITION_SUB_SLUG || normalized.includes("clinical-nutrition");
+};
+const shouldShowDepartmentDoctorsHeading = (
+  deptName: string,
+  deptSlug: string,
+  subSlug?: string,
+  activeSubName?: string,
+) => {
+  if (deptName === "Clinical Pharmacy") return false;
+  if (
+    (deptName === "General & Laparoscopic Surgery" || deptName === "Internal Medicine") &&
+    isClinicalNutritionSubSpecialty(deptName, deptSlug, subSlug, activeSubName)
+  ) {
+    return false;
+  }
+  return true;
+};
+const DETAIL_DOCTOR_CARD_WIDTH = 280;
+const DETAIL_DOCTOR_GAP = 16;
+const DETAIL_DOCTOR_VIEWPORT_WIDTH = DETAIL_DOCTOR_CARD_WIDTH * 4 + DETAIL_DOCTOR_GAP * 3;
+const DETAIL_DOCTOR_DESKTOP_SCROLL_STEP = 2;
+const DepartmentDoctors = memo(({
+  doctors,
+  lang,
+  showDepartmentDoctorsTitle = true,
+}: {
+  doctors: Doctor[];
+  lang: string;
+  showDepartmentDoctorsTitle?: boolean;
+}) => {
   const { t } = useLanguage();
   const scrollRef = useRef<HTMLDivElement>(null);
   const autoSlideRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const isPausedRef = useRef(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const visibleDoctors = useMemo(() => doctors.slice(0, 12), [doctors]);
   const scroll = (dir: "left" | "right") => {
     if (scrollRef.current) {
-      const isMobile = window.innerWidth < 768;
-      const amount = isMobile ? (280 + 80) : (280 + 24);
-      scrollRef.current.scrollBy({ left: dir === "left" ? -amount : amount, behavior: "smooth" });
+      const step = isMobile ? 1 : DETAIL_DOCTOR_DESKTOP_SCROLL_STEP;
+      scrollDoctorCarousel(scrollRef.current, dir, step);
       isPausedRef.current = true;
       setTimeout(() => { isPausedRef.current = false; }, 5000);
     }
   };
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
   useEffect(() => {
-    if (doctors.length <= 1) return;
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({ left: 0, behavior: "auto" });
+    }
+  }, [doctors]);
+  useEffect(() => {
+    if (visibleDoctors.length <= 1) return;
     autoSlideRef.current = setInterval(() => {
       if (isPausedRef.current || !scrollRef.current) return;
       const el = scrollRef.current;
-      const isMob = window.innerWidth < 768;
-      const cardWidth = isMob ? (280 + 80) : (280 + 24);
-      if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 4) {
+      const maxScroll = Math.max(0, el.scrollWidth - el.clientWidth);
+      const step = isMobile ? 1 : DETAIL_DOCTOR_DESKTOP_SCROLL_STEP;
+      if (el.scrollLeft >= maxScroll - 4) {
         el.scrollTo({ left: 0, behavior: "smooth" });
-      } else {
-        el.scrollBy({ left: cardWidth, behavior: "smooth" });
+        return;
       }
+      scrollDoctorCarousel(el, "right", step);
     }, 3000);
     return () => {
       if (autoSlideRef.current) clearInterval(autoSlideRef.current);
     };
-  }, [doctors.length]);
-  const showArrows = doctors.length > (isMobile ? 1 : 4);
+  }, [visibleDoctors.length, isMobile]);
+  const showArrows = visibleDoctors.length > (isMobile ? 1 : 4);
+  const centerDoctorRow = visibleDoctors.length <= 3;
+  const useDesktopSliderViewport = !isMobile && visibleDoctors.length > 4;
   return (
     <section className="py-12">
       <div className="container mx-auto px-6">
         <ScrollAnimationWrapper>
           <div className="text-center mb-8">
-            <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">
-              {lang === "ar" ? "فريقنا الطبي" : "Our Medical Team"}
-            </p>
-            <h2 className="text-2xl md:text-3xl font-serif text-foreground">
-              {lang === "ar" ? "أطباء القسم" : "Department Doctors"}
-            </h2>
+            {showDepartmentDoctorsTitle ? (
+              <>
+                <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">
+                  {lang === "ar" ? "فريقنا الطبي" : "Our Medical Team"}
+                </p>
+                <h2 className="text-2xl md:text-3xl font-serif text-foreground">
+                  {lang === "ar" ? "أطباء القسم" : "Department Doctors"}
+                </h2>
+              </>
+            ) : (
+              <h2 className="text-2xl md:text-3xl font-serif text-foreground">
+                {lang === "ar" ? "فريقنا الطبي" : "Our Medical Team"}
+              </h2>
+            )}
           </div>
         </ScrollAnimationWrapper>
         <div
-          className="relative max-w-[1188px] mx-auto group/carousel"
+          className="relative w-full max-w-[1280px] mx-auto group/carousel"
           dir="ltr"
           onMouseEnter={() => { isPausedRef.current = true; }}
           onMouseLeave={() => { isPausedRef.current = false; }}
         >
-          {showArrows && (
-            <>
-              <button onClick={() => scroll("left")}
-                className="absolute -left-2 md:-left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon">
+          <div className="flex items-center justify-center gap-3">
+            {showArrows && (
+              <button
+                type="button"
+                onClick={() => scroll("left")}
+                aria-label={lang === "ar" ? "التمرير لليسار" : "Scroll left"}
+                className="hidden md:flex shrink-0 w-10 h-10 rounded-full border border-border bg-background/90 backdrop-blur-sm items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon"
+              >
                 <ChevronLeft className="w-5 h-5" />
               </button>
-              <button onClick={() => scroll("right")}
-                className="absolute -right-2 md:-right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon">
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            </>
-          )}
-          <div
-            ref={scrollRef}
-            dir="ltr"
-            className={`flex gap-20 md:gap-6 overflow-x-auto pb-8 scroll-smooth snap-x snap-mandatory px-[20px] md:px-0 detail-doctor-carousel ${doctors.length <= 2 ? 'md:justify-center' : 'md:justify-start'}`}
-            style={{
-              scrollbarWidth: "none",
-              msOverflowStyle: "none",
-            }}
-          >
-            <style dangerouslySetInnerHTML={{
-              __html: `
-              .detail-doctor-carousel {
-                padding-left: calc((100vw - 280px) / 2);
-                padding-right: calc((100vw - 280px) / 2);
+            )}
+            <div
+              ref={scrollRef}
+              dir="ltr"
+              style={
+                useDesktopSliderViewport
+                  ? { width: DETAIL_DOCTOR_VIEWPORT_WIDTH }
+                  : undefined
               }
-              @media (min-width: 768px) {
-                .detail-doctor-carousel {
-                  padding-left: 0 !important;
-                  padding-right: 0 !important;
-                }
-              }
-            `}} />
-            {doctors.slice(0, 12).map((doc) => (
+              className={`detail-doctor-carousel flex gap-4 overflow-x-auto pb-8 scroll-smooth snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden ${
+                centerDoctorRow ? "justify-center" : "justify-start"
+              } max-md:scroll-px-[calc(50%-140px)] max-md:px-[calc(50%-140px)] ${
+                useDesktopSliderViewport
+                  ? "md:shrink-0"
+                  : "w-full md:max-w-[1168px]"
+              }`}
+            >
+            {visibleDoctors.map((doc) => (
               <Link
                 key={doc.id}
                 to={`/doctors/${doc.id}`}
+                data-doctor-carousel-card
                 className="w-[280px] md:w-[280px] bg-popover border border-border/50 rounded-2xl overflow-hidden hover:border-primary/30 hover:shadow-md transition-all group flex-shrink-0 snap-center md:snap-start"
               >
                 <div className="bg-white h-56 flex items-center justify-center relative">
@@ -209,7 +259,38 @@ const DepartmentDoctors = memo(({ doctors, lang }: { doctors: Doctor[]; lang: st
                 </div>
               </Link>
             ))}
+            </div>
+            {showArrows && (
+              <button
+                type="button"
+                onClick={() => scroll("right")}
+                aria-label={lang === "ar" ? "التمرير لليمين" : "Scroll right"}
+                className="hidden md:flex shrink-0 w-10 h-10 rounded-full border border-border bg-background/90 backdrop-blur-sm items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            )}
           </div>
+          {showArrows && (
+            <div className="mt-2 flex justify-center gap-3 md:hidden">
+              <button
+                type="button"
+                onClick={() => scroll("left")}
+                aria-label={lang === "ar" ? "التمرير لليسار" : "Scroll left"}
+                className="w-10 h-10 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => scroll("right")}
+                aria-label={lang === "ar" ? "التمرير لليمين" : "Scroll right"}
+                className="w-10 h-10 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+          )}
         </div>
         <div className="mt-6 max-w-5xl mx-auto">
           <Link
@@ -370,6 +451,7 @@ const DepartmentDetail = () => {
     "Family Medicine": ["Family Medicine"],
     "Dental Clinic": ["Dental"],
     "Anesthesia": ["Anesthesia"],
+    "Intensive Care": ["Anesthesia"],
     "Center for Diagnostic Imaging": ["Radiology"],
     "Laboratory Services": ["Laboratory"],
     "Royale Hayat Pharmacy": ["Pharmacy"],
@@ -382,6 +464,8 @@ const DepartmentDetail = () => {
     ? allDoctors.filter((doc) => (ROYALE_HAYAT_PHARMACY_DOCTOR_IDS as readonly string[]).includes(doc.id))
     : dept.name === "Clinical Pharmacy"
       ? allDoctors.filter((doc) => (CLINICAL_PHARMACY_DOCTOR_IDS as readonly string[]).includes(doc.id))
+      : dept.name === "Pain Management"
+        ? allDoctors.filter((doc) => (PAIN_MANAGEMENT_DOCTOR_IDS as readonly string[]).includes(doc.id))
       : matchingDepts.length > 0
       ? allDoctors.filter((doc) => matchingDepts.includes(doc.department))
       : allDoctors.filter((doc) =>
@@ -390,9 +474,7 @@ const DepartmentDetail = () => {
       );
   const deptDoctors = (() => {
     if (!resolvedSubSlug) {
-      return baseDeptDoctors.sort((a, b) =>
-        (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en")
-      );
+      return sortDoctorsInDepartment(baseDeptDoctors, dept.name, lang);
     }
     const subSpecialtyDoctorMap: Record<string, string[]> = {
       "cardiology": ["alturki", "turki"],
@@ -423,9 +505,7 @@ const DepartmentDetail = () => {
         keywords.some((kw) => doc.id.toLowerCase().includes(kw) || doc.name.toLowerCase().includes(kw))
       );
       if (filtered.length > 0) {
-        return [...filtered].sort((a, b) =>
-          (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en")
-        );
+        return sortDoctorsInDepartment(filtered, dept.name, lang);
       }
     }
     if (activeSub) {
@@ -438,14 +518,10 @@ const DepartmentDetail = () => {
         return subKeywords.some((kw) => haystack.includes(kw));
       });
       if (filtered.length > 0) {
-        return [...filtered].sort((a, b) =>
-          (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en")
-        );
+        return sortDoctorsInDepartment(filtered, dept.name, lang);
       }
     }
-    return baseDeptDoctors.sort((a, b) =>
-      (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en")
-    );
+    return sortDoctorsInDepartment(baseDeptDoctors, dept.name, lang);
   })();
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
@@ -774,7 +850,16 @@ const DepartmentDetail = () => {
       )}
       {}
       {deptDoctors.length > 0 && (
-        <DepartmentDoctors doctors={deptDoctors} lang={lang} />
+        <DepartmentDoctors
+          doctors={deptDoctors}
+          lang={lang}
+          showDepartmentDoctorsTitle={shouldShowDepartmentDoctorsHeading(
+            dept.name,
+            dept.slug,
+            resolvedSubSlug,
+            activeSub?.name,
+          )}
+        />
       )}
       {}
       {dept.slug === "home-health" && !activeSub && (

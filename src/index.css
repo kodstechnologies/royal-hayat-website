@@ -296,6 +296,41 @@
     transform: translateY(-4px);
     box-shadow: 0 20px 40px -15px rgba(127, 35, 70, 0.12);
   }
+
+  /* iOS Safari gives date inputs a large intrinsic width — clip inside the form */
+  .date-input-wrap {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .form-date-input {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .form-date-input::-webkit-date-and-time-value {
+    text-align: start;
+    min-width: 0;
+  }
+
+  .form-date-input::-webkit-calendar-picker-indicator {
+    flex-shrink: 0;
+  }
+}
+
+@supports (-webkit-touch-callout: none) {
+  .form-date-input {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
 }
 
 

@@ -14,6 +14,7 @@ import type { AppointmentRequestPrefillState } from "@/types/appointmentRequestP
 
 type AppointmentRequestLocationState = {
   appointmentRequestPrefill?: AppointmentRequestPrefillState;
+  fromBookAppointment?: boolean;
 };
 
 const AppointmentRequest = () => {
@@ -23,6 +24,21 @@ const AppointmentRequest = () => {
   const [searchParams] = useSearchParams();
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  useEffect(() => {
+    if (!submitted) return;
+    const scrollToTop = () => {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    };
+    scrollToTop();
+    const t1 = window.setTimeout(scrollToTop, 0);
+    const t2 = window.setTimeout(scrollToTop, 100);
+    return () => {
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+    };
+  }, [submitted]);
   const locState = (location.state as AppointmentRequestLocationState | null) ?? {};
   const prefill = locState.appointmentRequestPrefill ?? {};
   const identityReadOnly = Boolean(prefill.readOnlyIdentity);
@@ -114,6 +130,17 @@ const AppointmentRequest = () => {
     setForm(prev => ({ ...prev, [field]: value }));
     setErrors(prev => ({ ...prev, [field]: "" }));
   };
+  const handleGoBack = () => {
+    if (doctorId) {
+      navigate(`/doctors/${doctorId}`, { state: returnState });
+      return;
+    }
+    if (locState.appointmentRequestPrefill || locState.fromBookAppointment) {
+      navigate("/book-appointment", { state: returnState });
+      return;
+    }
+    navigate(-1);
+  };
   const formattedDob = form.dateOfBirth ? form.dateOfBirth.split("-").reverse().join("/") : "";
   const genderLabel =
     form.gender === "male"
@@ -183,9 +210,9 @@ const AppointmentRequest = () => {
           {lang === "ar" ? "املأ التفاصيل أدناه وسنتواصل معك قريباً" : "Fill in the details below and we'll get back to you shortly"}
         </p>
       </div>
-      <div className="container mx-auto px-6 py-8 max-w-2xl">
+      <div className="container mx-auto px-6 py-8 max-w-2xl min-w-0 overflow-x-hidden">
         <button
-          onClick={() => navigate("/book-appointment", { state: returnState })}
+          onClick={handleGoBack}
           className="inline-flex items-center gap-2 text-accent hover:text-accent/80 transition-colors font-body text-sm mb-6 px-0"
         >
           <ArrowLeft className={`w-4 h-4 ${lang === 'ar' ? 'rotate-180' : ''}`} />
@@ -214,7 +241,7 @@ const AppointmentRequest = () => {
           </motion.div>
         )}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-          className="bg-popover rounded-2xl p-6 md:p-8 border border-border shadow-sm">
+          className="bg-popover rounded-2xl p-6 md:p-8 border border-border shadow-sm min-w-0 overflow-hidden">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
               <ClipboardList className="w-5 h-5 text-accent" />
@@ -246,7 +273,7 @@ const AppointmentRequest = () => {
               </div>
             </div>
           )}
-          <div className="space-y-5">
+          <div className="space-y-5 min-w-0">
             {}
             <div>
               <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
@@ -280,28 +307,30 @@ const AppointmentRequest = () => {
               {errors.phone && <p className="font-body text-xs text-destructive mt-1">{errors.phone}</p>}
             </div>
             {}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="min-w-0">
                 <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
                   {lang === "ar" ? "تاريخ الميلاد" : "Date of Birth"} <span className="text-destructive">*</span>
                 </label>
-                <input
-                  type="date"
-                  value={form.dateOfBirth}
-                  onChange={(e) => updateField("dateOfBirth", e.target.value)}
-                  readOnly={identityReadOnly}
-                  max={new Date().toISOString().split("T")[0]}
-                  className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 ${errors.dateOfBirth ? "border-destructive" : "border-border"} ${identityReadOnly ? "opacity-80 cursor-default" : ""}`}
-                />
+                <div className="date-input-wrap">
+                  <input
+                    type="date"
+                    value={form.dateOfBirth}
+                    onChange={(e) => updateField("dateOfBirth", e.target.value)}
+                    readOnly={identityReadOnly}
+                    max={new Date().toISOString().split("T")[0]}
+                    className={`form-date-input w-full min-w-0 max-w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 ${errors.dateOfBirth ? "border-destructive" : "border-border"} ${identityReadOnly ? "opacity-80 cursor-default" : ""}`}
+                  />
+                </div>
                 {errors.dateOfBirth && <p className="font-body text-xs text-destructive mt-1">{errors.dateOfBirth}</p>}
               </div>
-              <div>
+              <div className="min-w-0">
                 <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
                   {t("gender")} <span className="text-destructive">*</span>
                 </label>
                 <select value={form.gender} onChange={(e) => updateField("gender", e.target.value)}
                   disabled={identityReadOnly}
-                  className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 ${errors.gender ? "border-destructive" : "border-border"} ${identityReadOnly ? "opacity-80 cursor-default" : ""}`}>
+                  className={`w-full min-w-0 max-w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 ${errors.gender ? "border-destructive" : "border-border"} ${identityReadOnly ? "opacity-80 cursor-default" : ""}`}>
                   <option value="">{t("selectGender")}</option>
                   <option value="male">{t("male")}</option>
                   <option value="female">{t("female")}</option>

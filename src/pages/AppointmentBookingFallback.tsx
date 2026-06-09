@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -37,6 +37,22 @@ const AppointmentBookingFallback = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    if (!submitted) return;
+    const scrollToTop = () => {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    };
+    scrollToTop();
+    const t1 = window.setTimeout(scrollToTop, 0);
+    const t2 = window.setTimeout(scrollToTop, 100);
+    return () => {
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+    };
+  }, [submitted]);
 
   const genderLabel = useMemo(() => {
     if (!fallbackState?.gender) return fallbackState?.genderDisplay || "—";
@@ -314,16 +330,18 @@ const AppointmentBookingFallback = () => {
                 <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
                   {isAr ? "تاريخ الميلاد" : "Date of Birth"} <span className="text-destructive">*</span>
                 </label>
-                <input
-                  type="date"
-                  value={dateOfBirth}
-                  max={new Date().toISOString().split("T")[0]}
-                  onChange={(e) => {
-                    setDateOfBirth(e.target.value);
-                    setErrors((prev) => ({ ...prev, dateOfBirth: "" }));
-                  }}
-                  className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 ${errors.dateOfBirth ? "border-destructive" : "border-border"}`}
-                />
+                <div className="date-input-wrap">
+                  <input
+                    type="date"
+                    value={dateOfBirth}
+                    max={new Date().toISOString().split("T")[0]}
+                    onChange={(e) => {
+                      setDateOfBirth(e.target.value);
+                      setErrors((prev) => ({ ...prev, dateOfBirth: "" }));
+                    }}
+                    className={`form-date-input w-full min-w-0 max-w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 ${errors.dateOfBirth ? "border-destructive" : "border-border"}`}
+                  />
+                </div>
                 {errors.dateOfBirth && (
                   <p className="font-body text-xs text-destructive mt-1">{errors.dateOfBirth}</p>
                 )}

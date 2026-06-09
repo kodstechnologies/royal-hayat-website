@@ -8,6 +8,7 @@ import { loadDoctors, type Doctor } from "@/data/loadDoctors";
 import { doctorMatchesDepartment, departments as staticDepartments } from "@/data/departments";
 import { getSubSlugForDepartment, normalizeSubSlug } from "@/utils/departmentSubSlug";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
+import { sortDoctorsInDepartment } from "@/utils/sortDoctorsInDepartment";
 interface ServiceItem {
   num: string;
   name: string;
@@ -438,9 +439,7 @@ const SpecializedCare = () => {
                     keywords.some((kw) => doc.id.toLowerCase().includes(kw) || doc.name.toLowerCase().includes(kw))
                   );
                   if (filtered.length > 0) {
-                    return [...filtered].sort((a, b) =>
-                      (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en")
-                    );
+                    return sortDoctorsInDepartment(filtered, s.department, lang);
                   }
                 }
                 const selectedSub = s.subspecialties.find(
@@ -453,15 +452,11 @@ const SpecializedCare = () => {
                     return subKeywords.some((kw) => haystack.includes(kw));
                   });
                   if (filtered.length > 0) {
-                    return [...filtered].sort((a, b) =>
-                      (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en")
-                    );
+                    return sortDoctorsInDepartment(filtered, s.department, lang);
                   }
                 }
               }
-              return [...allDeptDoctors]
-                .sort((a, b) => (lang === "ar" ? a.nameAr : a.name).localeCompare(lang === "ar" ? b.nameAr : b.name, lang === "ar" ? "ar" : "en"))
-                .slice(0, 3);
+              return sortDoctorsInDepartment(allDeptDoctors, s.department, lang).slice(0, 3);
             })();
             const showImageCard = isInFirstSix(origIdx);
             return (
@@ -617,12 +612,9 @@ const SpecializedCare = () => {
                         {}
                         {deptDoctors.length > 0 && (
                           <div className="mt-auto">
-                            <p className="text-accent text-xs tracking-[0.2em] uppercase font-body mb-3">
+                            <p className="text-accent text-xs tracking-[0.2em] uppercase font-body mb-4">
                               {lang === "ar" ? "فريقنا الطبي" : "Our Medical Team"}
                             </p>
-                            <h3 className="text-lg md:text-xl font-serif text-foreground mb-4">
-                              {lang === "ar" ? "أطباء القسم" : "Department Doctors"}
-                            </h3>
                             <div className="relative max-w-[576px] mx-auto">
                               {deptDoctors.length > (isMobile ? 1 : 2) && (
                                 <>

@@ -2,8 +2,12 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
+import LazyViewportVideo from "@/components/LazyViewportVideo";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { motion } from "framer-motion";
+
+const CSR_CELEBRATING_LIFE_VIDEO_URL =
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a27add7dc7a58140d561ca5/1780985629227-Celebrating_Life(CSR).mp4";
 const initiatives = [
   {
     titleKey: "csrInit1Title",
@@ -68,18 +72,12 @@ const CSR = () => {
             transition={{ duration: 0.6 }}
             className="max-w-4xl mx-auto rounded-3xl overflow-hidden bg-black"
           >
-            <video
-              src="https://res.cloudinary.com/dqznbmfja/video/upload/v1776248697/Land_Mark_Opening_Coverage_xrvvgf.mp4"
-              autoPlay
-              muted
-              loop
-              playsInline
-              disablePictureInPicture
-              className="w-full h-full aspect-video object-cover pointer-events-none"
-              onContextMenu={(e) => e.preventDefault()}
-            >
-              Your browser does not support the video tag.
-            </video>
+            <LazyViewportVideo
+              src={CSR_CELEBRATING_LIFE_VIDEO_URL}
+              className="w-full h-full object-cover pointer-events-none"
+              ariaLabel={isAr ? "فيديو الاحتفال بالحياة" : "Celebrating Life CSR video"}
+              loadingLabel={isAr ? "جاري تحميل الفيديو…" : "Loading video…"}
+            />
           </motion.div>
           <div className={`max-w-3xl mx-auto mt-8 space-y-4 ${isAr ? "rtl-text" : ""}`}>
             <p className="font-body text-base text-muted-foreground leading-relaxed text-justify">{t("csrAboutP2")}</p>

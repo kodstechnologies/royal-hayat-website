@@ -11,12 +11,18 @@ import { loadDoctors, type Doctor } from "@/data/loadDoctors";
 import { departments, deptDoctorAliases, MAIN_CATEGORIES, type MainCategory } from "@/data/departments";
 import { Input } from "@/components/ui/input";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
+import { sortDoctorsInDepartment } from "@/utils/sortDoctorsInDepartment";
+import { getDoctorCarouselScrollState, scrollDoctorCarousel, syncDoctorCarouselIndex } from "@/utils/doctorCarousel";
 
 const DoctorCard = memo(({ doc }: { doc: Doctor }) => {
   const { lang } = useLanguage();
   const displayName = getDoctorDisplayName(doc, lang);
   return (
-    <Link to={`/doctors/${doc.id}`} className="block w-[280px] min-h-[430px] flex-shrink-0 relative z-0 hover:z-10 snap-center md:snap-start">
+    <Link
+      to={`/doctors/${doc.id}`}
+      data-doctor-carousel-card
+      className="relative z-0 block w-[280px] min-h-[430px] flex-shrink-0 snap-center hover:z-10 md:snap-start"
+    >
       <motion.div
         whileHover={{ y: -6, boxShadow: "0 20px 40px -12px hsl(var(--primary) / 0.12)" }}
         className="bg-popover rounded-2xl border border-border/50 group cursor-pointer w-full h-full flex flex-col transition-all duration-300 "
@@ -44,8 +50,8 @@ const DoctorCard = memo(({ doc }: { doc: Doctor }) => {
               <div className={`w-1.5 h-1.5 rounded-full ${doc.availableOnline !== false ? "bg-green-500" : "bg-destructive"}`} />
               <span className="font-body text-[10px]">
                 {doc.availableOnline !== false
-                  ? (lang === "ar" ? "متاح للحجز الإلكتروني" : "Book Online")
-                  : (lang === "ar" ? "غير متاح للحجز الإلكتروني" : "Not Available for Online Booking")}
+                  ? (lang === "ar" ? "متاح للحجز اونلاين" : "Book Online")
+                  : (lang === "ar" ? "غير متاح للحجز اونلاين" : "Not Available for Online Booking")}
               </span>
             </div>
           )}
@@ -65,7 +71,6 @@ const departmentDescriptions: Record<string, { en: string; ar: string }> = {
   "Family Medicine": { en: "Continuous, personalized care for individuals and families of all ages. Our family physicians build lasting relationships with patients, managing everything from routine check-ups to chronic disease management.", ar: "رعاية مستمرة ومخصصة للأفراد والعائلات من جميع الأعمار. يبني أطباء الأسرة لدينا علاقات دائمة مع المرضى ويديرون كل شيء من الفحوصات الروتينية إلى إدارة الأمراض المزمنة." },
   "Anesthesia": { en: "Top-tier anesthesia services ensuring patient safety and comfort. Our anesthesiologists provide pre-operative assessments, pain-free surgical experiences, and post-operative pain management using modern monitoring equipment.", ar: "نقدّم خدمات تخدير متقدمة على أعلى مستوى لضمان سلامة المريض وراحته قبل وأثناء وبعد العمليات الجراحية. يقوم أطباء التخدير لدينا بإجراء تقييمات ما قبل العملية، وتوفير تجربة جراحية خالية من الألم، بالإضافة إلى إدارة فعّالة للألم بعد العمليات باستخدام أحدث تقنيات وأجهزة المراقبة الطبية." },
   "Neonatal": { en: "Dedicated care for newborns requiring specialized medical attention. Our neonatal unit provides advanced life support, developmental care, and family-centered services for premature and critically ill infants.", ar: "رعاية متخصصة ومتكاملة لحديثي الولادة الذين يحتاجون إلى عناية طبية دقيقة. يوفر قسم حديثي الولادة لدينا دعمًا متقدمًا لإنقاذ الحياة، ورعاية لنمو وتطور الطفل، إلى جانب خدمات تركز على الأسرة لضمان أفضل رعاية للرضع الخدّج والحالات الحرجة." },
-  "Clinical Pharmacy": { en: "Patient-focused pharmaceutical care ensuring safe and effective medication use. Our clinical pharmacists collaborate with medical teams to optimize drug therapy, prevent interactions, and provide medication counseling.", ar: "رعاية صيدلانية تركز على المريض وتضمن استخداماً آمناً وفعالاً للأدوية. يتعاون الصيادلة السريريون لدينا مع الفرق الطبية لتحسين العلاج الدوائي ومنع التفاعلات وتقديم الاستشارات الدوائية." },
   "General Surgery": { en: "Exceptional surgical care combining precision, safety, and rapid recovery. Our surgeons perform a wide range of minimally invasive and laparoscopic procedures, including bariatric surgery, hernia repair, and oncological operations.", ar: "رعاية جراحية متميزة تجمع بين الدقة العالية، ومعايير الأمان، وسرعة التعافي. يقدم جراحونا مجموعة واسعة من الإجراءات الجراحية طفيفة التوغل وجراحات المنظار، بما في ذلك جراحات السمنة، وإصلاح الفتق، وجراحات الأورام، وذلك باستخدام أحدث التقنيات الطبية لضمان أفضل النتائج للمرضى." },
   "La Cosmetique": { en: "Advanced cosmetic and reconstructive surgery in a luxurious clinical setting. Our board-certified surgeons combine artistry with precision for body contouring, facial rejuvenation, rhinoplasty, and non-surgical aesthetic treatments.", ar: "جراحة تجميلية وترميمية متقدمة في بيئة سريرية فاخرة. يجمع جراحونا المعتمدون بين الفن والدقة لنحت الجسم وتجديد الوجه وتجميل الأنف والعلاجات التجميلية غير الجراحية." },
   "Pediatric": { en: "World-class pediatric care with warmth and a child-centered approach. From routine wellness visits to specialized treatments, our pediatricians ensure every child receives compassionate, evidence-based medical attention.", ar: "رعاية أطفال على مستوى عالمي تجمع بين الدفء الإنساني والنهج المتمحورة حول الطفل. من الزيارات الدورية والفحوصات الوقائية إلى العلاجات التخصصية، يحرص أطباؤنا على تقديم رعاية طبية شاملة ومبنية على الأدلة، تضمن حصول كل طفل على اهتمام طبي متعاطف وعالي الجودة في بيئة آمنة وداعمة." },
@@ -85,38 +90,54 @@ const departmentArLabels: Record<string, string> = {
 const DepartmentRow = memo(({ department, departmentAr, docs }: { department: string; departmentAr: string; docs: Doctor[] }) => {
   const { lang } = useLanguage();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [isScrollable, setIsScrollable] = useState(false);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
 
   const updateScrollState = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
-    setIsScrollable(el.scrollWidth > el.clientWidth + 1);
+    syncDoctorCarouselIndex(el);
+    const { canScrollLeft: left, canScrollRight: right } = getDoctorCarouselScrollState(el);
+    setCanScrollLeft(left);
+    setCanScrollRight(right);
   }, []);
 
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
 
-    updateScrollState();
+    const scheduleUpdate = () => {
+      window.requestAnimationFrame(updateScrollState);
+    };
 
-    const observer = new ResizeObserver(updateScrollState);
+    scheduleUpdate();
+    const delayedChecks = [
+      window.setTimeout(scheduleUpdate, 150),
+      window.setTimeout(scheduleUpdate, 600),
+    ];
+
+    const observer = new ResizeObserver(scheduleUpdate);
     observer.observe(el);
-    el.addEventListener("scroll", updateScrollState);
-    window.addEventListener("resize", updateScrollState);
+    Array.from(el.children).forEach((child) => observer.observe(child));
+
+    el.addEventListener("scroll", updateScrollState, { passive: true });
+    el.addEventListener("load", scheduleUpdate, true);
+    window.addEventListener("resize", scheduleUpdate);
 
     return () => {
+      delayedChecks.forEach((timer) => window.clearTimeout(timer));
       observer.disconnect();
       el.removeEventListener("scroll", updateScrollState);
-      window.removeEventListener("resize", updateScrollState);
+      el.removeEventListener("load", scheduleUpdate, true);
+      window.removeEventListener("resize", scheduleUpdate);
     };
   }, [docs, updateScrollState]);
 
   const scroll = (dir: "left" | "right") => {
-    if (scrollRef.current) {
-      const isMobile = window.innerWidth < 768;
-      const amount = isMobile ? (280 + 80) : (280 + 24);
-      scrollRef.current.scrollBy({ left: dir === "left" ? -amount : amount, behavior: "smooth" });
-    }
+    const el = scrollRef.current;
+    if (!el) return;
+    scrollDoctorCarousel(el, dir);
+    window.setTimeout(updateScrollState, 400);
   };
   const deptDesc = departmentDescriptions[department];
   return (
@@ -133,46 +154,40 @@ const DepartmentRow = memo(({ department, departmentAr, docs }: { department: st
           </div>
         )}
       </div>
-      <div className="relative group/carousel">
-        {isScrollable && (
-          <>
-            <button
-              type="button"
-              aria-label={lang === "ar" ? "التمرير لليسار" : "Scroll left"}
-              onClick={() => scroll("left")}
-              className="absolute left-0 md:left-1 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <button
-              type="button"
-              aria-label={lang === "ar" ? "التمرير لليمين" : "Scroll right"}
-              onClick={() => scroll("right")}
-              className="absolute right-0 md:right-1 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </>
-        )}
-        {}
+      <div className="relative" dir="ltr">
+        <button
+          type="button"
+          aria-label={lang === "ar" ? "التمرير لليسار" : "Scroll left"}
+          onClick={() => scroll("left")}
+          disabled={!canScrollLeft}
+          className={`absolute left-0 sm:-left-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground transition-all shadow-md ltr-icon pointer-events-auto ${
+            !canScrollLeft
+              ? "opacity-0 pointer-events-none"
+              : "opacity-100 hover:bg-primary hover:text-primary-foreground hover:border-primary"
+          }`}
+        >
+          <ChevronLeft className="w-5 h-5" />
+        </button>
+        <button
+          type="button"
+          aria-label={lang === "ar" ? "التمرير لليمين" : "Scroll right"}
+          onClick={() => scroll("right")}
+          disabled={!canScrollRight}
+          className={`absolute right-0 sm:-right-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground transition-all shadow-md ltr-icon pointer-events-auto ${
+            !canScrollRight
+              ? "opacity-0 pointer-events-none"
+              : "opacity-100 hover:bg-primary hover:text-primary-foreground hover:border-primary"
+          }`}
+        >
+          <ChevronRight className="w-5 h-5" />
+        </button>
         <div className="max-w-[1192px] mx-auto overflow-hidden">
           <div
             ref={scrollRef}
-            className="flex items-stretch gap-20 md:gap-6 overflow-x-auto pb-8 scroll-smooth snap-x snap-mandatory px-[20px] md:px-0"
-            style={{
-              scrollbarWidth: "none",
-              msOverflowStyle: "none",
-              paddingLeft: "calc((100vw - 280px) / 2)",
-              paddingRight: "calc((100vw - 280px) / 2)",
-            }}
+            dir="ltr"
+            onScroll={updateScrollState}
+            className="doctors-carousel-track flex w-full items-stretch gap-4 overflow-x-auto pb-8 snap-x snap-mandatory max-md:scroll-px-[calc(50%-140px)] max-md:px-[calc(50%-140px)] md:gap-6 md:px-0 md:scroll-px-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden [-webkit-overflow-scrolling:touch]"
           >
-            {}
-            <style dangerouslySetInnerHTML={{
-              __html: `
-              @media (min-width: 768px) {
-                .snap-x { padding-left: 0 !important; padding-right: 0 !important; }
-              }
-            `}} />
             {docs.map((doc) => (
               <DoctorCard key={doc.id} doc={doc} />
             ))}
@@ -215,7 +230,10 @@ const Doctors = () => {
       });
     });
     const pharmacyIdx = departments.findIndex((d) => d.name === "Royale Hayat Pharmacy");
-    if (pharmacyIdx >= 0) m.set("Pharmacy", pharmacyIdx);
+    if (pharmacyIdx >= 0) {
+      m.set("Pharmacy", pharmacyIdx);
+      m.set("Clinical Pharmacy", pharmacyIdx + 0.5);
+    }
     return m;
   }, []);
   const DEPT_ORDER_FALLBACK = 100_000;
@@ -265,21 +283,9 @@ const Doctors = () => {
   }, [allDoctors, searchQuery]);
   const isSearching = searchQuery.trim().length > 0;
   const locale = lang === "ar" ? "ar" : "en";
-  const stripTitlePrefix = (name: string) =>
-    name.replace(/^(dr|prof|professor)\.?\s+/i, "").trim();
   const sortedGroupedEntries = useMemo(() => {
     const sortDocsWithinDept = (dept: string, docs: Doctor[]) =>
-      [...docs].sort((a, b) => {
-        const stripTitles =
-          dept === "Anesthesia" || dept === "Anesthesia & Intensive Care";
-        const aKey = stripTitles
-          ? stripTitlePrefix(lang === "ar" ? a.nameAr : a.name)
-          : lang === "ar" ? a.nameAr : a.name;
-        const bKey = stripTitles
-          ? stripTitlePrefix(lang === "ar" ? b.nameAr : b.name)
-          : lang === "ar" ? b.nameAr : b.name;
-        return aKey.localeCompare(bKey, locale);
-      });
+      sortDoctorsInDepartment(docs, dept, lang);
     const orderOf = (dept: string) => doctorDeptOrderIndex.get(dept) ?? DEPT_ORDER_FALLBACK;
     return Object.entries(grouped)
       .filter(([, docs]) => Array.isArray(docs) && docs.length > 0)

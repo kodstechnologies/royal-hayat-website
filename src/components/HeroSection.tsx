@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Volume2, VolumeX } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -69,18 +70,37 @@ const HeroSection = () => {
     const description = t("heroDesc");
     const hospitalName = isAr ? "مستشفى رويال حياة" : "Royale Hayat Hospital";
 
-    if (!description.includes(hospitalName)) {
-      return description;
-    }
+    const renderText = (text: string) => {
+      if (!text.includes(hospitalName)) {
+        return text;
+      }
 
-    const [before, after] = description.split(hospitalName);
-    return (
-      <>
-        {before}
-        <strong className="font-semibold">{hospitalName}</strong>
-        {after}
-      </>
-    );
+      const [before, after] = text.split(hospitalName);
+      return (
+        <>
+          {before}
+          <strong className="font-semibold">{hospitalName}</strong>
+          {after}
+        </>
+      );
+    };
+
+    return description.split("\n\n").map((paragraph, index) => (
+      <span key={index}>
+        {index > 0 && (
+          <>
+            <br />
+            <br />
+          </>
+        )}
+        {paragraph.split("\n").map((line, lineIndex) => (
+          <span key={lineIndex}>
+            {lineIndex > 0 && <br />}
+            {renderText(line)}
+          </span>
+        ))}
+      </span>
+    ));
   };
 
   return (
@@ -175,7 +195,7 @@ const HeroSection = () => {
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.3 }}
-                className={`font-body leading-relaxed mb-3 max-lg:mb-4 md:mb-5 max-w-xl whitespace-pre-line ${
+                className={`font-body leading-relaxed mb-3 max-lg:mb-4 md:mb-5 max-w-xl ${
                   isAr
                     ? "text-start text-sm sm:text-base md:text-lg text-muted-foreground"
                     : "text-left text-sm md:text-base text-muted-foreground"
@@ -203,12 +223,12 @@ const HeroSection = () => {
                 transition={{ duration: 0.4, delay: 0.45 }}
                 className={`flex flex-wrap gap-4 pointer-events-auto ${isAr ? "justify-start" : ""}`}
               >
-                <a
-                  href="/medical-services"
+                <Link
+                  to="/medical-services"
                   className="inline-flex items-center gap-3 border border-secondary text-foreground px-8 py-4 rounded-lg font-body text-sm tracking-widest uppercase hover:bg-secondary/30 transition-all duration-300 hover:scale-[1.03] active:scale-[0.97]"
                 >
                   {t("exploreServices")}
-                </a>
+                </Link>
               </motion.div>
             </div>
           </motion.div>

@@ -1,4 +1,4 @@
-const LINK_CLASS = "text-accent underline hover:text-accent/80 font-medium";
+const LINK_CLASS = "text-primary underline hover:text-primary/80 font-medium";
 const COMPLETE_LINK_RE = /\[([^\]]+)\]\((\/[^)\s]*)\)/g;
 const INCOMPLETE_LINK_RE = /\[([^\]]+)\]\((\/[^)\s]*)$/;
 const INCOMPLETE_LABEL_RE = /\[[^\]]*$/;

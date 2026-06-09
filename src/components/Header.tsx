@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import logoFull from "@/assets/rhh-logo-full-color.png";
+import { doctorSearchIndex } from "@/data/doctorsSearchIndex";
 type SearchIndexItem = {
   label: string;
   labelAr: string;
@@ -21,7 +22,17 @@ const Header = () => {
   const [showLogo] = useState(true);
   const [headerVisible, setHeaderVisible] = useState(true);
   const [showMedRecordsModal, setShowMedRecordsModal] = useState(false);
-  const [doctorSearchItems, setDoctorSearchItems] = useState<SearchIndexItem[]>([]);
+  const doctorSearchItems = useMemo<SearchIndexItem[]>(
+    () =>
+      doctorSearchIndex.map((doc) => ({
+        label: doc.name,
+        labelAr: doc.nameAr,
+        type: `Doctor · ${doc.specialty}`,
+        typeAr: `طبيب · ${doc.specialtyAr}`,
+        href: `/doctors/${doc.id}`,
+      })),
+    [],
+  );
   const { lang, setLang, t } = useLanguage();
   const phoneDisplay = "+965 2536 0000";
   const phoneTextClass = "inline-block [direction:ltr] [unicode-bidi:isolate]";
@@ -78,24 +89,6 @@ const Header = () => {
       window.removeEventListener("resize", updateHeaderHeight);
     };
   }, [headerVisible, lang, menuOpen, searchOpen]);
-  useEffect(() => {
-    let cancelled = false;
-    void import("@/data/doctors").then(({ doctors }) => {
-      if (cancelled) return;
-      setDoctorSearchItems(
-        doctors.map((doc) => ({
-          label: doc.name,
-          labelAr: doc.nameAr,
-          type: `Doctor · ${doc.specialty}`,
-          typeAr: `طبيب · ${doc.specialtyAr}`,
-          href: `/doctors/${doc.id}`,
-        })),
-      );
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
   const aboutSubLinks = [
     { label: t("ourStory"), href: "/about-us?section=history", icon: BookOpen, desc: lang === "ar" ? "قصة مستشفى رويال حياة" : "The story of Royale Hayat Hospital" },
     { label: lang === "ar" ? "الرسالة والقيم" : "Mission & Values", href: "/about-us?section=mission", icon: Heart, desc: lang === "ar" ? "رسالتنا وقيمنا الأساسية" : "Our mission and core values" },
@@ -303,7 +296,6 @@ const Header = () => {
         className="bg-popover border-b border-border fixed top-0 left-0 right-0 z-50"
       >
         <div className="lg:overflow-visible">
-        {}
         <AnimatePresence>
           {searchOpen && (
             <motion.div
@@ -364,7 +356,6 @@ const Header = () => {
             </motion.div>
           )}
         </AnimatePresence>
-        {}
         <div
           ref={logoRowRef}
           className={`hidden md:block border-b border-border/50 transition-all duration-300 ease-in-out overflow-hidden ${
@@ -375,7 +366,6 @@ const Header = () => {
         >
           <div className="container mx-auto flex items-center justify-between py-2.5 md:py-3 px-4 md:px-6 gap-3">
             <div className="flex-1 flex items-center justify-start">
-              {}
               <div className="flex items-center bg-muted/40 rounded-full border border-border p-0.5 md:scale-95 lg:scale-100 origin-left">
                 <button
                   onClick={() => setLang("en")}
@@ -416,13 +406,10 @@ const Header = () => {
             </div>
           </div>
         </div>
-        {}
         <div ref={navRowRef} className="container mx-auto flex items-center justify-between py-1.5 px-3 md:py-2 md:px-6 gap-2 md:gap-4">
-          {}
           <Link to="/" className="md:hidden flex-shrink-0">
             <img src={logoFull} alt="Royale Hayat Hospital" className="h-7 w-auto" />
           </Link>
-          {}
           <nav className="hidden lg:flex items-center flex-1 justify-between">
             {navItems.map((item) => {
               const NavIcon = item.icon;
@@ -450,7 +437,6 @@ const Header = () => {
                     </span>
                   </a>
                 )}
-                {}
                 <AnimatePresence>
                   {item.hasDropdown && activeDropdown === item.hasDropdown && (
                     <motion.div
@@ -547,7 +533,6 @@ const Header = () => {
             );
             })}
           </nav>
-          {}
           <div className="flex items-center gap-1.5 md:gap-4 ml-auto">
             <button
               onClick={() => setSearchOpen(!searchOpen)}
@@ -571,7 +556,6 @@ const Header = () => {
             >
               {t("login")}
             </button>
-            {}
             <div className="flex md:hidden items-center bg-muted/40 rounded-full border border-border p-0.5">
               <button
                 onClick={() => setLang("en")}
@@ -605,7 +589,6 @@ const Header = () => {
             </button>
           </div>
         </div>
-        {}
         <AnimatePresence>
           {menuOpen && (
             <motion.div
@@ -716,7 +699,6 @@ const Header = () => {
           )}
         </AnimatePresence>
         </div>
-        {}
         <div className="lg:hidden border-t border-border bg-popover shadow-sm">
           <div className="flex w-full divide-x divide-border rtl:divide-x-reverse">
             <Link
@@ -737,7 +719,6 @@ const Header = () => {
           </div>
         </div>
       </header>
-      {}
       {showMedRecordsModal && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-foreground/40 backdrop-blur-sm" onClick={() => setShowMedRecordsModal(false)}>
           <motion.div

@@ -9,7 +9,7 @@ export type PatientTestimonial = {
 export const patientTestimonials: PatientTestimonial[] = [
   {
     name: "Entesar",
-    nameAr: "Entesar",
+    nameAr: "انتصار",
     stars: 5,
     text: "I truly appreciated how the doctors took the time to explain each step of the process, which made me feel safe, confident, and in good hands",
     textAr:
@@ -17,29 +17,29 @@ export const patientTestimonials: PatientTestimonial[] = [
   },
   {
     name: "Hamad",
-    nameAr: "Hamad",
+    nameAr: "حمد",
     stars: 5,
     text: 'The patient\'s mother expressed, "The doctors and the care were absolutely wonderful. May God reward you for your attention, which we have not seen in other hospitals"',
     textAr:
-      "أعربت والدة المريض عن امتنانها قائلة: «كان الأطباء والرعاية المقدمة على مستوى رائع للغاية. جزاكم الله خيرًا على اهتمامكم ومتابعتكم المميزة التي لم نلمسها في مستشفيات أخرى",
+      "أعربت والدة المريض عن امتنانها قائلة: «كان الأطباء والرعاية المقدمة على مستوى رائع للغاية. جزاكم الله خيرًا على اهتمامكم ومتابعتكم المميزة التي لم نلمسها في مستشفيات أخرى»",
   },
   {
-    name: "Moudhi",
-    nameAr: "Moudhi",
+    name: "Fatima",
+    nameAr: "فاطمة",
     stars: 5,
     text: "The doctors are great",
     textAr: "الأطباء يتمتعون بكفاءة عالية ومهنية استثنائية",
   },
   {
     name: "Moudhi",
-    nameAr: "Moudhi",
+    nameAr: "موضي",
     stars: 5,
     text: "The doctors were excellent",
     textAr: "كان الأطباء على درجة عالية من التميز والاحترافية",
   },
   {
     name: "Haya",
-    nameAr: "Haya",
+    nameAr: "هيا",
     stars: 5,
     text: "The doctors explained everything clearly, and I could tell they genuinely cared about my well-being",
     textAr:
@@ -47,14 +47,14 @@ export const patientTestimonials: PatientTestimonial[] = [
   },
   {
     name: "Moudhi",
-    nameAr: "Moudhi",
+    nameAr: "موضي",
     stars: 5,
     text: "The doctors were excellent",
     textAr: "تميز الأطباء بخبرتهم وكفاءتهم العالية، مما عزز ثقتي بجودة الرعاية المقدمة",
   },
   {
     name: "Haya",
-    nameAr: "Haya",
+    nameAr: "هيا",
     stars: 5,
     text: "The doctors explained everything clearly, and I could tell they genuinely cared about my well-being",
     textAr:

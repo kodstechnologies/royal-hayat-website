@@ -8,10 +8,18 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { loadDoctorById, type Doctor } from "@/data/loadDoctors";
 import { departments, deptDoctorAliases } from "@/data/departments";
 import { getDoctorById, mapApiDoctorRowToDoctor } from "@/api/doctors";
+import {
+  createDoctorFeedbackByName,
+  extractDoctorFeedbackRecord,
+  getDoctorFeedbacksByDoctorName,
+  type DoctorFeedbackRecord,
+} from "@/api/feedback";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
 import { patientTestimonials } from "@/data/patientTestimonials";
 import AddFeedbackModal from "@/components/AddFeedbackModal";
 import { useState, useEffect, type ReactNode } from "react";
+import axios from "axios";
+import { toast } from "sonner";
 
 const ltrIsolateClass = "inline-block [direction:ltr] [unicode-bidi:isolate]";
 
@@ -140,14 +148,47 @@ function renderExpertiseLine(text: string, lang: "en" | "ar"): ReactNode {
   );
 }
 
-const patientFeedback = patientTestimonials.map((item) => ({
-  name: item.name,
-  nameAr: item.nameAr,
-  rating: item.stars,
-  comment: item.text,
-  commentAr: item.textAr,
-  date: "",
-}));
+type ProfileFeedback = {
+  name: string;
+  nameAr: string;
+  rating: number;
+  comment: string;
+  commentAr: string;
+  date: string;
+};
+
+const formatFeedbackDate = (createdAt?: string) => {
+  if (!createdAt) return "";
+  const parsed = new Date(createdAt);
+  if (Number.isNaN(parsed.getTime())) return "";
+  return parsed.toLocaleDateString("en-US", {
+    month: "long",
+    year: "numeric",
+  });
+};
+
+const mapDoctorFeedbackToProfile = (
+  record: DoctorFeedbackRecord,
+): ProfileFeedback => ({
+  name: record.userName || record.arabicUserName || "",
+  nameAr: record.arabicUserName || record.userName || "",
+  rating: record.stars,
+  comment: record.feedback || record.arabicFeedback || "",
+  commentAr: record.arabicFeedback || record.feedback || "",
+  date: formatFeedbackDate(record.createdAt),
+});
+
+const staticProfileFeedback: ProfileFeedback[] = patientTestimonials.map(
+  (item) => ({
+    name: item.name,
+    nameAr: item.nameAr,
+    rating: item.stars,
+    comment: item.text,
+    commentAr: item.textAr,
+    date: "",
+  }),
+);
+
 const DoctorProfile = () => {
   const { id } = useParams<{ id: string }>();
   const { lang, t } = useLanguage();
@@ -156,7 +197,10 @@ const DoctorProfile = () => {
   const bookingReturnState = (location.state as any) ?? {};
   const fromBooking = Boolean(bookingReturnState?.fromBookAppointment || bookingReturnState?.step != null);
   const [isTestimonialOpen, setIsTestimonialOpen] = useState(false);
-  const [testimonials, setTestimonials] = useState(patientFeedback);
+  const [testimonials, setTestimonials] = useState<ProfileFeedback[]>(
+    staticProfileFeedback,
+  );
+  const [feedbackLoading, setFeedbackLoading] = useState(false);
   const handleGoBack = () => {
     if (fromBooking) {
       navigate("/book-appointment", { state: bookingReturnState });
@@ -215,6 +259,40 @@ const DoctorProfile = () => {
     enabled: !!id && localResolved && !localDoctor,
   });
   const doctor = localDoctor || apiDoctor;
+
+  useEffect(() => {
+    if (!doctor?.name) return;
+
+    let cancelled = false;
+    setTestimonials(staticProfileFeedback);
+    setFeedbackLoading(true);
+
+    getDoctorFeedbacksByDoctorName(doctor.name)
+      .then((feedbacks) => {
+        if (cancelled) return;
+
+        const apiFeedbacks = feedbacks
+          .filter((fb) => fb.shownOnWebsite !== false)
+          .map(mapDoctorFeedbackToProfile)
+          .filter((item) => item.comment || item.commentAr);
+
+        setTestimonials([...apiFeedbacks, ...staticProfileFeedback]);
+      })
+      .catch((error) => {
+        console.error("Failed to load doctor feedbacks:", error);
+        if (!cancelled) {
+          setTestimonials(staticProfileFeedback);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setFeedbackLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [doctor?.name]);
+
   if (!localResolved || apiLoading) {
     return (
       <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
@@ -268,17 +346,15 @@ const DoctorProfile = () => {
     });
   };
   return (
-    <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
+    <div id="doctor-profile-page" className="min-h-screen bg-background pt-[var(--header-height,56px)]">
       <Header />
       <section className="py-12 md:py-20">
         <div className="container mx-auto px-4 md:px-6">
-          {}
           <button onClick={handleGoBack} className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary font-body text-sm mb-8 transition-colors">
             <ArrowLeft className="w-4 h-4" />
             {lang === "ar" ? "العودة" : "Go Back"}
           </button>
           <div className="grid md:grid-cols-3 gap-10">
-            {}
             <div className="md:col-span-1">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                 className="bg-popover rounded-2xl overflow-hidden border border-border/50 sticky top-24">
@@ -299,8 +375,7 @@ const DoctorProfile = () => {
                     {lang === "ar" ? doctor.specialtyAr : doctor.specialty}
                   </p>
                   <h1 className="text-2xl font-serif font-bold text-foreground mb-1">{getDoctorDisplayName(doctor, lang)}</h1>
-                  <p className="text-muted-foreground font-body text-sm mb-5 whitespace-pre-line">{lang === "ar" ? doctor.titleAr : doctor.title}</p>
-                  {}
+                  <p className="text-muted-foreground font-body text-sm mb-5 whitespace-pre-line text-start">{lang === "ar" ? doctor.titleAr : doctor.title}</p>
                   {doctor.hideBooking !== true && !hideRequestAppointmentButton && (
                     <div
                       className={`flex items-center gap-1.5 mb-4 justify-center ${doctor.availableOnline !== false ? "text-green-600" : "text-destructive"}`}
@@ -355,9 +430,7 @@ const DoctorProfile = () => {
                 </div>
               </motion.div>
             </div>
-            {}
             <div className="md:col-span-2 space-y-10">
-              {}
               {doctor.qualifications && doctor.qualifications.length > 0 && (
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
                   className="bg-popover rounded-2xl border border-border/50 p-5 md:p-6 shadow-sm">
@@ -384,7 +457,7 @@ const DoctorProfile = () => {
                         <li
                           key={i}
                           lang={lang === "ar" ? "ar" : "en"}
-                          className={`font-body text-base leading-relaxed text-justify ${isHeader
+                          className={`font-body text-base leading-relaxed text-start ${isHeader
                           ? "list-none -ps-7 font-serif text-lg font-bold text-primary mt-6 mb-2"
                           : "text-muted-foreground"
                           }`}>
@@ -397,7 +470,6 @@ const DoctorProfile = () => {
                   </ul>
                 </motion.div>
               )}
-              {}
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
                 className="bg-popover rounded-2xl border border-border/50 p-5 md:p-6 shadow-sm">
                 <h2 className="text-xl md:text-2xl font-serif text-primary font-bold mb-5">
@@ -428,7 +500,7 @@ const DoctorProfile = () => {
                       <li
                         key={i}
                         lang={lang === "ar" ? "ar" : "en"}
-                        className={`font-body text-base leading-relaxed text-justify ${isHeader
+                        className={`font-body text-base leading-relaxed text-start ${isHeader
                         ? `-ps-7 list-none font-serif text-lg font-bold text-primary mt-6 mb-2${isColonHeader ? "" : " uppercase tracking-wide"}`
                         : isSubBullet
                           ? "list-none ps-12 text-muted-foreground"
@@ -457,7 +529,6 @@ const DoctorProfile = () => {
           </div>
         </div>
       </section>
-      {}
       <section className="py-12 bg-background overflow-hidden">
         <div className="container mx-auto px-6 mb-6">
           <h2 className="text-xl font-serif text-foreground flex items-center gap-2">
@@ -476,6 +547,18 @@ const DoctorProfile = () => {
           </motion.button>
         </div>
         <div className="relative overflow-hidden">
+          {feedbackLoading ? (
+            <div className="absolute right-6 top-0 z-10">
+              <Loader2 className="w-5 h-5 text-primary animate-spin" />
+            </div>
+          ) : null}
+          {testimonials.length === 0 ? (
+            <p className="px-6 text-center font-body text-sm text-muted-foreground">
+              {lang === "ar"
+                ? "لا توجد آراء للمرضى بعد. كن أول من يشارك تجربته."
+                : "No patient feedback yet. Be the first to share your experience."}
+            </p>
+          ) : (
           <div className={`flex gap-5 w-max hover:[animation-play-state:paused] ${lang === "ar" ? "animate-[feedbackMarqueeRtl_30s_linear_infinite]" : "animate-[feedbackMarquee_30s_linear_infinite]"}`}>
             {[...testimonials, ...testimonials].map((fb, i) => (
               <div
@@ -506,6 +589,7 @@ const DoctorProfile = () => {
               </div>
             ))}
           </div>
+          )}
         </div>
       </section>
       <AddFeedbackModal
@@ -515,23 +599,60 @@ const DoctorProfile = () => {
         subtitleAr="شارك تجربتك مع الطبيب"
         feedbackPlaceholderEn="Write your feedback about the doctor"
         feedbackPlaceholderAr="اكتب رأيك عن الطبيب"
-        onSubmit={({ name, feedback, stars }) => {
-          setTestimonials((prev) => [
-            {
-              name,
-              nameAr: name,
-              rating: stars,
-              comment: feedback,
-              commentAr: feedback,
-              date: new Date().toLocaleDateString("en-US", {
-                month: "long",
-                year: "numeric",
-              }),
-            },
-            ...prev,
-          ]);
+        onSubmit={async ({ name, feedback, stars }) => {
+          if (!doctor?.name) return;
+
+          try {
+            const response = await createDoctorFeedbackByName(
+              {
+                doctorName: doctor.name,
+                userName: name,
+                arabicUserName: name,
+                feedback,
+                arabicFeedback: feedback,
+                stars,
+              },
+              { addedBy: "patient" },
+            );
+
+            const record = extractDoctorFeedbackRecord(response);
+            if (record && record.shownOnWebsite !== false) {
+              setTestimonials((prev) => [
+                mapDoctorFeedbackToProfile(record),
+                ...prev,
+              ]);
+            }
+          } catch (error) {
+            const backendMessage =
+              axios.isAxiosError(error)
+                ? error.response?.data?.message ||
+                  error.response?.data?.error ||
+                  error.message
+                : null;
+            toast.error(
+              backendMessage ||
+                (lang === "ar"
+                  ? "تعذر إرسال التقييم. يرجى المحاولة مرة أخرى."
+                  : "Failed to submit feedback. Please try again."),
+            );
+            throw error;
+          }
         }}
       />
+      <style>{`
+        @media (max-width: 767px) {
+          #doctor-profile-page .whitespace-pre-line,
+          #doctor-profile-page li {
+            text-align: start !important;
+            text-align-last: start !important;
+            text-justify: auto !important;
+            word-spacing: normal !important;
+            letter-spacing: normal !important;
+            -webkit-hyphens: manual !important;
+            hyphens: manual !important;
+          }
+        }
+      `}</style>
       <Footer />
     </div>
   );

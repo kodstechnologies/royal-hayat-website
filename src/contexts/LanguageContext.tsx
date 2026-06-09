@@ -8,7 +8,6 @@ interface Translations {
 }
 
 const translations: Translations = {
-  // Nav
   home: { en: "Home", ar: "الرئيسية" },
   about: { en: "About", ar: "عن المستشفى" },
   aboutUsNav: { en: "About Us", ar: "من نحن" },
@@ -22,9 +21,6 @@ const translations: Translations = {
   bookAppointment: { en: "Book Appointment", ar: "طلب موعد" },
   login: { en: "My Medical Reports", ar: "تقاريري الطبية" },
   searchPlaceholder: { en: "Search symptoms, doctors, departments, services...", ar: "ابحث عن الأعراض، الأطباء، الأقسام، الخدمات..." },
-
-  
-  // Story Block
   getToKnowUs: { en: "Get To Know Us", ar: "تعرّف علينا" },
   ourStory: { en: "Our Story", ar: "قصتنا" },
   storyTitle: {
@@ -39,8 +35,6 @@ const translations: Translations = {
     en: "Every patient receives personalized, exceptional care in an environment where luxury meets medicine and care goes beyond healing.",
     ar: "لكل مريض رعاية شخصية استثنائية، في بيئة تلتقي فيها الفخامة بالطب، وتتجاوز فيها العناية حدود الشفاء.",
   },
-
-  // Our History
   historyTitle: { en: "The Journey of Royale Hayat Hospital", ar: "رحلة مستشفى رويال حياة" },
   historyP1: {
     en: "Healthcare in Kuwait has long been known for its medical excellence. Yet, for many families, the experience of care often felt rushed, impersonal, and emotionally distant. Healing addressed the body, but comfort, privacy, and hospitality were not always part of the journey.",
@@ -74,8 +68,6 @@ const translations: Translations = {
     en: "<strong>We are Royale Hayat Hospital, recognized as the “Best Hospital in Kuwait” for the past 16 consecutive years.</strong><br /><br />And our story has only just begun.",
     ar: "<strong>نحن مستشفى رويال حياة \"أفضل مستشفى في الكويت\" ل16 عاماً على التوالي</strong><br /><br />وقصتنا… ما زالت في بدايتها.",
   },
-
-  // Mission & Values
   missionValues: { en: "Mission & Values", ar: "الرسالة والقيم" },
   ourMission: { en: "Our Mission", ar: "رسالتنا" },
   ourValues: { en: "Our Values", ar: "قيمنا" },
@@ -109,8 +101,6 @@ const translations: Translations = {
     en: "We always do what is professional, ethical, and right.",
     ar: "نلتزم دائمًا بأعلى المعايير المهنية والأخلاقية في جميع تعاملاتنا.",
   },
-
-  // CSR (About Us section)
   csrEyebrow: { en: "Our Commitment", ar: "التزامنا" },
   csrCelebratingLife: { en: "Celebrating Life", ar: "\"لنحتفل معاً بالحياة\"" },
   csrAboutP1: {
@@ -181,16 +171,12 @@ const translations: Translations = {
     en: "This prestigious event reflects our unwavering commitment to delivering world-class, evidence-based care for women in Kuwait and the region.",
     ar: "ويعكس هذا الحدث المرموق التزامنا الراسخ بتقديم رعاية صحية عالمية المستوى قائمة على الأدلة العلمية، للمرأة في الكويت والمنطقة.",
   },
-
-  // Leadership
   leadership: { en: "Leadership Team", ar: "فريق القيادة" },
   leadershipSubtitle: { en: "Leading the Journey to Excellence", ar: "قيادة مسيرة التميّز" },
   leadershipDesc: {
     en: "Learn more about our visionary leadership team responsible for fulfilling the vision of our Group, managing Royale Hayat Hospital activities as the leading luxurious healthcare provider in Kuwait, and steering the organization towards a bright future.",
     ar: "تعرّفوا على فريقنا القيادي صاحب الرؤية، والمسؤول عن تحقيق تطلعات مجموعة رويال حياة، وإدارة عمليات المستشفى باعتباره أحد أبرز مقدمي الرعاية الصحية الفاخرة في الكويت، وقيادة المؤسسة نحو مستقبل أكثر إشراقًا وتميزًا",
   },
-
-  // Home Health
   careAtHome: { en: "Care at Home", ar: "خدمات الرعاية المنزلية" },
   homeHealthDesc: { en: "Premium medical care in the comfort of your home", ar: "رعاية طبية متميزة في راحة منزلك" },
   homeHealthFullDesc: { en: "Royale Home Health brings the excellence of hospital care to your doorstep. Our certified medical professionals provide comprehensive healthcare services including nursing, post-operative care, physiotherapy, and elder care — all within the comfort and privacy of your home.", ar: "يقدم رويال للرعاية المنزلية تميز الرعاية الصحية إلى عتبة بابك. يقدم المتخصصون الطبيون المعتمدون لدينا خدمات رعاية صحية شاملة تشمل التمريض والرعاية بعد العمليات والعلاج الطبيعي ورعاية كبار السن." },
@@ -206,8 +192,6 @@ const translations: Translations = {
   teleconsultationDesc: { en: "Virtual consultations with our specialists from anywhere.", ar: "استشارات افتراضية مع متخصصينا من أي مكان." },
   elderCare: { en: "Elder Care", ar: "رعاية كبار السن" },
   elderCareDesc: { en: "Specialized care programs for elderly patients at home.", ar: "برامج رعاية متخصصة لكبار السن في المنزل." },
-
-  // Hospitality
   premiumExperience: { en: "Premium Experience", ar: "تجربة استثنائية بمعايير راقية" },
   hospitalityServicesTitle: { en: "Hospitality Services", ar: "خدمات الضيافة" },
   hospitalityDesc: { en: "Experience exclusive healthcare like never before. Our hospitality services ensure every patient and family member feels welcomed, comfortable, and cared for throughout their stay.", ar: "اختبر الرعاية الصحية الفاخرة كما لم تختبرها من قبل. تضمن خدمات الضيافة لدينا أن يشعر كل مريض وأفراد عائلته بالترحيب والراحة والرعاية طوال إقامتهم." },
@@ -239,16 +223,12 @@ const translations: Translations = {
   spaWellnessDesc: { en: "Relaxation and wellness services to support recovery and well-being.", ar: "خدمات استرخاء وعافية لدعم التعافي والرفاهية." },
   premiumAmenities: { en: "Premium Amenities", ar: "وسائل الراحة المتميزة" },
   premiumAmenitiesDesc: { en: "High-end toiletries, entertainment systems, and comfort essentials.", ar: "مستلزمات فاخرة وأنظمة ترفيه ومستلزمات الراحة." },
-
-  // Al Safwa Program
   premiumLoyalty: { en: "Premium Loyalty", ar: "الولاء المتميز" },
   alSafwaProgram: { en: "Al Safwa Healthcare Program", ar: "برنامج الصفوة للرعاية الصحية" },
   alSafwaDesc: { en: "Take control of your health effortlessly with our personalized program. Enroll by completing a quick registration form, providing a snapshot of your medical history and lifestyle. Our team will craft a customized care plan just for you.", ar: "تحكم في صحتك بسهولة مع برنامجنا المخصص. سجّل عن طريق ملء نموذج تسجيل سريع. سيقوم فريقنا بإعداد خطة رعاية مخصصة لك." },
   priorityBooking: { en: "Priority Booking", ar: "أولوية الحجز" },
   dedicatedCoordinator: { en: "Dedicated Coordinator", ar: "منسق مخصص" },
   exclusiveDiscounts: { en: "Exclusive Discounts", ar: "خصومات حصرية" },
-
-  // Patients & Visitors
   forOurPatients: { en: "For Our Patients", ar: "لمرضانا" },
   patientsVisitorsDesc: { en: "", ar: "كل ما تحتاج معرفته لتجربة مريحة ومطلعة في مستشفى رويال حياة." },
   nursing: { en: "Nursing", ar: "التمريض" },
@@ -283,11 +263,7 @@ const translations: Translations = {
   faqsDesc: { en: "Answers to commonly asked questions about services, billing, and appointments.", ar: "إجابات على الأسئلة الشائعة حول الخدمات والفوترة والمواعيد." },
   supportDesk: { en: "Support Desk", ar: "مكتب الدعم" },
   supportDeskDesc: { en: "24/7 patient support for inquiries, complaints, and assistance.", ar: "دعم المرضى على مدار الساعة للاستفسارات والشكاوى والمساعدة." },
-
-  // Awards
   awards: { en: "Awards", ar: "الجوائز" },
-
-  // Hero
   luxuriousHospital: { en: "Welcome to Royale Hayat Hospital", ar: "مرحباً بكم في مستشفى رويال حياة" },
   exceptionalCare: { en: "Celebrating Life.", ar: "لنحتفل معاً بالحياة." },
   everyStage: { en: "Every Stage,", ar: "في كل مرحلة." },
@@ -304,7 +280,6 @@ const translations: Translations = {
   bookAnAppointment: { en: "Book an Appointment", ar: "احجز موعداً" },
   exploreServices: { en: "Explore Services", ar: "للمزيد من الخدمات" },
   discover: { en: "Discover", ar: "اكتشف" },
-  // Symptom checker
   aiPowered: { en: "AI-Powered Symptom Checker", ar: "فحص الأعراض بالذكاء الاصطناعي" },
   tellUsSymptoms: { en: "Tell Us Your Symptoms", ar: "أخبرنا بأعراضك" },
   symptomDesc: { en: "Our AI analyzes your symptoms and matches you with the right specialist -- instantly and confidentially.", ar: "يحلل الذكاء الاصطناعي أعراضك ويوصلك بالمختص المناسب فوراً وبسرية تامة." },
@@ -316,12 +291,10 @@ const translations: Translations = {
   recommendedDepts: { en: "Recommended Departments", ar: "الأقسام الموصى بها" },
   continueToBook: { en: "Continue to Book Appointment", ar: "المتابعة لحجز موعد" },
   encrypted: { en: "Encrypted & confidential", ar: "مشفر وسري" },
-  // Specialized care
   whatWeOffer: { en: "What We Offer", ar: "ما نقدمه" },
   specializedCare: { en: "Specialized Care", ar: "رعاية متخصصة" },
   specializedDesc: { en: "Tailored, premium medical services designed around your individual needs, delivered with compassion and clinical excellence.", ar: "خدمات طبية فاخرة مصممة حسب احتياجاتك الفردية، تُقدم بالرحمة والتميز السريري." },
   learnMore: { en: "Read More", ar: "المزيد" },
-  // Departments
   ourSpecialties: { en: "Our Specialties", ar: "تخصصاتنا" },
   medicalDepartments: { en: "Medical Departments", ar: "الأقسام الطبية" },
   deptCount: {
@@ -332,7 +305,6 @@ const translations: Translations = {
   subSpecialties: { en: "Sub-Specialties", ar: "التخصصات الدقيقة" },
   viewAllDepts: { en: "VIEW ALL DEPARTMENTS", ar: "عرض جميع الأقسام" },
   showLess: { en: "SHOW LESS", ar: "عرض أقل" },
-  // Booking flow
   aiAssistedBooking: { en: "AI-Assisted Booking", ar: "حجز بمساعدة الذكاء الاصطناعي" },
   bookYourAppointment: { en: "Request for Appointment", ar: "طلب موعد" },
   symptoms: { en: "Symptoms", ar: "الأعراض" },
@@ -399,7 +371,6 @@ const translations: Translations = {
   continue: { en: "Continue", ar: "متابعة" },
   previous: { en: "Previous", ar: "السابق" },
   backToHome: { en: "Back to Home", ar: "العودة إلى الصفحة الرئيسية" },
-  // Confirmation
   requestSubmitted: { en: "Request Submitted", ar: "تم إرسال الطلب" },
   appointmentConfirmed: { en: "Appointment Confirmed", ar: "تم استلام طلب الموعد!" },
   requestConfirmMsg: { en: "Thank you for your request, we will contact you soon", ar: "شكراً لطلبك، سنتواصل معك قريباً." },
@@ -414,9 +385,7 @@ const translations: Translations = {
   step2: { en: "List of current medications", ar: "قائمة بالأدوية الحالية" },
   step3: { en: "Previous medical reports or lab results", ar: "التقارير الطبية أو نتائج الفحوصات السابقة" },
   step4: { en: "Arrive 15 minutes before your scheduled time", ar: "يرجى الحضور قبل موعدكم بـ 15 دقيقة" },
-  // step5: { en: "Wear comfortable clothing for examination", ar: "ارتداء ملابس مريحة للفحص" },
   aiHealthInsights: { en: "AI Health Insights", ar: "رؤى صحية ذكية" },
-  // Chairman
   chairmanMessage: { en: "Chairman's Message", ar: "كلمة رئيس مجلس الإدارة" },
   chairmanGreeting: { en: "Dear Valued Patient / Visitor,", ar: "أعزّاءنا المرضى والزوار الكرام،" },
   chairmanP1: {
@@ -445,13 +414,10 @@ const translations: Translations = {
     ar: "مستشفى رويال حياة… وجهتكم نحو صحة أفضل والاحتفال بالحياة",
   },
   chairmanBestWishes: { en: "With best wishes,", ar: "" },
-  // International
   internationalPatients: { en: "International Patients", ar: "المرضى الدوليون" },
-  // Footer / misc
   contact: { en: "Contact", ar: "اتصل بنا" },
   luxuryServices: { en: "Services", ar: "الخدمات" },
   services: { en: "Services", ar: "الخدمات" },
-  // Specialized care items
   womensHealth: { en: "Women's Health & Obstetrics", ar: "صحة المرأة والتوليد" },
   womensHealthDesc: { en: "Comprehensive maternity and women's healthcare with personalized birth plans and dedicated specialists.", ar: "رعاية شاملة للأمومة وصحة المرأة مع خطط ولادة شخصية ومتخصصين." },
   childrens: { en: "Children's Care & Neonatology", ar: "رعاية الأطفال وحديثي الولادة" },
@@ -464,8 +430,6 @@ const translations: Translations = {
   cosmeticDesc: { en: "Board-certified surgeons offering aesthetic and reconstructive procedures in a luxurious setting.", ar: "جراحون معتمدون يقدمون إجراءات تجميلية وترميمية في بيئة فاخرة." },
   ivf: { en: "IVF & Reproductive Medicine", ar: "أطفال الأنابيب والطب التناسلي" },
   ivfDesc: { en: "World-class fertility treatments with cutting-edge technology and personalized care plans.", ar: "علاجات خصوبة عالمية المستوى بتقنيات متطورة وخطط رعاية شخصية." },
-
-  // Why Royale Hayat
   whyRoyaleHayat: { en: "Why Royale Hayat", ar: "لماذا رويال حياة" },
   whereLuxuryMeets: { en: "Where Luxury Meets", ar: "حيث يلتقي الفخامة" },
   worldClass: { en: "World-Class", ar: "العالمية" },
@@ -480,13 +444,9 @@ const translations: Translations = {
   compassionateApproach: { en: "Compassionate Approach", ar: "نهج رحيم" },
   compassionateApproachDesc: { en: "From birth to every stage — comprehensive, compassionate care.", ar: "من الولادة إلى كل مرحلة — رعاية شاملة ورحيمة." },
   patientSatisfaction: { en: "Patient Satisfaction", ar: "رضا المرضى" },
-
-  // Stats
   yearsOfExcellence: { en: " Years of Excellence ", ar: "سنوات من التميز" },
   specialistDoctors: { en: "Healthcare Professionals", ar: "متخصصون في الرعاية الصحية" },
   departmentsLabel: { en: "Departments", ar: "الأقسام" },
-
-  // Chairman
   aMessageFrom: { en: "A Message From", ar: "رسالة من" },
   theChairman: { en: "The Chairman", ar: "رئيس مجلس الإدارة" },
   chairmanQuote: {
@@ -497,8 +457,6 @@ const translations: Translations = {
   chairmanTitle: { en: "Chairman, Royale Hayat Executive Board", ar: "رئيس مجلس الإدارة" },
   chairmanFullMessage: { en: "We have thoughtfully shaped an environment where every detail is considered, and every interaction is carefully curated. We believe that at its core, the very idea of a hospital is rooted in hospitality the act of caring for people with warmth, dignity, and respect. This philosophy defines The Royale Hayat Experience, where advanced healthcare is delivered with attentiveness, discretion, and a deeply personalized touch.\n\nAt the heart of our philosophy lies a commitment to patient care that goes beyond expectation. Every experience is thoughtfully designed to reflect ·a level of attention and refinement that ensures each individual feels valued, respected, and exceptionally cared for at every stage of their journey.\n\nOur distinction is built upon the strength of our team our physicians, nurses, and clinical professionals whose expertise, dedication, and quiet commitment to excellence define who we are.Being recognized as the Best Hospital in Kuwait for 16 years reflects their contribution and the enduring trust of our patients and community.\n\nAs we look ahead, our focus remains clear to continue advancing healthcare through innovation and adeeply personalized approach, while preserving the warmth, attentiveness, and human connection that define us. On behalf of our entire team, we look forward to welcoming you not just as a patient, but as part of our extended family and ensuring your journey is defined by comfort, confidence, and exceptional care.", ar: "وراء هذا الجو الفندقي الفاخر تكمن تقنيات متقدمة وبنية تحتية عالمية وفريق من الأطباء والممرضين والمهنيين السريريين المتميزين المكرسين لتقديم رعاية استثنائية. كل تفصيل مصمم ليس فقط لإراحة الحواس بل لدعم أعلى معايير التميز الطبي وسلامة المرضى.\n\nللعائلات التي تبدأ رحلتها أو تنميها، نحن نفهم مدى ثمينة كل لحظة. من الحمل والرعاية قبل الولادة إلى الولادة ودعم ما بعد الولادة، تسير فرقنا المتمرسة بجانبك بالرحمة والمهارة والاهتمام الثابت.\n\nتم الاعتراف بمستشفى رويال حياة كأفضل مستشفى في الكويت على مدار الـ 15 عامًا الماضية، حيث يمزج الضيافة مع التميز السريري بطريقة فريدة حقاً. هذا ما نفخر بتسميته \"تجربة رويال حياة\" — حيث يلتقي الدفء بالخبرة وتتعايش الفخامة بسلاسة مع الرعاية الصحية المتقدمة.\n\nنيابة عن فريقنا بأكمله، نتطلع إلى الترحيب بكم — ليس فقط كمريض، بل كجزء من عائلتنا الممتدة — وضمان أن إقامتكم تتميز بالراحة والثقة والرعاية الاستثنائية." },
   chairmanClosingEn: { en: "Royale Hayat Hospital ...your destination for better health and to celebrate life!", ar: "مستشفى رويال حياة ...وجهتك لصحة أفضل والاحتفاء بالحياة!" },
-
-  // Doctors
   ourTeam: { en: "Our Medical Team", ar: "فريقنا الطبي" },
   meetOurDoctors: { en: "Meet Our Doctors", ar: "تعرف على أطبائنا" },
   meetOurDoctorsSubtitle: {
@@ -507,16 +465,10 @@ const translations: Translations = {
   },
   viewAllDoctors: { en: "View All Doctors", ar: "عرض جميع الأطباء" },
   viewProfile: { en: "View Profile", ar: "عرض الملف الشخصي" },
-
-  // Testimonials
   testimonials: { en: "Testimonials", ar: "شهادات المرضى" },
   patientFeedback: { en: "Patient Feedback", ar: "آراء المرضى" },
-
-  // Awards
   recognition: { en: "Recognition", ar: "التقدير" },
   certificatesAwards: { en: "Certificates &", ar: "الشهادات و" },
-  
-  // Insurance
   trustedBy: { en: "Trusted By", ar: "موثوق من قبل" },
   insurancePartners: { en: "Insurance Partners", ar: "شركاء التأمين" },
   verified: { en: "Verified", ar: "معتمد" },
@@ -599,8 +551,6 @@ const translations: Translations = {
   },
   contactUs: { en: "Contact us", ar: "اتصل بنا" },
   toVerifyCoverage: { en: "to verify your coverage.", ar: "للتحقق من تغطيتك." },
-
-  // International Patients
   welcomeWorldwide: { en: "Welcome Worldwide", ar: "مرحباً بالعالم" },
   internationalPatientsTitle: { en: "International Patients", ar: "المرضى الدوليون" },
   internationalPatientsDesc: { en: "Royale Hayat Hospital welcomes patients from around the world. Our dedicated international office ensures a seamless experience from arrival to recovery.", ar: "يرحب مستشفى رويال حياة بالمرضى من جميع أنحاء العالم. مكتبنا الدولي المخصص يضمن تجربة سلسة من الوصول حتى التعافي." },
@@ -612,8 +562,6 @@ const translations: Translations = {
   insuranceLiaisonDesc: { en: "International insurance coordination and billing support", ar: "تنسيق التأمين الدولي ودعم الفواتير" },
   patientLoginBtn: { en: "Patient Login", ar: "تسجيل دخول المريض" },
   registerBtn: { en: "Register", ar: "تسجيل" },
-
-  // Footer
   quickLinks: { en: "Quick Links", ar: "روابط سريعة" },
   aboutUs: { en: "About Us", ar: "من نحن" },
   ourServices: { en: "Our Services", ar: "خدماتنا" },
@@ -627,8 +575,6 @@ const translations: Translations = {
   androidApp: { en: "Android App", ar: "تطبيق أندرويد" },
   iosApp: { en: "iOS App", ar: "تطبيق iOS" },
   privacyPolicy: { en: "Privacy Policy", ar: "سياسة الخصوصية" },
-
-  // Chat
   chatAssistantName: { en: "Hayat Chat", ar: "حياة شات" },
   aiHealthConcierge: { en: "Your Smart Health Guide", ar: "دليلك الصحي الذكي" },
   chatPlaceholder: { en: "Ask about appointments, symptoms...", ar: "اسأل عن المواعيد، الأعراض..." },
@@ -668,8 +614,6 @@ const translations: Translations = {
   chatDepartments: { en: "Departments", ar: "الأقسام" },
   chatEmergency: { en: "Emergency", ar: "الطوارئ" },
   chatInsurance: { en: "Insurance", ar: "التأمين" },
-
-  // Registered patient check
   areYouRegistered: { en: "Are you a registered patient at Royale Hayat Hospital?", ar: "هل أنت مريض مسجل في مستشفى رويال حياة؟" },
   yes: { en: "Yes", ar: "نعم" },
   no: { en: "No", ar: "لا" },
@@ -694,15 +638,9 @@ const translations: Translations = {
   insurance_lightbox: { en: "Royale Hayat Hospital Insurance Lightbox Poster Report", ar: "تقرير ملصق التأمين الإعلاني" },
 
   internationalPatientLink: { en: "International Patient", ar: "المرضى الدوليون" },
-
-  // Work With Us
   workWithUs: { en: "Work With Us", ar: "إنضم الينا" },
-
-  // Al Safwa
   eliteHealthcare: { en: "Elite Healthcare", ar: "رعاية صحية متميزة" },
   alSafwaSpotlightDesc: { en: "Take control of your health effortlessly with our personalized elite medical care program, designed to fit seamlessly into your busy lifestyle.", ar: "تحكم بصحتك بسهولة مع برنامجنا الشخصي للرعاية الطبية المتميزة، المصمم ليتناسب بسلاسة مع أسلوب حياتك المزدحم." },
-
-  // Footer extra links
   faq: { en: "FAQ", ar: "الأسئلة الشائعة" },
   disclaimer: { en: "Disclaimer", ar: "إخلاء المسؤولية" },
   exchangeLogin: { en: "Exchange Login", ar: "تسجيل دخول البريد" },
@@ -746,8 +684,6 @@ const translations: Translations = {
   },
   medicalRepVisitBooking: { en: "Medical Rep. Visit Booking", ar: "حجز زيارة مندوب طبي" },
   medicalRecordsRequestForm: { en: "Medical Records Request Form", ar: "نموذج طلب السجلات الطبية" },
-
-  // FAQ page
   faqTitle: { en: "Frequently Asked Questions", ar: "الأسئلة الشائعة" },
   faqGeneral: { en: "General", ar: "عام" },
   faqQ1: { en: "How can I get an appointment with a doctor?", ar: "كيف يمكنني الحصول على موعد مع طبيب؟" },

@@ -105,7 +105,6 @@ const InsurancePartners = ({ variant = "default" }: InsurancePartnersProps) => {
         </ScrollAnimationWrapper>
       </div>
       <div className="insurance-marquee-ltr" dir="ltr">
-      {}
       <div className="relative w-full overflow-hidden mb-4">
         <div className="flex animate-marquee hover:[animation-play-state:paused]">
           {marqueePartners.map((p, i) => (
@@ -132,7 +131,6 @@ const InsurancePartners = ({ variant = "default" }: InsurancePartnersProps) => {
           ))}
         </div>
       </div>
-      {}
       <div className="relative w-full overflow-hidden mb-8">
         <div className="flex animate-marquee-reverse hover:[animation-play-state:paused]">
           {marqueePartners.map((p, i) => (

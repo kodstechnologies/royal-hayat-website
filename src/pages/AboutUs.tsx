@@ -199,7 +199,6 @@ const LeaderCard = ({ leader, lang }: { leader: typeof leaders[0] & { image?: st
             )}
           </div>
         </div>
-        {}
         <div className="flex-1 p-6 md:p-8">
           <h3 className={`font-serif text-xl font-bold text-foreground mb-1 ${lang === "ar" ? "rtl-text" : ""}`}>{name}</h3>
           {(() => {
@@ -278,7 +277,6 @@ const AboutUs = () => {
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107]">
       <Header />
-      {}
       {section !== "chairman" && (
         <section className="pt-12 pb-6 md:pt-16 md:pb-8 bg-primary/5">
           <div className="container mx-auto px-6 text-center">
@@ -331,7 +329,6 @@ const AboutUs = () => {
           </div>
         </section>
       )}
-      {}
       {show("history") && (
         <section className="pb-16 pt-2 bg-background" id="history">
           <div className="container mx-auto px-6">
@@ -375,7 +372,6 @@ const AboutUs = () => {
           </div>
         </section>
       )}
-      {}
       {show("mission") && (
         <section className="pb-16 pt-2 bg-secondary/10" id="mission">
           <div className="container mx-auto px-6">
@@ -440,7 +436,6 @@ const AboutUs = () => {
           </div>
         </section>
       )}
-      {}
       {show("chairman") && (
         <>
           <section className="pt-12 pb-0 bg-background">
@@ -461,7 +456,6 @@ const AboutUs = () => {
           <ChairmanMessage />
         </>
       )}
-      {}
       {show("leadership") && <section className="pb-16 pt-16 bg-muted/20" id="leadership">
         <div className="container mx-auto px-6">
           <ScrollAnimationWrapper>
@@ -489,7 +483,6 @@ const AboutUs = () => {
           </div>
         </div>
       </section>}
-      {}
       {show("csr") && (
         <Link to="/csr" className="block">
           <section className="pb-16 pt-2 bg-background cursor-pointer hover:bg-primary/5 transition">

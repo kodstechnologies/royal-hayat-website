@@ -113,7 +113,6 @@ const MedicalRepVisitBooking = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      {}
       <section className="pt-40 pb-16 bg-primary">
         <div className="container mx-auto px-6 text-center">
           <ScrollAnimationWrapper>
@@ -122,7 +121,6 @@ const MedicalRepVisitBooking = () => {
           </ScrollAnimationWrapper>
         </div>
       </section>
-      {}
       <section className="py-20">
         <div className="container mx-auto px-6 max-w-3xl">
           <ScrollAnimationWrapper>
@@ -136,7 +134,6 @@ const MedicalRepVisitBooking = () => {
           </ScrollAnimationWrapper>
         </div>
       </section>
-      {}
       <section className="py-16 bg-secondary/10">
         <div className="container mx-auto px-6 max-w-3xl">
           <ScrollAnimationWrapper>
@@ -152,7 +149,6 @@ const MedicalRepVisitBooking = () => {
           </ScrollAnimationWrapper>
         </div>
       </section>
-      {}
       <section className="pt-10 pb-20">
         <div className="container mx-auto px-6 max-w-7xl">
           <ScrollAnimationWrapper>

@@ -110,7 +110,6 @@ const HeroSection = () => {
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
-      {}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <video
           ref={videoRef}
@@ -122,10 +121,7 @@ const HeroSection = () => {
           onClick={handleVideoClick}
           className="absolute inset-0 w-full h-full object-cover cursor-pointer"
         />
-        {}
-        {}
         <div className="absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-transparent pointer-events-none" />
-        {}
         <motion.div
           className={`absolute inset-0 pointer-events-none ${
             isAr
@@ -137,10 +133,8 @@ const HeroSection = () => {
           transition={{ duration: 0.6 }}
         />
       </div>
-      {}
       {
 }
-      {}
       <AnimatePresence>
         {isVisible && (
           <motion.div
@@ -234,7 +228,6 @@ const HeroSection = () => {
           </motion.div>
         )}
       </AnimatePresence>
-      {}
       <motion.button
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

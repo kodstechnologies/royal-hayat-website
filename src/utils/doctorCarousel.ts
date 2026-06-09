@@ -1,10 +1,10 @@
 export const DOCTOR_CAROUSEL_CARD_SELECTOR = "[data-doctor-carousel-card]";
 
 type CarouselState = {
-  activeIndex: number;
   animating: boolean;
   pendingSteps: number;
   settleTimer: ReturnType<typeof setTimeout> | null;
+  runPromise: Promise<void> | null;
 };
 
 const carouselStates = new WeakMap<HTMLElement, CarouselState>();
@@ -19,10 +19,10 @@ function getState(container: HTMLElement): CarouselState {
   let state = carouselStates.get(container);
   if (!state) {
     state = {
-      activeIndex: 0,
       animating: false,
       pendingSteps: 0,
       settleTimer: null,
+      runPromise: null,
     };
     carouselStates.set(container, state);
   }
@@ -33,8 +33,12 @@ function isMobileCarousel() {
   return window.matchMedia("(max-width: 767px)").matches;
 }
 
+function getMaxScroll(container: HTMLElement) {
+  return Math.max(0, container.scrollWidth - container.clientWidth);
+}
+
 function getTargetScrollLeft(container: HTMLElement, card: HTMLElement) {
-  const maxScroll = Math.max(0, container.scrollWidth - container.clientWidth);
+  const maxScroll = getMaxScroll(container);
 
   if (isMobileCarousel()) {
     const cardCenter = card.offsetLeft + card.offsetWidth / 2;
@@ -78,6 +82,41 @@ export function getActiveDoctorCarouselIndex(container: HTMLElement) {
   return activeIndex;
 }
 
+function getStepTargetIndex(
+  container: HTMLElement,
+  direction: "left" | "right",
+): number | null {
+  const cards = getCards(container);
+  if (!cards.length) return null;
+
+  if (isMobileCarousel()) {
+    const current = getActiveDoctorCarouselIndex(container);
+    const next = direction === "right" ? current + 1 : current - 1;
+    if (next < 0 || next >= cards.length) return null;
+    return next;
+  }
+
+  const scrollLeft = container.scrollLeft;
+  const viewportRight = scrollLeft + container.clientWidth;
+
+  if (direction === "right") {
+    for (let i = 0; i < cards.length; i++) {
+      const cardRight = cards[i].offsetLeft + cards[i].offsetWidth;
+      if (cardRight > viewportRight + 4) {
+        return i;
+      }
+    }
+    return null;
+  }
+
+  for (let i = cards.length - 1; i >= 0; i--) {
+    if (cards[i].offsetLeft < scrollLeft - 4) {
+      return i;
+    }
+  }
+  return null;
+}
+
 function snapToIndex(container: HTMLElement, index: number, behavior: ScrollBehavior) {
   const cards = getCards(container);
   const card = cards[index];
@@ -96,7 +135,7 @@ function clearSettleTimer(state: CarouselState) {
   }
 }
 
-function waitForScrollSettle(container: HTMLElement) {
+function waitForScrollSettle(container: HTMLElement, behavior: ScrollBehavior) {
   return new Promise<void>((resolve) => {
     const state = getState(container);
     clearSettleTimer(state);
@@ -105,6 +144,14 @@ function waitForScrollSettle(container: HTMLElement) {
       clearSettleTimer(state);
       resolve();
     };
+
+    if (behavior === "auto") {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(done);
+      });
+      state.settleTimer = setTimeout(done, isMobileCarousel() ? 80 : 120);
+      return;
+    }
 
     if ("onscrollend" in window) {
       const onEnd = () => {
@@ -119,41 +166,50 @@ function waitForScrollSettle(container: HTMLElement) {
       return;
     }
 
-    state.settleTimer = setTimeout(done, isMobileCarousel() ? 80 : 420);
+    state.settleTimer = setTimeout(done, 380);
   });
 }
 
-async function runCarouselSteps(container: HTMLElement, totalDelta: number) {
+async function executeStep(
+  container: HTMLElement,
+  direction: "left" | "right",
+): Promise<boolean> {
+  const targetIndex = getStepTargetIndex(container, direction);
+  if (targetIndex === null) return false;
+
+  const behavior: ScrollBehavior = isMobileCarousel() ? "auto" : "smooth";
+  snapToIndex(container, targetIndex, behavior);
+  await waitForScrollSettle(container, behavior);
+  snapToIndex(container, targetIndex, "auto");
+  return true;
+}
+
+async function drainCarouselQueue(container: HTMLElement, initialDelta: number) {
   const state = getState(container);
-  const cards = getCards(container);
-  if (!cards.length || totalDelta === 0) return;
-
-  const sign = totalDelta > 0 ? 1 : -1;
-  let remaining = Math.abs(totalDelta);
-
   state.animating = true;
-  let currentIndex = getActiveDoctorCarouselIndex(container);
 
-  while (remaining > 0) {
-    const nextIndex = Math.max(0, Math.min(cards.length - 1, currentIndex + sign));
-    if (nextIndex === currentIndex) break;
+  try {
+    let delta = initialDelta;
 
-    currentIndex = nextIndex;
-    state.activeIndex = nextIndex;
+    while (delta !== 0) {
+      const direction: "left" | "right" = delta > 0 ? "right" : "left";
+      let steps = Math.abs(delta);
+      delta = 0;
 
-    const behavior: ScrollBehavior = isMobileCarousel() ? "auto" : "smooth";
-    snapToIndex(container, nextIndex, behavior);
-    await waitForScrollSettle(container);
-    snapToIndex(container, nextIndex, "auto");
-    remaining -= 1;
-  }
+      while (steps > 0) {
+        const moved = await executeStep(container, direction);
+        if (!moved) break;
+        steps -= 1;
+      }
 
-  state.animating = false;
-
-  if (state.pendingSteps !== 0) {
-    const pending = state.pendingSteps;
-    state.pendingSteps = 0;
-    await runCarouselSteps(container, pending);
+      if (state.pendingSteps !== 0) {
+        delta = state.pendingSteps;
+        state.pendingSteps = 0;
+      }
+    }
+  } finally {
+    state.animating = false;
+    state.runPromise = null;
   }
 }
 
@@ -161,10 +217,12 @@ export function scrollDoctorCarousel(
   container: HTMLElement,
   direction: "left" | "right",
   step = 1,
-) {
+): Promise<void> {
   const state = getState(container);
   const cards = getCards(container);
-  if (!cards.length) return;
+  if (!cards.length || getMaxScroll(container) <= 1) {
+    return Promise.resolve();
+  }
 
   const delta = (direction === "left" ? -1 : 1) * Math.max(1, step);
 
@@ -173,22 +231,37 @@ export function scrollDoctorCarousel(
       -cards.length,
       Math.min(cards.length, state.pendingSteps + delta),
     );
-    return;
+    return state.runPromise ?? Promise.resolve();
   }
 
-  void runCarouselSteps(container, delta);
+  const run = drainCarouselQueue(container, delta);
+  state.runPromise = run;
+  return run;
 }
 
-export function syncDoctorCarouselIndex(container: HTMLElement) {
-  const state = getState(container);
-  if (state.animating) return;
-  state.activeIndex = getActiveDoctorCarouselIndex(container);
+export function syncDoctorCarouselIndex(_container: HTMLElement) {
+  // Index is derived from scroll position when needed; no cached state to sync.
 }
 
 export function getDoctorCarouselScrollState(container: HTMLElement) {
-  const maxScroll = Math.max(0, container.scrollWidth - container.clientWidth);
+  const cards = getCards(container);
+  const maxScroll = getMaxScroll(container);
+
+  if (cards.length <= 1 || maxScroll <= 1) {
+    return { canScrollLeft: false, canScrollRight: false };
+  }
+
+  if (isMobileCarousel()) {
+    const activeIndex = getActiveDoctorCarouselIndex(container);
+    return {
+      canScrollLeft: activeIndex > 0,
+      canScrollRight: activeIndex < cards.length - 1,
+    };
+  }
+
+  const scrollLeft = container.scrollLeft;
   return {
-    canScrollLeft: container.scrollLeft > 10,
-    canScrollRight: container.scrollLeft < maxScroll - 10,
+    canScrollLeft: scrollLeft > 8,
+    canScrollRight: scrollLeft < maxScroll - 8,
   };
 }

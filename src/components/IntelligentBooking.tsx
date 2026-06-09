@@ -219,7 +219,6 @@ const IntelligentBooking = () => {
         <ScrollAnimationWrapper delay={0.2}>
           <div className="max-w-2xl mx-auto bg-background rounded-2xl p-6 md:p-8 text-left shadow-2xl border border-border">
             <AnimatePresence mode="wait">
-              {}
               {bookingStep === "symptoms" && (
                 <motion.div key="symptoms" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
                   <div className="flex items-center gap-3 mb-2">
@@ -296,7 +295,6 @@ const IntelligentBooking = () => {
                   </div>
                 </motion.div>
               )}
-              {}
               {bookingStep === "results" && results && (
                 <motion.div key="results" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
                   <div className="bg-accent/5 rounded-xl p-5 border border-accent/10 mb-4">
@@ -346,7 +344,6 @@ const IntelligentBooking = () => {
                   </button>
                 </motion.div>
               )}
-              {}
               {bookingStep === "registered" && (
                 <motion.div key="registered" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
                   <div className="flex items-center gap-3 mb-5">
@@ -401,7 +398,6 @@ const IntelligentBooking = () => {
                   </button>
                 </motion.div>
               )}
-              {}
               {bookingStep === "doctor" && (
                 <motion.div key="doctor" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
                   <div className="flex items-center gap-3 mb-4">
@@ -442,7 +438,6 @@ const IntelligentBooking = () => {
                   </button>
                 </motion.div>
               )}
-              {}
               {bookingStep === "patient" && (
                 <motion.div key="patient" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
                   <div className="flex items-center gap-3 mb-5">
@@ -575,7 +570,6 @@ const IntelligentBooking = () => {
                   </div>
                 </motion.div>
               )}
-              {}
               {bookingStep === "success" && (
                 <motion.div key="success" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-6">
                   <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2, type: "spring", stiffness: 200 }}

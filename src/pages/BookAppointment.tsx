@@ -37,7 +37,11 @@ import {
 import { identityDateToIso, mapPaciSexToGender } from "@/utils/mapPaciGender";
 import type { AppointmentBookingFallbackState } from "@/types/appointmentBookingFallback";
 import type { AppointmentRequestPrefillState, PaciIdentityDetails } from "@/types/appointmentRequestPrefill";
-import { departments as staticDepts, deptDoctorAliases, MAIN_CATEGORIES } from "@/data/departments";
+import {
+  departments as staticDepts,
+  doctorMatchesDepartment,
+  MAIN_CATEGORIES,
+} from "@/data/departments";
 import { Calendar as DatePickerCalendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import type { Slot } from "@/api/royalhayat";
@@ -490,10 +494,8 @@ const BookAppointment = () => {
           if (!cancelled) setDeptDoctorList([]);
           return;
         }
-        const filtered = allApiDoctors.filter((doc) => {
-            const aliases = deptDoctorAliases[dept.name] || [dept.name];
-            return aliases.some((alias) => doc.department.toLowerCase() === alias.toLowerCase());
-          })
+        const filtered = allApiDoctors
+          .filter((doc) => doctorMatchesDepartment(dept.name, doc))
           .map((doc) => ({
             ...doc,
             clinicCode: doc.clinicCode || doc.departmentClinicCode,
@@ -1671,7 +1673,6 @@ Clinic Code:`;
               );
             })}
           </div>
-          {}
           <div className="flex items-center justify-start mt-8">
             <button onClick={() => { setSymptomResults(null); }} className="flex items-center gap-2 text-muted-foreground font-body text-sm hover:text-foreground transition-colors">
               <ArrowLeft className="w-4 h-4" /> {t("previous")}

@@ -446,7 +446,6 @@ const HospitalityServices = ({
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107]">
       <Header />
-      {}
       <section className="py-8 md:py-10 bg-primary/5">
         <div className="container mx-auto px-6 text-center">
           <ScrollAnimationWrapper>
@@ -461,7 +460,6 @@ const HospitalityServices = ({
           </ScrollAnimationWrapper>
         </div>
       </section>
-      {}
       {showAll && <section className="py-4">
         <div className="container mx-auto px-6 max-w-7xl">
           <ScrollAnimationWrapper>
@@ -504,7 +502,6 @@ const HospitalityServices = ({
 }
         </div>
       </section>}
-      {}
       {show("halls") && <section className="py-6 bg-white">
         <div className="container mx-auto px-6 max-w-7xl">
           <ScrollAnimationWrapper>
@@ -518,7 +515,6 @@ const HospitalityServices = ({
               ))}
             </div>
           </ScrollAnimationWrapper>
-          {}
           {activeHall === "gardenia" && (
             <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} key="gardenia">
               <div className="grid lg:grid-cols-2 gap-10 items-start">
@@ -572,7 +568,7 @@ const HospitalityServices = ({
                     </div>
                     <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify mb-5">
                       {isAr
-                        ? "بفضل تصميمها المرن، وديكورها الأنيق، وخدماتها المخصصة، تضمن قاعة جاردينيا تجربة استثنائية راقية ومتكاملة لجميع مناسباتكم."
+                        ? "بفضل تصميمها المرن، وديكورها الأنيق، وخدماتها المخصصة، تضمن قاعة جاردينيا تجربة استثنائية راقية ومتكاملة لجميع مناسباتكم"
                         : "With its flexible layout, stunning interior, and personalized service, the Gardenia Banquet Hall guarantees a refined and seamless experience for your event."}
                     </p>
                     <div className="flex items-center gap-2">
@@ -599,7 +595,6 @@ const HospitalityServices = ({
               </div>
             </motion.div>
           )}
-          {}
           {activeHall === "aljouri" && (
             <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} key="aljouri">
               <div className="grid lg:grid-cols-2 gap-10 items-start">
@@ -665,7 +660,6 @@ const HospitalityServices = ({
           )}
         </div>
       </section>}
-      {}
       {section === "cafe" && <section className="py-6">
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="lg:hidden flex items-center gap-3 mb-4">
@@ -719,7 +713,6 @@ const HospitalityServices = ({
           </div>
         </div>
       </section>}
-      {}
       {section === "spa" && <section className="py-6 bg-primary/5">
         <div className="container mx-auto px-6 max-w-7xl">
           <div className="flex flex-col gap-10 lg:grid lg:grid-cols-2 lg:gap-10 lg:items-start">
@@ -769,7 +762,6 @@ const HospitalityServices = ({
           </div>
         </div>
       </section>}
-      {}
       {show("suites") && <section className="py-6 bg-primary/5">
         <div className="container mx-auto px-6 max-w-7xl">
           <ScrollAnimationWrapper>
@@ -940,7 +932,6 @@ const HospitalityServices = ({
               </>
             ) : (
               <>
-                {}
                 <div className="grid lg:grid-cols-2 gap-10 items-start">
                   <div className="rounded-2xl overflow-hidden border border-border shadow-md h-[340px] order-2 lg:order-2">
                     {activeSuite === 0 ? (
@@ -996,7 +987,6 @@ const HospitalityServices = ({
                     )}
                   </div>
                 </div>
-                {}
                 <div className="grid lg:grid-cols-2 gap-10 items-start mt-16">
                   <ImageCarousel
                     images={orchidSuiteImages}
@@ -1084,10 +1074,8 @@ const HospitalityServices = ({
           </motion.div>
         </div>
       </section>}
-      {}
       {showAll && <section className="py-6 bg-muted/20">
         <div className="container mx-auto px-6 max-w-6xl">
-          {}
           <div className="lg:hidden flex items-center gap-3 mb-4">
             <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
               <Sparkles className="w-6 h-6 text-primary" />
@@ -1097,7 +1085,6 @@ const HospitalityServices = ({
             </h2>
           </div>
           <div className="grid lg:grid-cols-2 gap-10 items-start">
-            {}
             <div className="order-1">
               {inRoomEventGalleryImages.length > 0 ? (
                 <ImageCarousel
@@ -1120,10 +1107,8 @@ const HospitalityServices = ({
                 </div>
               )}
             </div>
-            {}
             <ScrollAnimationWrapper className="order-2">
               <div>
-                {}
                 <div className="hidden lg:flex items-center gap-3 mb-4">
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                     <Sparkles className="w-6 h-6 text-primary" />
@@ -1244,7 +1229,6 @@ const HospitalityServices = ({
           </div>
         </div>
       </section>}
-      {}
       {showAll && <section className="py-6 bg-primary/5">
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="flex flex-col gap-10 lg:grid lg:grid-cols-2 lg:gap-10 lg:items-start">
@@ -1294,7 +1278,6 @@ const HospitalityServices = ({
           </div>
         </div>
       </section>}
-      {}
       {showAll && <section className="py-6 bg-white">
         <div className="container mx-auto px-6 max-w-7xl">
           <div className="lg:hidden flex items-center gap-3 mb-4">
@@ -1348,7 +1331,6 @@ const HospitalityServices = ({
           </div>
         </div>
       </section>}
-      {}
       {showAll && <section className="py-6 bg-muted/10">
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-10 items-start">
@@ -1409,10 +1391,8 @@ const HospitalityServices = ({
           </div>
         </div>
       </section>}
-      {}
       {showAll && <section className="py-6">
         <div className="container mx-auto px-6 max-w-6xl">
-          {}
           <div className="lg:hidden flex items-center gap-3 mb-4">
             <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
               <Baby className="w-6 h-6 text-accent" />
@@ -1420,7 +1400,6 @@ const HospitalityServices = ({
             <h2 className="text-2xl font-serif text-foreground">{isAr ? "خدمات تصوير حديثي الولادة" : "Newborn Photography Services"}</h2>
           </div>
           <div className="grid lg:grid-cols-2 gap-10 items-start">
-            {}
             <div className="order-1 lg:order-1">
               <ImageCarousel
                 images={babyImages}
@@ -1432,7 +1411,6 @@ const HospitalityServices = ({
                 isAr={isAr}
               />
             </div>
-            {}
             <ScrollAnimationWrapper className="order-2 lg:order-2">
               <div>
                 <div className="hidden lg:flex items-center gap-3 mb-4">

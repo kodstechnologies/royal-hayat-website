@@ -32,14 +32,19 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          if (!id.includes("node_modules")) {
-            if (id.includes("/src/data/doctors")) return "data-doctors";
-            if (id.includes("/src/data/departmentDetails")) return "data-department-details";
-            if (id.includes("/src/i18n/ar")) return "i18n-ar";
-            if (id.includes("/src/i18n/en")) return "i18n-en";
-            if (id.includes("/src/data/featuredDoctors")) return "data-featured-doctors";
-            if (id.includes("/src/data/doctorsWithClinicCodes")) return "data-booking-doctors";
+          if (id.includes("node_modules")) {
+            if (id.includes("framer-motion")) return "vendor-motion";
+            if (id.includes("react-pannellum")) return "vendor-pannellum";
+            if (id.includes("@tanstack/react-query")) return "vendor-query";
+            return;
           }
+          if (id.includes("/src/data/doctorsSearchIndex")) return "data-doctors-search";
+          if (id.includes("/src/data/doctors")) return "data-doctors";
+          if (id.includes("/src/data/departmentDetails")) return "data-department-details";
+          if (id.includes("/src/i18n/ar")) return "i18n-ar";
+          if (id.includes("/src/i18n/en")) return "i18n-en";
+          if (id.includes("/src/data/featuredDoctors")) return "data-featured-doctors";
+          if (id.includes("/src/data/doctorsWithClinicCodes")) return "data-booking-doctors";
         },
       },
     },

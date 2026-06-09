@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
-import TestimonialsSection from "@/components/TestimonialsSection";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { loadDoctors, type Doctor } from "@/data/loadDoctors";
 import { departments, deptDoctorAliases, MAIN_CATEGORIES, type MainCategory } from "@/data/departments";
@@ -14,18 +13,21 @@ import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
 import { sortDoctorsInDepartment } from "@/utils/sortDoctorsInDepartment";
 import { getDoctorCarouselScrollState, scrollDoctorCarousel, syncDoctorCarouselIndex } from "@/utils/doctorCarousel";
 
+
 const DoctorCard = memo(({ doc }: { doc: Doctor }) => {
   const { lang } = useLanguage();
+  const isAr = lang === "ar";
   const displayName = getDoctorDisplayName(doc, lang);
   return (
     <Link
       to={`/doctors/${doc.id}`}
       data-doctor-carousel-card
+      dir={isAr ? "rtl" : "ltr"}
       className="relative z-0 block w-[280px] min-h-[430px] flex-shrink-0 snap-center hover:z-10 md:snap-start"
     >
       <motion.div
         whileHover={{ y: -6, boxShadow: "0 20px 40px -12px hsl(var(--primary) / 0.12)" }}
-        className="bg-popover rounded-2xl border border-border/50 group cursor-pointer w-full h-full flex flex-col transition-all duration-300 "
+        className="bg-popover rounded-2xl border border-border/50 group cursor-pointer w-full h-full flex flex-col transition-all duration-300"
       >
         <div className="bg-white h-64 flex items-center justify-center relative overflow-hidden shrink-0 rounded-t-2xl">
           {doc.image ? (
@@ -35,28 +37,42 @@ const DoctorCard = memo(({ doc }: { doc: Doctor }) => {
               <span className="text-2xl font-serif text-primary-foreground">{doc.initials}</span>
             </div>
           )}
-          <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-popover/20 backdrop-blur-sm flex items-center justify-center">
+          <div
+            className={`absolute top-3 w-7 h-7 rounded-full bg-popover/20 backdrop-blur-sm flex items-center justify-center ${
+              isAr ? "left-3" : "right-3"
+            }`}
+          >
             <Stethoscope className="w-3.5 h-3.5 text-primary-foreground" />
           </div>
         </div>
-        <div className="p-5 flex flex-col flex-grow">
-          <p className="text-accent text-[10px] tracking-[0.2em] uppercase font-body mb-1.5">
-            {lang === "ar" ? doc.specialtyAr : doc.specialty}
+        <div className="p-5 flex flex-col flex-grow text-start items-start">
+          <p
+            className={`text-accent text-[10px] tracking-[0.2em] font-body mb-1.5 w-full ${
+              isAr ? "" : "uppercase"
+            }`}
+          >
+            {isAr ? doc.specialtyAr : doc.specialty}
           </p>
-          <h3 className="text-[1.2rem] font-serif font-bold text-foreground mb-1">{displayName}</h3>
-          <p className="text-muted-foreground font-body text-xs mb-3">{lang === "ar" ? doc.titleAr : doc.title}</p>
+          <h3 className="text-[1.2rem] font-serif font-bold text-foreground mb-1 w-full">{displayName}</h3>
+          <p className="text-muted-foreground font-body text-xs mb-3 w-full">
+            {isAr ? doc.titleAr : doc.title}
+          </p>
           {doc.hideBooking !== true && (
-            <div className={`flex items-center gap-1.5 mb-2 ${doc.availableOnline !== false ? "text-green-600" : "text-destructive"}`}>
+            <div
+              className={`flex items-center gap-1.5 mb-2 w-full ${
+                doc.availableOnline !== false ? "text-green-600" : "text-destructive"
+              }`}
+            >
               <div className={`w-1.5 h-1.5 rounded-full ${doc.availableOnline !== false ? "bg-green-500" : "bg-destructive"}`} />
               <span className="font-body text-[10px]">
                 {doc.availableOnline !== false
-                  ? (lang === "ar" ? "متاح للحجز اونلاين" : "Book Online")
-                  : (lang === "ar" ? "غير متاح للحجز اونلاين" : "Not Available for Online Booking")}
+                  ? (isAr ? "متاح للحجز اونلاين" : "Book Online")
+                  : (isAr ? "غير متاح للحجز اونلاين" : "Not Available for Online Booking")}
               </span>
             </div>
           )}
           <span className="inline-flex items-center gap-1.5 text-primary font-body text-xs tracking-wide group-hover:text-accent transition-colors">
-            {lang === "ar" ? "عرض الملف الشخصي ←" : "View Profile →"}
+            {isAr ? "عرض الملف الشخصي ←" : "View Profile →"}
           </span>
         </div>
       </motion.div>
@@ -86,6 +102,12 @@ const departmentArLabels: Record<string, string> = {
   "Obstetrics & Gynecology": "امراض النساء والولادة",
   "Neonatal": "طب حديثي الولادة",
   "Anesthesia": "التخدير",
+  "Internal Medicine": "الطب الباطنية",
+  "Nutricare": "قسم التغذية",
+  "La Cosmetique": "قسم جراحة التجميل",
+  "IVF": "طب الإنجاب وأطفال الأنابيب",
+  "Reproductive Medicine & IVF": "طب الإنجاب وأطفال الأنابيب",
+  "Reproductive Medicine": "طب الإنجاب وأطفال الأنابيب",
 };
 const DepartmentRow = memo(({ department, departmentAr, docs }: { department: string; departmentAr: string; docs: Doctor[] }) => {
   const { lang } = useLanguage();
@@ -133,12 +155,18 @@ const DepartmentRow = memo(({ department, departmentAr, docs }: { department: st
     };
   }, [docs, updateScrollState]);
 
-  const scroll = (dir: "left" | "right") => {
-    const el = scrollRef.current;
-    if (!el) return;
-    scrollDoctorCarousel(el, dir);
-    window.setTimeout(updateScrollState, 400);
-  };
+  const scroll = useCallback(
+    (dir: "left" | "right") => {
+      const el = scrollRef.current;
+      if (!el) return;
+
+      void scrollDoctorCarousel(el, dir).finally(() => {
+        updateScrollState();
+        window.requestAnimationFrame(updateScrollState);
+      });
+    },
+    [updateScrollState],
+  );
   const deptDesc = departmentDescriptions[department];
   return (
     <div className="mb-14">
@@ -154,38 +182,39 @@ const DepartmentRow = memo(({ department, departmentAr, docs }: { department: st
           </div>
         )}
       </div>
-      <div className="relative" dir="ltr">
+      <div className="relative isolate" dir="ltr">
         <button
           type="button"
           aria-label={lang === "ar" ? "التمرير لليسار" : "Scroll left"}
+          aria-hidden={!canScrollLeft}
+          tabIndex={canScrollLeft ? 0 : -1}
           onClick={() => scroll("left")}
-          disabled={!canScrollLeft}
-          className={`absolute left-0 sm:-left-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground transition-all shadow-md ltr-icon pointer-events-auto ${
+          className={`absolute left-0 sm:-left-4 top-1/2 -translate-y-1/2 z-50 w-10 h-10 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground transition-opacity shadow-md ltr-icon touch-manipulation ${
             !canScrollLeft
               ? "opacity-0 pointer-events-none"
-              : "opacity-100 hover:bg-primary hover:text-primary-foreground hover:border-primary"
+              : "opacity-100 pointer-events-auto hover:bg-primary hover:text-primary-foreground hover:border-primary"
           }`}
         >
-          <ChevronLeft className="w-5 h-5" />
+          <ChevronLeft className="w-5 h-5 pointer-events-none" />
         </button>
         <button
           type="button"
           aria-label={lang === "ar" ? "التمرير لليمين" : "Scroll right"}
+          aria-hidden={!canScrollRight}
+          tabIndex={canScrollRight ? 0 : -1}
           onClick={() => scroll("right")}
-          disabled={!canScrollRight}
-          className={`absolute right-0 sm:-right-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground transition-all shadow-md ltr-icon pointer-events-auto ${
+          className={`absolute right-0 sm:-right-4 top-1/2 -translate-y-1/2 z-50 w-10 h-10 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground transition-opacity shadow-md ltr-icon touch-manipulation ${
             !canScrollRight
               ? "opacity-0 pointer-events-none"
-              : "opacity-100 hover:bg-primary hover:text-primary-foreground hover:border-primary"
+              : "opacity-100 pointer-events-auto hover:bg-primary hover:text-primary-foreground hover:border-primary"
           }`}
         >
-          <ChevronRight className="w-5 h-5" />
+          <ChevronRight className="w-5 h-5 pointer-events-none" />
         </button>
-        <div className="max-w-[1192px] mx-auto overflow-hidden">
+        <div className="relative z-0 max-w-[1192px] mx-auto overflow-hidden">
           <div
             ref={scrollRef}
             dir="ltr"
-            onScroll={updateScrollState}
             className="doctors-carousel-track flex w-full items-stretch gap-4 overflow-x-auto pb-8 snap-x snap-mandatory max-md:scroll-px-[calc(50%-140px)] max-md:px-[calc(50%-140px)] md:gap-6 md:px-0 md:scroll-px-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden [-webkit-overflow-scrolling:touch]"
           >
             {docs.map((doc) => (
@@ -320,7 +349,6 @@ const Doctors = () => {
               <span className="sr-only">Loading doctors...</span>
             </div>
           )}
-          {}
           <div className="text-center mb-12">
             <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-4">
               {lang === "ar" ? "فريقنا الطبي" : "Our Medical Team"}
@@ -334,7 +362,6 @@ const Doctors = () => {
                 : "Find the right doctor by symptom or specialty"}
             </p>
           </div>
-          {}
           <div className="max-w-2xl mx-auto mb-14">
             <div className="relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
@@ -346,7 +373,6 @@ const Doctors = () => {
               />
             </div>
           </div>
-          {}
           {isSearching ? (
             <div>
               <h3 className="text-lg font-serif text-foreground mb-6">
@@ -373,7 +399,6 @@ const Doctors = () => {
                 if (!entries || entries.length === 0) return null;
                 return (
                   <div key={cat.key}>
-                    {}
                     <div className="flex items-center gap-4 mb-10">
                       <div className="h-px flex-1 bg-border/50" />
                       <h2 className="text-base md:text-lg font-body font-bold tracking-[0.2em] md:tracking-[0.25em] uppercase text-accent whitespace-nowrap px-1">
@@ -396,7 +421,6 @@ const Doctors = () => {
           )}
         </div>
       </section>
-      <TestimonialsSection />
       <Footer />
       <ScrollToTop />
     </div>

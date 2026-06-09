@@ -65,13 +65,11 @@ const ContactUs = () => {
       </div>
       <div className="container mx-auto px-6 py-12 max-w-6xl">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-          {}
           <div className="space-y-6">
             <motion.h2 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
               className="text-2xl font-serif text-foreground mb-6">
               {lang === "ar" ? "تواصل معنا" : "Get In Touch"}
             </motion.h2>
-            {}
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
               className="bg-popover rounded-2xl p-6 border border-border">
               <div className="flex items-center gap-4">
@@ -91,7 +89,6 @@ const ContactUs = () => {
                 </div>
               </div>
             </motion.div>
-            {}
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
               className="bg-popover rounded-2xl p-6 border border-border">
               <div className="flex items-center gap-4">
@@ -108,7 +105,6 @@ const ContactUs = () => {
                 </div>
               </div>
             </motion.div>
-            {}
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
               className="bg-popover rounded-2xl p-6 border border-border">
               <div className="flex items-start gap-4">
@@ -127,7 +123,6 @@ const ContactUs = () => {
                 </div>
               </div>
             </motion.div>
-            {}
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
               className="rounded-2xl overflow-hidden border border-border h-[250px]">
               <iframe
@@ -138,7 +133,6 @@ const ContactUs = () => {
               />
             </motion.div>
           </div>
-          {}
           <div>
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
               className="bg-popover rounded-2xl p-6 md:p-8 border border-border shadow-sm sticky top-24">

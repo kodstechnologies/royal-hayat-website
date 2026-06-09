@@ -3467,9 +3467,9 @@ export const doctors: Doctor[] = [
       'Fellowship in Maternal-Fetal Medicine, Dalhousie University, Canada',
     ],
     qualificationsAr: [
-      'كلية الطب في جامعة الكويت.',
-      'البورد الكويتي للنساء والولادة.',
-      'الزمالة التخصصية في الحمل العالي الخطورة والسونارات الدقيقة للأجنة، جامعة الهاوي، كندا.',
+      'كلية الطب في جامعة الكويت',
+      'البورد الكويتي للنساء والولادة',
+      'الزمالة التخصصية في الحمل العالي الخطورة والسونارات الدقيقة للأجنة، جامعة الهاوي، كندا',
     ],
     expertise: [
       'Obstetrics ultrasound at any stage of pregnancy',
@@ -3534,10 +3534,10 @@ export const doctors: Doctor[] = [
       'More than 35 years\' experience in Obstetrics & Gynecology',
     ],
     qualificationsAr: [
-      'دكتوراه أمراض النساء والولادة.',
-      'عضو الجمعية الأوروبية لجراحة المنظار للأمراض النسائية.',
-      'زميل كلية الجراحين الدولية.',
-      'خبرة أكثر من خمسة وثلاثون عاماً.',
+      'دكتوراه أمراض النساء والولادة',
+      'عضو الجمعية الأوروبية لجراحة المنظار للأمراض النسائية',
+      'زميل كلية الجراحين الدولية',
+      'خبرة أكثر من خمسة وثلاثون عاماً',
     ],
     expertise: [
       'Management of normal & high-risk pregnancy',

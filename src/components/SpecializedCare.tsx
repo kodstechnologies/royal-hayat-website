@@ -505,7 +505,7 @@ const SpecializedCare = () => {
                               {lang === "ar" ? s.descAr : s.desc}
                             </p>
                             <span className="inline-flex items-center gap-1.5 text-primary font-body text-xs tracking-wide hover:text-accent transition-colors">
-                              {t("learnMore")} <ArrowRight className="w-3.5 h-3.5" />
+                              {t("learnMore")} <ArrowRight className={`w-3.5 h-3.5 shrink-0 ${lang === "ar" ? "rotate-180" : ""}`} />
                             </span>
                           </div>
                         </>
@@ -517,7 +517,7 @@ const SpecializedCare = () => {
                               {lang === "ar" ? s.nameAr : s.name}
                             </h3>
                           </div>
-                          <ArrowRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0 ml-auto" />
+                          <ArrowRight className={`w-3.5 h-3.5 shrink-0 ml-auto text-muted-foreground group-hover:text-primary transition-colors ${lang === "ar" ? "rotate-180" : ""}`} />
                         </div>
                       )}
                     </motion.div>
@@ -532,7 +532,6 @@ const SpecializedCare = () => {
                       className="flex flex-col lg:flex-row"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      {}
                       <div className="lg:w-2/5 relative">
                         <div className="relative h-72 lg:h-full min-h-[380px] overflow-hidden">
                           <img
@@ -558,15 +557,13 @@ const SpecializedCare = () => {
                                 }}
                                 className="inline-flex w-full justify-end items-center gap-1.5 text-primary font-body text-xs tracking-wide hover:text-accent transition-colors mt-3"
                               >
-                                {t("learnMore")} <ArrowRight className="w-3.5 h-3.5" />
+                                {t("learnMore")} <ArrowRight className={`w-3.5 h-3.5 shrink-0 ${lang === "ar" ? "rotate-180" : ""}`} />
                               </button>
                             )}
                           </div>
                         </div>
                       </div>
-                      {}
                       <div className="lg:w-3/5 p-6 lg:p-8 flex flex-col">
-                        {}
                         <div className="flex justify-between items-start mb-6">
                           <div>
                             {s.subspecialties.length > 0 && (
@@ -609,7 +606,6 @@ const SpecializedCare = () => {
                             <X className="w-4 h-4 text-muted-foreground" />
                           </button>
                         </div>
-                        {}
                         {deptDoctors.length > 0 && (
                           <div className="mt-auto">
                             <p className="text-accent text-xs tracking-[0.2em] uppercase font-body mb-4">
@@ -690,7 +686,7 @@ const SpecializedCare = () => {
                                         {lang === "ar" ? doc.titleAr : doc.title}
                                       </p>
                                       <p className="text-xs text-primary font-body mt-2 inline-flex items-center gap-1 transition-colors group-hover/doc:text-accent">
-                                        {t("viewProfile")} <ArrowRight className="w-3 h-3 ltr-icon" />
+                                        {t("viewProfile")} <ArrowRight className={`w-3 h-3 shrink-0 ${lang === "ar" ? "rotate-180" : ""}`} />
                                       </p>
                                     </div>
                                   </motion.div>
@@ -703,7 +699,7 @@ const SpecializedCare = () => {
                                   onClick={() => openMedicalService(`/medical-services/${departmentSlug}/${selectedSubSlug}`)}
                                   className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground font-body text-xs tracking-[0.15em] uppercase rounded-full hover:bg-primary/90 transition-colors"
                                 >
-                                  {t("learnMore")} <ArrowRight className="w-3.5 h-3.5" />
+                                  {t("learnMore")} <ArrowRight className={`w-3.5 h-3.5 shrink-0 ${lang === "ar" ? "rotate-180" : ""}`} />
                                 </button>
                               )}
                             </div>
@@ -717,7 +713,6 @@ const SpecializedCare = () => {
             );
           })}
         </div>
-        {}
         <motion.div
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}

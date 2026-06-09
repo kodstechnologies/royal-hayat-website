@@ -69,7 +69,6 @@ const HomeHealth = () => {
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
       <Header />
-      {}
       <section className="py-16 md:py-20 bg-primary/5">
         <div className="container mx-auto px-6 text-center">
           <ScrollAnimationWrapper>
@@ -83,7 +82,6 @@ const HomeHealth = () => {
           </ScrollAnimationWrapper>
         </div>
       </section>
-      {}
       <section className="py-16">
         <div className="container mx-auto px-6 max-w-4xl">
           <ScrollAnimationWrapper>
@@ -98,7 +96,6 @@ const HomeHealth = () => {
           </ScrollAnimationWrapper>
         </div>
       </section>
-      {}
       <section className="py-16 bg-primary/5">
         <div className="container mx-auto px-6 max-w-4xl">
           <ScrollAnimationWrapper>
@@ -125,7 +122,6 @@ const HomeHealth = () => {
           </div>
         </div>
       </section>
-      {}
       <section className="py-16">
         <div className="container mx-auto px-6 max-w-4xl">
           <ScrollAnimationWrapper>
@@ -141,7 +137,6 @@ const HomeHealth = () => {
                 : "Our specialized nursing team offers comprehensive medical services in the comfort of your home, including:"}
             </p>
           </ScrollAnimationWrapper>
-          {}
           <div className="mb-10">
             <div className="flex items-center gap-2 mb-4">
               <Syringe className="w-5 h-5 text-primary" />
@@ -157,7 +152,6 @@ const HomeHealth = () => {
               ))}
             </div>
           </div>
-          {}
           <div>
             <div className="flex items-center gap-2 mb-4">
               <Heart className="w-5 h-5 text-accent" />

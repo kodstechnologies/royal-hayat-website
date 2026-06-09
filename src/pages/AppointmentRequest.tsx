@@ -218,7 +218,6 @@ const AppointmentRequest = () => {
           <ArrowLeft className={`w-4 h-4 ${lang === 'ar' ? 'rotate-180' : ''}`} />
           {lang === "ar" ? "العودة" : "Back"}
         </button>
-        {}
         {prefilledDoctor && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
             className="bg-popover rounded-2xl p-5 border border-border shadow-sm mb-6 flex items-center gap-4">
@@ -274,7 +273,6 @@ const AppointmentRequest = () => {
             </div>
           )}
           <div className="space-y-5 min-w-0">
-            {}
             <div>
               <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
                 {t("fullName")} <span className="text-destructive">*</span>
@@ -285,7 +283,6 @@ const AppointmentRequest = () => {
                 className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 ${errors.fullName ? "border-destructive" : "border-border"} ${identityReadOnly ? "opacity-80 cursor-default" : ""}`} />
               {errors.fullName && <p className="font-body text-xs text-destructive mt-1">{errors.fullName}</p>}
             </div>
-            {}
             <div>
               <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
                 {t("phoneNumber")} <span className="text-destructive">*</span>
@@ -306,7 +303,6 @@ const AppointmentRequest = () => {
               </div>
               {errors.phone && <p className="font-body text-xs text-destructive mt-1">{errors.phone}</p>}
             </div>
-            {}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="min-w-0">
                 <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
@@ -338,7 +334,6 @@ const AppointmentRequest = () => {
                 {errors.gender && <p className="font-body text-xs text-destructive mt-1">{errors.gender}</p>}
               </div>
             </div>
-            {}
             <div>
               <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
                 {lang === "ar" ? "ملاحظات إضافية" : "Additional Notes"} ({lang === "ar" ? "اختياري" : "Optional"})

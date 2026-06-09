@@ -14,6 +14,7 @@ import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
 import { sortDoctorsInDepartment } from "@/utils/sortDoctorsInDepartment";
 import { getDoctorCarouselScrollState, scrollDoctorCarousel, syncDoctorCarouselIndex } from "@/utils/doctorCarousel";
 
+
 const DoctorCard = memo(({ doc }: { doc: Doctor }) => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";

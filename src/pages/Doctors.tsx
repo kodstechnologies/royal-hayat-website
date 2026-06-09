@@ -102,6 +102,12 @@ const departmentArLabels: Record<string, string> = {
   "Obstetrics & Gynecology": "امراض النساء والولادة",
   "Neonatal": "طب حديثي الولادة",
   "Anesthesia": "التخدير",
+  "Internal Medicine": "الطب الباطنية",
+  "Nutricare": "قسم التغذية",
+  "La Cosmetique": "قسم جراحة التجميل",
+  "IVF": "طب الإنجاب وأطفال الأنابيب",
+  "Reproductive Medicine & IVF": "طب الإنجاب وأطفال الأنابيب",
+  "Reproductive Medicine": "طب الإنجاب وأطفال الأنابيب",
 };
 const DepartmentRow = memo(({ department, departmentAr, docs }: { department: string; departmentAr: string; docs: Doctor[] }) => {
   const { lang } = useLanguage();
@@ -149,12 +155,18 @@ const DepartmentRow = memo(({ department, departmentAr, docs }: { department: st
     };
   }, [docs, updateScrollState]);
 
-  const scroll = (dir: "left" | "right") => {
-    const el = scrollRef.current;
-    if (!el) return;
-    scrollDoctorCarousel(el, dir);
-    window.setTimeout(updateScrollState, 400);
-  };
+  const scroll = useCallback(
+    (dir: "left" | "right") => {
+      const el = scrollRef.current;
+      if (!el) return;
+
+      void scrollDoctorCarousel(el, dir).finally(() => {
+        updateScrollState();
+        window.requestAnimationFrame(updateScrollState);
+      });
+    },
+    [updateScrollState],
+  );
   const deptDesc = departmentDescriptions[department];
   return (
     <div className="mb-14">
@@ -170,38 +182,39 @@ const DepartmentRow = memo(({ department, departmentAr, docs }: { department: st
           </div>
         )}
       </div>
-      <div className="relative" dir="ltr">
+      <div className="relative isolate" dir="ltr">
         <button
           type="button"
           aria-label={lang === "ar" ? "التمرير لليسار" : "Scroll left"}
+          aria-hidden={!canScrollLeft}
+          tabIndex={canScrollLeft ? 0 : -1}
           onClick={() => scroll("left")}
-          disabled={!canScrollLeft}
-          className={`absolute left-0 sm:-left-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground transition-all shadow-md ltr-icon pointer-events-auto ${
+          className={`absolute left-0 sm:-left-4 top-1/2 -translate-y-1/2 z-50 w-10 h-10 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground transition-opacity shadow-md ltr-icon touch-manipulation ${
             !canScrollLeft
               ? "opacity-0 pointer-events-none"
-              : "opacity-100 hover:bg-primary hover:text-primary-foreground hover:border-primary"
+              : "opacity-100 pointer-events-auto hover:bg-primary hover:text-primary-foreground hover:border-primary"
           }`}
         >
-          <ChevronLeft className="w-5 h-5" />
+          <ChevronLeft className="w-5 h-5 pointer-events-none" />
         </button>
         <button
           type="button"
           aria-label={lang === "ar" ? "التمرير لليمين" : "Scroll right"}
+          aria-hidden={!canScrollRight}
+          tabIndex={canScrollRight ? 0 : -1}
           onClick={() => scroll("right")}
-          disabled={!canScrollRight}
-          className={`absolute right-0 sm:-right-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground transition-all shadow-md ltr-icon pointer-events-auto ${
+          className={`absolute right-0 sm:-right-4 top-1/2 -translate-y-1/2 z-50 w-10 h-10 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground transition-opacity shadow-md ltr-icon touch-manipulation ${
             !canScrollRight
               ? "opacity-0 pointer-events-none"
-              : "opacity-100 hover:bg-primary hover:text-primary-foreground hover:border-primary"
+              : "opacity-100 pointer-events-auto hover:bg-primary hover:text-primary-foreground hover:border-primary"
           }`}
         >
-          <ChevronRight className="w-5 h-5" />
+          <ChevronRight className="w-5 h-5 pointer-events-none" />
         </button>
-        <div className="max-w-[1192px] mx-auto overflow-hidden">
+        <div className="relative z-0 max-w-[1192px] mx-auto overflow-hidden">
           <div
             ref={scrollRef}
             dir="ltr"
-            onScroll={updateScrollState}
             className="doctors-carousel-track flex w-full items-stretch gap-4 overflow-x-auto pb-8 snap-x snap-mandatory max-md:scroll-px-[calc(50%-140px)] max-md:px-[calc(50%-140px)] md:gap-6 md:px-0 md:scroll-px-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden [-webkit-overflow-scrolling:touch]"
           >
             {docs.map((doc) => (

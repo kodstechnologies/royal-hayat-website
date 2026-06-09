@@ -299,7 +299,10 @@ const ChatButton = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.25 }}
-            className={`fixed bottom-20 md:bottom-24 ${isRtl ? "left-4 md:left-6" : "right-4 md:right-6"} z-50 w-[calc(100vw-32px)] md:w-[400px] max-h-[70vh] md:max-h-[580px] bg-background rounded-2xl shadow-2xl border border-border/50 flex flex-col overflow-hidden`}
+            className={`fixed z-40 flex flex-col overflow-hidden bg-background rounded-2xl shadow-2xl border border-border/50
+              max-xl:inset-x-4 max-xl:top-[calc(var(--header-height,56px)+0.75rem)] max-xl:bottom-[max(5rem,calc(env(safe-area-inset-bottom,0px)+4.5rem))]
+              xl:bottom-24 xl:top-auto xl:w-[400px] xl:max-h-[min(580px,calc(100dvh-var(--header-height,56px)-7rem))]
+              ${isRtl ? "xl:left-6" : "xl:right-6"}`}
           >
             <div className="bg-primary px-5 py-4 flex items-center gap-3 shrink-0">
               <div className="w-9 h-9 rounded-full bg-accent/20 flex items-center justify-center">

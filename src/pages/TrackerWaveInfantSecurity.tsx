@@ -2,8 +2,12 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
+import LazyViewportVideo from "@/components/LazyViewportVideo";
 import { Baby, Shield, Lock, Search, Users, Radio, CheckCircle2 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+
+const INFANT_SECURITY_VIDEO_URL =
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a27add7dc7a58140d561ca5/1780985582198-Infant_Security-Vedio.mp4";
 const TrackerWaveInfantSecurity = () => {
   const { lang } = useLanguage();
   return (
@@ -35,17 +39,11 @@ const TrackerWaveInfantSecurity = () => {
         <div className="container mx-auto px-6">
           <div className="max-w-5xl mx-auto">
             <div className="rounded-2xl overflow-hidden border border-border/50 bg-muted/30">
-              <div className="aspect-video relative">
-                <video
-                  src="https://res.cloudinary.com/dqznbmfja/video/upload/v1775822694/RHH_TRACKER_WAVE_F_F_1_m9ojmp.mp4"
-                  playsInline
-                  autoPlay
-                  muted
-                  loop
-                  disablePictureInPicture
-                  className="w-full h-full object-cover"
-                />
-              </div>
+              <LazyViewportVideo
+                src={INFANT_SECURITY_VIDEO_URL}
+                ariaLabel={lang === "ar" ? "فيديو نظام حماية المواليد" : "Infant security system video"}
+                loadingLabel={lang === "ar" ? "جاري تحميل الفيديو…" : "Loading video…"}
+              />
             </div>
           </div>
         </div>

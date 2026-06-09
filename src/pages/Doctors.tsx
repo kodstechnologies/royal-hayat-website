@@ -12,7 +12,7 @@ import { departments, deptDoctorAliases, MAIN_CATEGORIES, type MainCategory } fr
 import { Input } from "@/components/ui/input";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
 import { sortDoctorsInDepartment } from "@/utils/sortDoctorsInDepartment";
-import { getDoctorCarouselScrollState, scrollDoctorCarousel } from "@/utils/doctorCarousel";
+import { getDoctorCarouselScrollState, scrollDoctorCarousel, syncDoctorCarouselIndex } from "@/utils/doctorCarousel";
 
 const DoctorCard = memo(({ doc }: { doc: Doctor }) => {
   const { lang } = useLanguage();
@@ -97,6 +97,7 @@ const DepartmentRow = memo(({ department, departmentAr, docs }: { department: st
   const updateScrollState = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
+    syncDoctorCarouselIndex(el);
     const { canScrollLeft: left, canScrollRight: right } = getDoctorCarouselScrollState(el);
     setCanScrollLeft(left);
     setCanScrollRight(right);
@@ -186,7 +187,7 @@ const DepartmentRow = memo(({ department, departmentAr, docs }: { department: st
             ref={scrollRef}
             dir="ltr"
             onScroll={updateScrollState}
-            className="doctors-carousel-track flex w-full items-stretch gap-4 overflow-x-auto pb-8 scroll-smooth snap-x snap-mandatory max-md:scroll-px-[calc(50%-140px)] max-md:px-[calc(50%-140px)] md:gap-6 md:px-0 md:scroll-px-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+            className="doctors-carousel-track flex w-full items-stretch gap-4 overflow-x-auto pb-8 snap-x snap-mandatory max-md:scroll-px-[calc(50%-140px)] max-md:px-[calc(50%-140px)] md:gap-6 md:px-0 md:scroll-px-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden [-webkit-overflow-scrolling:touch]"
           >
             {docs.map((doc) => (
               <DoctorCard key={doc.id} doc={doc} />

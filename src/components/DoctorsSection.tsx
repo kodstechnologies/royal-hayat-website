@@ -6,7 +6,7 @@ import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Doctor } from "@/data/doctors";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
-import { scrollDoctorCarousel } from "@/utils/doctorCarousel";
+import { scrollDoctorCarousel, syncDoctorCarouselIndex } from "@/utils/doctorCarousel";
 const DoctorCard = ({ doc }: { doc: Doctor }) => {
   const { lang } = useLanguage();
   const displayName = getDoctorDisplayName(doc, lang);
@@ -66,6 +66,7 @@ const DoctorsSection = ({ featuredDoctors }: { featuredDoctors: Doctor[] }) => {
   const checkScroll = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
+    syncDoctorCarouselIndex(el);
     const { scrollLeft, scrollWidth, clientWidth } = el;
     const maxScroll = Math.max(0, scrollWidth - clientWidth);
     setCanScrollLeft(scrollLeft > 10);
@@ -159,7 +160,7 @@ const DoctorsSection = ({ featuredDoctors }: { featuredDoctors: Doctor[] }) => {
               ref={scrollRef}
               dir="ltr"
               onScroll={checkScroll}
-              className="doctors-carousel-track flex items-stretch gap-4 overflow-x-auto pb-8 scroll-smooth snap-x snap-mandatory max-md:scroll-px-[calc(50%-140px)] max-md:px-[calc(50%-140px)] md:gap-6 md:px-0 md:scroll-px-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+              className="doctors-carousel-track flex items-stretch gap-4 overflow-x-auto pb-8 snap-x snap-mandatory max-md:scroll-px-[calc(50%-140px)] max-md:px-[calc(50%-140px)] md:gap-6 md:px-0 md:scroll-px-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden [-webkit-overflow-scrolling:touch]"
             >
               {featuredDoctors.map((doc) => (
                 <DoctorCard key={doc.id} doc={doc} />

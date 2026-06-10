@@ -21,7 +21,6 @@ const Header = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showLogo] = useState(true);
   const [headerVisible, setHeaderVisible] = useState(true);
-  const [showMedRecordsModal, setShowMedRecordsModal] = useState(false);
   const doctorSearchItems = useMemo<SearchIndexItem[]>(
     () =>
       doctorSearchIndex.map((doc) => ({
@@ -173,7 +172,7 @@ const Header = () => {
       { label: "Departments", labelAr: "الأقسام", type: "Page", typeAr: "صفحة", href: "/departments" },
       { label: "International Patient", labelAr: "المرضى الدوليون", type: "Page", typeAr: "صفحة", href: "/international-patient" },
       { label: "Downloads", labelAr: "التحميلات", type: "Page", typeAr: "صفحة", href: "/downloads" },
-      { label: "My Medical Reports", labelAr: "تقاريري الطبية", type: "Page", typeAr: "صفحة", href: "#" },
+      { label: "My Medical Reports", labelAr: "تقاريري الطبية", type: "Page", typeAr: "صفحة", href: "/my-medical-reports" },
     );
     const deptNames = [
       { en: "Obstetrics & Gynecology", ar: "التوليد وأمراض النساء" },
@@ -549,13 +548,13 @@ const Header = () => {
             >
               {t("bookAppointment")}
             </Link>
-            <button
-              onClick={() => setShowMedRecordsModal(true)}
+            <Link
+              to="/my-medical-reports"
               className={`hidden lg:inline-flex items-center justify-center h-8 md:h-9 rounded-full font-body tracking-wide border border-border text-foreground hover:bg-background transition-colors duration-300 ${lang === "ar" ? "px-2.5 text-[9px]" : "px-3.5 text-[11px]"
                 }`}
             >
               {t("login")}
-            </button>
+            </Link>
             <div className="flex md:hidden items-center bg-muted/40 rounded-full border border-border p-0.5">
               <button
                 onClick={() => setLang("en")}
@@ -709,65 +708,16 @@ const Header = () => {
               <Stethoscope className="w-4 h-4 text-[#816107]" />
               <span>{t("bookAppointment")}</span>
             </Link>
-            <button
-              onClick={() => setShowMedRecordsModal(true)}
+            <Link
+              to="/my-medical-reports"
               className="flex-1 py-3 flex items-center justify-center gap-2 font-body text-xs font-bold text-foreground hover:bg-muted/20 transition-colors tracking-wide"
             >
               <ClipboardList className="w-4 h-4 text-primary" />
               <span>{t("login")}</span>
-            </button>
+            </Link>
           </div>
         </div>
       </header>
-      {showMedRecordsModal && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-foreground/40 backdrop-blur-sm" onClick={() => setShowMedRecordsModal(false)}>
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-popover rounded-2xl border border-border shadow-2xl p-8 max-w-md w-full mx-4"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 className="font-serif text-xl text-foreground mb-2 text-center">
-              {lang === "ar" ? "تقاريري الطبية" : "My Medical Reports"}
-            </h3>
-            <p className="font-body text-sm text-muted-foreground mb-4 text-center">
-              {lang === "ar" ? "هل أنت من المسجلون لدى مستشفى رويال حياة؟" : "Are you a registered Royale Hayat patient?"}
-            </p>
-            <div className="flex gap-4 mt-6 justify-center">
-              <button
-                onClick={() => { setShowMedRecordsModal(false); window.open("https://afyati.royalehayat.com", "_blank"); }}
-                className="flex-1 bg-primary text-primary-foreground py-3 rounded-xl font-body text-sm tracking-wider uppercase hover:bg-primary/90 transition-colors text-center"
-              >
-                {lang === "ar" ? "نعم" : "YES"}
-              </button>
-              <button
-                onClick={() => setShowMedRecordsModal(false)}
-                className="flex-1 bg-secondary/40 text-foreground py-3 rounded-xl font-body text-sm tracking-wider uppercase hover:bg-secondary/60 transition-colors text-center"
-              >
-                {lang === "ar" ? "لا" : "NO"}
-              </button>
-            </div>
-            <div className="mt-4 p-4 bg-muted/30 rounded-xl">
-              <p className="font-body text-xs text-muted-foreground text-center leading-relaxed">
-                {lang === "ar"
-                  ? (
-                    <>
-                      في حال لم يتم تسجيلكم مسبقًا، يرجى التواصل مع المستشفى على الرقم:
-                      <br />
-                      <strong className={`text-foreground ${phoneTextClass}`}>{phoneDisplay}</strong>
-                      <br />
-                      لاستكمال إجراءات التسجيل.
-                    </>
-                  )
-                  : `If you are not yet registered, please call the hospital at ${phoneDisplay} to complete your registration.`}
-              </p>
-            </div>
-            <button onClick={() => setShowMedRecordsModal(false)} className="mt-4 w-full text-center font-body text-xs text-muted-foreground hover:text-foreground transition-colors">
-              {lang === "ar" ? "إغلاق" : "Close"}
-            </button>
-          </motion.div>
-        </div>
-      )}
     </>
   );
 };

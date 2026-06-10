@@ -43,6 +43,7 @@ const AppointmentRequest = lazyWithRetry(() => import("./pages/AppointmentReques
 const AppointmentBookingFallback = lazyWithRetry(() => import("./pages/AppointmentBookingFallback.tsx"));
 const ContactUs = lazyWithRetry(() => import("./pages/ContactUs.tsx"));
 const VerifyNationalId = lazyWithRetry(() => import("./pages/VerifyNationalId.tsx"));
+const MyMedicalReports = lazyWithRetry(() => import("./pages/MyMedicalReports.tsx"));
 const FAQ = lazyWithRetry(() => import("./pages/FAQ.tsx"));
 const MedicalRepVisitBooking = lazyWithRetry(() => import("./pages/MedicalRepVisitBooking.tsx"));
 const MedicalRecordsRequest = lazyWithRetry(() => import("./pages/MedicalRecordsRequest.tsx"));
@@ -139,6 +140,7 @@ const App = () => (
             <Route path="/fifth-floor-cafe" element={<FifthFloorCafe />} />
             <Route path="/newborn-photography" element={<NewbornPhotography />} />
             <Route path="/verify-national-id" element={<VerifyNationalId />} />
+            <Route path="/my-medical-reports" element={<MyMedicalReports />} />
             <Route path="*" element={<NotFound />} />
             </Routes>
             </Suspense>

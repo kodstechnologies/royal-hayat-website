@@ -185,7 +185,7 @@ const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) =
           <div className="max-w-5xl mx-auto">
             <ScrollAnimationWrapper>
               <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-8 text-center">
-                {isAr ? "معرض الصور" : "Photo Gallery"}
+                {isAr ? "لقطات المميزة" : "Photo Gallery"}
               </h2>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {galleryImages.map((src, i) => (

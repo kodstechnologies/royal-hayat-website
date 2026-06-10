@@ -72,7 +72,7 @@ const CAFE_AR_MENU =
 const CAFE_AR_DESSERT =
   "واختتموا تجربتكم بقطعة من الكيك أو المخبوزات الطازجة، إلى جانب تشكيلة من القهوة المختصة وأنواع الشاي الفاخرة.";
 const CAFE_AR_HOURS =
-  "يفتح الليوان بيسترو أبوابه يوميًا من الساعة 8 صباحًا وحتى 11 مساءً، ليكون وجهتكم المثالية للإفطار، والغداء، والعشاء، أو للاستمتاع بوجبة خفيفة في أي وقت من اليوم.";
+  "يفتتح الليوان بيسترو أبوابه يوميًا من الساعة 8 صباحًا وحتى 11 مساءً، ليكون وجهتكم المثالية للإفطار، والغداء، والعشاء، أو للاستمتاع بوجبة خفيفة في أي وقت من اليوم.";
 const FIFTH_FLOOR_AR_TITLE = "مقهى الدور الخامس";
 const FIFTH_FLOOR_AR_SUBTITLE = "مساحة دافئة للوجبات الخفيفة والمشروبات المنعشة";
 const FIFTH_FLOOR_AR_INTRO =
@@ -281,7 +281,7 @@ const HospitalityServices = ({
             "بث مباشر من حضانة الأطفال عبر كاميرا خاصة لراحة وطمأنينة العائلة",
             "هاتف لسهولة التواصل",
             "خدمة إنترنت عالية السرعة مجانًا",
-            "خدمة تنظيف متوفرة على مدار 24 ساعة لضمان أعلى مستويات الراحة والنظافة",
+            "خدمة تنظيف متوفرة على مدار الساعة لضمان أعلى مستويات الراحة والنظافة",
             "قائمة طعام خاصة وتجربة ضيافة راقية داخل الجناح وفق تفضيلاتكم",
           ]
         : ["Suite Area: 130 square meters", "Hill-Rom® Intelligent Medical Bed for optimal patient comfort", "Luxury seating and a lavish reception area designed for you and your guests", "Private Orchid Lounge for visiting relatives and friends", "Companion room with private bathroom", "Pantry equipped with a refrigerator, complimentary coffee, and tea-making facilities", "Interactive television featuring your favorite channels on the Orbit-Showtime Network", "Dedicated patient education channel for informative care", "Hugs & Kisses Mother & Baby Security System for peace of mind", "Live baby camera connection with the nursery", "IP telephone for easy communication", "Complimentary high-speed Wi-Fi internet access", "24-hour housekeeping service ensures a pristine environment", "Exclusive private dining menu tailored to your preferences"],
@@ -312,7 +312,7 @@ const HospitalityServices = ({
             "بث مباشر من حضانة الأطفال عبر كاميرا خاصة لراحة وطمأنينة العائلة",
             "هاتف لسهولة التواصل",
             "خدمة إنترنت عالية السرعة مجانًا",
-            "خدمة تنظيف متوفرة على مدار 24 ساعة",
+            "خدمة تنظيف متوفرة على مدار الساعة",
             "قائمة طعام خاصة وتجربة ضيافة راقية داخل الجناح وفق تفضيلاتكم",
           ]
         : ["Suite Area: 130 square meters", "Hill-Rom® Intelligent Medical Bed for enhanced patient comfort", "Elegant luxury seating in the reception area", "Companion room with private bathroom", "Fully equipped pantry and mini kitchen with a refrigerator, complimentary coffee, and tea-making facilities", "Interactive television featuring your favorite channels via the Orbit-Showtime Network", "Dedicated patient education channel", "Hugs & Kisses Mother & Baby Security System", "Live baby camera connection with the nursery", "IP telephone for seamless communication", "Complimentary high-speed Wi-Fi internet access", "24-hour housekeeping service", "Exclusive private dining menu tailored to your preferences"],
@@ -342,7 +342,7 @@ const HospitalityServices = ({
             "هاتف لسهولة التواصل",
             "خدمة إنترنت عالية السرعة مجانًا",
             "مطبخ صغير مجهز بثلاجة ومرافق إعداد القهوة والشاي مجانًا",
-            "خدمة تنظيف متوفرة على مدار 24 ساعة",
+            "خدمة تنظيف متوفرة على مدار الساعة",
             "قائمة طعام خاصة وتجربة ضيافة راقية داخل الجناح",
           ]
         : ["Suite Area: 90 square meters", "Hill-Rom® Intelligent Medical Bed for superior patient comfort", "Luxury seating in the reception area", "Interactive television with your favorite channels from the Orbit-Showtime Network", "Dedicated patient education channel", "Hugs & Kisses Mother & Baby Security System", "Live baby camera connection with the nursery", "IP telephone for easy communication", "Complimentary high-speed Wi-Fi internet access", "Mini kitchen with a refrigerator, complimentary coffee, and tea-making facilities", "24-hour housekeeping service", "Exclusive private dining menu"],
@@ -372,7 +372,7 @@ const HospitalityServices = ({
             "هاتف لسهولة التواصل",
             "خدمة إنترنت عالية السرعة مجانًا",
             "ركن ضيافة مجهز بثلاجة ومرافق إعداد القهوة والشاي مجانًا",
-            "خدمة تنظيف متوفرة على مدار 24 ساعة",
+            "خدمة تنظيف متوفرة على مدار الساعة",
             "قائمة طعام خاصة وتجربة ضيافة راقية داخل الجناح",
           ]
         : ["Suite Area: 65 square meters", "Hill-Rom® Intelligent Medical Bed for optimal patient comfort", "Convenient seating and a large reception area", "Interactive television featuring your favorite channels from the Orbit-Showtime Network", "Dedicated patient education channel", "Hugs & Kisses Mother & Baby Security System", "Live baby camera connection with the nursery", "IP telephone for seamless communication", "Complimentary high-speed Wi-Fi internet access", "Pantry with a refrigerator, complimentary coffee, and tea-making facilities", "24-hour housekeeping service", "Exclusive private dining menu"],
@@ -403,7 +403,7 @@ const HospitalityServices = ({
             "خدمة إنترنت عالية السرعة مجانًا",
             "ثلاجة صغيرة داخل الجناح",
             "مرافق إعداد القهوة والشاي مجانًا",
-            "خدمة تنظيف متوفرة على مدار 24 ساعة",
+            "خدمة تنظيف متوفرة على مدار الساعة",
             "قائمة طعام خاصة وتجربة ضيافة راقية داخل الجناح",
           ]
         : ["Suite Area: 32 square meters", "Hill-Rom® Intelligent Medical Bed for enhanced comfort", "Luxury seating area for relaxation", "Interactive television with your favorite channels from the Orbit-Showtime Network", "Dedicated patient education channel", "Hugs & Kisses Mother & Baby Security System", "Live baby camera connection with the nursery", "IP telephone for convenient communication", "Complimentary high-speed Wi-Fi internet access", "Mini refrigerator", "Coffee and tea-making facilities are provided free of charge", "24-hour housekeeping service", "Exclusive private dining menu"],
@@ -434,7 +434,7 @@ const HospitalityServices = ({
             "خدمة إنترنت عالية السرعة مجانًا",
             "ثلاجة صغيرة داخل الجناح",
             "مرافق إعداد القهوة والشاي للوالدين مجانًا",
-            "خدمة تنظيف متوفرة على مدار 24 ساعة",
+            "خدمة تنظيف متوفرة على مدار الساعة",
             "قائمة طعام خاصة بالأطفال تناسب أذواقهم واحتياجاتهم",
           ]
         : ["Suite Area: 32 square meters", "Hill-Rom® Intelligent Medical Bed for comfort and safety", "Colorful seating area to brighten the day", "Interactive television with your child's favorite channels from the Orbit-Showtime Network", "Dedicated patient education channel", "On-demand gaming services for fun and relaxation", "Special DVD program menu designed for kids", "IP telephone for easy communication", "Complimentary high-speed Wi-Fi internet access", "Mini refrigerator", "Coffee and tea-making facilities for parents", "24-hour housekeeping service", "Special kids' menu crafted to please young palates"],
@@ -625,7 +625,7 @@ const HospitalityServices = ({
                     <h4 className="font-serif text-base text-foreground mb-3">{renderColonHeading(isAr ? "مثالية لـ:" : "Ideal for:")}</h4>
                     <div className="space-y-2 mb-5">
                       {(isAr
-                        ? ["الفعاليات حتى 100 ضيف", "التجمعات العائلية والاجتماعات الودية", "جلسات النقاش واللقاءات الخاصة", "ترتيبات الجلوس التقليدية التي تعزز الألفة والراحة"]
+                        ? ["الفعاليات حتى 100 ضيف", "التجمعات العائلية والاجتماعات الودية", "جلسات النقاش واللقاءات الخاصة", "مساحات جلوس تقليدية مصممة لتعزيز التواصل والراحة"]
                         : ["Up to 100 guests", "Casual gatherings", "Discussions", "Traditional seating arrangements that foster conversation and warmth"]
                       ).map((item, i) => (
                         <div key={i} className="flex items-center gap-3">
@@ -674,7 +674,7 @@ const HospitalityServices = ({
                 images={cafeImages}
                 slide={cafeSlide}
                 setSlide={setCafeSlide}
-                altForIndex={(i) => (isAr ? `بيسترو الليوان ${i + 1}` : `Al Liwan Bistro image ${i + 1}`)}
+                altForIndex={(i) => (isAr ? `الليوان بيسترو ${i + 1}` : `Al Liwan Bistro image ${i + 1}`)}
                 autoPlay
                 onImageClick={setLightboxImage}
                 isAr={isAr}
@@ -1292,7 +1292,7 @@ const HospitalityServices = ({
                 images={cafeImages}
                 slide={cafeSlide}
                 setSlide={setCafeSlide}
-                altForIndex={(i) => (isAr ? `بيسترو الليوان ${i + 1}` : `Al Liwan Bistro image ${i + 1}`)}
+                altForIndex={(i) => (isAr ? `الليوان بيسترو ${i + 1}` : `Al Liwan Bistro image ${i + 1}`)}
                 autoPlay
                 onImageClick={setLightboxImage}
                 isAr={isAr}

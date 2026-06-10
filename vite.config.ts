@@ -10,12 +10,20 @@ export default defineConfig(({ mode }) => ({
       overlay: false,
     },
     proxy: {
+      "/Runtime/uploads": {
+        target: "http://localhost:8001",
+        changeOrigin: true,
+      },
+      "/wp-content/uploads": {
+        target: "http://localhost:8001",
+        changeOrigin: true,
+      },
       "/api": {
-        target: "http://localhost:8000",
+        target: "http://localhost:8001",
         changeOrigin: true,
       },
       "/api/socket.io": {
-        target: "http://localhost:8000",
+        target: "http://localhost:8001",
         changeOrigin: true,
         ws: true,
       },

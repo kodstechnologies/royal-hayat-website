@@ -48,7 +48,7 @@ const INSURANCE_AR_ASSISTANCE_ITEMS = [
   "المساعدة في التسجيل والتقديرات المالية",
   "التنسيق للحصول على الموافقات المسبقة للتنويم والعمليات الجراحية",
 ];
-const INSURANCE_AR_HOURS_INTRO = "يفتح مكتب التأمين أبوابه خلال الأوقات التالية:";
+const INSURANCE_AR_HOURS_INTRO = "يفتتح مكتب التأمين أبوابه خلال الأوقات التالية:";
 const INSURANCE_AR_HOURS_SUN_THU = "الأحد إلى الخميس:";
 const INSURANCE_AR_HOURS_SUN_THU_TIME = "8:00 صباحًا – 8:00 مساءً";
 const INSURANCE_AR_HOURS_SAT = "السبت:";

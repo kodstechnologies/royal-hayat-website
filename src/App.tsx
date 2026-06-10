@@ -53,6 +53,7 @@ const JobApplication = lazyWithRetry(() => import("./pages/JobApplication.tsx"))
 const CSR = lazyWithRetry(() => import("./pages/CSR.tsx"));
 const FifthFloorCafe = lazyWithRetry(() => import("./pages/FifthFloorCafe.tsx"));
 const NewbornPhotography = lazyWithRetry(() => import("./pages/NewbornPhotography.tsx"));
+const RuntimePdfViewer = lazyWithRetry(() => import("./pages/RuntimePdfViewer.tsx"));
 const NotFound = lazyWithRetry(() => import("./pages/NotFound.tsx"));
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -96,6 +97,7 @@ const App = () => (
                 />
               }
             />
+            
             <Route path="/patients-visitors" element={<PatientsVisitors />} />
             <Route path="/al-safwa" element={<AlSafwaProgram />} />
             <Route path="/home-health" element={<HomeHealth />} />
@@ -107,6 +109,7 @@ const App = () => (
             <Route path="/medical-services/:slug" element={<DepartmentDetail />} />
             <Route path="/medical-services/:slug/:subSlug" element={<DepartmentDetail />} />
             <Route path="/about-us" element={<AboutUs />} />
+            
             <Route
               path="/work-with-us"
               element={
@@ -141,6 +144,8 @@ const App = () => (
             <Route path="/newborn-photography" element={<NewbornPhotography />} />
             <Route path="/verify-national-id" element={<VerifyNationalId />} />
             <Route path="/my-medical-reports" element={<MyMedicalReports />} />
+            <Route path="/Runtime/uploads/*" element={<RuntimePdfViewer />} />
+            <Route path="/wp-content/uploads/*" element={<RuntimePdfViewer />} />
             <Route path="*" element={<NotFound />} />
             </Routes>
             </Suspense>

@@ -29,10 +29,18 @@ const WhyRoyaleHayat = () => {
             <ScrollAnimationWrapper direction="right">
               <div className="w-12 h-0.5 bg-accent mb-4 sm:mb-6" />
               <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3 sm:mb-4">{t("whyRoyaleHayat")}</p>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-foreground mb-2 leading-tight">
+              <h2
+                className={`text-2xl sm:text-3xl md:text-4xl font-serif text-foreground leading-tight ${
+                  t("medicine") ? "mb-2" : "mb-4 sm:mb-6"
+                }`}
+              >
                 {t("whereLuxuryMeets")} <span className="text-accent italic">{t("worldClass")}</span>
               </h2>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-foreground mb-4 sm:mb-6 leading-tight">{t("medicine")}</h2>
+              {t("medicine") ? (
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-foreground mb-4 sm:mb-6 leading-tight">
+                  {t("medicine")}
+                </h2>
+              ) : null}
               <p className="text-muted-foreground font-body text-sm leading-relaxed mb-8 sm:mb-10">{t("whyDesc")}</p>
             </ScrollAnimationWrapper>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">

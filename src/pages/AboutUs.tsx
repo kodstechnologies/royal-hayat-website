@@ -88,7 +88,7 @@ const leaders = [
       "Shibu Thomas Mathew has been part of Royale Hayat Hospital’s leadership journey since its inception, joining the pre-opening team in 2006 and contributing to the establishment of a trusted, world-class healthcare institution. He was appointed Financial Controller in 2007 and promoted to Chief Financial Officer in 2010.",
       "In his role as Chief Financial Officer and Director – Human Resources Capital, Mr. Shibu provides strategic leadership that integrates financial stewardship with people-centric governance. He oversees long-term investment planning, financial performance management, budget governance, and human capital strategy across all Group companies. He also serves as a Board Member for several subsidiaries, supporting strong governance, ethical decision-making, and sustainable growth.",
       "With prior senior leadership experience in finance, accounting, and treasury roles across multinational organizations, Mr. Shibu brings a balanced approach combining operational discipline, strategic foresight, and a deep commitment to people and purpose.",
-      "He is a CMA (USA), ACMA India with IFRS credentials and executive education in healthcare strategy from Harvard T.H. Chan School of Public Health.",
+      "He is a CMA (USA), ACMA India with IFRS credentials and executive education in healthcare strategy from Harvard T.H. Chan School of Public Health",
     ],
     bioAr: [
       "يُعد شيبو توماس ماثيو أحد أعضاء فريق القيادة منذ تأسيس مستشفى رويال حياة، حيث انضم إلى فريق ما قبل الافتتاح عام 2006 وأسهم في بناء مؤسسة صحية عالمية موثوقة. عُيِّن مراقبًا ماليًا عام 2007 ثم تمت ترقيته إلى مدير مالي تنفيذي عام 2010.",
@@ -377,6 +377,9 @@ const AboutUs = () => {
           <div className="container mx-auto px-6">
             <ScrollAnimationWrapper>
               <div className="text-center mb-10">
+                <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">
+                  {t("missionValues")}
+                </p>
                 <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">
                   <Target className="w-4 h-4 inline mr-1" />
                   {t("ourMission")}

@@ -58,6 +58,8 @@ type BookingDeptRow = {
   id: string;
   name: string;
   nameAr: string;
+  desc: string;
+  descAr: string;
   category: string;
   slug: string;
   specialityCode?: string;
@@ -141,6 +143,8 @@ function apiRowToBookingDept(row: Record<string, unknown>): BookingDeptRow | nul
     id,
     name,
     nameAr: name,
+    desc: "",
+    descAr: "",
     category: category || "—",
     slug: departmentSlug(name, id),
     specialityCode: typeof row.departmentId === "string" ? row.departmentId : undefined,
@@ -454,6 +458,8 @@ const BookAppointment = () => {
           id: dept.id.toString(),
           name: dept.name,
           nameAr: dept.nameAr,
+          desc: dept.desc || "",
+          descAr: dept.descAr || "",
           category: dept.category || "Others",
           slug: dept.slug,
           specialityCode: dept.clinicCode,
@@ -578,10 +584,14 @@ const BookAppointment = () => {
     setShowReturningPatientModal(false);
   }, [locState?.resetBookingFlow]);
   const filteredDepts = useMemo(() => {
+    const query = deptSearch.toLowerCase();
     return departmentsList.filter(
       (d) =>
-        d.name.toLowerCase().includes(deptSearch.toLowerCase()) ||
-        d.category.toLowerCase().includes(deptSearch.toLowerCase())
+        d.name.toLowerCase().includes(query) ||
+        d.nameAr.toLowerCase().includes(query) ||
+        d.desc.toLowerCase().includes(query) ||
+        d.descAr.toLowerCase().includes(query) ||
+        d.category.toLowerCase().includes(query)
     );
   }, [departmentsList, deptSearch]);
   const displayDepts = useMemo(() => {

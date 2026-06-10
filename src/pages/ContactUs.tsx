@@ -15,7 +15,10 @@ const ContactUs = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [form, setForm] = useState({ fullName: "", email: "", phone: "", department: "", message: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const departments = departmentsData.slice(0, 20).map((d) => d.name);
+  const departments = departmentsData.slice(0, 20).map((d) => ({
+    name: d.name,
+    nameAr: d.nameAr,
+  }));
   const validate = () => {
     const e: Record<string, string> = {};
     if (!form.fullName.trim()) e.fullName = lang === "ar" ? "الاسم مطلوب" : "Full name is required";
@@ -193,10 +196,18 @@ const ContactUs = () => {
                       <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
                         {lang === "ar" ? "القسم" : "Department"}
                       </label>
-                      <select value={form.department} onChange={(e) => updateField("department", e.target.value)}
-                        className="w-full px-4 py-3 rounded-xl border border-border bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30">
+                      <select
+                        value={form.department}
+                        onChange={(e) => updateField("department", e.target.value)}
+                        dir={lang === "ar" ? "rtl" : "ltr"}
+                        className="w-full px-4 py-3 rounded-xl border border-border bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30"
+                      >
                         <option value="">{lang === "ar" ? "اختر القسم" : "Select Department"}</option>
-                        {departments.map(d => <option key={d} value={d}>{d}</option>)}
+                        {departments.map((d) => (
+                          <option key={d.name} value={d.name}>
+                            {lang === "ar" ? d.nameAr : d.name}
+                          </option>
+                        ))}
                       </select>
                     </div>
                     <div>

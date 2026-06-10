@@ -365,7 +365,7 @@ const IntelligentBooking = () => {
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       onClick={() => {
-                        window.open("https://afyati.royalehayat.com", "_blank");
+                        window.open("https://afyati.royalehayat.com/public/index.html", "_blank");
                       }}
                       className="flex flex-col items-center gap-2 p-5 rounded-xl border border-border bg-popover hover:border-accent/40 hover:bg-accent/5 cursor-pointer transition-all text-center"
                     >

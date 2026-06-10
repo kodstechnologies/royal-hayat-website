@@ -73,7 +73,7 @@ const translations: Translations = {
   ourValues: { en: "Our Values", ar: "قيمنا" },
   missionStatement: { en: "Mission Statement", ar: "بيان الرسالة" },
   missionText: {
-    en: "Royale Hayat promises to deliver safe, modern, and high-quality medical care and services to society in an environment of compassion, comfort, and care. We will achieve this by setting and elevating global benchmarks in hospitality and through providing a culture of continuous learning, innovation, and excellence in healthcare.",
+    en: "Royale Hayat promises to deliver safe, modern, and high-quality medical care and services to society in an environment of compassion, comfort, and care. We will achieve this by setting and elevating global benchmarks in hospitality and through providing a culture of continuous learning, innovation, and excellence in healthcare",
     ar: "يعد مستشفى رويال حياة بتقديم رعاية وخدمات طبية آمنة وحديثة وعالية الجودة للمجتمع، وذلك ضمن بيئة قائمة على الرحمة، الراحة، والاهتمام. ونسعى إلى تحقيق ذلك من خلال إعادة تعريف معايير الضيافة ووضع مقاييس عالمية جديدة، إلى جانب ترسيخ ثقافة التعلم المستمر، الابتكار، والتميّز في الرعاية الصحية.",
   },
   patientCenteredCare: { en: "Patient-Centered Care", ar: "الرعاية المتمحورة حول المريض" },
@@ -125,11 +125,11 @@ const translations: Translations = {
   },
   csrInit1Date: { en: "Held on 7 October 2025", ar: "أُقيمت بتاريخ 7 أكتوبر 2025" },
   csrInit1P1: {
-    en: "Within its walls, Royale Hayat Hospital hosted an exclusive Breast Cancer Awareness lecture led by our team of expert consultants. The session emphasized early detection, advanced treatment options, and holistic patient care, including emotional well-being.",
+    en: "Within its walls, Royale Hayat Hospital proudly hosted a specialised Breast Cancer Awareness lecture led by our team of expert consultants. The session emphasized early detection, advanced treatment options, and holistic patient care, including emotional well-being.",
     ar: "استضاف مستشفى رويال حياة بكل فخر محاضرة توعوية حصرية حول سرطان الثدي، قدّمها نخبة من استشاريي المستشفى، حيث ركزت الجلسة على أهمية الكشف المبكر، وأحدث الخيارات العلاجية، والرعاية الشاملة التي تراعي الجوانب النفسية والعاطفية للمريضات.",
   },
   csrInit1P2: {
-    en: "This luxurious and informative initiative reflects our dedication to empowering women with knowledge, compassion, and exceptional healthcare standards.",
+    en: "This luxurious and informative initiative reflects our dedication to empowering women with knowledge, compassion, and exceptional healthcare standards",
     ar: "وتعكس هذه المبادرة الهادفة والتثقيفية التزامنا المستمر بتمكين المرأة بالمعرفة، والرعاية الإنسانية، وتقديم أعلى معايير الرعاية الصحية.",
   },
   csrInit2Title: {
@@ -174,7 +174,7 @@ const translations: Translations = {
   leadership: { en: "Leadership Team", ar: "فريق القيادة" },
   leadershipSubtitle: { en: "Leading the Journey to Excellence", ar: "قيادة مسيرة التميّز" },
   leadershipDesc: {
-    en: "Learn more about our visionary leadership team responsible for fulfilling the vision of our Group, managing Royale Hayat Hospital activities as the leading luxurious healthcare provider in Kuwait, and steering the organization towards a bright future.",
+    en: "Learn more about our visionary leadership team responsible for fulfilling the vision of our Group, managing Royale Hayat Hospital activities as the leading premium healthcare provider in Kuwait, and steering the organization towards a bright future.",
     ar: "تعرّفوا على فريقنا القيادي صاحب الرؤية، والمسؤول عن تحقيق تطلعات مجموعة رويال حياة، وإدارة عمليات المستشفى باعتباره أحد أبرز مقدمي الرعاية الصحية الفاخرة في الكويت، وقيادة المؤسسة نحو مستقبل أكثر إشراقًا وتميزًا",
   },
   careAtHome: { en: "Care at Home", ar: "خدمات الرعاية المنزلية" },
@@ -273,7 +273,7 @@ const translations: Translations = {
     ar: "في أكثر لحظات الحياة عمقاً ومعنى، ينبغي للرعاية الصحية أن تكون إنسانية حقاً.",
   },
   heroDesc: {
-    en: "In 2006, a different vision took shape. We set out to create a healthcare destination where patients would feel cared for in every sense, from the\nvery first step inside to the moment they returned home. A space where\nhealing would be serene, and every interaction would be attentive and respectful.\n\nThis vision became Royale Hayat Hospital.",
+    en: "In 2006, a different vision took shape. We set out to create a healthcare destination where patients would feel cared for in every sense, from the\nvery first step inside to the moment they return home. A space where\nhealing would be serene, and every interaction would be attentive and respectful.\n\nThis vision became Royale Hayat Hospital.",
     ar: "في عام 2006، وُلدت رؤية مختلفة. رؤية جديدة تهدف إلى إنشاء وجهة صحية يشعر فيها المرضى بالرعاية الحقيقية بكل تفاصيلها، منذ اللحظة الأولى لدخولهم وحتى عودتهم إلى منازلهم. مكان يجمع بين العلاج والسكينة، حيث تُقدَّم كل تجربة بعناية واحترام واهتمام صادق.\n\nومن هنا، انطلقت قصة مستشفى رويال حياة",
   },
   heroTagline: { en: "A hospital experience unlike any other.", ar: "تجربة مستشفى لا مثيل لها." },
@@ -329,7 +329,7 @@ const translations: Translations = {
   available: { en: "Available", ar: "متاح" },
   currentlyUnavailable: { en: "Currently Unavailable", ar: "غير متاح حالياً" },
   clickToRequest: { en: "Click to request an appointment (6-12 hr response)", ar: "انقر لطلب موعد (الرد خلال 6-12 ساعة)" },
-  registeredPatient: { en: "Registered at Royal Hayat", ar: "مريض مسجل" },
+  registeredPatient: { en: "Registered at Royale Hayat", ar: "مريض مسجل" },
   alreadyAccount: { en: "Already have an account? Log in to continue.", ar: "لديك حساب؟ سجل دخولك للمتابعة." },
   firstTimeVisitor: { en: "First-Time Visitor", ar: "زائر لأول مرة" },
   newToRoyale: { en: "New to Royale Hayat? Fill in your details.", ar: "جديد في رويال حياة؟ أدخل بياناتك." },

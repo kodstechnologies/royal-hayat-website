@@ -43,9 +43,7 @@ const TestimonialsSection = () => {
           .map(mapHospitalFeedbackToTestimonial)
           .filter((item) => item.text || item.textAr);
 
-        if (visible.length > 0) {
-          setHospitalFeedbacks(visible);
-        }
+        setHospitalFeedbacks([...visible, ...patientTestimonials]);
       })
       .catch((error) => {
         console.error("Failed to load hospital feedbacks:", error);

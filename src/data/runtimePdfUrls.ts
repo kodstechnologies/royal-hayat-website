@@ -120,10 +120,13 @@ export const RUNTIME_PDF_GROUPS: RuntimePdfGroup[] = [
 /** Flat list of every legacy PDF */
 export const ALL_RUNTIME_PDFS: RuntimePdfItem[] = RUNTIME_PDF_GROUPS.flatMap((g) => g.items);
 
-/** Quick-access named paths */
-export const RUNTIME_PDF_URLS = {
+/** Relative legacy paths — use buildRuntimePdfUrl() for direct backend links */
+export const RUNTIME_PDF_PATHS = {
   alLiwanMenu: "/Runtime/uploads/AlLiwan_%20menu_2021.pdf",
   birthPlanBooklet: "/Runtime/uploads/Birth%20plan%20booklet_27May2021_final.pdf",
   alLiwanQrFoodMenu: "/wp-content/uploads/2026/04/Al_Liwan_QR_Food_Menu.pdf",
   fifthFloorFoodMenu: "/wp-content/uploads/2026/04/RHH_5th_Floor_Food_Menu.pdf",
 } as const;
+
+/** @deprecated Use RUNTIME_PDF_PATHS with buildRuntimePdfUrl() */
+export const RUNTIME_PDF_URLS = RUNTIME_PDF_PATHS;

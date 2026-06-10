@@ -329,7 +329,7 @@ const translations: Translations = {
   available: { en: "Available", ar: "متاح" },
   currentlyUnavailable: { en: "Currently Unavailable", ar: "غير متاح حالياً" },
   clickToRequest: { en: "Click to request an appointment (6-12 hr response)", ar: "انقر لطلب موعد (الرد خلال 6-12 ساعة)" },
-  registeredPatient: { en: "Registered at Royal Hayat", ar: "مريض مسجل" },
+  registeredPatient: { en: "Registered at Royale Hayat", ar: "مريض مسجل" },
   alreadyAccount: { en: "Already have an account? Log in to continue.", ar: "لديك حساب؟ سجل دخولك للمتابعة." },
   firstTimeVisitor: { en: "First-Time Visitor", ar: "زائر لأول مرة" },
   newToRoyale: { en: "New to Royale Hayat? Fill in your details.", ar: "جديد في رويال حياة؟ أدخل بياناتك." },

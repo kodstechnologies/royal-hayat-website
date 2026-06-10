@@ -206,7 +206,7 @@ export const en = {
   "available": "Available",
   "currentlyUnavailable": "Currently Unavailable",
   "clickToRequest": "Click to request an appointment (6-12 hr response)",
-  "registeredPatient": "Registered at Royal Hayat",
+  "registeredPatient": "Registered at Royale Hayat",
   "alreadyAccount": "Already have an account? Log in to continue.",
   "firstTimeVisitor": "First-Time Visitor",
   "newToRoyale": "New to Royale Hayat? Fill in your details.",

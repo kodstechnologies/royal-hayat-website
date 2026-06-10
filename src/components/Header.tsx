@@ -735,7 +735,7 @@ const Header = () => {
             </p>
             <div className="flex gap-4 mt-6 justify-center">
               <button
-                onClick={() => { setShowMedRecordsModal(false); window.open("https://afyati.royalehayat.com", "_blank"); }}
+                onClick={() => { setShowMedRecordsModal(false); window.open("https://afyati.royalehayat.com/public/index.html", "_blank"); }}
                 className="flex-1 bg-primary text-primary-foreground py-3 rounded-xl font-body text-sm tracking-wider uppercase hover:bg-primary/90 transition-colors text-center"
               >
                 {lang === "ar" ? "نعم" : "YES"}

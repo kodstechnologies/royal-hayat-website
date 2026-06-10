@@ -63,6 +63,11 @@ export type IdentityDataResponse = {
   skippedStart?: boolean;
   dataSource?: "data" | "mock";
 };
+export type MedicalReportsResponse = {
+  civilId: string;
+  contentType: string;
+  data: unknown;
+};
 type ApiEnvelope<T> = {
   success: boolean;
   message: string;
@@ -84,6 +89,10 @@ export const startIdentityVerification = async (payload: StartIdentityPayload): 
 export const getIdentityStatus = async (operationId: string): Promise<IdentityStatusResponse> => {
   const response = await api.get(`/api/v1/identity/status/${encodeURIComponent(operationId)}`);
   return (response.data as ApiEnvelope<IdentityStatusResponse>)?.data;
+};
+export const getMedicalReports = async (civilId: string): Promise<MedicalReportsResponse> => {
+  const response = await api.get(`/api/v1/identity/medical-reports/${encodeURIComponent(civilId.trim())}`);
+  return (response.data as ApiEnvelope<MedicalReportsResponse>)?.data;
 };
 export const getIdentityData = async (civilId: string): Promise<IdentityDataResponse> => {
   const normalizedCivilId = civilId.trim();

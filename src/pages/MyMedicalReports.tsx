@@ -6,17 +6,18 @@ import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
+  getMedicalReports,
   startIdentityVerification,
   type IdentityStatusResponse,
+  type MedicalReportsResponse,
   type StartIdentityPayload,
 } from "@/api/identity";
 import { subscribeToIdentityVerification } from "@/api/identitySocket";
-import { buildMedicalReportsCallbackUrl } from "@/utils/medicalReportsCallback";
 
 const PHONE_DISPLAY = "+965 2536 0000";
 const PHONE_TEXT_CLASS = "inline-block [direction:ltr] [unicode-bidi:isolate]";
 
-type Phase = "idle" | "starting" | "waiting" | "redirecting" | "failed" | "not_verified";
+type Phase = "idle" | "starting" | "waiting" | "loading_reports" | "loaded" | "failed" | "not_verified";
 
 const MyMedicalReports = () => {
   const { lang, t } = useLanguage();
@@ -25,6 +26,7 @@ const MyMedicalReports = () => {
   const [error, setError] = useState("");
   const [phase, setPhase] = useState<Phase>("idle");
   const [operationId, setOperationId] = useState("");
+  const [reports, setReports] = useState<MedicalReportsResponse | null>(null);
   const socketUnsubscribeRef = useRef<(() => void) | null>(null);
   const verificationDoneRef = useRef(false);
 
@@ -39,19 +41,30 @@ const MyMedicalReports = () => {
     return "";
   };
 
-  const resolveCivilId = (statusData: IdentityStatusResponse) =>
+  const resolveCivilId = (statusData: { civilId?: string | null }) =>
     (statusData?.civilId || nationalId.trim()).trim();
 
-  const redirectToMedicalReports = (civilId: string) => {
+  const loadMedicalReports = (civilId: string) => {
     if (!civilId) {
       setError(isAr ? "لم يتم استلام الرقم المدني." : "Civil ID was not received from verification.");
       setPhase("failed");
       return;
     }
-    setPhase("redirecting");
-    window.setTimeout(() => {
-      window.location.href = buildMedicalReportsCallbackUrl(civilId);
-    }, 800);
+    setPhase("loading_reports");
+    void (async () => {
+      try {
+        const result = await getMedicalReports(civilId);
+        setReports(result);
+        setPhase("loaded");
+      } catch {
+        setError(
+          isAr
+            ? "تعذر جلب التقارير الطبية. يرجى المحاولة مرة أخرى."
+            : "Failed to load your medical reports. Please try again.",
+        );
+        setPhase("failed");
+      }
+    })();
   };
 
   const handleVerificationResult = (statusData: IdentityStatusResponse) => {
@@ -63,7 +76,7 @@ const MyMedicalReports = () => {
       setPhase("not_verified");
       return;
     }
-    redirectToMedicalReports(resolveCivilId(statusData));
+    loadMedicalReports(resolveCivilId(statusData));
   };
 
   useEffect(() => {
@@ -93,6 +106,7 @@ const MyMedicalReports = () => {
     socketUnsubscribeRef.current?.();
     socketUnsubscribeRef.current = null;
     setOperationId("");
+    setReports(null);
     setPhase("idle");
     setError("");
   };
@@ -109,6 +123,7 @@ const MyMedicalReports = () => {
         setPhase("starting");
         setError("");
         setOperationId("");
+        setReports(null);
         socketUnsubscribeRef.current?.();
         socketUnsubscribeRef.current = null;
 
@@ -139,12 +154,12 @@ const MyMedicalReports = () => {
         }
 
         if (startData?.skippedStart === true && startData?.verified === true) {
-          redirectToMedicalReports(resolveCivilId(startData));
+          loadMedicalReports(resolveCivilId(startData));
           return;
         }
 
         if (startData?.verified === true) {
-          redirectToMedicalReports(civilId);
+          loadMedicalReports(civilId);
           return;
         }
 
@@ -187,7 +202,7 @@ const MyMedicalReports = () => {
     })();
   };
 
-  const isBusy = phase === "starting" || phase === "waiting" || phase === "redirecting";
+  const isBusy = phase === "starting" || phase === "waiting" || phase === "loading_reports";
   const showWaiting = Boolean(operationId) && phase === "waiting";
 
   return (
@@ -225,7 +240,7 @@ const MyMedicalReports = () => {
                 onChange={(event) => {
                   const next = event.target.value.replace(/\D/g, "").slice(0, 12);
                   setNationalId(next);
-                  if (phase !== "redirecting") {
+                  if (phase !== "loading_reports") {
                     resetVerification();
                   }
                 }}
@@ -237,7 +252,7 @@ const MyMedicalReports = () => {
               {error && <p className="font-body text-xs text-destructive mt-1">{error}</p>}
             </div>
 
-            {!operationId && phase !== "redirecting" && (
+            {!operationId && phase !== "loading_reports" && phase !== "loaded" && (
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.97 }}
@@ -274,12 +289,44 @@ const MyMedicalReports = () => {
               </div>
             )}
 
-            {phase === "redirecting" && (
+            {phase === "loading_reports" && (
               <div className="rounded-xl p-4 text-center border border-accent/20 bg-accent/5">
                 <Loader2 className="w-6 h-6 animate-spin text-accent mx-auto mb-2" />
                 <p className="font-body text-sm font-medium text-foreground">
-                  {isAr ? "تم التحقق بنجاح. جارٍ فتح تقاريرك الطبية..." : "Verified successfully. Opening your medical reports..."}
+                  {isAr ? "تم التحقق بنجاح. جارٍ جلب تقاريرك الطبية..." : "Verified successfully. Loading your medical reports..."}
                 </p>
+              </div>
+            )}
+
+            {phase === "loaded" && reports && (
+              <div className="rounded-xl border border-border overflow-hidden">
+                <div className="bg-muted/30 px-4 py-3 border-b border-border flex items-center justify-between gap-3">
+                  <p className="font-body text-sm font-medium text-foreground">
+                    {isAr ? "تقاريرك الطبية" : "Your Medical Reports"}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={resetVerification}
+                    className="text-xs font-body uppercase tracking-wider text-primary hover:text-primary/80 transition-colors"
+                  >
+                    {isAr ? "بحث جديد" : "New search"}
+                  </button>
+                </div>
+                {typeof reports.data === "string" &&
+                (reports.contentType.includes("html") || reports.data.trim().startsWith("<")) ? (
+                  <iframe
+                    title={isAr ? "التقارير الطبية" : "Medical Reports"}
+                    srcDoc={reports.data}
+                    sandbox=""
+                    className="w-full min-h-[70vh] bg-white"
+                  />
+                ) : (
+                  <pre className="p-4 font-mono text-xs text-foreground whitespace-pre-wrap break-words max-h-[70vh] overflow-auto [direction:ltr] text-left">
+                    {typeof reports.data === "string"
+                      ? reports.data
+                      : JSON.stringify(reports.data, null, 2)}
+                  </pre>
+                )}
               </div>
             )}
 

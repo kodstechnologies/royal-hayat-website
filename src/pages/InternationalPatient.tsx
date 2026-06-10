@@ -7,6 +7,9 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
+import PhoneInput from "react-phone-input-2";
+import type { CountryData } from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 import { createInternationalPatientEnquiry } from "@/api/internationalPatient";
 const InternationalPatient = () => {
   const { lang } = useLanguage();
@@ -22,23 +25,67 @@ const InternationalPatient = () => {
     { icon: Globe, label: isAr ? "خدمات الكونسيرج عند الطلب" : "Concierge services upon request" },
   ];
   const [form, setForm] = useState({
-    firstName: "", lastName: "", mobile: "", email: "", address: "", country: "", comments: "",
+    firstName: "", lastName: "", mobile: "965", email: "", address: "", country: "", comments: "",
+  });
+  const [mobileCountry, setMobileCountry] = useState<{ countryCode: string; dialCode: string }>({
+    countryCode: "kw",
+    dialCode: "965",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const getMobileLocalDigits = (phone: string, dialCode: string) => {
+    const digits = phone.replace(/\D/g, "");
+    return digits.startsWith(dialCode) ? digits.slice(dialCode.length) : digits;
+  };
+
+  const handleMobileChange = (value: string, country: CountryData | {}) => {
+    const data = country as CountryData;
+    const countryCode = data.countryCode || mobileCountry.countryCode;
+    const dialCode = data.dialCode || mobileCountry.dialCode;
+    setMobileCountry({ countryCode, dialCode });
+
+    const digits = value.replace(/\D/g, "");
+    if (countryCode === "kw") {
+      const localDigitsRaw = digits.startsWith(dialCode)
+        ? digits.slice(dialCode.length)
+        : digits;
+      const localDigits = localDigitsRaw.replace(/\D/g, "").slice(0, 8);
+      setForm((prev) => ({ ...prev, mobile: `${dialCode}${localDigits}` }));
+      return;
+    }
+    setForm((prev) => ({ ...prev, mobile: digits }));
+  };
+
   const validateForm = () => {
-    if (!form.firstName.trim() || !form.lastName.trim() || !form.email.trim() || !form.mobile.trim()) {
+    if (!form.firstName.trim() || !form.lastName.trim() || !form.email.trim()) {
       toast.error(isAr ? "يرجى ملء الحقول المطلوبة." : "Please fill in required fields.");
       return false;
     }
-    const mobileDigits = form.mobile.replace(/\D/g, "");
-    if (!/^\d{8,10}$/.test(mobileDigits)) {
+
+    const localDigits = getMobileLocalDigits(form.mobile, mobileCountry.dialCode);
+    if (!localDigits.length) {
+      toast.error(isAr ? "يرجى إدخال رقم الهاتف." : "Please enter a mobile number.");
+      return false;
+    }
+
+    if (mobileCountry.countryCode === "kw") {
+      if (localDigits.length !== 8) {
+        toast.error(
+          isAr
+            ? "رقم الكويت يجب أن يتكون من 8 أرقام."
+            : "Kuwait mobile number must be 8 digits.",
+        );
+        return false;
+      }
+    } else if (localDigits.length < 7 || localDigits.length > 15) {
       toast.error(
         isAr
-          ? "يرجى إدخال رقم جوال صحيح (8–10 أرقام)."
-          : "Please enter a valid mobile number (8–10 digits).",
+          ? "يرجى إدخال رقم جوال صحيح."
+          : "Please enter a valid mobile number.",
       );
       return false;
     }
+
     return true;
   };
   const handleSubmit = async (e: React.FormEvent) => {
@@ -58,7 +105,8 @@ const InternationalPatient = () => {
       toast.success(
         isAr ? "تم إرسال الطلب وسنتواصل معك." : "Request sent and we will get back to you.",
       );
-      setForm({ firstName: "", lastName: "", mobile: "", email: "", address: "", country: "", comments: "" });
+      setForm({ firstName: "", lastName: "", mobile: "965", email: "", address: "", country: "", comments: "" });
+      setMobileCountry({ countryCode: "kw", dialCode: "965" });
     } catch (error) {
       const backendMessage = axios.isAxiosError(error)
         ? error.response?.data?.message || error.message
@@ -76,6 +124,62 @@ const InternationalPatient = () => {
   const handleChange = (field: string, value: string) => setForm(prev => ({ ...prev, [field]: value }));
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
+      {isAr && (
+        <style>{`
+          .international-patient-phone-input[dir="rtl"] .react-tel-input .flag-dropdown {
+            height: 2.5rem;
+            background: hsl(var(--background));
+            border-color: hsl(var(--border));
+            left: auto !important;
+            right: 0 !important;
+            width: 3.25rem !important;
+            border-radius: 0 0.5rem 0.5rem 0;
+          }
+          .international-patient-phone-input[dir="rtl"] .react-tel-input .selected-flag {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 100% !important;
+            height: 100% !important;
+            gap: 0.3rem !important;
+            padding: 0 0.3rem !important;
+          }
+          .international-patient-phone-input[dir="rtl"] .react-tel-input .selected-flag .flag,
+          .international-patient-phone-input[dir="rtl"] .react-tel-input .selected-flag .arrow {
+            position: static !important;
+            inset: auto !important;
+            left: auto !important;
+            right: auto !important;
+            top: auto !important;
+            margin: 0 !important;
+            transform: none !important;
+            flex: 0 0 auto !important;
+          }
+          .international-patient-phone-input[dir="rtl"] .react-tel-input .selected-flag::before {
+            content: "";
+            order: 1;
+            width: 0;
+            height: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-top: 5px solid #6b7280;
+            flex-shrink: 0;
+          }
+          .international-patient-phone-input[dir="rtl"] .react-tel-input .selected-flag .arrow {
+            display: none !important;
+          }
+          .international-patient-phone-input[dir="rtl"] .react-tel-input .selected-flag .flag {
+            order: 2;
+            flex-shrink: 0;
+          }
+          .international-patient-phone-input[dir="rtl"] .react-tel-input .form-control {
+            padding-right: 3.5rem !important;
+            padding-left: 0.75rem !important;
+            text-align: right;
+          }
+        `}</style>
+      )}
       <Header />
       <section className="bg-primary py-16 md:py-20">
         <div className="container mx-auto px-6 text-center">
@@ -189,8 +293,39 @@ const InternationalPatient = () => {
               </div>
               <div>
                 <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "رقم الهاتف" : "Mobile"} *</label>
-                  <input type="tel" value={form.mobile} onChange={e => handleChange("mobile", e.target.value)}
-                  className="w-full rounded-lg border border-border bg-background px-4 py-2.5 font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                {isAr ? (
+                  <div className="international-patient-phone-input" dir="rtl">
+                    <PhoneInput
+                      country="kw"
+                      value={form.mobile}
+                      onChange={handleMobileChange}
+                      placeholder="أدخل الرقم"
+                      masks={{ kw: "........" }}
+                      enableLongNumbers
+                      inputClass="!w-full !h-10 !rounded-lg !border !border-border !bg-background !text-sm !font-body !text-foreground focus:!ring-2 focus:!ring-primary/30"
+                      buttonClass="!h-10 !border-border !bg-background"
+                      containerClass="!w-full"
+                      dropdownClass="!text-sm"
+                      enableSearch
+                      countryCodeEditable={false}
+                    />
+                  </div>
+                ) : (
+                  <PhoneInput
+                    country="kw"
+                    value={form.mobile}
+                    onChange={handleMobileChange}
+                    placeholder="Enter mobile number"
+                    masks={{ kw: "........" }}
+                    enableLongNumbers
+                    inputClass="!w-full !h-10 !rounded-lg !border !border-border !bg-background !px-12 !text-sm !font-body !text-foreground focus:!ring-2 focus:!ring-primary/30"
+                    buttonClass="!border-border !bg-background"
+                    containerClass="!w-full"
+                    dropdownClass="!text-sm"
+                    enableSearch
+                    countryCodeEditable={false}
+                  />
+                )}
               </div>
               <div>
                 <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "البريد الإلكتروني" : "Email"} *</label>

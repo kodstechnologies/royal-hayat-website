@@ -19,6 +19,12 @@ const ContactUs = () => {
     name: d.name,
     nameAr: d.nameAr,
   }));
+  const getDepartmentLabel = (departmentKey: string) => {
+    if (!departmentKey) return "";
+    const dept = departments.find((d) => d.name === departmentKey);
+    if (!dept) return departmentKey;
+    return lang === "ar" ? dept.nameAr : dept.name;
+  };
   const validate = () => {
     const e: Record<string, string> = {};
     if (!form.fullName.trim()) e.fullName = lang === "ar" ? "الاسم مطلوب" : "Full name is required";
@@ -33,7 +39,12 @@ const ContactUs = () => {
     if (!validate()) return;
     try {
       setIsSubmitting(true);
-      await postEnquiry(form);
+      await postEnquiry({
+        ...form,
+        department:
+          getDepartmentLabel(form.department) ||
+          (lang === "ar" ? "استفسار عام" : "General Inquiry"),
+      });
       setSubmitted(true);
       setForm({ fullName: "", email: "", phone: "", department: "", message: "" });
       toast.success(lang === "ar" ? "تم إرسال رسالتك بنجاح." : "Your message has been sent successfully.");

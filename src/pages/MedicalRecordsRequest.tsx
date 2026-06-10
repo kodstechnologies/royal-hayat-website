@@ -38,6 +38,8 @@ const DOCUMENT_TYPES: SpecificDocumentType[] = [
   "Others",
 ];
 
+const MAX_ATTACHMENT_SIZE_BYTES = 5 * 1024 * 1024;
+
 const CURRENT_YEAR = new Date().getFullYear();
 const DOB_FROM_YEAR = CURRENT_YEAR - 100;
 const DOB_TO_YEAR = CURRENT_YEAR;
@@ -109,11 +111,46 @@ const MedicalRecordsRequest = () => {
 
   const [recipientName, setRecipientName] = useState("");
   const [recipientEmail, setRecipientEmail] = useState("");
-  const [recipientPhone, setRecipientPhone] = useState("");
+  const [recipientPhone, setRecipientPhone] = useState("965");
   const [mobileCountry, setMobileCountry] = useState<{ countryCode: string; dialCode: string }>({
     countryCode: "kw",
     dialCode: "965",
   });
+
+  const getRecipientLocalDigits = (phone: string, dialCode: string) => {
+    const digits = phone.replace(/\D/g, "");
+    return digits.startsWith(dialCode) ? digits.slice(dialCode.length) : digits;
+  };
+
+  const isAttachmentTooLarge = (file: File) => file.size > MAX_ATTACHMENT_SIZE_BYTES;
+
+  const showAttachmentTooLargeToast = () => {
+    toast({
+      title: isAr ? "حجم الملف كبير جداً" : "File too large",
+      description: isAr
+        ? "يجب ألا يتجاوز حجم الملف 5 ميجابايت."
+        : "File size must not exceed 5 MB.",
+      variant: "destructive",
+    });
+  };
+
+  const handleIdentityAttachmentChange = (
+    file: File | undefined,
+    setAttachment: (file: File | null) => void,
+    input: HTMLInputElement | null,
+  ) => {
+    if (!file) {
+      setAttachment(null);
+      return;
+    }
+    if (isAttachmentTooLarge(file)) {
+      showAttachmentTooLargeToast();
+      if (input) input.value = "";
+      setAttachment(null);
+      return;
+    }
+    setAttachment(file);
+  };
 
   const [purposeValue, setPurposeValue] = useState("");
   const [otherPurpose, setOtherPurpose] = useState("");
@@ -161,7 +198,8 @@ const MedicalRecordsRequest = () => {
     setSpecificDocumentsOther("");
     setRecipientName("");
     setRecipientEmail("");
-    setRecipientPhone("");
+    setRecipientPhone("965");
+    setMobileCountry({ countryCode: "kw", dialCode: "965" });
     setPurposeValue("");
     setOtherPurpose("");
     setRequestedBy("");
@@ -213,14 +251,24 @@ const MedicalRecordsRequest = () => {
         });
         return;
       }
+      if (isAttachmentTooLarge(civilIdAttachment)) {
+        showAttachmentTooLargeToast();
+        return;
+      }
     }
-    if (validIdentification === "passportORGovtId" && !passportAttachment) {
-      toast({
-        title: isAr ? "حقل مطلوب" : "Required",
-        description: isAr ? "يرجى إرفاق الهوية الحكومية." : "Please attach the government ID.",
-        variant: "destructive",
-      });
-      return;
+    if (validIdentification === "passportORGovtId") {
+      if (!passportAttachment) {
+        toast({
+          title: isAr ? "حقل مطلوب" : "Required",
+          description: isAr ? "يرجى إرفاق الهوية الحكومية." : "Please attach the government ID.",
+          variant: "destructive",
+        });
+        return;
+      }
+      if (isAttachmentTooLarge(passportAttachment)) {
+        showAttachmentTooLargeToast();
+        return;
+      }
     }
     if (!dob) {
       toast({
@@ -354,7 +402,11 @@ const MedicalRecordsRequest = () => {
         return;
       }
     }
-    if (!recipientPhone.trim()) {
+    const recipientLocalDigits = getRecipientLocalDigits(
+      recipientPhone,
+      mobileCountry.dialCode,
+    );
+    if (!recipientLocalDigits.length) {
       toast({
         title: isAr ? "حقل مطلوب" : "Required",
         description: isAr ? "يرجى إدخال رقم هاتف المستلم." : "Please enter recipient contact number.",
@@ -362,11 +414,8 @@ const MedicalRecordsRequest = () => {
       });
       return;
     }
-    if (mobileCountry.countryCode === "kw" && recipientPhone.trim()) {
-      const mobileDigits = recipientPhone.replace(/\D/g, "");
-      const localDigits = mobileDigits.startsWith(mobileCountry.dialCode)
-        ? mobileDigits.slice(mobileCountry.dialCode.length)
-        : mobileDigits;
+    if (mobileCountry.countryCode === "kw") {
+      const localDigits = recipientLocalDigits;
       if (localDigits.length !== 8) {
         toast({
           title: isAr ? "رقم غير صالح" : "Invalid number",
@@ -397,11 +446,18 @@ const MedicalRecordsRequest = () => {
         passportOrGovernmentIdAttachment:
           validIdentification === "passportORGovtId" ? passportAttachment ?? undefined : undefined,
         specificAuthorization,
-        specificFromDate: format(serviceFromDate, "yyyy-MM-dd"),
-        specificToDate:
+        specificAuthorizationDate:
           specificAuthorization === "Discharge Summary"
             ? format(serviceFromDate, "yyyy-MM-dd")
-            : format(serviceToDate!, "yyyy-MM-dd"),
+            : undefined,
+        specificFromDate:
+          specificAuthorization === "specific documents"
+            ? format(serviceFromDate, "yyyy-MM-dd")
+            : undefined,
+        specificToDate:
+          specificAuthorization === "specific documents"
+            ? format(serviceToDate!, "yyyy-MM-dd")
+            : undefined,
         specialRequest: specialRequest.trim() || undefined,
         specificDocumentTypes:
           specificAuthorization === "specific documents" ? documentTypes : undefined,
@@ -453,6 +509,62 @@ const MedicalRecordsRequest = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {isAr && (
+        <style>{`
+          .medical-record-phone-input[dir="rtl"] .react-tel-input .flag-dropdown {
+            height: 2.5rem;
+            background: hsl(var(--background));
+            border-color: hsl(var(--input));
+            left: auto !important;
+            right: 0 !important;
+            width: 3.25rem !important;
+            border-radius: 0 0.375rem 0.375rem 0;
+          }
+          .medical-record-phone-input[dir="rtl"] .react-tel-input .selected-flag {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 100% !important;
+            height: 100% !important;
+            gap: 0.3rem !important;
+            padding: 0 0.3rem !important;
+          }
+          .medical-record-phone-input[dir="rtl"] .react-tel-input .selected-flag .flag,
+          .medical-record-phone-input[dir="rtl"] .react-tel-input .selected-flag .arrow {
+            position: static !important;
+            inset: auto !important;
+            left: auto !important;
+            right: auto !important;
+            top: auto !important;
+            margin: 0 !important;
+            transform: none !important;
+            flex: 0 0 auto !important;
+          }
+          .medical-record-phone-input[dir="rtl"] .react-tel-input .selected-flag::before {
+            content: "";
+            order: 1;
+            width: 0;
+            height: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-top: 5px solid #6b7280;
+            flex-shrink: 0;
+          }
+          .medical-record-phone-input[dir="rtl"] .react-tel-input .selected-flag .arrow {
+            display: none !important;
+          }
+          .medical-record-phone-input[dir="rtl"] .react-tel-input .selected-flag .flag {
+            order: 2;
+            flex-shrink: 0;
+          }
+          .medical-record-phone-input[dir="rtl"] .react-tel-input .form-control {
+            padding-right: 3.5rem !important;
+            padding-left: 0.75rem !important;
+            text-align: right;
+          }
+        `}</style>
+      )}
       <Header />
 
       <section className="pt-40 pb-16 bg-primary">
@@ -581,12 +693,18 @@ const MedicalRecordsRequest = () => {
                           accept=".png,.jpg,.jpeg,.pdf"
                           required
                           onChange={(e) =>
-                            setCivilIdAttachment(e.target.files?.[0] || null)
+                            handleIdentityAttachmentChange(
+                              e.target.files?.[0],
+                              setCivilIdAttachment,
+                              e.target,
+                            )
                           }
                           className="text-sm"
                         />
                         <p className="text-xs text-muted-foreground">
-                          {isAr ? "الصيغ المقبولة: PNG، JPG، PDF" : "Accepted formats: PNG, JPG, PDF"}
+                          {isAr
+                            ? "الصيغ المقبولة: PNG، JPG، PDF. الحد الأقصى: 5 ميجابايت."
+                            : "Accepted formats: PNG, JPG, PDF. Max size: 5 MB."}
                         </p>
                       </div>
                     </>
@@ -604,12 +722,18 @@ const MedicalRecordsRequest = () => {
                         accept=".png,.jpg,.jpeg,.pdf"
                         required
                         onChange={(e) =>
-                          setPassportAttachment(e.target.files?.[0] || null)
+                          handleIdentityAttachmentChange(
+                            e.target.files?.[0],
+                            setPassportAttachment,
+                            e.target,
+                          )
                         }
                         className="text-sm"
                       />
                       <p className="text-xs text-muted-foreground">
-                        {isAr ? "الصيغ المقبولة: PNG، JPG، PDF" : "Accepted formats: PNG, JPG, PDF"}
+                        {isAr
+                          ? "الصيغ المقبولة: PNG، JPG، PDF. الحد الأقصى: 5 ميجابايت."
+                          : "Accepted formats: PNG, JPG, PDF. Max size: 5 MB."}
                       </p>
                     </div>
                   )}
@@ -883,20 +1007,39 @@ const MedicalRecordsRequest = () => {
                       {isAr ? "رقم هاتف المستلم" : "Recipient's Contact Number"}{" "}
                       <span className="text-destructive">*</span>
                     </Label>
-                    <PhoneInput
-                      country="kw"
-                      value={recipientPhone}
-                      onChange={handleMobileChange}
-                      placeholder={isAr ? "أدخل الرقم" : "Enter contact number"}
-                      masks={{ kw: "........" }}
-                      enableLongNumbers={false}
-                      inputClass="!w-full !h-10 !rounded-md !border !border-input !bg-background !px-12 !text-sm"
-                      buttonClass="!border-input !bg-background"
-                      containerClass="!w-full"
-                      dropdownClass="!text-sm"
-                      enableSearch
-                      countryCodeEditable={false}
-                    />
+                    {isAr ? (
+                      <div className="medical-record-phone-input" dir="rtl">
+                        <PhoneInput
+                          country="kw"
+                          value={recipientPhone}
+                          onChange={handleMobileChange}
+                          placeholder="أدخل الرقم"
+                          masks={{ kw: "........" }}
+                          enableLongNumbers={false}
+                          inputClass="!w-full !h-10 !rounded-md !border !border-input !bg-background !text-sm !font-body !text-foreground"
+                          buttonClass="!h-10 !border-input !bg-background"
+                          containerClass="!w-full"
+                          dropdownClass="!text-sm"
+                          enableSearch
+                          countryCodeEditable={false}
+                        />
+                      </div>
+                    ) : (
+                      <PhoneInput
+                        country="kw"
+                        value={recipientPhone}
+                        onChange={handleMobileChange}
+                        placeholder="Enter contact number"
+                        masks={{ kw: "........" }}
+                        enableLongNumbers={false}
+                        inputClass="!w-full !h-10 !rounded-md !border !border-input !bg-background !px-12 !text-sm"
+                        buttonClass="!border-input !bg-background"
+                        containerClass="!w-full"
+                        dropdownClass="!text-sm"
+                        enableSearch
+                        countryCodeEditable={false}
+                      />
+                    )}
                   </div>
                 </div>
                 <div className="space-y-3">

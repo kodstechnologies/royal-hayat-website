@@ -15,6 +15,7 @@ export type CreateMedicalRecordRequestPayload = {
   passportOrGovernmentIdAttachment?: File;
 
   specificAuthorization: "Discharge Summary" | "specific documents";
+  specificAuthorizationDate?: string;
   specificFromDate?: string;
   specificToDate?: string;
   specialRequest?: string;
@@ -66,6 +67,9 @@ export const createMedicalRecordRequest = async (
 
   formData.append("specificAuthorization", data.specificAuthorization);
 
+  if (data.specificAuthorizationDate) {
+    formData.append("specificAuthorizationDate", data.specificAuthorizationDate);
+  }
   if (data.specificFromDate) {
     formData.append("specificFromDate", data.specificFromDate);
   }

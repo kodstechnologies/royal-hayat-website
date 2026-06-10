@@ -1,24 +1,39 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { format } from "date-fns";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
+import MedicalRecordDatePicker from "@/components/MedicalRecordDatePicker";
 import { Crown, Star, Target, Stethoscope, ClipboardList, Briefcase, UserPlus, CheckCircle2, X, ChevronDown, ArrowLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "@/hooks/use-toast";
 import { createAlSafwaEnrollment } from "../api/alSafwa";
 import axios from "axios";
+
+const CURRENT_YEAR = new Date().getFullYear();
+const DOB_FROM_YEAR = CURRENT_YEAR - 100;
+const DOB_TO_YEAR = CURRENT_YEAR;
+const APPOINTMENT_TO_YEAR = CURRENT_YEAR + 2;
+
+const isFutureDate = (date: Date) => date > new Date();
+const isPastDate = (date: Date) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const day = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  return day < today;
+};
 const EnrollmentModal = ({ isOpen, onClose, t, isAr, onSuccess }: { isOpen: boolean; onClose: () => void; t: any; isAr: boolean; onSuccess: () => void }) => {
+  const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>();
+  const [preferredAppointmentDate, setPreferredAppointmentDate] = useState<Date | undefined>();
   const [formData, setFormData] = useState({
     firstName: "",
     familyName: "",
     gender: "",
-    dateOfBirth: "",
     mobile: "",
     email: "",
-    preferredAppointmentDate: "",
     previousMedicalCheckup: "",
     diabetes: "",
     highCholesterol: "",
@@ -33,10 +48,22 @@ const EnrollmentModal = ({ isOpen, onClose, t, isAr, onSuccess }: { isOpen: bool
   const [isSuccess, setIsSuccess] = useState(false);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!dateOfBirth || !preferredAppointmentDate) {
+      toast({
+        title: isAr ? "خطأ" : "Error",
+        description: isAr
+          ? "يرجى اختيار تاريخ الميلاد والتاريخ المفضل للموعد."
+          : "Please select date of birth and preferred appointment date.",
+        variant: "destructive",
+      });
+      return;
+    }
     setIsSubmitting(true);
     try {
       await createAlSafwaEnrollment({
         ...formData,
+        dateOfBirth: format(dateOfBirth, "yyyy-MM-dd"),
+        preferredAppointmentDate: format(preferredAppointmentDate, "yyyy-MM-dd"),
         gender: formData.gender as "male" | "female",
         previousMedicalCheckup: formData.previousMedicalCheckup as
           | "less_than_1_year"
@@ -168,18 +195,19 @@ const EnrollmentModal = ({ isOpen, onClose, t, isAr, onSuccess }: { isOpen: bool
                       </select>
                       <ChevronDown className="absolute right-3 top-[34px] w-3.5 h-3.5 text-muted-foreground/60 pointer-events-none" />
                     </div>
-                    <div>
-                      <label className="block text-[11px] font-serif text-primary/70 mb-1 ml-1.5 uppercase tracking-wider">
-                        {isAr ? "تاريخ الميلاد *" : "Date of Birth *"}
-                      </label>
-                      <input
-                        required
-                        type="date"
-                        className="w-full px-4 py-2.5 rounded-xl bg-primary/5 border border-primary/10 focus:border-primary/30 focus:bg-background focus:outline-none transition-all font-body text-sm"
-                        value={formData.dateOfBirth}
-                        onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
-                      />
-                    </div>
+                    <MedicalRecordDatePicker
+                      id="dateOfBirth"
+                      label={isAr ? "تاريخ الميلاد" : "Date of Birth"}
+                      value={dateOfBirth}
+                      onChange={setDateOfBirth}
+                      isAr={isAr}
+                      inModal
+                      placeholder={isAr ? "اختر تاريخ الميلاد" : "Select date of birth"}
+                      ariaLabel={isAr ? "تاريخ الميلاد" : "Date of birth"}
+                      fromYear={DOB_FROM_YEAR}
+                      toYear={DOB_TO_YEAR}
+                      disabledDates={isFutureDate}
+                    />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -209,20 +237,20 @@ const EnrollmentModal = ({ isOpen, onClose, t, isAr, onSuccess }: { isOpen: bool
                       />
                     </div>
                   </div>
-                  <div>
-                    <label className="block text-[11px] font-serif text-primary/70 mb-1 ml-1.5 uppercase tracking-wider">
-                      {isAr ? "التاريخ المفضل للموعد *" : "Preferred Date of Appointment *"}
-                    </label>
-                    <input
-                      required
-                      type="date"
-                      className="w-full px-4 py-2.5 rounded-xl bg-primary/5 border border-primary/10 focus:border-primary/30 focus:bg-background focus:outline-none transition-all font-body text-sm"
-                      value={formData.preferredAppointmentDate}
-                      onChange={(e) =>
-                        setFormData({ ...formData, preferredAppointmentDate: e.target.value })
-                      }
-                    />
-                  </div>
+                  <MedicalRecordDatePicker
+                    id="preferredAppointmentDate"
+                    label={isAr ? "التاريخ المفضل للموعد" : "Preferred Date of Appointment"}
+                    value={preferredAppointmentDate}
+                    onChange={setPreferredAppointmentDate}
+                    isAr={isAr}
+                    inModal
+                    placeholder={isAr ? "اختر التاريخ المفضل للموعد" : "Select preferred appointment date"}
+                    ariaLabel={isAr ? "التاريخ المفضل للموعد" : "Preferred date of appointment"}
+                    fromYear={CURRENT_YEAR}
+                    toYear={APPOINTMENT_TO_YEAR}
+                    minDate={new Date()}
+                    disabledDates={isPastDate}
+                  />
                   <div>
                     <label className="block text-[11px] font-serif text-primary/70 mb-2 ml-1.5 uppercase tracking-wider">
                       {isAr

@@ -1,20 +1,25 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { format } from "date-fns";
 import { Loader2, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import PhoneInput from "react-phone-input-2";
 import type { CountryData } from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
+import MedicalRecordDatePicker from "@/components/MedicalRecordDatePicker";
 import {
   createEventBooking,
   type CreateEventBookingPayload,
 } from "@/api/event";
+
+const CURRENT_YEAR = new Date().getFullYear();
+const EVENT_DATE_FROM_YEAR = CURRENT_YEAR - 10;
+const EVENT_DATE_TO_YEAR = CURRENT_YEAR + 2;
+
 type EventBookingForm = {
   hall: string;
-  dueDate: string;
   eventType: string;
   otherEventType: string;
-  proposedDate: string;
   numberOfDays: string;
   name: string;
   mobile: string;
@@ -28,10 +33,8 @@ type EventBookingModalProps = {
 };
 const initialForm: EventBookingForm = {
   hall: "",
-  dueDate: "",
   eventType: "",
   otherEventType: "",
-  proposedDate: "",
   numberOfDays: "",
   name: "",
   mobile: "",
@@ -42,9 +45,13 @@ const formatMobileNumber = (mobile: string) => {
   const digits = mobile.replace(/\D/g, "");
   return digits ? `+${digits}` : "";
 };
+type EventBookingErrors = Partial<Record<keyof EventBookingForm | "dueDate" | "proposedDate", string>>;
+
 const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) => {
   const [form, setForm] = useState<EventBookingForm>(initialForm);
-  const [errors, setErrors] = useState<Partial<Record<keyof EventBookingForm, string>>>({});
+  const [dueDate, setDueDate] = useState<Date | undefined>();
+  const [proposedDate, setProposedDate] = useState<Date | undefined>();
+  const [errors, setErrors] = useState<EventBookingErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mobileCountry, setMobileCountry] = useState<{ countryCode: string; dialCode: string }>({
     countryCode: "kw",
@@ -56,14 +63,14 @@ const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) =>
     { value: "in-room-event-services", labelEn: "In room event services", labelAr: "خدمات فعاليات داخل الغرفة" },
   ];
   const validate = () => {
-    const nextErrors: Partial<Record<keyof EventBookingForm, string>> = {};
+    const nextErrors: EventBookingErrors = {};
     if (!form.hall) nextErrors.hall = isAr ? "القاعة مطلوبة" : "Choose your hall is required";
-    if (!form.dueDate) nextErrors.dueDate = isAr ? "التاريخ المتوقع مطلوب" : "Due date is required";
+    if (!dueDate) nextErrors.dueDate = isAr ? "التاريخ المتوقع مطلوب" : "Due date is required";
     if (!form.eventType) nextErrors.eventType = isAr ? "نوع المناسبة مطلوب" : "Type of event is required";
     if (form.eventType === "other" && !form.otherEventType.trim()) {
       nextErrors.otherEventType = isAr ? "يرجى تحديد نوع المناسبة" : "Other event type is required";
     }
-    if (!form.proposedDate) nextErrors.proposedDate = isAr ? "تاريخ المناسبة مطلوب" : "Proposed date is required";
+    if (!proposedDate) nextErrors.proposedDate = isAr ? "تاريخ المناسبة مطلوب" : "Proposed date is required";
     if (!form.numberOfDays || Number(form.numberOfDays) <= 0) {
       nextErrors.numberOfDays = isAr ? "عدد الأيام مطلوب" : "Number of days is required";
     }
@@ -113,9 +120,9 @@ const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) =>
     if (Object.keys(nextErrors).length > 0) return;
     const payload: CreateEventBookingPayload = {
       hall: form.hall as CreateEventBookingPayload["hall"],
-      dueDateOfExpectingMother: form.dueDate,
+      dueDateOfExpectingMother: format(dueDate!, "yyyy-MM-dd"),
       eventType: form.eventType as CreateEventBookingPayload["eventType"],
-      proposedDate: form.proposedDate,
+      proposedDate: format(proposedDate!, "yyyy-MM-dd"),
       numberOfDays: Number(form.numberOfDays),
       name: form.name.trim(),
       mobileNumber: formatMobileNumber(form.mobile),
@@ -138,6 +145,8 @@ const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) =>
             : "Your event booking form was submitted successfully. Our team will contact you soon."),
       });
       setForm(initialForm);
+      setDueDate(undefined);
+      setProposedDate(undefined);
       setErrors({});
       onClose();
     } catch (error: unknown) {
@@ -156,6 +165,83 @@ const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) =>
     }
   };
   return (
+    <>
+    <style>{`
+      .event-booking-phone-input .react-tel-input .flag-dropdown {
+        height: 2.5rem;
+        background: hsl(var(--background));
+        border-color: hsl(var(--border));
+      }
+      .event-booking-phone-input .react-tel-input .selected-flag {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        width: 100% !important;
+        height: 100% !important;
+        padding: 0 0.5rem !important;
+      }
+      .event-booking-phone-input .react-tel-input .selected-flag .flag,
+      .event-booking-phone-input .react-tel-input .selected-flag .arrow {
+        position: static !important;
+        inset: auto !important;
+        left: auto !important;
+        right: auto !important;
+        top: auto !important;
+        margin: 0 !important;
+        transform: none !important;
+        flex: 0 0 auto !important;
+      }
+      .event-booking-phone-input[dir="ltr"] .react-tel-input .flag-dropdown {
+        left: 0;
+        right: auto;
+        width: 3.75rem;
+        border-radius: 0.5rem 0 0 0.5rem;
+      }
+      .event-booking-phone-input[dir="ltr"] .react-tel-input .selected-flag {
+        justify-content: flex-start !important;
+        gap: 0.4rem !important;
+      }
+      .event-booking-phone-input[dir="ltr"] .react-tel-input .form-control {
+        padding-left: 4rem !important;
+        padding-right: 0.75rem !important;
+      }
+      .event-booking-phone-input[dir="rtl"] .react-tel-input .flag-dropdown {
+        left: auto !important;
+        right: 0 !important;
+        width: 3.25rem !important;
+        border-radius: 0 0.5rem 0.5rem 0;
+      }
+      .event-booking-phone-input[dir="rtl"] .react-tel-input .selected-flag {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: center !important;
+        align-items: center !important;
+        gap: 0.3rem !important;
+        padding: 0 0.3rem !important;
+      }
+      .event-booking-phone-input[dir="rtl"] .react-tel-input .selected-flag::before {
+        content: "";
+        order: 1;
+        width: 0;
+        height: 0;
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-top: 5px solid #6b7280;
+        flex-shrink: 0;
+      }
+      .event-booking-phone-input[dir="rtl"] .react-tel-input .selected-flag .arrow {
+        display: none !important;
+      }
+      .event-booking-phone-input[dir="rtl"] .react-tel-input .selected-flag .flag {
+        order: 2;
+        flex-shrink: 0;
+      }
+      .event-booking-phone-input[dir="rtl"] .react-tel-input .form-control {
+        padding-right: 3.5rem !important;
+        padding-left: 0.75rem !important;
+        text-align: right;
+      }
+    `}</style>
     <AnimatePresence>
       {isOpen && (
         <motion.div
@@ -200,12 +286,21 @@ const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) =>
                 {errors.hall && <p className="mt-1 text-xs text-destructive">{errors.hall}</p>}
               </div>
               <div>
-                <label className="block text-sm font-body text-foreground mb-1">{isAr ? "التاريخ المتوقع للولادة *" : "Due Date of Expecting Mother *"}</label>
-                <input
-                  type="date"
-                  value={form.dueDate}
-                  onChange={(e) => updateField("dueDate", e.target.value)}
-                  className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm font-body"
+                <MedicalRecordDatePicker
+                  id="dueDate"
+                  label={isAr ? "التاريخ المتوقع للولادة" : "Due Date of Expecting Mother"}
+                  value={dueDate}
+                  onChange={(date) => {
+                    setDueDate(date);
+                    setErrors((prev) => ({ ...prev, dueDate: undefined }));
+                  }}
+                  isAr={isAr}
+                  inModal
+                  compact
+                  placeholder={isAr ? "اختر التاريخ المتوقع للولادة" : "Select due date of expecting mother"}
+                  ariaLabel={isAr ? "التاريخ المتوقع للولادة" : "Due date of expecting mother"}
+                  fromYear={EVENT_DATE_FROM_YEAR}
+                  toYear={EVENT_DATE_TO_YEAR}
                 />
                 {errors.dueDate && <p className="mt-1 text-xs text-destructive">{errors.dueDate}</p>}
               </div>
@@ -238,12 +333,21 @@ const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) =>
                 </div>
               )}
               <div>
-                <label className="block text-sm font-body text-foreground mb-1">{isAr ? "التاريخ المقترح للمناسبة *" : "Proposed Date of Event *"}</label>
-                <input
-                  type="date"
-                  value={form.proposedDate}
-                  onChange={(e) => updateField("proposedDate", e.target.value)}
-                  className="w-full h-10 rounded-lg border border-border bg-background px-3 text-sm font-body"
+                <MedicalRecordDatePicker
+                  id="proposedDate"
+                  label={isAr ? "التاريخ المقترح للمناسبة" : "Proposed Date of Event"}
+                  value={proposedDate}
+                  onChange={(date) => {
+                    setProposedDate(date);
+                    setErrors((prev) => ({ ...prev, proposedDate: undefined }));
+                  }}
+                  isAr={isAr}
+                  inModal
+                  compact
+                  placeholder={isAr ? "اختر التاريخ المقترح للمناسبة" : "Select proposed date of event"}
+                  ariaLabel={isAr ? "التاريخ المقترح للمناسبة" : "Proposed date of event"}
+                  fromYear={EVENT_DATE_FROM_YEAR}
+                  toYear={EVENT_DATE_TO_YEAR}
                 />
                 {errors.proposedDate && <p className="mt-1 text-xs text-destructive">{errors.proposedDate}</p>}
               </div>
@@ -270,20 +374,22 @@ const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) =>
               </div>
               <div className="md:col-span-2">
                 <label className="block text-sm font-body text-foreground mb-1">{isAr ? "رقم الجوال *" : "Mobile *"}</label>
-                <PhoneInput
-                  country="kw"
-                  value={form.mobile}
-                  onChange={handleMobileChange}
-                  placeholder={isAr ? "أدخل الرقم" : "Enter mobile number"}
-                  masks={{ kw: "........" }}
-                  enableLongNumbers={false}
-                  inputClass="!w-full !h-10 !rounded-lg !border !border-border !bg-background !px-12 !text-sm !font-body !text-foreground"
-                  buttonClass="!border-border !bg-background"
-                  containerClass="!w-full"
-                  dropdownClass="!text-sm"
-                  enableSearch
-                  countryCodeEditable={false}
-                />
+                <div className="event-booking-phone-input" dir={isAr ? "rtl" : "ltr"}>
+                  <PhoneInput
+                    country="kw"
+                    value={form.mobile}
+                    onChange={handleMobileChange}
+                    placeholder={isAr ? "أدخل الرقم" : "Enter mobile number"}
+                    masks={{ kw: "........" }}
+                    enableLongNumbers={false}
+                    inputClass="!w-full !h-10 !rounded-lg !border !border-border !bg-background !text-sm !font-body !text-foreground"
+                    buttonClass="!h-10 !border-border !bg-background"
+                    containerClass="!w-full"
+                    dropdownClass="!text-sm"
+                    enableSearch
+                    countryCodeEditable={false}
+                  />
+                </div>
                 {errors.mobile && <p className="mt-1 text-xs text-destructive">{errors.mobile}</p>}
               </div>
               <div className="md:col-span-2">
@@ -320,6 +426,8 @@ const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) =>
         </motion.div>
       )}
     </AnimatePresence>
+    </>
   );
 };
+
 export default EventBookingModal;

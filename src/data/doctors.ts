@@ -143,6 +143,7 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'AR', color: 'bg-accent',
     symptoms: [],
+    availableOnline: false,
   },
   {
     id: 'dr-mohammad-mohammad-hasan-alkandari',
@@ -3734,6 +3735,7 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'NI', color: 'bg-primary/90',
     symptoms: [],
+    availableOnline: false,
   },
   {
     id: 'dr-salma-ibrahim',

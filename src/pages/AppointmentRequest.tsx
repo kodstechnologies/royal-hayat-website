@@ -11,6 +11,38 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { loadDoctorById, type Doctor } from "@/data/loadDoctors";
 import type { AppointmentRequestPrefillState } from "@/types/appointmentRequestPrefill";
+import type { AppointmentRequestType } from "@/api/appointmentRequest";
+
+const isDoctorRequestOnly = (doc: Pick<Doctor, "hideBooking" | "availableOnline">) =>
+  doc.hideBooking === true || doc.availableOnline === false;
+
+const resolveAppointmentSymptoms = (
+  prefill: AppointmentRequestPrefillState,
+  locationState: Record<string, unknown>,
+): string[] | undefined => {
+  if (Array.isArray(prefill.symptoms) && prefill.symptoms.length > 0) {
+    return prefill.symptoms.map((item) => String(item).trim()).filter(Boolean);
+  }
+  const saved = locationState.savedSymptoms;
+  if (!Array.isArray(saved) || saved.length === 0) return undefined;
+  const normalized = saved.map((item) => String(item).trim()).filter(Boolean);
+  return normalized.length > 0 ? normalized : undefined;
+};
+
+const resolveAppointmentRequestType = (
+  prefill: AppointmentRequestPrefillState,
+  doctorId: string | null,
+  prefilledDoctor: Doctor | null,
+  fromBookAppointment: boolean,
+): AppointmentRequestType => {
+  if (prefill.requestType) return prefill.requestType;
+  if (fromBookAppointment) return "appointment request";
+  if (prefilledDoctor && isDoctorRequestOnly(prefilledDoctor)) {
+    return "doctor unavailability request";
+  }
+  if (doctorId) return "doctor unavailability request";
+  return "appointment request";
+};
 
 type AppointmentRequestLocationState = {
   appointmentRequestPrefill?: AppointmentRequestPrefillState;
@@ -42,7 +74,6 @@ const AppointmentRequest = () => {
   const locState = (location.state as AppointmentRequestLocationState | null) ?? {};
   const prefill = locState.appointmentRequestPrefill ?? {};
   const identityReadOnly = Boolean(prefill.readOnlyIdentity);
-  const requestType = prefill.requestType || "first time visitor request";
   const returnState = (location.state as Record<string, unknown>) ?? {};
   const doctorId = searchParams.get("doctor");
   const [prefilledDoctor, setPrefilledDoctor] = useState<Doctor | null>(null);
@@ -83,6 +114,13 @@ const AppointmentRequest = () => {
   const handleSubmit = async () => {
     if (!validate()) return;
     setSubmitting(true);
+    const requestType = resolveAppointmentRequestType(
+      prefill,
+      doctorId,
+      prefilledDoctor,
+      Boolean(locState.fromBookAppointment),
+    );
+    const symptoms = resolveAppointmentSymptoms(prefill, returnState);
     try {
       await createAppointmentRequest({
         fullname: form.fullName.trim(),
@@ -106,6 +144,7 @@ const AppointmentRequest = () => {
         ]
           .filter(Boolean)
           .join(". ") || undefined,
+        symptoms,
         requestType,
       });
       setSubmitted(true);

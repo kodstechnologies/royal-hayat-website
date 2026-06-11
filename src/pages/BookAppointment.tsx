@@ -260,6 +260,7 @@ const BookAppointment = () => {
         allApiDoctors.find((d) => d.id === selectedDoctor) ||
         deptDoctorList.find((d) => d.id === selectedDoctor);
       if (doc) {
+        setIsRequestMode(isDoctorRequestOnly(doc));
         if (doc.providerCode) {
           setProviderCode(doc.providerCode);
         }
@@ -655,6 +656,31 @@ const BookAppointment = () => {
     if (snapshot.length > 0) setSavedSymptoms(snapshot);
     return snapshot;
   }, []);
+  const buildBookingNavigationState = useCallback(
+    (overrides: Record<string, unknown> = {}) => {
+      const symptoms =
+        collectedSymptoms.length > 0
+          ? collectedSymptoms
+          : buildCollectedSymptoms(symptomChips, symptomText);
+      return {
+        fromBookAppointment: true,
+        step,
+        bookingPath: bookingPath ?? "primary",
+        selectedDept,
+        ...(symptoms.length > 0 ? { savedSymptoms: symptoms } : {}),
+        ...overrides,
+      };
+    },
+    [bookingPath, collectedSymptoms, selectedDept, step, symptomChips, symptomText],
+  );
+  useEffect(() => {
+    const restored = (location.state as { savedSymptoms?: unknown })?.savedSymptoms;
+    if (!Array.isArray(restored) || restored.length === 0) return;
+    const normalized = restored
+      .map((item) => String(item).trim())
+      .filter(Boolean);
+    if (normalized.length > 0) setSavedSymptoms(normalized);
+  }, [location.state]);
   const getSelectedSlotPeriod = (): "morning" | "afternoon" => {
     if (!selectedSlot?.includes(":")) return "morning";
     const hour = parseInt(selectedSlot.split(":")[0], 10);
@@ -795,7 +821,10 @@ const BookAppointment = () => {
             time: formatTimeString(selectedSlot) || selectedSlot || "",
           },
           symptoms: collectedSymptoms.length > 0 ? collectedSymptoms : undefined,
-          requestType: "first time visitor request",
+          requestType:
+            isRequestMode || (selectedDoctorObj && isDoctorRequestOnly(selectedDoctorObj))
+              ? "doctor unavailability request"
+              : "first time visitor request",
         });
         setBooked(true);
         return;
@@ -955,7 +984,7 @@ const BookAppointment = () => {
       const fallback: AppointmentRequestPrefillState = {
         fullName: pickedName,
         civilId: civilIdForData,
-        requestType: "registered patient booking fallback",
+        requestType: "appointment request",
         readOnlyIdentity: true,
         identityDetails: resolvedDetails || undefined,
       };
@@ -979,7 +1008,7 @@ const BookAppointment = () => {
           dateOfBirth: dobIso || undefined,
           gender: gender || undefined,
           civilId: String(rawData?.civilId || civilIdForData),
-          requestType: "registered patient booking fallback",
+          requestType: "appointment request",
           readOnlyIdentity: true,
           identityDetails: details,
         };
@@ -1063,13 +1092,30 @@ const BookAppointment = () => {
       : "";
     const prefill = hisFailurePrefillRef.current;
     hisFailurePrefillRef.current = null;
+    const symptoms =
+      collectedSymptoms.length > 0
+        ? collectedSymptoms
+        : buildCollectedSymptoms(symptomChips, symptomText);
     navigate(`/appointment-request${doctorQuery}`, {
       state: {
-        ...(prefill ? { appointmentRequestPrefill: prefill } : {}),
+        appointmentRequestPrefill: {
+          ...(prefill ?? {}),
+          requestType: prefill?.requestType ?? "appointment request",
+          ...(symptoms.length > 0 ? { symptoms } : {}),
+        },
         fromBookAppointment: true,
+        ...(symptoms.length > 0 ? { savedSymptoms: symptoms } : {}),
       },
     });
-  }, [dismissHisFailureModal, navigate, resetPatientLookupFailure, selectedDoctor]);
+  }, [
+    collectedSymptoms,
+    dismissHisFailureModal,
+    navigate,
+    resetPatientLookupFailure,
+    selectedDoctor,
+    symptomChips,
+    symptomText,
+  ]);
   const finalizeRegisteredPatientAfterPaci = useCallback(
     async (params: {
       civilId: string;
@@ -1671,7 +1717,12 @@ Clinic Code:`;
               if (!dept) return null;
               return (
                 <motion.button key={dept.id} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                  onClick={() => { setSelectedDept(dept.id); setBookingPath("primary"); setStep(1); }}
+                  onClick={() => {
+                    persistSymptomsSnapshot(symptomChips, symptomText);
+                    setSelectedDept(dept.id);
+                    setBookingPath("primary");
+                    setStep(1);
+                  }}
                   className={`flex items-center gap-3 p-4 rounded-xl border transition-all text-left ${selectedDept === dept.id ? "bg-primary text-primary-foreground border-primary" : "bg-popover border-border hover:border-accent text-foreground"
                     }`}>
                   <Stethoscope className="w-5 h-5 flex-shrink-0" />
@@ -1811,7 +1862,12 @@ Clinic Code:`;
                             onClick={() => {
                               const resolvedDeptId = selectedDept ?? resolveDeptIdForDoctor(doc);
                               navigate(`/doctors/${doc.id}`, {
-                                state: { fromBookAppointment: true, step, bookingPath: bookingPath ?? "primary", selectedDept: resolvedDeptId, selectedDoctor: doc.id, isRequestMode: isDoctorRequestOnly(doc), canBookSlot: !isDoctorRequestOnly(doc) }
+                                state: buildBookingNavigationState({
+                                  selectedDept: resolvedDeptId,
+                                  selectedDoctor: doc.id,
+                                  isRequestMode: isDoctorRequestOnly(doc),
+                                  canBookSlot: !isDoctorRequestOnly(doc),
+                                }),
                               });
                             }}>
                             <div className="bg-white h-64 flex items-center justify-center relative overflow-hidden shrink-0 rounded-t-2xl">
@@ -1837,7 +1893,7 @@ Clinic Code:`;
                                   </span>
                                 </div>
                               )}
-                              <button onClick={(e) => { e.stopPropagation(); const resolvedDeptId = selectedDept ?? resolveDeptIdForDoctor(doc); navigate(`/doctors/${doc.id}`, { state: { fromBookAppointment: true, step, bookingPath: bookingPath ?? "primary", selectedDept: resolvedDeptId, selectedDoctor: doc.id, isRequestMode: isDoctorRequestOnly(doc), canBookSlot: !isDoctorRequestOnly(doc) } }); }} className="mt-auto inline-flex items-center gap-1 text-primary font-body text-xs hover:text-accent transition-colors">{isAr ? "عرض الملف الشخصي ←" : "View Profile →"}</button>
+                              <button onClick={(e) => { e.stopPropagation(); const resolvedDeptId = selectedDept ?? resolveDeptIdForDoctor(doc); navigate(`/doctors/${doc.id}`, { state: buildBookingNavigationState({ selectedDept: resolvedDeptId, selectedDoctor: doc.id, isRequestMode: isDoctorRequestOnly(doc), canBookSlot: !isDoctorRequestOnly(doc) }) }); }} className="mt-auto inline-flex items-center gap-1 text-primary font-body text-xs hover:text-accent transition-colors">{isAr ? "عرض الملف الشخصي ←" : "View Profile →"}</button>
                             </div>
                           </motion.div>
                         ))}

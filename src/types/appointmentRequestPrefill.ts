@@ -19,7 +19,13 @@ export type AppointmentRequestPrefillState = {
    * Allows routing different fallbacks into the same request form while keeping
    * backend classification consistent.
    */
-  requestType?: "doctor unavailability request" | "first time visitor request" | "registered patient booking fallback";
+  requestType?:
+    | "doctor unavailability request"
+    | "first time visitor request"
+    | "appointment request"
+    | "registered patient booking fallback";
   /** When true, name / DOB / gender from PACI are read-only. */
   readOnlyIdentity?: boolean;
+  /** Symptoms captured earlier in the book-appointment flow (e.g. symptom checker). */
+  symptoms?: string[];
 };

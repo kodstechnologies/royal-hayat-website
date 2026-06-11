@@ -166,6 +166,7 @@ export const doctorsWithClinicCodes: DoctorWithClinicCode[] = [
     initials: 'AR',
     color: 'bg-accent',
     symptoms: [],
+    availableOnline: false,
   },
   {
     id: 'dr-ahmed-al-qallaf',
@@ -2661,6 +2662,7 @@ export const doctorsWithClinicCodes: DoctorWithClinicCode[] = [
     initials: 'NI',
     color: 'bg-primary/90',
     symptoms: [],
+    availableOnline: false,
   },
   {
     id: 'dr-salma-ibrahim',

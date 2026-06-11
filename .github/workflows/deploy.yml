@@ -37,7 +37,7 @@ jobs:
           script: |
             sudo chown -R ubuntu:ubuntu /home/ubuntu/royal-hayat-website
 
-      # 🧹 Remove old build
+      # 🧹 Remove old static build output (keep deploy path consistent)
       - name: Clean old build
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -46,16 +46,31 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           script: |
             rm -rf /home/ubuntu/royal-hayat-website/dist
+            rm -rf /home/ubuntu/royal-hayat-website/Runtime
+            rm -rf /home/ubuntu/royal-hayat-website/assets
+            rm -f /home/ubuntu/royal-hayat-website/index.html
 
-      # 🚀 Copy new build
+      # 🚀 Copy new build (recursive — includes Runtime/uploads/*.pdf)
       - name: Copy new build
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_KEY }}
-          source: "dist/*"
-          target: "/home/ubuntu/royal-hayat-website/"
+          source: "dist/"
+          target: "/home/ubuntu/royal-hayat-website"
+          strip_components: 1
+
+      # ✅ Verify birth plan PDF reached the server
+      - name: Verify Runtime PDF on server
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            test -f "/home/ubuntu/royal-hayat-website/Runtime/uploads/Birth_plan_booklet_27May2021_final.pdf"
+            ls -la /home/ubuntu/royal-hayat-website/Runtime/uploads/
 
       # 🔐 Fix permissions for nginx
       - name: Fix permissions for nginx

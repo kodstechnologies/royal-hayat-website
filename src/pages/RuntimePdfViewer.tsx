@@ -1,9 +1,14 @@
 import { useLocation } from "react-router-dom";
-import { buildRuntimePdfStreamUrl } from "@/utils/buildRuntimePdfUrl";
+import { buildRuntimePdfPath } from "@/utils/buildRuntimePdfUrl";
 
+/**
+ * Legacy URL uses %20 for spaces, e.g.
+ * /Runtime/uploads/Birth%20plan%20booklet_27May2021_final.pdf
+ * → public/dist file: Runtime/uploads/Birth plan booklet_27May2021_final.pdf
+ */
 const RuntimePdfViewer = () => {
   const { pathname } = useLocation();
-  const pdfSrc = buildRuntimePdfStreamUrl(pathname);
+  const pdfSrc = buildRuntimePdfPath(pathname);
 
   return (
     <iframe

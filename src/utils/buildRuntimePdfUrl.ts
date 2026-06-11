@@ -1,4 +1,8 @@
-/** Relative legacy path with encoded segments, e.g. /Runtime/uploads/foo%20bar.pdf */
+/**
+ * Legacy path with encoded segments (%20 = space in the filename on disk).
+ * e.g. /Runtime/uploads/Birth%20plan%20booklet_27May2021_final.pdf
+ *   → Birth plan booklet_27May2021_final.pdf in public/Runtime/uploads/
+ */
 export function buildRuntimePdfPath(pathOrFilename: string): string {
   const trimmed = pathOrFilename.trim();
   const path = trimmed.startsWith("/") ? trimmed : `/Runtime/uploads/${trimmed}`;

@@ -124,6 +124,11 @@ export const ALL_RUNTIME_PDFS: RuntimePdfItem[] = RUNTIME_PDF_GROUPS.flatMap((g)
 export const RUNTIME_PDF_PATHS = {
   alLiwanMenu: "/Runtime/uploads/AlLiwan_%20menu_2021.pdf",
   birthPlanBooklet: "/Runtime/uploads/Birth%20plan%20booklet_27May2021_final.pdf",
+  fifthFloorCafeMenuJune2026: "/wp-content/uploads/2026/06/5th_Floor_Cafe_Menu.pdf",
+  alaCarteMenuJune2026: "/wp-content/uploads/2026/06/ALa_Carte_Menu.pdf",
+  askMeFlyersJune2026: "/wp-content/uploads/2026/06/Ask_Me_Flyers_June_2026.pdf",
+  clinicalAwarenessFlyersJune2026:
+    "/wp-content/uploads/2026/06/Clinical_Awareness_Flyers_June_2026.pdf",
   alLiwanQrFoodMenu: "/wp-content/uploads/2026/04/Al_Liwan_QR_Food_Menu.pdf",
   fifthFloorFoodMenu: "/wp-content/uploads/2026/04/RHH_5th_Floor_Food_Menu.pdf",
 } as const;

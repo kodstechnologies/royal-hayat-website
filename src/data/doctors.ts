@@ -3195,6 +3195,7 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'EA', color: 'bg-accent',
     symptoms: [],
+    availableOnline: false,
   },
   {
     id: 'dr-fariba-vadoudi',
@@ -3627,6 +3628,7 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'FS', color: 'bg-primary',
     symptoms: [],
+    availableOnline: false,
   },
   {
     id: 'dr-nada-al-ibrahim',

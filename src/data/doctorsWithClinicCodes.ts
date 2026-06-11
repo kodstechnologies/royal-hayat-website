@@ -2019,6 +2019,7 @@ export const doctorsWithClinicCodes: DoctorWithClinicCode[] = [
     initials: 'EA',
     color: 'bg-accent',
     symptoms: [],
+    availableOnline: false,
   },
   {
     id: 'dr-fariba-vadoudi',
@@ -2528,6 +2529,7 @@ export const doctorsWithClinicCodes: DoctorWithClinicCode[] = [
     initials: 'FS',
     color: 'bg-primary',
     symptoms: [],
+    availableOnline: false,
   },
   {
     id: 'dr-nada-al-ibrahim',

@@ -7,6 +7,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { ensureChatSession } from "@/api/chat";
 import { useLanguage } from "@/contexts/LanguageContext";
 export interface ChatMessage {
   role: "user" | "assistant";
@@ -54,6 +55,9 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (isOpen && !wasOpenRef.current) {
       resetChat();
+      void ensureChatSession().catch((err) => {
+        console.error("Failed to initialize chat session:", err);
+      });
     }
     wasOpenRef.current = isOpen;
   }, [isOpen, resetChat]);

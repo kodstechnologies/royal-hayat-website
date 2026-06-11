@@ -41,24 +41,82 @@ function parseSseEvents(buffer: string): { events: StreamEvent[]; rest: string }
   }
   return { events, rest };
 }
-function getChatSessionId(): string {
-  const key = "rh_chat_session_id";
+const CHAT_SESSION_ID_KEY = "rh_chat_session_id";
+const CHAT_REFERENCE_ID_KEY = "rh_chat_reference_id";
+
+type ChatSessionData = {
+  sessionId: string;
+  referenceId: string;
+};
+
+let sessionInitPromise: Promise<ChatSessionData> | null = null;
+
+function readCachedChatSession(): ChatSessionData | null {
   try {
-    let id = sessionStorage.getItem(key);
-    if (!id) {
-      id = crypto.randomUUID();
-      sessionStorage.setItem(key, id);
-    }
-    return id;
+    const sessionId = sessionStorage.getItem(CHAT_SESSION_ID_KEY)?.trim() ?? "";
+    const referenceId = sessionStorage.getItem(CHAT_REFERENCE_ID_KEY)?.trim() ?? "";
+    if (!sessionId) return null;
+    return { sessionId, referenceId };
   } catch {
-    return "";
+    return null;
   }
 }
+
+function cacheChatSession(data: ChatSessionData): ChatSessionData {
+  try {
+    sessionStorage.setItem(CHAT_SESSION_ID_KEY, data.sessionId);
+    if (data.referenceId) {
+      sessionStorage.setItem(CHAT_REFERENCE_ID_KEY, data.referenceId);
+    }
+  } catch {
+    // ignore storage failures
+  }
+  return data;
+}
+
+export async function ensureChatSession(): Promise<ChatSessionData> {
+  const cached = readCachedChatSession();
+  if (cached) return cached;
+
+  if (!sessionInitPromise) {
+    sessionInitPromise = api
+      .get<{ success: boolean; data: ChatSessionData }>("/api/v1/chat/session")
+      .then((response) => cacheChatSession(response.data.data))
+      .catch((err) => {
+        sessionInitPromise = null;
+        throw err;
+      });
+  }
+
+  return sessionInitPromise;
+}
+
+export function getChatReferenceId(): string {
+  return readCachedChatSession()?.referenceId ?? "";
+}
+
+export async function postChatLog(
+  messages: ChatMessagePayload[],
+  lang: "en" | "ar",
+  assistantReply: string,
+  topicId?: string,
+): Promise<void> {
+  const { sessionId } = await ensureChatSession();
+  await api.post("/api/v1/chat/log", {
+    messages,
+    lang,
+    sessionId,
+    assistantReply,
+    topicId,
+  });
+}
+
 export async function postChat(messages: ChatMessagePayload[], lang: "en" | "ar") {
+  const { sessionId } = await ensureChatSession();
   const response = await api.post<PostChatResponse>("/api/v1/chat", {
     messages,
     lang,
-    sessionId: getChatSessionId(),
+    sessionId,
   });
   return response.data.data.reply;
 }
@@ -68,11 +126,12 @@ export async function postChatStream(
   onDelta: (text: string) => void,
   signal?: AbortSignal,
 ): Promise<string> {
+  const { sessionId } = await ensureChatSession();
   const base = getBackendApiBase();
   const response = await fetch(`${base}/api/v1/chat/stream`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ messages, lang, sessionId: getChatSessionId() }),
+    body: JSON.stringify({ messages, lang, sessionId }),
     signal,
   });
   if (!response.ok) {

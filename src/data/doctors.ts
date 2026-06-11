@@ -3564,6 +3564,7 @@ export const doctors: Doctor[] = [
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/fatima-sultan34.png',
     providerCode: 'E1897',
     clinicCode: 'R002OBG',
+    availableOnline: true,
     name: 'Dr. Fatima Sultan', nameAr: 'د. فاطمـة سلطـان',
     specialty: 'Obstetrics & Gynecology', specialtyAr: 'أمراض النساء والولادة',
     department: 'Obstetrics & Gynecology', departmentAr: 'أمراض النساء والولادة',
@@ -3629,7 +3630,6 @@ export const doctors: Doctor[] = [
     languages: ['English', 'Arabic'], languagesAr: ['الإنجليزية', 'العربية'],
     initials: 'FS', color: 'bg-primary',
     symptoms: [],
-    availableOnline: false,
   },
   {
     id: 'dr-nada-al-ibrahim',

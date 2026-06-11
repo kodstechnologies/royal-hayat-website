@@ -2460,6 +2460,7 @@ export const doctorsWithClinicCodes: DoctorWithClinicCode[] = [
     departmentAr: 'أمراض النساء والولادة',
     departmentClinicCode: 'R002OBG',
     providerCode: 'E1897',
+    availableOnline: true,
     title: 'Consultant Obstetrician & Gynecologist',
     titleAr: 'إستشاري أمراض النساء والولادة',
     bio: 'Dr. Fatima Sultan is a specialist in the Obstetrics & Gynecology department at Royale Hayat Hospital.',
@@ -2530,7 +2531,6 @@ export const doctorsWithClinicCodes: DoctorWithClinicCode[] = [
     initials: 'FS',
     color: 'bg-primary',
     symptoms: [],
-    availableOnline: false,
   },
   {
     id: 'dr-nada-al-ibrahim',

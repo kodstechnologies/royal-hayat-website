@@ -158,8 +158,8 @@ export const doctorSearchIndex: DoctorSearchIndexEntry[] = [
     "id": "dr-brook-assefa-ayele",
     "name": "Dr. Brook Assefa Ayele",
     "nameAr": "د. بروك أسيفا أيلي",
-    "specialty": "La Cosmetique",
-    "specialtyAr": "التجميل"
+    "specialty": "ENT (Ear, Nose & Throat)",
+    "specialtyAr": "الأنف والأذن والحنجرة"
   },
   {
     "id": "dr-fatemah-faras",

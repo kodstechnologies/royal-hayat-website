@@ -120,7 +120,7 @@ export const RUNTIME_PDF_GROUPS: RuntimePdfGroup[] = [
 /** Flat list of every legacy PDF */
 export const ALL_RUNTIME_PDFS: RuntimePdfItem[] = RUNTIME_PDF_GROUPS.flatMap((g) => g.items);
 
-/** Relative legacy paths — use buildRuntimePdfUrl() for direct backend links */
+/** Relative legacy paths — use buildRuntimePdfUrl() for same-origin links */
 export const RUNTIME_PDF_PATHS = {
   alLiwanMenu: "/Runtime/uploads/AlLiwan_%20menu_2021.pdf",
   birthPlanBooklet: "/Runtime/uploads/Birth%20plan%20booklet_27May2021_final.pdf",

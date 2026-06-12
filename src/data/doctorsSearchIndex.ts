@@ -289,8 +289,8 @@ export const doctorSearchIndex: DoctorSearchIndexEntry[] = [
   },
   {
     "id": "dr-adel-al-ali",
-    "name": "Dr. Adel Al-ali",
-    "nameAr": "الدكتور عادل العلي",
+    "name": "Dr. Adel Al-Ali, M.D.",
+    "nameAr": "د. عادل العلي",
     "specialty": "Radiology",
     "specialtyAr": "الأشعة التشخيصية"
   },
@@ -359,8 +359,8 @@ export const doctorSearchIndex: DoctorSearchIndexEntry[] = [
   },
   {
     "id": "dr-mirvat-sameer-ghanem",
-    "name": "Dr. Mirvat Sameer Ghanem",
-    "nameAr": "د. مـيــرفــت غــانـــم",
+    "name": "Mirvat Sameer Ghanem",
+    "nameAr": "مـيــرفــت غــانـــم",
     "specialty": "Pharmacy",
     "specialtyAr": "الصيدلية"
   },
@@ -387,7 +387,7 @@ export const doctorSearchIndex: DoctorSearchIndexEntry[] = [
   },
   {
     "id": "dr-sanketa-patil",
-    "name": "Dr. Sanketa Patil",
+    "name": "Dr. Sanketa Patil, M.D.S. Periodontology",
     "nameAr": "د. سانكيتـة باتيـل",
     "specialty": "Dental",
     "specialtyAr": "طب الأسنان"
@@ -395,13 +395,13 @@ export const doctorSearchIndex: DoctorSearchIndexEntry[] = [
   {
     "id": "dr-nourah-adnan-saad-alrubaian",
     "name": "Dr. Nourah Adnan Saad Alrubaian",
-    "nameAr": "د.نوره عدنان سعد الربيعان",
+    "nameAr": "د. نوره عدنان سعد الربيعان",
     "specialty": "Dental",
     "specialtyAr": "طب الأسنان"
   },
   {
     "id": "dr-rajesh-r-patil",
-    "name": "Dr. Rajesh R. Patil",
+    "name": "Dr. Rajesh R. Patil BDS, MDS",
     "nameAr": "د. راجيش ر. باتيل",
     "specialty": "Dental",
     "specialtyAr": "طب الأسنان"
@@ -520,7 +520,7 @@ export const doctorSearchIndex: DoctorSearchIndexEntry[] = [
   },
   {
     "id": "dr-salah-al-wuhaib",
-    "name": "Dr. Salah Al-wuhaib",
+    "name": "Dr. Salah Al-Wuhaib",
     "nameAr": "د. صلاح الوهيب",
     "specialty": "Laboratory",
     "specialtyAr": "المختبر"
@@ -528,7 +528,7 @@ export const doctorSearchIndex: DoctorSearchIndexEntry[] = [
   {
     "id": "dr-alaa-abdullah",
     "name": "Dr. Alaa Abdullah",
-    "nameAr": "د. آلاء عبـدالله",
+    "nameAr": "د. آلاء عبـد الله",
     "specialty": "Laboratory",
     "specialtyAr": "المختبر"
   },

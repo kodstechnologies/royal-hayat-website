@@ -21,7 +21,7 @@ import { useState, useEffect, type ReactNode } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 
-const ltrIsolateClass = "inline-block [direction:ltr] [unicode-bidi:isolate]";
+const ltrIsolateClass = "inline [unicode-bidi:isolate] [direction:ltr]";
 
 function renderLtrSpan(content: string) {
   return (
@@ -33,7 +33,7 @@ function renderLtrSpan(content: string) {
 
 function renderMixedLatinParens(text: string): ReactNode {
   const parts: ReactNode[] = [];
-  const regex = /(\([A-Za-z][A-Za-z0-9\s]*\))/g;
+  const regex = /\([^)]*[A-Za-z][^)]*\)/g;
   let lastIndex = 0;
   let match: RegExpExecArray | null;
 
@@ -41,15 +41,26 @@ function renderMixedLatinParens(text: string): ReactNode {
     if (match.index > lastIndex) {
       parts.push(text.slice(lastIndex, match.index));
     }
+    parts.push("\u200F");
     parts.push(renderLtrSpan(match[0]));
     lastIndex = regex.lastIndex;
   }
 
   if (lastIndex < text.length) {
-    parts.push(text.slice(lastIndex));
+    const tail = text.slice(lastIndex);
+    if (parts.length > 0 && /[\u0600-\u06FF]/.test(tail)) {
+      parts.push("\u200F");
+    }
+    parts.push(tail);
   }
 
-  return parts.length === 1 ? parts[0] : <>{parts}</>;
+  if (parts.length === 1) return parts[0];
+
+  return (
+    <span dir="rtl" className="inline">
+      {parts}
+    </span>
+  );
 }
 
 function renderGermanBoardQualification(text: string): ReactNode | null {
@@ -515,7 +526,7 @@ const DoctorProfile = () => {
                         ? `-ps-7 list-none font-serif text-lg font-bold text-primary mt-6 mb-2${isColonHeader ? "" : " uppercase tracking-wide"}`
                         : isSubBullet
                           ? "list-none ps-12 text-muted-foreground"
-                          : "text-muted-foreground"
+                          : "text-muted-foreground whitespace-pre-line"
                         }`}>
                         {isHeader
                           ? stripTrailingFullStop(exp)

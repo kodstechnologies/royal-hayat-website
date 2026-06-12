@@ -83,9 +83,10 @@ DoctorCard.displayName = "DoctorCard";
 const departmentDescriptions: Record<string, { en: string; ar: string }> = {
   "Obstetrics & Gynecology": { en: "Complete maternity care from prenatal through postpartum recovery. Our team provides expert guidance for high-risk pregnancies, minimally invasive gynecological procedures, and comprehensive family planning services.", ar: "رعاية شاملة للأم خلال جميع مراحل الحمل، من المتابعة قبل الولادة وحتى التعافي بعد الولادة. يقدم فريقنا الطبي رعاية متخصصة للحمل عالي الخطورة، وإجراءات أمراض النساء طفيفة التوغل، بالإضافة إلى خدمات شاملة لتنظيم الأسرة." },
   "Internal Medicine": { en: "Comprehensive diagnosis and treatment of complex adult diseases. Our internists specialize in managing chronic conditions, preventive health screenings, and coordinating multidisciplinary care for optimal patient outcomes.", ar: "تشخيص وعلاج شامل لأمراض البالغين المعقدة. يتخصص أطباؤنا في إدارة الحالات المزمنة والفحوصات الوقائية وتنسيق الرعاية متعددة التخصصات لتحقيق أفضل النتائج." },
-  "Dermatology": { en: "Expert care for all dermatological needs for adults and children. Our dermatologists offer advanced treatments for skin conditions, cosmetic procedures, and laser therapies using the latest diagnostic technologies.", ar: "رعاية متخصصة وشاملة لجميع احتياجات البشرة للكبار والأطفال. يقدم أطباء الجلدية لدينا علاجات متقدمة لمختلف الأمراض الجلدية، والإجراءات التجميلية، وعلاجات الليزر، باستخدام أحدث التقنيات التشخيصية والطبية لضمان أفضل النتائج وصحة البشرة." },
-  "Family Medicine": { en: "Continuous, personalized care for individuals and families of all ages. Our family physicians build lasting relationships with patients, managing everything from routine check-ups to chronic disease management.", ar: "رعاية صحية شاملة ومستمرّة للأفراد والعائلات من جميع الأعمار. يحرص أطباء طب العائلة لدينا على بناء علاقات طويلة الأمد مع المرضى، مع تقديم متابعة دقيقة للحالات الصحية المختلفة، بدءًا من الفحوصات الدورية وصولًا إلى إدارة الأمراض المزمنة، بهدف تعزيز الصحة العامة وتحسين جودة الحياة." },
-  "Anesthesia": { en: "Top-tier anesthesia services ensuring patient safety and comfort. Our anesthesiologists provide pre-operative assessments, pain-free surgical experiences, and post-operative pain management using modern monitoring equipment.", ar: "نقدّم خدمات تخدير متقدمة على أعلى مستوى لضمان سلامة المريض وراحته قبل وأثناء وبعد العمليات الجراحية. يقوم أطباء التخدير لدينا بإجراء تقييمات ما قبل العملية، وتوفير تجربة جراحية خالية من الألم، بالإضافة إلى إدارة فعّالة للألم بعد العمليات باستخدام أحدث تقنيات وأجهزة المراقبة الطبية." },
+  "Dermatology": { en: "Expert care for all dermatological needs for adults and children. Our dermatologists offer advanced treatments for skin conditions, cosmetic procedures, and laser therapies using the latest diagnostic technologies.", ar: "رعاية متخصصة لجميع احتياجات الأمراض الجلدية للبالغين والأطفال. يقدم أطباء الجلدية لدينا علاجات متقدمة للأمراض الجلدية والإجراءات التجميلية والعلاج بالليزر باستخدام أحدث التقنيات." },
+  "Family Medicine": { en: "Continuous, personalized care for individuals and families of all ages. Our family physicians build lasting relationships with patients, managing everything from routine check-ups to chronic disease management.", ar: "رعاية مستمرة ومخصصة للأفراد والعائلات من جميع الأعمار. يبني أطباء الأسرة لدينا علاقات دائمة مع المرضى ويديرون كل شيء من الفحوصات الروتينية إلى إدارة الأمراض المزمنة." },
+  "Anesthesia": { en: "Top-tier anesthesia services ensuring patient safety and comfort. Our anesthesiologists provide pre-operative assessments, pain-free surgical experiences, and post-operative pain management using modern monitoring equipment", ar: "نقدّم خدمات تخدير متقدمة على أعلى مستوى لضمان سلامة المريض وراحته قبل وأثناء وبعد العمليات الجراحية. يقوم أطباء التخدير لدينا بإجراء تقييمات ما قبل العملية، وتوفير تجربة جراحية خالية من الألم، بالإضافة إلى إدارة فعّالة للألم بعد العمليات باستخدام أحدث تقنيات وأجهزة المراقبة الطبية." },
+  "Anesthesia & Intensive Care": { en: "Top-tier anesthesia services ensuring patient safety and comfort. Our anesthesiologists provide pre-operative assessments, pain-free surgical experiences, and post-operative pain management using modern monitoring equipment", ar: "نقدّم خدمات تخدير متقدمة على أعلى مستوى لضمان سلامة المريض وراحته قبل وأثناء وبعد العمليات الجراحية. يقوم أطباء التخدير لدينا بإجراء تقييمات ما قبل العملية، وتوفير تجربة جراحية خالية من الألم، بالإضافة إلى إدارة فعّالة للألم بعد العمليات باستخدام أحدث تقنيات وأجهزة المراقبة الطبية." },
   "Neonatal": { en: "Dedicated care for newborns requiring specialized medical attention. Our neonatal unit provides advanced life support, developmental care, and family-centered services for premature and critically ill infants.", ar: "رعاية متخصصة ومتكاملة لحديثي الولادة الذين يحتاجون إلى عناية طبية دقيقة. يوفر قسم حديثي الولادة لدينا دعمًا متقدمًا لإنقاذ الحياة، ورعاية لنمو وتطور الطفل، إلى جانب خدمات تركز على الأسرة لضمان أفضل رعاية للرضع الخدّج والحالات الحرجة." },
   "General Surgery": { en: "Exceptional surgical care combining precision, safety, and rapid recovery. Our surgeons perform a wide range of minimally invasive and laparoscopic procedures, including bariatric surgery, hernia repair, and oncological operations.", ar: "رعاية جراحية متميزة تجمع بين الدقة العالية، ومعايير الأمان، وسرعة التعافي. يقدم جراحونا مجموعة واسعة من الإجراءات الجراحية طفيفة التوغل وجراحات المنظار، بما في ذلك جراحات السمنة، وإصلاح الفتق، وجراحات الأورام، وذلك باستخدام أحدث التقنيات الطبية لضمان أفضل النتائج للمرضى." },
   "La Cosmetique": { en: "Advanced cosmetic and reconstructive surgery in a luxurious clinical setting. Our board-certified surgeons combine artistry with precision for body contouring, facial rejuvenation, rhinoplasty, and non-surgical aesthetic treatments.", ar: "جراحة تجميلية وترميمية متقدمة في بيئة سريرية فاخرة. يجمع جراحونا المعتمدون بين الفن والدقة لنحت الجسم وتجديد الوجه وتجميل الأنف والعلاجات التجميلية غير الجراحية." },
@@ -99,10 +100,16 @@ const departmentDescriptions: Record<string, { en: string; ar: string }> = {
   "Laboratory": { en: "Comprehensive clinical laboratory and pathology services with rapid, accurate diagnostic testing. Our team includes histopathologists, microbiologists, and hematologists performing specialized analyses.", ar: "خدمات مختبر سريري وباثولوجي شاملة مع فحوصات تشخيصية سريعة ودقيقة. يضم فريقنا أخصائيي أنسجة وأحياء دقيقة وأمراض دم يجرون تحاليل متخصصة." },
   "ENT (Ear, Nose & Throat)": { en: "Expert care for conditions affecting the ear, nose, throat, head, and neck. Our ENT specialists provide surgical and non-surgical treatments for hearing disorders, sinus conditions, voice disorders, and head & neck tumors.", ar: "رعاية طبية متخصصة لحالات الأذن والأنف والحنجرة والرأس والرقبة. يقدم أخصائيو الأنف والأذن والحنجرة لدينا علاجات جراحية وغير جراحية لمشكلات السمع، واضطرابات الجيوب الأنفية، واضطرابات الصوت، وأورام الرأس والرقبة، باستخدام أحدث التقنيات الطبية لضمان أفضل النتائج للمرضى." },
 };
+const departmentEnLabels: Record<string, string> = {
+  "Laboratory": "Laboratory Services",
+  "Laboratory Services": "Laboratory Services",
+  "Radiology": "Center for Diagnostic Imaging",
+};
 const departmentArLabels: Record<string, string> = {
   "Obstetrics & Gynecology": "امراض النساء والولادة",
   "Neonatal": "طب حديثي الولادة",
   "Anesthesia": "التخدير",
+  "Anesthesia & Intensive Care": "التخدير",
   "Internal Medicine": "الطب الباطنية",
   "Family Medicine": "طب العائلة",
   "Dermatology": "الأمراض الجلدية",
@@ -112,6 +119,11 @@ const departmentArLabels: Record<string, string> = {
   "IVF": "طب الإنجاب وأطفال الأنابيب",
   "Reproductive Medicine & IVF": "طب الإنجاب وأطفال الأنابيب",
   "Reproductive Medicine": "طب الإنجاب وأطفال الأنابيب",
+  "Laboratory": "الخدمات المخبرية",
+  "Laboratory Services": "الخدمات المخبرية",
+  "Radiology": "الأشعة التشخيصية",
+  "Pharmacy": "الصيدلية",
+  "Clinical Pharmacy": "الصيدلة الإكلينيكية",
 };
 const DepartmentRow = memo(({ department, departmentAr, docs }: { department: string; departmentAr: string; docs: Doctor[] }) => {
   const { lang } = useLanguage();
@@ -176,7 +188,7 @@ const DepartmentRow = memo(({ department, departmentAr, docs }: { department: st
     <div className="mb-14">
       <div className="max-w-[1192px] mx-auto mb-6">
         <h3 className="text-2xl font-serif font-bold text-foreground mb-3">
-          {lang === "ar" ? (departmentArLabels[department] ?? departmentAr) : department}
+          {lang === "ar" ? (departmentArLabels[department] ?? departmentAr) : (departmentEnLabels[department] ?? department)}
         </h3>
         {deptDesc && (
           <div className="bg-popover border border-border/50 rounded-2xl p-4 md:p-5 shadow-sm">

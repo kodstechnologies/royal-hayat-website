@@ -205,7 +205,7 @@ export const doctorSearchIndex: DoctorSearchIndexEntry[] = [
   },
   {
     "id": "prof-omar-el-khateeb",
-    "name": "Prof. Omar El Khateeb",
+    "name": "Prof. Dr. Omar El Khateeb",
     "nameAr": "البروفيسور د. عمر الخطيب",
     "specialty": "Anesthesia",
     "specialtyAr": "التخدير والعناية المركزة"

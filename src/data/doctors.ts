@@ -1755,14 +1755,14 @@ export const doctors: Doctor[] = [
   {
     id: 'prof-omar-el-khateeb',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/omar1.png',
-    name: 'Prof. Omar El Khateeb', nameAr: 'البروفيسور د. عمر الخطيب',
+    name: 'Prof. Dr. Omar El Khateeb', nameAr: 'البروفيسور د. عمر الخطيب',
     specialty: 'Anesthesia', specialtyAr: 'التخدير والعناية المركزة',
     department: 'Anesthesia', departmentAr: 'التخدير والعناية المركزة',
     providerCode: 'E0366',
     clinicCode: 'R002ANA',
     title: 'Medical Director, Anesthesia & Intensive Care Consultant',
     titleAr: 'المدير الطبي، استشاري التخدير والعناية المركزة',
-    bio: 'Prof. Omar El Khateeb is a specialist in the Anesthesia department at Royale Hayat Hospital.',
+    bio: 'Prof. Dr. Omar El Khateeb is a specialist in the Anesthesia department at Royale Hayat Hospital.',
     bioAr: 'البروفيسور د. عمر الخطيب متخصص في قسم التخدير والعناية المركزة في مستشفى رويال حياة.',
     qualifications: [
       'Consultant of Anesthesia & Intensive Care',

@@ -3056,7 +3056,7 @@ export const doctorsWithClinicCodes: DoctorWithClinicCode[] = [
   {
     id: 'prof-omar-el-khateeb',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/omar1.png',
-    name: 'Prof. Omar El Khateeb',
+    name: 'Prof. Dr. Omar El Khateeb',
     nameAr: 'البروفيسور د. عمر الخطيب',
     specialty: 'Anesthesia',
     specialtyAr: 'التخدير والعناية المركزة',
@@ -3065,9 +3065,9 @@ export const doctorsWithClinicCodes: DoctorWithClinicCode[] = [
     departmentClinicCode: 'R002ANA',
     clinicCode: 'R002ANA',
     providerCode: 'E0366',
-    title: 'Medical Director & Consultant of Anesthesia & Intensive Care',
-    titleAr: 'المدير الطبي واستشاري التخدير والعناية المركزة',
-    bio: 'Prof. Omar El Khateeb is a specialist in the Anesthesia department at Royale Hayat Hospital.',
+    title: 'Medical Director, Anesthesia & Intensive Care Consultant',
+    titleAr: 'المدير الطبي، استشاري التخدير والعناية المركزة',
+    bio: 'Prof. Dr. Omar El Khateeb is a specialist in the Anesthesia department at Royale Hayat Hospital.',
     bioAr: 'البروفيسور د. عمر الخطيب متخصص في قسم التخدير والعناية المركزة في مستشفى رويال حياة.',
     qualifications: [
       'Consultant of Anesthesia & Intensive Care',

@@ -124,8 +124,16 @@ function stripExpertiseBullet(text: string) {
   return trimmed;
 }
 
-function renderExpertiseLine(text: string, lang: "en" | "ar"): ReactNode {
-  const content = stripExpertiseBullet(text);
+/** QUALIFICATIONS / EXPERIENCED IN list items should not end with a full stop. */
+function stripTrailingFullStop(text: string) {
+  const trimmed = text.trimEnd();
+  if (trimmed.endsWith(":") || trimmed.endsWith("：")) return text;
+  return trimmed.replace(/\.+$/, "");
+}
+
+/** Label before ":" is bold; text after ":" stays regular (QUALIFICATIONS & EXPERIENCED IN). */
+function renderProfileListLine(text: string, lang: "en" | "ar"): ReactNode {
+  const content = stripTrailingFullStop(stripExpertiseBullet(text));
 
   const colonIndex = content.indexOf(":");
   if (colonIndex === -1 || colonIndex > 80) {
@@ -141,7 +149,9 @@ function renderExpertiseLine(text: string, lang: "en" | "ar"): ReactNode {
       {rest ? (
         <>
           {" "}
-          {lang === "ar" ? renderArQualification(rest) : rest}
+          <span className="font-normal text-muted-foreground">
+            {lang === "ar" ? renderArQualification(rest) : rest}
+          </span>
         </>
       ) : null}
     </>
@@ -461,9 +471,10 @@ const DoctorProfile = () => {
                           ? "list-none -ps-7 font-serif text-lg font-bold text-primary mt-6 mb-2"
                           : "text-muted-foreground"
                           }`}>
-                          {lang === "ar"
-                            ? renderArQualification(isManualBullet ? trimmed.substring(1).trim() : q)
-                            : (isManualBullet ? trimmed.substring(1).trim() : q)}
+                          {renderProfileListLine(
+                            isManualBullet ? trimmed.substring(1).trim() : q,
+                            lang === "ar" ? "ar" : "en"
+                          )}
                         </li>
                       );
                     })}
@@ -507,19 +518,21 @@ const DoctorProfile = () => {
                           : "text-muted-foreground"
                         }`}>
                         {isHeader
-                          ? exp
+                          ? stripTrailingFullStop(exp)
                           : isSubBullet
                             ? (
                               <span className="flex items-start gap-2">
                                 <span className="text-primary shrink-0 leading-relaxed">–</span>
                                 <span className="flex-1">
                                   {lang === "ar"
-                                    ? renderArQualification(stripExpertiseBullet(exp))
-                                    : stripExpertiseBullet(exp)}
+                                    ? renderArQualification(
+                                        stripTrailingFullStop(stripExpertiseBullet(exp))
+                                      )
+                                    : stripTrailingFullStop(stripExpertiseBullet(exp))}
                                 </span>
                               </span>
                             )
-                            : renderExpertiseLine(exp, lang === "ar" ? "ar" : "en")}
+                            : renderProfileListLine(exp, lang === "ar" ? "ar" : "en")}
                       </li>
                     );
                   })}

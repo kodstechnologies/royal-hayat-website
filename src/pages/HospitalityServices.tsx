@@ -225,7 +225,7 @@ const HospitalityServices = ({
         : "252 sqm (Suite 130 sqm + Hall 122 sqm)",
       desc: isAr
         ? "يوفر جناح رويال أوركيد تجربة استثنائية فاخرة صُممت خصيصًا للضيوف الذين يبحثون عن أعلى مستويات الخصوصية والراحة والرقي. ويتميز الجناح بتصميم مستوحى من الأناقة الأوروبية الكلاسيكية، مع خدمات ضيافة متكاملة وعناية شخصية فائقة."
-        : "The Royale Orchid Suites offer a truly 1 rarefied experience for those who expect nothing less than the extraordinary. Designed for guests accustomed to the finest things in life, these exclusive suites provide unmatched privacy and comfort within a setting inspired by classic European elegance.",
+        : "The Royale Orchid Suites offer a truly rarefied experience for those who expect nothing less than the extraordinary. Designed for guests accustomed to the finest things in life, these exclusive suites provide unmatched privacy and comfort within a setting inspired by classic European elegance.",
       highlights: isAr
         ? ["خصوصية تامة واهتمام شخصي راقٍ", "تنسيق متكامل بين الخدمات الطبية وخدمات الضيافة", "تفاصيل فاخرة تمنحكم تجربة لا تُنسى لكم ولعائلتكم وضيوفكم", "أثاث فاخر، ومساحات استقبال خاصة، وخدمة طعام راقية داخل الجناح"]
         : ["Complete discretion and personalized attention", "Seamless coordination of healthcare and guest services", "Thoughtful touches that create lasting memories for you, your family, and your guests"],

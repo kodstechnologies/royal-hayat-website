@@ -394,12 +394,12 @@ const WorkWithUs = ({
                 <p>
                   {isAr
                     ? "نعد بتوفير بيئة عمل يشعر فيها كل موظف بالاحترام، الثقة، والدعم، حيث لا تُقاس قيمة الإنسان بالمسمى الوظيفي، بل بما يقدمه من احترافية، نزاهة، وإسهام حقيقي."
-                    : "We promise a workplace where employees are respected, trusted, and supported not defined by titles, but valued for their professionalism, integrity, and contribution."}
+                    : "We promise a workplace where employees are respected, trusted, and supported, not defined by titles, but valued for their professionalism, integrity, and contribution."}
                 </p>
                 <p>
                   {isAr
                     ? "نستثمر بوعي في التطوير والتعلم المستمر، من خلال البرامج التدريبية، والتعرّف على المعايير العالمية، والتعاون بين التخصصات، وتوفير الفرص التي تساعد موظفينا على النمو بثقة وتميّز."
-                    : "We invest deliberately in learning and development, through continuous training, exposure to international standards, collaboration across disciplines, and opportunities to grow with confidence."}
+                    : "We invest deliberately in learning and development through continuous training, exposure to international standards, collaboration across disciplines, and opportunities to grow with confidence."}
                 </p>
                 <p>
                   {isAr ? (
@@ -438,7 +438,7 @@ const WorkWithUs = ({
                 <p>
                   {isAr
                     ? "وفي رويال حياة، لا تمر الجهود والإنجازات دون تقدير، لأن الامتنان جزء أساسي من ثقافتنا، والرعاية تستحق أن تُحتفى بها."
-                    : "Effort and excellence never go unnoticed here because appreciation matters, and care deserves recognition. At Royale Hayat, it is more than work; it is a place to belong and be valued."}
+                    : "Effort and excellence never go unnoticed here—because appreciation matters, and care deserves to be recognized. At Royale Hayat, it's more than work. It's a place to belong and be valued"}
                 </p>
                 {isAr && (
                   <p>

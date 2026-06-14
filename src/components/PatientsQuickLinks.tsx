@@ -3,10 +3,8 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { useLanguage } from "@/contexts/LanguageContext";
-
 const PatientsQuickLinks = () => {
   const { t, lang } = useLanguage();
-
   const links = [
     { icon: Heart, label: t("nursing"), href: "/patients-visitors?tab=nursing" },
     { icon: ClipboardList, label: t("admissionInfo"), href: "/patients-visitors?tab=admission" },
@@ -17,7 +15,6 @@ const PatientsQuickLinks = () => {
     { icon: MapPin, label: t("internationalPatient"), href: "/international-patient" },
     { icon: Baby, label: lang === "ar" ? "نظام أمان الرضّع" : "Infant Security", href: "/infant-security" },
   ];
-
   return (
     <section className="py-12 bg-secondary/10">
       <div className="container mx-auto px-6">
@@ -53,5 +50,4 @@ const PatientsQuickLinks = () => {
     </section>
   );
 };
-
 export default PatientsQuickLinks;

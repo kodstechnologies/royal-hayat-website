@@ -8,13 +8,13 @@ import { useState } from "react";
 import axios from "axios";
 // import axios from "axios";
 import { toast } from "sonner";
+import PhoneInput from "react-phone-input-2";
+import type { CountryData } from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 import { createInternationalPatientEnquiry } from "@/api/internationalPatient";
-// import { createInternationalPatientEnquiry } from "@/api/internationalPatient";
-
 const InternationalPatient = () => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
-
   const services = [
     { icon: Calendar, label: isAr ? "حجز المواعيد مع الأطباء" : "Appointment scheduling with physicians" },
     { icon: Globe, label: isAr ? "تنسيق إجراءات الدخول إلى المستشفى" : "Coordination of the admissions process" },
@@ -25,34 +25,73 @@ const InternationalPatient = () => {
     { icon: UtensilsCrossed, label: isAr ? "وجبات خاصة حسب الطلب" : "Specially prepared meals upon request" },
     { icon: Globe, label: isAr ? "خدمات الكونسيرج عند الطلب" : "Concierge services upon request" },
   ];
-
   const [form, setForm] = useState({
-    firstName: "", lastName: "", mobile: "", email: "", address: "", country: "", comments: "",
+    firstName: "", lastName: "", mobile: "965", email: "", address: "", country: "", comments: "",
+  });
+  const [mobileCountry, setMobileCountry] = useState<{ countryCode: string; dialCode: string }>({
+    countryCode: "kw",
+    dialCode: "965",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleMobileChange = (value: string) => {
-    const digitsOnly = value.replace(/\D/g, "").slice(0, 10);
-    setForm((prev) => ({ ...prev, mobile: digitsOnly }));
+  const getMobileLocalDigits = (phone: string, dialCode: string) => {
+    const digits = phone.replace(/\D/g, "");
+    return digits.startsWith(dialCode) ? digits.slice(dialCode.length) : digits;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!form.firstName.trim() || !form.lastName.trim() || !form.email.trim() || !form.mobile.trim()) {
+  const handleMobileChange = (value: string, country: CountryData | {}) => {
+    const data = country as CountryData;
+    const countryCode = data.countryCode || mobileCountry.countryCode;
+    const dialCode = data.dialCode || mobileCountry.dialCode;
+    setMobileCountry({ countryCode, dialCode });
+
+    const digits = value.replace(/\D/g, "");
+    if (countryCode === "kw") {
+      const localDigitsRaw = digits.startsWith(dialCode)
+        ? digits.slice(dialCode.length)
+        : digits;
+      const localDigits = localDigitsRaw.replace(/\D/g, "").slice(0, 8);
+      setForm((prev) => ({ ...prev, mobile: `${dialCode}${localDigits}` }));
+      return;
+    }
+    setForm((prev) => ({ ...prev, mobile: digits }));
+  };
+
+  const validateForm = () => {
+    if (!form.firstName.trim() || !form.lastName.trim() || !form.email.trim()) {
       toast.error(isAr ? "يرجى ملء الحقول المطلوبة." : "Please fill in required fields.");
       return false;
     }
 
-    const mobileDigits = form.mobile.replace(/\D/g, "");
-    if (mobileDigits.length < 8 || mobileDigits.length > 10) {
+    const localDigits = getMobileLocalDigits(form.mobile, mobileCountry.dialCode);
+    if (!localDigits.length) {
+      toast.error(isAr ? "يرجى إدخال رقم الهاتف." : "Please enter a mobile number.");
+      return false;
+    }
+
+    if (mobileCountry.countryCode === "kw") {
+      if (localDigits.length !== 8) {
+        toast.error(
+          isAr
+            ? "رقم الكويت يجب أن يتكون من 8 أرقام."
+            : "Kuwait mobile number must be 8 digits.",
+        );
+        return false;
+      }
+    } else if (localDigits.length < 7 || localDigits.length > 15) {
       toast.error(
         isAr
-          ? "يرجى إدخال رقم هاتف صحيح (من 8 إلى 10 أرقام)."
-          : "Please enter a valid phone number (8 to 10 digits)."
+          ? "يرجى إدخال رقم جوال صحيح."
+          : "Please enter a valid mobile number.",
       );
       return;
     }
 
+    return true;
+  };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validateForm()) return;
     try {
       setIsSubmitting(true);
       await createInternationalPatientEnquiry({
@@ -64,8 +103,11 @@ const InternationalPatient = () => {
         country: form.country,
         comments: form.comments,
       });
-      toast.success(isAr ? "تم إرسال الطلب وسنتواصل معك." : "Request sent and we will get back to you.");
-      setForm({ firstName: "", lastName: "", mobile: "", email: "", address: "", country: "", comments: "" });
+      toast.success(
+        isAr ? "تم إرسال الطلب وسنتواصل معك." : "Request sent and we will get back to you.",
+      );
+      setForm({ firstName: "", lastName: "", mobile: "965", email: "", address: "", country: "", comments: "" });
+      setMobileCountry({ countryCode: "kw", dialCode: "965" });
     } catch (error) {
       const backendMessage = axios.isAxiosError(error)
         ? error.response?.data?.message || error.response?.data?.error || error.message
@@ -80,14 +122,66 @@ const InternationalPatient = () => {
       setIsSubmitting(false);
     }
   };
-
   const handleChange = (field: string, value: string) => setForm(prev => ({ ...prev, [field]: value }));
-
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
+      {isAr && (
+        <style>{`
+          .international-patient-phone-input[dir="rtl"] .react-tel-input .flag-dropdown {
+            height: 2.5rem;
+            background: hsl(var(--background));
+            border-color: hsl(var(--border));
+            left: auto !important;
+            right: 0 !important;
+            width: 3.25rem !important;
+            border-radius: 0 0.5rem 0.5rem 0;
+          }
+          .international-patient-phone-input[dir="rtl"] .react-tel-input .selected-flag {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 100% !important;
+            height: 100% !important;
+            gap: 0.3rem !important;
+            padding: 0 0.3rem !important;
+          }
+          .international-patient-phone-input[dir="rtl"] .react-tel-input .selected-flag .flag,
+          .international-patient-phone-input[dir="rtl"] .react-tel-input .selected-flag .arrow {
+            position: static !important;
+            inset: auto !important;
+            left: auto !important;
+            right: auto !important;
+            top: auto !important;
+            margin: 0 !important;
+            transform: none !important;
+            flex: 0 0 auto !important;
+          }
+          .international-patient-phone-input[dir="rtl"] .react-tel-input .selected-flag::before {
+            content: "";
+            order: 1;
+            width: 0;
+            height: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-top: 5px solid #6b7280;
+            flex-shrink: 0;
+          }
+          .international-patient-phone-input[dir="rtl"] .react-tel-input .selected-flag .arrow {
+            display: none !important;
+          }
+          .international-patient-phone-input[dir="rtl"] .react-tel-input .selected-flag .flag {
+            order: 2;
+            flex-shrink: 0;
+          }
+          .international-patient-phone-input[dir="rtl"] .react-tel-input .form-control {
+            padding-right: 3.5rem !important;
+            padding-left: 0.75rem !important;
+            text-align: right;
+          }
+        `}</style>
+      )}
       <Header />
-
-      {/* Hero */}
       <section className="bg-primary py-16 md:py-20">
         <div className="container mx-auto px-6 text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
@@ -104,8 +198,6 @@ const InternationalPatient = () => {
           </motion.div>
         </div>
       </section>
-
-      {/* About */}
       <section className="py-16">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto space-y-6">
@@ -130,13 +222,11 @@ const InternationalPatient = () => {
           </div>
         </div>
       </section>
-
-      {/* Services */}
-      <section className="py-16 bg-secondary/20">
+      <section className="py-16 bg-secondary/20" dir={isAr ? "rtl" : "ltr"} lang={isAr ? "ar" : "en"}>
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto">
             <motion.h2 initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-              className="text-2xl md:text-3xl font-serif text-foreground mb-3 text-center">
+              className={`text-2xl md:text-3xl font-serif text-foreground mb-3 text-center ${isAr ? "!font-bold" : "font-bold"}`}>
               {isAr ? "كيف يمكننا مساعدتكم؟" : "How We Help"}
             </motion.h2>
             <motion.p initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
@@ -160,35 +250,36 @@ const InternationalPatient = () => {
           </div>
         </div>
       </section>
-
-      {/* Contact Info */}
       <section className="py-12 bg-primary/5">
         <div className="container mx-auto px-6 text-center">
           <motion.div initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             className="max-w-xl mx-auto">
             <Phone className="w-6 h-6 text-accent mx-auto mb-3" />
-            <p className="font-body text-sm text-foreground mb-1">{isAr ? "للمواعيد من خارج الكويت يرجى الاتصال على:" : "For appointment from outside Kuwait, please call:"}</p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-2">
-              <a href="tel:+96525360555" className="font-serif text-lg text-accent hover:underline">+965 2536 0555</a>
-              <a href="tel:+96567668208" className="font-serif text-lg text-accent hover:underline">+965 6766 8208</a>
+            {isAr ? (
+              <>
+                <p className="font-body text-sm text-foreground mb-1">للمواعيد من خارج الكويت</p>
+                <p className="font-body text-sm text-muted-foreground mb-2">يرجى الاتصال على:</p>
+              </>
+            ) : (
+              <p className="font-body text-sm text-foreground mb-1">For appointment from outside Kuwait, please call:</p>
+            )}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-2" dir="ltr">
+              <a href="tel:+96525360555" dir="ltr" className="font-serif text-lg text-accent hover:underline inline-block [unicode-bidi:isolate]">+965 2536 0555</a>
+              <a href="tel:+96567668208" dir="ltr" className="font-serif text-lg text-accent hover:underline inline-block [unicode-bidi:isolate]">+965 6766 8208</a>
             </div>
           </motion.div>
         </div>
       </section>
-
-      {/* Enquiry Form */}
-      <section className="py-16">
+      <section className="py-16" dir={isAr ? "rtl" : "ltr"} lang={isAr ? "ar" : "en"}>
         <div className="container mx-auto px-6">
           <div className="max-w-2xl mx-auto">
             <motion.div initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-              <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-2 text-center">{isAr ? "الاستفسار الإلكتروني" : "Online Enquiry"}</h2>
+              <h2 className={`text-2xl md:text-3xl font-serif text-foreground mb-2 text-center ${isAr ? "!font-bold" : "font-bold"}`}>{isAr ? "الاستفسار الإلكتروني" : "Online Enquiry"}</h2>
               <p className="font-body text-sm text-muted-foreground text-center mb-8">{isAr ? "للاستفسارات عبر الإنترنت، يرجى تعبئة النموذج التالي:" : "For online enquiries, please fill in the form below."}</p>
             </motion.div>
-
             <motion.form onSubmit={handleSubmit} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }} transition={{ delay: 0.1 }}
               className="bg-popover border border-border/50 rounded-2xl p-6 md:p-8 space-y-5">
-
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "الاسم الأول" : "First Name"} *</label>
@@ -196,53 +287,72 @@ const InternationalPatient = () => {
                     className="w-full rounded-lg border border-border bg-background px-4 py-2.5 font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
                 </div>
                 <div>
-                  <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "اسم العائلة" : "Last Name"} *</label>
-                  <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "اسم العائلة" : "Last Name"} *</label>
+                  <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "اسم العائلة" : "Last Name *"}</label>
                   <input type="text" value={form.lastName} onChange={e => handleChange("lastName", e.target.value)}
                     className="w-full rounded-lg border border-border bg-background px-4 py-2.5 font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
                 </div>
               </div>
-
               <div>
-                <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "الهاتف المحمول" : "Mobile"} *</label>
-                <input
-                  type="tel"
-                  inputMode="numeric"
-                  autoComplete="tel"
-                  maxLength={10}
-                  value={form.mobile}
-                  onChange={(e) => handleMobileChange(e.target.value)}
-                  placeholder={isAr ? "8–10 أرقام" : "8–10 digits"}
-                  className="w-full rounded-lg border border-border bg-background px-4 py-2.5 font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
-                />
+                <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "رقم الهاتف" : "Mobile"} *</label>
+                {isAr ? (
+                  <div className="international-patient-phone-input" dir="rtl">
+                    <PhoneInput
+                      country="kw"
+                      value={form.mobile}
+                      onChange={handleMobileChange}
+                      placeholder="أدخل الرقم"
+                      masks={{ kw: "........" }}
+                      enableLongNumbers
+                      inputClass="!w-full !h-10 !rounded-lg !border !border-border !bg-background !text-sm !font-body !text-foreground focus:!ring-2 focus:!ring-primary/30"
+                      buttonClass="!h-10 !border-border !bg-background"
+                      containerClass="!w-full"
+                      dropdownClass="!text-sm"
+                      enableSearch
+                      countryCodeEditable={false}
+                    />
+                  </div>
+                ) : (
+                  <PhoneInput
+                    country="kw"
+                    value={form.mobile}
+                    onChange={handleMobileChange}
+                    placeholder="Enter mobile number"
+                    masks={{ kw: "........" }}
+                    enableLongNumbers
+                    inputClass="!w-full !h-10 !rounded-lg !border !border-border !bg-background !px-12 !text-sm !font-body !text-foreground focus:!ring-2 focus:!ring-primary/30"
+                    buttonClass="!border-border !bg-background"
+                    containerClass="!w-full"
+                    dropdownClass="!text-sm"
+                    enableSearch
+                    countryCodeEditable={false}
+                  />
+                )}
               </div>
-
               <div>
                 <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "البريد الإلكتروني" : "Email"} *</label>
                 <input type="email" value={form.email} onChange={e => handleChange("email", e.target.value)}
                   className="w-full rounded-lg border border-border bg-background px-4 py-2.5 font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
               </div>
-
               <div>
                 <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "العنوان" : "Address"}</label>
                 <input type="text" value={form.address} onChange={e => handleChange("address", e.target.value)}
                   className="w-full rounded-lg border border-border bg-background px-4 py-2.5 font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
               </div>
-
               <div>
                 <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "الدولة" : "Country"}</label>
                 <input type="text" value={form.country} onChange={e => handleChange("country", e.target.value)}
                   className="w-full rounded-lg border border-border bg-background px-4 py-2.5 font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
               </div>
-
               <div>
                 <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "الملاحظات" : "Comments"}</label>
                 <textarea rows={4} value={form.comments} onChange={e => handleChange("comments", e.target.value)}
                   className="w-full rounded-lg border border-border bg-background px-4 py-2.5 font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none" />
               </div>
-
-              <button type="submit" disabled={isSubmitting}
-                className="w-full inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg font-body text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed">
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg font-body text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
+              >
                 <Send className="w-4 h-4" />
                 {isSubmitting ? (isAr ? "جاري الإرسال..." : "Sending...") : isAr ? "إرسال" : "Send"}
                 {isSubmitting ? (isAr ? "جاري الإرسال..." : "Sending...") : isAr ? "إرسال" : "Send"}
@@ -251,13 +361,9 @@ const InternationalPatient = () => {
           </div>
         </div>
       </section>
-
- 
-
       <Footer />
       <ScrollToTop />
     </div>
   );
 };
-
 export default InternationalPatient;

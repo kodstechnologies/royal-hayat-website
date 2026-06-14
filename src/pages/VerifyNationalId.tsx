@@ -13,10 +13,8 @@ import {
   type StartIdentityResponse
 } from "@/api/identity";
 import { subscribeToIdentityVerification } from "@/api/identitySocket";
-
 const VerifyNationalId = () => {
   const { lang, t } = useLanguage();
-
   const [nationalId, setNationalId] = useState("");
   const [error, setError] = useState<string>("");
   const [phase, setPhase] = useState<"idle" | "starting" | "waiting" | "done" | "failed">("idle");
@@ -24,10 +22,8 @@ const VerifyNationalId = () => {
   const [isVerified, setIsVerified] = useState<boolean | null>(null);
   const [personName, setPersonName] = useState<string>("");
   const [identityPayload, setIdentityPayload] = useState<Record<string, unknown> | null>(null);
-
   const socketUnsubscribeRef = useRef<(() => void) | null>(null);
   const verificationDoneRef = useRef(false);
-
   const applyStatusResult = (statusData: IdentityStatusResponse) => {
     if (statusData?.status === "pending") {
       setIsVerified(null);
@@ -36,9 +32,7 @@ const VerifyNationalId = () => {
       setPhase("waiting");
       return;
     }
-
     setIsVerified(statusData?.verified === true);
-
     const nameFromStatus = (() => {
       const nameEn = statusData?.personName?.english || "";
       const nameAr = statusData?.personName?.arabic || "";
@@ -48,7 +42,6 @@ const VerifyNationalId = () => {
     setIdentityPayload(extractIdentityPayload(statusData));
     setPhase("done");
   };
-
   const extractDisplayName = (payload: StartIdentityResponse | IdentityStatusResponse) => {
     const source =
       ("raw" in payload ? payload.raw?.payload || payload.raw : undefined) ||
@@ -58,14 +51,12 @@ const VerifyNationalId = () => {
     const nameAr = typedSource?.name?.arabic || typedSource?.name?.ar || "";
     return (lang === "ar" ? nameAr : nameEn) || "";
   };
-
   const extractIdentityPayload = (payload: StartIdentityResponse | IdentityStatusResponse) => {
     const source =
       ("raw" in payload ? payload.raw?.payload || payload.raw : undefined) ||
       ("identityData" in payload ? payload.identityData?.payload || payload.identityData : undefined);
     return source && typeof source === "object" ? (source as Record<string, unknown>) : null;
   };
-
   const renderValue = (value: unknown): string => {
     if (value === null || value === undefined || value === "") return "null";
     if (typeof value === "boolean") return value ? "true" : "false";
@@ -73,7 +64,6 @@ const VerifyNationalId = () => {
     if (typeof value === "string") return value;
     return "";
   };
-
   const renderPayloadRows = (value: unknown, path = "", depth = 0): JSX.Element[] => {
     if (Array.isArray(value)) {
       if (!value.length) {
@@ -85,7 +75,6 @@ const VerifyNationalId = () => {
       }
       return value.flatMap((item, index) => renderPayloadRows(item, `${path}[${index}]`, depth + 1));
     }
-
     if (value && typeof value === "object") {
       const entries = Object.entries(value as Record<string, unknown>);
       if (!entries.length) {
@@ -100,14 +89,12 @@ const VerifyNationalId = () => {
         return renderPayloadRows(nested, nestedPath, depth + 1);
       });
     }
-
     return [
       <div key={`${path}-leaf`} className="text-[11px] text-muted-foreground break-all" style={{ paddingInlineStart: depth * 14 }}>
         {path || "value"}: {renderValue(value)}
       </div>
     ];
   };
-
   const validate = () => {
     const v = nationalId.trim();
     if (!v) {
@@ -118,16 +105,13 @@ const VerifyNationalId = () => {
     }
     return "";
   };
-
   useEffect(() => {
     if (!operationId || phase !== "waiting") {
       verificationDoneRef.current = false;
       return;
     }
-
     verificationDoneRef.current = false;
     socketUnsubscribeRef.current?.();
-
     const finishIfReady = (statusData: IdentityStatusResponse) => {
       if (verificationDoneRef.current || statusData?.status === "pending") return;
       verificationDoneRef.current = true;
@@ -136,22 +120,18 @@ const VerifyNationalId = () => {
       socketUnsubscribeRef.current?.();
       socketUnsubscribeRef.current = null;
     };
-
     const { unsubscribe } = subscribeToIdentityVerification(operationId, finishIfReady);
     socketUnsubscribeRef.current = unsubscribe;
-
     return () => {
       unsubscribe();
       socketUnsubscribeRef.current = null;
     };
   }, [operationId, phase, lang]);
-
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     const err = validate();
     setError(err);
     if (err) return;
-
     void (async () => {
       try {
         setPhase("starting");
@@ -162,10 +142,9 @@ const VerifyNationalId = () => {
         setOperationId("");
         socketUnsubscribeRef.current?.();
         socketUnsubscribeRef.current = null;
-
         const payload: StartIdentityPayload = {
           civilId: nationalId.trim(),
-          serviceName: { ar: "تجربة", en: "Service Test" },
+          serviceName: { ar: "طلب موعد", en: "Appointment Request" },
           reason: { ar: "تجربة", en: "test" }
         };
         const startData = await startIdentityVerification(payload);
@@ -177,10 +156,8 @@ const VerifyNationalId = () => {
           setPhase("done");
           return;
         }
-
         const opId: string | undefined = startData?.operationId;
         if (!opId) throw new Error(lang === "ar" ? "لم يتم استلام operationId" : "Missing operationId");
-
         setOperationId(opId);
         setPhase("waiting");
       } catch (err: unknown) {
@@ -196,13 +173,10 @@ const VerifyNationalId = () => {
       }
     })();
   };
-
   const showWaiting = operationId && phase === "waiting";
-
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)] overflow-x-hidden">
       <Header />
-
       <div className="container mx-auto px-6 py-6 max-w-5xl">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -221,7 +195,6 @@ const VerifyNationalId = () => {
               : "Select the method that works best for you to schedule your appointment — by department, doctor, or symptom description."}
           </p>
         </motion.div>
-
         <div className="bg-popover rounded-2xl border border-border p-6 md:p-8 max-w-3xl mx-auto shadow-sm">
           <form onSubmit={onSubmit} className="space-y-6">
             <div className="space-y-2">
@@ -249,7 +222,6 @@ const VerifyNationalId = () => {
               />
               {error && <p className="font-body text-xs text-destructive mt-1">{error}</p>}
             </div>
-
             {!operationId && (
               <motion.button
                 whileHover={{ scale: 1.02 }}
@@ -271,14 +243,12 @@ const VerifyNationalId = () => {
                 )}
               </motion.button>
             )}
-
             {phase === "starting" && (
               <div className="bg-muted/30 rounded-xl p-4 text-center border border-border">
                 <Loader2 className="w-6 h-6 animate-spin text-accent mx-auto mb-2" />
                 <p className="font-body text-sm text-foreground">{t("identitySendingRequest")}</p>
               </div>
             )}
-
             {showWaiting && (
               <div className="rounded-xl p-4 text-center border border-accent/20 bg-accent/5">
                 <Loader2 className="w-6 h-6 animate-spin text-accent mx-auto mb-2" />
@@ -289,7 +259,6 @@ const VerifyNationalId = () => {
                 </p>
               </div>
             )}
-
             {phase === "done" && isVerified !== null && (
               <div
                 className={`rounded-xl p-4 text-center border ${
@@ -330,7 +299,6 @@ const VerifyNationalId = () => {
                 )}
               </div>
             )}
-
             {phase === "failed" && (
               <div className="bg-destructive/10 rounded-xl p-4 text-center border border-destructive/30">
                 <XCircle className="w-8 h-8 text-destructive mx-auto mb-2" />
@@ -347,11 +315,9 @@ const VerifyNationalId = () => {
           </form>
         </div>
       </div>
-
       <Footer />
       <ScrollToTop />
     </div>
   );
 };
-
 export default VerifyNationalId;

@@ -6,9 +6,9 @@ import DoctorsSection from "@/components/DoctorsSection";
 import { Link } from "react-router-dom";
 import { Home } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-
+import { featuredDoctors } from "@/data/featuredDoctors";
 const HomeHealthPreview = () => {
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
   return (
     <section className="py-12 bg-primary/5">
       <div className="container mx-auto px-6 max-w-4xl">
@@ -25,11 +25,8 @@ const HomeHealthPreview = () => {
                 ? "نقدم رعاية طبية متميزة في راحة منزلك، تشمل التمريض المنزلي والعلاج الطبيعي والرعاية بعد العمليات الجراحية."
                 : "We deliver premium medical care in the comfort of your home, including home nursing, physiotherapy, and post-surgical recovery care."}
             </p>
-            <Link
-              to="/home-health"
-              className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2 rounded-full font-body text-xs tracking-[0.15em] uppercase hover:bg-primary/90 transition-colors"
-            >
-              {lang === "ar" ? "اكتشف المزيد" : "Read More"}
+            <Link to="/home-health" className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2 rounded-full font-body text-xs tracking-[0.15em] uppercase hover:bg-primary/90 transition-colors">
+              {t("learnMore")}
             </Link>
           </div>
         </div>
@@ -37,7 +34,6 @@ const HomeHealthPreview = () => {
     </section>
   );
 };
-
 const MedicalServices = () => {
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107]">
@@ -50,5 +46,4 @@ const MedicalServices = () => {
     </div>
   );
 };
-
 export default MedicalServices;

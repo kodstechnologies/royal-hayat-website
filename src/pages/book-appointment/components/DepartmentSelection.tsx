@@ -4,14 +4,12 @@ import { useNavigate } from "react-router-dom";
 import { pageVariants } from "../types";
 import { isAlSafwaDept, isHomeHealthDept } from "../utils";
 import type { BookingDeptRow } from "../types";
-
 type GroupedDepts = {
   key: string;
   label: string;
   labelAr: string;
   depts: BookingDeptRow[];
 };
-
 type DepartmentSelectionProps = {
   isAr: boolean;
   t: (key: string) => string;
@@ -28,7 +26,6 @@ type DepartmentSelectionProps = {
   deptSearchTrimmed: boolean;
   filteredDeptsCount: number;
 };
-
 const DepartmentSelection = ({
   isAr,
   t,
@@ -46,7 +43,6 @@ const DepartmentSelection = ({
   filteredDeptsCount,
 }: DepartmentSelectionProps) => {
   const navigate = useNavigate();
-
   return (
     <motion.div
       key="s0"
@@ -147,5 +143,4 @@ const DepartmentSelection = ({
     </motion.div>
   );
 };
-
 export default DepartmentSelection;

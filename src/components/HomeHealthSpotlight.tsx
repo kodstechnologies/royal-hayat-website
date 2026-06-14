@@ -3,17 +3,14 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { useLanguage } from "@/contexts/LanguageContext";
-
 const HomeHealthSpotlight = () => {
   const { t } = useLanguage();
-
   const features = [
     { icon: Home, label: t("homeNursing") },
     { icon: Heart, label: t("postOpCare") },
     { icon: Clock, label: t("available247homeHealth") },
     { icon: Shield, label: t("certifiedTeam") },
   ];
-
   return (
     <section className="py-16 bg-background">
       <div className="container mx-auto px-6">
@@ -46,5 +43,4 @@ const HomeHealthSpotlight = () => {
     </section>
   );
 };
-
 export default HomeHealthSpotlight;

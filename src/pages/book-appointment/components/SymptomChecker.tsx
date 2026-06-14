@@ -3,12 +3,13 @@ import { AlertCircle, ArrowLeft, Brain, Sparkles } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
+import type { SymptomChipOption } from "@/data/symptomChipOptions";
 
 type SymptomCheckerProps = {
   lang: string;
   isAr: boolean;
   t: (key: string) => string;
-  chipOptions: string[];
+  chipOptions: SymptomChipOption[];
   symptomChips: string[];
   setSymptomChips: React.Dispatch<React.SetStateAction<string[]>>;
   symptomText: string;
@@ -17,7 +18,6 @@ type SymptomCheckerProps = {
   onAnalyze: () => void;
   onBack: () => void;
 };
-
 const SymptomChecker = ({
   lang,
   isAr,
@@ -43,43 +43,52 @@ const SymptomChecker = ({
         </div>
         <h1 className="text-2xl md:text-3xl font-serif text-foreground mb-2">{t("tellUsSymptoms")}</h1>
       </motion.div>
-
       <div className="bg-popover rounded-2xl p-8 border border-border shadow-sm">
         <div className="flex flex-wrap gap-2 mb-4">
           {chipOptions.map((chip) => (
             <motion.button
-              key={chip}
+              key={chip.value}
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.96 }}
               onClick={() =>
                 setSymptomChips((prev) => {
-                  const isSelected = prev.includes(chip);
-                  const next = isSelected ? prev.filter((c) => c !== chip) : [...prev, chip];
-
+                  const isSelected = prev.includes(chip.value);
+                  const next = isSelected ? prev.filter((c) => c !== chip.value) : [...prev, chip.value];
                   setSymptomText((prevText) => {
+                    const chipLabel = isAr ? chip.ar : chip.en;
                     const parts = prevText
                       .split(/[,;\n]+/)
                       .map((s) => s.trim())
                       .filter(Boolean);
-
                     if (isSelected) {
-                      return parts.filter((p) => p.toLowerCase() !== chip.toLowerCase()).join(", ");
+                      return parts
+                        .filter(
+                          (p) =>
+                            p.toLowerCase() !== chip.value.toLowerCase() &&
+                            p !== chipLabel,
+                        )
+                        .join(", ");
                     }
-
-                    if (parts.some((p) => p.toLowerCase() === chip.toLowerCase())) return parts.join(", ");
-                    return [...parts, chip].join(", ");
+                    if (
+                      parts.some(
+                        (p) =>
+                          p.toLowerCase() === chip.value.toLowerCase() || p === chipLabel,
+                      )
+                    ) {
+                      return parts.join(", ");
+                    }
+                    return [...parts, chipLabel].join(", ");
                   });
-
                   return next;
                 })
               }
               className={`px-4 py-2 rounded-full text-xs font-body tracking-wide transition-all duration-200 border ${
-                symptomChips.includes(chip)
+                symptomChips.includes(chip.value)
                   ? "bg-primary text-primary-foreground border-primary shadow-sm"
                   : "bg-background border-border text-muted-foreground hover:border-accent hover:text-accent"
               }`}
             >
-              {chip}
+              {isAr ? chip.ar : chip.en}
             </motion.button>
           ))}
         </div>
@@ -89,7 +98,6 @@ const SymptomChecker = ({
           placeholder={t("describeInDetail")}
           className="w-full h-24 bg-muted/20 border border-border rounded-xl p-4 font-body text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-2 focus:ring-accent/30 mb-4"
         />
-
         <div className="bg-destructive/10 rounded-xl p-4 border-2 border-destructive/30 mb-4">
           <p className="font-body text-sm text-foreground leading-relaxed font-medium">
             <AlertCircle className="w-4 h-4 inline mr-2 text-destructive" />
@@ -98,28 +106,17 @@ const SymptomChecker = ({
               : "⚠️ Important Disclaimer: This tool provides general suggestions only and is NOT a substitute for professional medical advice. Please consult a doctor for accurate diagnosis and appropriate treatment."}
           </p>
         </div>
-
         <AnimatePresence>
           {symptomAnalyzing && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="flex items-center justify-center gap-3 py-6"
-            >
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
-                className="w-6 h-6 rounded-full border-2 border-accent/20 border-t-accent"
-              />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex items-center justify-center gap-3 py-6">
+              <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+                className="w-6 h-6 rounded-full border-2 border-accent/20 border-t-accent" />
               <span className="font-body text-sm text-accent">{t("analyzing")}</span>
             </motion.div>
           )}
         </AnimatePresence>
-
         <div className="flex flex-nowrap items-center justify-between gap-3 sm:gap-4">
           <button
-            type="button"
             onClick={onBack}
             className="flex shrink-0 items-center gap-1.5 text-muted-foreground font-body text-xs sm:text-sm hover:text-foreground transition-colors"
           >

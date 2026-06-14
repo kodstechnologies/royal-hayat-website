@@ -1,40 +1,32 @@
 import api from "./axiosInstance";
 import { getBackendApiBase } from "./backendBase";
-
 export type ChatMessagePayload = {
   role: "user" | "assistant";
   content: string;
 };
-
 type PostChatResponse = {
   success: boolean;
   message: string;
   data: { reply: string };
 };
-
 export type ChatErrorCode = "MODEL_OVERLOADED" | "SERVICE_UNAVAILABLE" | "GENERIC";
-
 export class ChatStreamError extends Error {
   code: ChatErrorCode;
-
   constructor(code: ChatErrorCode, message?: string) {
     super(message ?? code);
     this.name = "ChatStreamError";
     this.code = code;
   }
 }
-
 type StreamEvent =
   | { type: "start" }
   | { type: "chunk"; text: string }
   | { type: "done"; reply: string }
   | { type: "error"; message: string; code?: string };
-
 function parseSseEvents(buffer: string): { events: StreamEvent[]; rest: string } {
   const events: StreamEvent[] = [];
   const parts = buffer.split("\n\n");
   const rest = parts.pop() ?? "";
-
   for (const part of parts) {
     for (const line of part.split("\n")) {
       const trimmed = line.trim();
@@ -44,56 +36,104 @@ function parseSseEvents(buffer: string): { events: StreamEvent[]; rest: string }
       try {
         events.push(JSON.parse(payload) as StreamEvent);
       } catch {
-        // ignore malformed events
       }
     }
   }
-
   return { events, rest };
 }
+const CHAT_SESSION_ID_KEY = "rh_chat_session_id";
+const CHAT_REFERENCE_ID_KEY = "rh_chat_reference_id";
 
-function getChatSessionId(): string {
-  const key = "rh_chat_session_id";
+type ChatSessionData = {
+  sessionId: string;
+  referenceId: string;
+};
+
+let sessionInitPromise: Promise<ChatSessionData> | null = null;
+
+function readCachedChatSession(): ChatSessionData | null {
   try {
-    let id = sessionStorage.getItem(key);
-    if (!id) {
-      id = crypto.randomUUID();
-      sessionStorage.setItem(key, id);
-    }
-    return id;
+    const sessionId = sessionStorage.getItem(CHAT_SESSION_ID_KEY)?.trim() ?? "";
+    const referenceId = sessionStorage.getItem(CHAT_REFERENCE_ID_KEY)?.trim() ?? "";
+    if (!sessionId) return null;
+    return { sessionId, referenceId };
   } catch {
-    return "";
+    return null;
   }
 }
 
-/** Non-streaming fallback. */
+function cacheChatSession(data: ChatSessionData): ChatSessionData {
+  try {
+    sessionStorage.setItem(CHAT_SESSION_ID_KEY, data.sessionId);
+    if (data.referenceId) {
+      sessionStorage.setItem(CHAT_REFERENCE_ID_KEY, data.referenceId);
+    }
+  } catch {
+    // ignore storage failures
+  }
+  return data;
+}
+
+export async function ensureChatSession(): Promise<ChatSessionData> {
+  const cached = readCachedChatSession();
+  if (cached) return cached;
+
+  if (!sessionInitPromise) {
+    sessionInitPromise = api
+      .get<{ success: boolean; data: ChatSessionData }>("/api/v1/chat/session")
+      .then((response) => cacheChatSession(response.data.data))
+      .catch((err) => {
+        sessionInitPromise = null;
+        throw err;
+      });
+  }
+
+  return sessionInitPromise;
+}
+
+export function getChatReferenceId(): string {
+  return readCachedChatSession()?.referenceId ?? "";
+}
+
+export async function postChatLog(
+  messages: ChatMessagePayload[],
+  lang: "en" | "ar",
+  assistantReply: string,
+  topicId?: string,
+): Promise<void> {
+  const { sessionId } = await ensureChatSession();
+  await api.post("/api/v1/chat/log", {
+    messages,
+    lang,
+    sessionId,
+    assistantReply,
+    topicId,
+  });
+}
+
 export async function postChat(messages: ChatMessagePayload[], lang: "en" | "ar") {
+  const { sessionId } = await ensureChatSession();
   const response = await api.post<PostChatResponse>("/api/v1/chat", {
     messages,
     lang,
-    sessionId: getChatSessionId(),
+    sessionId,
   });
   return response.data.data.reply;
 }
-
-/**
- * Streams assistant reply via SSE. Invokes onDelta for each text chunk; returns the full reply.
- */
-
 export async function postChatStream(
   messages: ChatMessagePayload[],
   lang: "en" | "ar",
   onDelta: (text: string) => void,
   signal?: AbortSignal,
 ): Promise<string> {
+  const { sessionId } = await ensureChatSession();
   const base = getBackendApiBase();
   const response = await fetch(`${base}/api/v1/chat/stream`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ messages, lang, sessionId: getChatSessionId() }),
+    body: JSON.stringify({ messages, lang, sessionId }),
     signal,
   });
-
   if (!response.ok) {
     let message = "Chat request failed";
     let code: ChatErrorCode = "GENERIC";
@@ -113,24 +153,19 @@ export async function postChatStream(
     }
     throw new ChatStreamError(code, message);
   }
-
   if (!response.body) {
     throw new Error("Streaming is not supported in this browser");
   }
-
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
   let buffer = "";
   let fullReply = "";
-
   while (true) {
     const { done, value } = await reader.read();
     if (done) break;
-
     buffer += decoder.decode(value, { stream: true });
     const { events, rest } = parseSseEvents(buffer);
     buffer = rest;
-
     for (const event of events) {
       if (event.type === "chunk" && event.text) {
         fullReply += event.text;
@@ -145,7 +180,6 @@ export async function postChatStream(
       }
     }
   }
-
   if (buffer.trim()) {
     const { events } = parseSseEvents(`${buffer}\n\n`);
     for (const event of events) {
@@ -162,11 +196,9 @@ export async function postChatStream(
       }
     }
   }
-
   const trimmed = fullReply.trim();
   if (!trimmed) {
     throw new ChatStreamError("GENERIC", "Empty response from assistant");
   }
-
   return trimmed;
 }

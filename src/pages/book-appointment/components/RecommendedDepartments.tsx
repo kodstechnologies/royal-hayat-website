@@ -4,7 +4,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import type { BookingDeptRow } from "../types";
-
 type RecommendedDepartmentsProps = {
   lang: string;
   isAr: boolean;
@@ -15,7 +14,6 @@ type RecommendedDepartmentsProps = {
   onSelectDepartment: (deptId: string) => void;
   onBack: () => void;
 };
-
 const RecommendedDepartments = ({
   lang,
   isAr,
@@ -39,7 +37,6 @@ const RecommendedDepartments = ({
             : "Based on your symptoms, we recommend these departments"}
         </p>
       </motion.div>
-
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
         {symptomResults.map((id) => {
           const dept = departmentsList.find((d) => d.id === id);
@@ -68,7 +65,6 @@ const RecommendedDepartments = ({
           );
         })}
       </div>
-
       <div className="flex items-center justify-start mt-8">
         <button
           type="button"
@@ -83,5 +79,4 @@ const RecommendedDepartments = ({
     <ScrollToTop />
   </div>
 );
-
 export default RecommendedDepartments;

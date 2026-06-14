@@ -1,5 +1,8 @@
 import api from "./axiosInstance";
 import type { Doctor } from "@/data/doctors";
+import type { DoctorWithClinicCode } from "@/data/doctorsWithClinicCodes";
+import { departments as staticDepts, deptDoctorAliases } from "@/data/departments";
+import { resolveDoctorArabicName } from "@/utils/doctorDisplayName";
 
 export const isMongoObjectId = (value?: string | null): value is string =>
   Boolean(value && /^[0-9a-fA-F]{24}$/.test(value));
@@ -64,6 +67,28 @@ export async function getDoctorsBySubspeciality(
   return Array.isArray(raw) ? (raw as Record<string, unknown>[]) : [];
 }
 
+function parseAvailableOnline(value: unknown): boolean {
+  return value === true || value === "true" || value === 1 || value === "1";
+}
+
+export function isDoctorAvailableOnline(value: unknown): boolean {
+  return parseAvailableOnline(value);
+}
+
+function resolveStaticDepartment(apiDeptName: string) {
+  const normalized = apiDeptName.trim().toLowerCase();
+  for (const dept of staticDepts) {
+    const aliases = deptDoctorAliases[dept.name] ?? [dept.name];
+    if (
+      dept.name.toLowerCase() === normalized ||
+      aliases.some((alias) => alias.toLowerCase() === normalized)
+    ) {
+      return dept;
+    }
+  }
+  return undefined;
+}
+
 export function mapApiDoctorRowToDoctor(
   row: Record<string, unknown>,
   departmentNameEn: string,
@@ -71,7 +96,13 @@ export function mapApiDoctorRowToDoctor(
 ): Doctor {
   const id = String(row._id ?? row.doctorId ?? "");
   const name = String(row.name ?? "");
-  const nameAr = String(row.nameAr ?? name);
+  const providerCode =
+    typeof row.doctorId === "string" && row.doctorId.trim() ? row.doctorId.trim() : undefined;
+  const nameAr = resolveDoctorArabicName({
+    id: providerCode ?? id,
+    name,
+    nameAr: String(row.nameAr ?? name),
+  });
 
   const depRaw = row.department;
   let resolvedDeptEn = departmentNameEn;
@@ -79,21 +110,34 @@ export function mapApiDoctorRowToDoctor(
   let departmentId: string | undefined;
 
   if (depRaw && typeof depRaw === "object" && depRaw !== null) {
-    const d = depRaw as { _id?: unknown; name?: string; nameAr?: string };
+    const d = depRaw as {
+      _id?: unknown;
+      name?: string;
+      nameAr?: string;
+      arabicName?: string;
+    };
     if (d._id != null) departmentId = String(d._id);
     if (typeof d.name === "string" && d.name.trim()) {
       resolvedDeptEn = d.name.trim();
     }
-    if (typeof d.nameAr === "string" && d.nameAr.trim()) {
+    if (typeof d.arabicName === "string" && d.arabicName.trim()) {
+      resolvedDeptAr = d.arabicName.trim();
+    } else if (typeof d.nameAr === "string" && d.nameAr.trim()) {
       resolvedDeptAr = d.nameAr.trim();
     }
   } else if (typeof depRaw === "string" && /^[0-9a-fA-F]{24}$/i.test(depRaw)) {
     departmentId = depRaw;
   }
 
-  // Fallback specialty to department name if missing
-  const specialty = String(row.specialty ?? resolvedDeptEn ?? "");
-  const specialtyAr = String(row.specialtyAr ?? resolvedDeptAr ?? specialty);
+  const subs = Array.isArray(row.subspecialities)
+    ? (row.subspecialities as string[]).filter(Boolean)
+    : [];
+  const subsAr = Array.isArray(row.subspecialitiesAr)
+    ? (row.subspecialitiesAr as string[]).filter(Boolean)
+    : subs;
+
+  const specialty = String(row.specialty ?? subs[0] ?? resolvedDeptEn ?? "");
+  const specialtyAr = String(row.specialtyAr ?? subsAr[0] ?? resolvedDeptAr ?? specialty);
 
   const title = String(row.title ?? "");
   const titleAr = String(row.titleAr ?? title);
@@ -133,10 +177,43 @@ export function mapApiDoctorRowToDoctor(
     color: typeof row.color === "string" ? row.color : "#4A1423",
     symptoms,
     image,
-    availableOnline: row.availableOnline === true,
+    availableOnline: parseAvailableOnline(row.availableOnline),
     hideBooking: !isActive,
     ...(departmentId ? { departmentId } : {}),
-    providerCode: typeof row.doctorId === "string" ? row.doctorId : undefined,
+    providerCode,
+  };
+}
+
+/** Maps API doctor rows for BookAppointment (static dept ids + HIS clinic/provider codes). */
+export function mapApiDoctorRowToBookingDoctor(
+  row: Record<string, unknown>,
+  departmentNameEn: string,
+  departmentNameAr: string,
+): DoctorWithClinicCode {
+  const base = mapApiDoctorRowToDoctor(row, departmentNameEn, departmentNameAr);
+
+  const depRaw = row.department;
+  let apiClinicalCode: string | undefined;
+  if (depRaw && typeof depRaw === "object" && depRaw !== null) {
+    const d = depRaw as { departmentId?: string };
+    if (typeof d.departmentId === "string" && d.departmentId.trim()) {
+      apiClinicalCode = d.departmentId.trim();
+    }
+  }
+
+  const staticDept = resolveStaticDepartment(base.department);
+  const rowClinicCode =
+    typeof row.clinicCode === "string" && row.clinicCode.trim() ? row.clinicCode.trim() : undefined;
+  const departmentClinicCode = staticDept?.clinicCode ?? apiClinicalCode;
+  const clinicCode = rowClinicCode || departmentClinicCode;
+
+  return {
+    ...base,
+    departmentId: staticDept ? String(staticDept.id) : base.departmentId,
+    providerCode: base.providerCode,
+    departmentClinicCode,
+    clinicCode,
+    hideBooking: base.hideBooking,
   };
 }
 
@@ -157,10 +234,41 @@ export async function fetchAllActiveDoctors(): Promise<Doctor[]> {
       let deptName = "";
       let deptNameAr = "";
       if (dep && typeof dep === "object" && dep !== null && "name" in dep) {
-        deptName = String((dep as { name?: string }).name ?? "");
-        deptNameAr = deptName;
+        const d = dep as { name?: string; arabicName?: string; nameAr?: string };
+        deptName = String(d.name ?? "");
+        deptNameAr = String(d.arabicName ?? d.nameAr ?? deptName);
       }
       out.push(mapApiDoctorRowToDoctor(row, deptName, deptNameAr));
+    }
+    const totalPages = meta?.totalPages ?? page;
+    if (page >= totalPages) break;
+    page += 1;
+  }
+  return out;
+}
+
+/** Active doctors mapped for BookAppointment (static department ids + booking codes). */
+export async function fetchAllBookingDoctors(): Promise<DoctorWithClinicCode[]> {
+  const out: DoctorWithClinicCode[] = [];
+  let page = 1;
+  const limit = 100;
+  for (;;) {
+    const res = await api.get("/api/v1/doctors", {
+      params: { page, limit, sortBy: "name", sortOrder: "asc" },
+    });
+    const rows = res?.data?.data as Record<string, unknown>[] | undefined;
+    const meta = res?.data?.meta as { totalPages?: number } | undefined;
+    if (!Array.isArray(rows) || rows.length === 0) break;
+    for (const row of rows) {
+      const dep = row.department;
+      let deptName = "";
+      let deptNameAr = "";
+      if (dep && typeof dep === "object" && dep !== null && "name" in dep) {
+        const d = dep as { name?: string; arabicName?: string; nameAr?: string };
+        deptName = String(d.name ?? "");
+        deptNameAr = String(d.arabicName ?? d.nameAr ?? deptName);
+      }
+      out.push(mapApiDoctorRowToBookingDoctor(row, deptName, deptNameAr));
     }
     const totalPages = meta?.totalPages ?? page;
     if (page >= totalPages) break;

@@ -9,9 +9,7 @@ import {
   Stethoscope,
 } from "lucide-react";
 import type { BookingDeptRow } from "./types";
-
 const OID = /^[0-9a-fA-F]{24}$/i;
-
 export function departmentSlug(name: string, mongoId: string): string {
   const base = name
     .toLowerCase()
@@ -20,7 +18,6 @@ export function departmentSlug(name: string, mongoId: string): string {
     .replace(/^-+|-+$/g, "");
   return `${base}-${mongoId.slice(-6)}`;
 }
-
 export function apiRowToBookingDept(row: Record<string, unknown>): BookingDeptRow | null {
   const id = String(row._id ?? "");
   if (!OID.test(id)) return null;
@@ -32,9 +29,7 @@ export function apiRowToBookingDept(row: Record<string, unknown>): BookingDeptRo
   if (cat && typeof cat === "object" && cat !== null && "name" in cat) {
     category = String((cat as { name?: string }).name ?? "").trim();
   }
-
   const mainCategory = category || "Others";
-
   let icon = Stethoscope;
   const lowerName = name.toLowerCase();
   if (lowerName.includes("dental")) icon = Smile;
@@ -45,7 +40,6 @@ export function apiRowToBookingDept(row: Record<string, unknown>): BookingDeptRo
   else if (lowerName.includes("surgery")) icon = Scissors;
   else if (lowerName.includes("home health")) icon = Building2;
   else if (lowerName.includes("physio")) icon = Activity;
-
   return {
     id,
     name,
@@ -57,28 +51,23 @@ export function apiRowToBookingDept(row: Record<string, unknown>): BookingDeptRo
     icon,
   };
 }
-
 export function normalizeRestoredDeptId(v: unknown): string | null {
   if (typeof v !== "string" || !v.trim()) return null;
   const s = v.trim();
   if (OID.test(s) || /^\d+$/.test(s)) return s;
   return null;
 }
-
 export function isHomeHealthDept(d: BookingDeptRow): boolean {
   const n = d.name.toLowerCase();
   return n.includes("home health") || d.slug === "home-health";
 }
-
 export function isAlSafwaDept(d: BookingDeptRow): boolean {
   const n = d.name.toLowerCase();
   return n.includes("safwa") || n.includes("al-safwa") || d.slug.includes("safwa");
 }
-
 function normalizeClinicCode(value: string): string {
   return value.toUpperCase().replace(/[^A-Z0-9]/g, "");
 }
-
 export function heuristicDepartmentIdsFromTokens(tokens: string[], departments: BookingDeptRow[]): string[] {
   const symptomKeywords: Record<string, string[]> = {
     headache: ["neuro", "neurology", "brain", "internal", "medicine"],
@@ -92,7 +81,6 @@ export function heuristicDepartmentIdsFromTokens(tokens: string[], departments: 
     "joint pain": ["ortho", "rheum", "physio"],
     "shortness of breath": ["pulmo", "cardio", "internal"],
   };
-
   const hints = new Set<string>();
   for (const t of tokens) {
     const direct = symptomKeywords[t];
@@ -106,29 +94,23 @@ export function heuristicDepartmentIdsFromTokens(tokens: string[], departments: 
     const dc = d.category.toLowerCase();
     return [...hints].some((h) => dn.includes(h) || dc.includes(h));
   });
-
   return matched.length > 0
     ? matched.map((d) => d.id)
     : departments.slice(0, Math.min(3, departments.length)).map((d) => d.id);
 }
-
 export function mapAiClinicCodeToDepartmentIds(aiText: string, departments: BookingDeptRow[]): string[] {
   const firstLine = aiText
     .split(/\r?\n/)
     .map((line) => line.trim())
     .find(Boolean) ?? "";
-
   const candidate = firstLine
     .replace(/^clinic\s*code\s*:\s*/i, "")
     .replace(/^[-*]\s*/, "")
     .replace(/^["'`]|["'`]$/g, "")
     .trim();
-
   if (!candidate || /^no clinic found$/i.test(candidate)) return [];
-
   const normalizedCandidate = normalizeClinicCode(candidate);
   if (!normalizedCandidate) return [];
-
   const exact = departments.find(
     (d) => d.specialityCode && normalizeClinicCode(d.specialityCode) === normalizedCandidate,
   );

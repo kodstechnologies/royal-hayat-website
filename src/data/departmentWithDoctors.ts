@@ -1,5 +1,4 @@
 import { doctorsWithClinicCodes, DoctorWithClinicCode } from './doctorsWithClinicCodes';
-
 export interface DepartmentWithDoctors {
   name: string;
   nameAr: string;
@@ -7,7 +6,6 @@ export interface DepartmentWithDoctors {
   doctors: DoctorWithClinicCode[];
   doctorCount: number;
 }
-
 export const departmentsWithDoctors: DepartmentWithDoctors[] = [
   {
     name: 'Internal Medicine',
@@ -45,23 +43,15 @@ export const departmentsWithDoctors: DepartmentWithDoctors[] = [
     doctorCount: doctorsWithClinicCodes.filter(doctor => doctor.department === 'Clinical Pharmacy').length
   }
 ];
-
-// Helper function to get department by name
 export const getDepartmentByName = (departmentName: string): DepartmentWithDoctors | undefined => {
   return departmentsWithDoctors.find(dept => dept.name === departmentName);
 };
-
-// Helper function to get department by clinic code
 export const getDepartmentByClinicCode = (clinicCode: string): DepartmentWithDoctors | undefined => {
   return departmentsWithDoctors.find(dept => dept.clinicCode === clinicCode);
 };
-
-// Helper function to get all departments with clinic codes
 export const getDepartmentsWithClinicCodes = (): DepartmentWithDoctors[] => {
   return departmentsWithDoctors.filter(dept => dept.clinicCode !== undefined);
 };
-
-// Helper function to get departments without clinic codes
 export const getDepartmentsWithoutClinicCodes = (): DepartmentWithDoctors[] => {
   return departmentsWithDoctors.filter(dept => dept.clinicCode === undefined);
 };

@@ -2,8 +2,11 @@ import { motion } from "framer-motion";
 import { CheckCircle2, Search, Stethoscope } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import type { DoctorWithClinicCode as Doctor } from "@/data/doctorsWithClinicCodes";
+import { filterDoctorsBySearch } from "@/utils/doctorSearch";
 import { pageVariants } from "../types";
 
+const isDoctorRequestOnly = (doc: Pick<Doctor, "hideBooking" | "availableOnline">) =>
+  doc.hideBooking === true || doc.availableOnline === false;
 type DoctorSelectionProps = {
   isAr: boolean;
   lang: string;
@@ -24,7 +27,6 @@ type DoctorSelectionProps = {
   step: number;
   resolveDeptIdForDoctor: (doc: Doctor) => string | null;
 };
-
 const DoctorSelection = ({
   isAr,
   lang,
@@ -46,10 +48,10 @@ const DoctorSelection = ({
   resolveDeptIdForDoctor,
 }: DoctorSelectionProps) => {
   const navigate = useNavigate();
-
-  const docList = bookingPathDoctor ? filteredAllDoctors : doctors;
+  const docList = bookingPathDoctor
+    ? filteredAllDoctors
+    : filterDoctorsBySearch(doctors, doctorSearch);
   const displayList = showAllDoctors || doctorSearchTrimmed ? docList : docList.slice(0, 6);
-
   return (
     <motion.div
       key="s1"
@@ -100,8 +102,8 @@ const DoctorSelection = ({
                         bookingPath: bookingPath ?? "primary",
                         selectedDept: resolvedDeptId,
                         selectedDoctor: doc.id,
-                        isRequestMode: doc.availableOnline === false,
-                        canBookSlot: doc.availableOnline !== false,
+                        isRequestMode: isDoctorRequestOnly(doc),
+                        canBookSlot: !isDoctorRequestOnly(doc),
                       },
                     });
                   }}
@@ -147,28 +149,26 @@ const DoctorSelection = ({
                         </span>
                       ))}
                     </div>
-                    {doc.hideBooking !== true && (
+                    <div
+                      className={`flex items-center gap-1.5 mb-3 ${
+                        isDoctorRequestOnly(doc) ? "text-gray-500" : "text-green-600"
+                      }`}
+                    >
                       <div
-                        className={`flex items-center gap-1.5 mb-3 ${
-                          doc.availableOnline !== false ? "text-green-600" : "text-gray-500"
+                        className={`w-1.5 h-1.5 rounded-full ${
+                          isDoctorRequestOnly(doc) ? "bg-muted-foreground" : "bg-green-500"
                         }`}
-                      >
-                        <div
-                          className={`w-1.5 h-1.5 rounded-full ${
-                            doc.availableOnline !== false ? "bg-green-500" : "bg-muted-foreground"
-                          }`}
-                        />
-                        <span className="font-body text-[10px]">
-                          {doc.availableOnline !== false
-                            ? isAr
-                              ? "متاح للحجز"
-                              : "Book Online"
-                            : isAr
-                              ? "غير متاح حالياً"
-                              : "Request Appointment"}
-                        </span>
-                      </div>
-                    )}
+                      />
+                      <span className="font-body text-[10px]">
+                        {isDoctorRequestOnly(doc)
+                          ? isAr
+                            ? "غير متاح حالياً"
+                            : "Request Appointment"
+                          : isAr
+                            ? "متاح للحجز اونلاين"
+                            : "Book Online"}
+                      </span>
+                    </div>
                     <button
                       type="button"
                       onClick={(e) => {
@@ -181,8 +181,8 @@ const DoctorSelection = ({
                             bookingPath: bookingPath ?? "primary",
                             selectedDept: resolvedDeptId,
                             selectedDoctor: doc.id,
-                            isRequestMode: doc.availableOnline === false,
-                            canBookSlot: doc.availableOnline !== false,
+                            isRequestMode: isDoctorRequestOnly(doc),
+                            canBookSlot: !isDoctorRequestOnly(doc),
                           },
                         });
                       }}
@@ -211,5 +211,4 @@ const DoctorSelection = ({
     </motion.div>
   );
 };
-
 export default DoctorSelection;

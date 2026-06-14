@@ -1,5 +1,4 @@
 import api from "./axiosInstance";
-
 export type ApiDoctorNested = {
   _id: string;
   doctorId?: string;
@@ -11,7 +10,6 @@ export type ApiDoctorNested = {
   isActive?: boolean;
   availableOnline?: boolean;
 };
-
 export type ApiDepartmentNested = {
   _id: string;
   departmentId?: string;
@@ -22,31 +20,42 @@ export type ApiDepartmentNested = {
   order?: number;
   subSpecialties?: string[];
   subspecialityName?: string;
-  /** Populated subspeciality documents (preferred; supports multiple per department). */
   subspecialities?: {
     _id?: string;
     name?: string;
     description?: string;
-    customSubspecialities?: { subHeading?: string; explanations?: string[]; _id?: string }[];
+    customSubspecialities?: {
+      _id?: string;
+      heading?: string;
+      subHeading?: string;
+      arabicHeading?: string;
+      arabicSubHeading?: string;
+      explanations?: string[];
+      arabicExplanations?: string[];
+    }[];
   }[];
-  /** First subspeciality (backward compatible with older API payloads). */
   subspeciality?: {
     _id?: string;
     name?: string;
     description?: string;
-    customSubspecialities?: { subHeading?: string; explanations?: string[]; _id?: string }[];
+    customSubspecialities?: {
+      _id?: string;
+      heading?: string;
+      subHeading?: string;
+      arabicHeading?: string;
+      arabicSubHeading?: string;
+      explanations?: string[];
+      arabicExplanations?: string[];
+    }[];
   } | null;
   doctors?: ApiDoctorNested[];
-  /** Populated department content blocks (`CustomExplainantion`). */
-  customExplainantions?: { _id?: string; subHeading?: string; explaination?: string[] }[];
+  customExplainantions?: { _id?: string; heading?: string; subHeading?: string; explaination?: string[]; arabicHeading?: string; arabicSubHeading?: string; arabicExplaination?: string[] }[];
 };
-
 export type ApiCategoryWithNested = {
   _id: string;
   name: string;
   departments?: ApiDepartmentNested[];
 };
-
 function normalizeCategoriesPayload(body: unknown): ApiCategoryWithNested[] {
   if (!body || typeof body !== "object") return [];
   const o = body as Record<string, unknown>;
@@ -71,7 +80,6 @@ function normalizeCategoriesPayload(body: unknown): ApiCategoryWithNested[] {
     };
   });
 }
-
 export const getCatagoriesWithDepartmentsAndDoctors = async (): Promise<ApiCategoryWithNested[]> => {
   const res = await api.get("/api/v1/catagories/with-departments-doctors");
   const payload = res?.data;

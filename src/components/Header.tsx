@@ -4,9 +4,15 @@ import type { LucideIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { doctors } from "@/data/doctors";
 import logoFull from "@/assets/rhh-logo-full-color.png";
-
+import { doctorSearchIndex } from "@/data/doctorsSearchIndex";
+type SearchIndexItem = {
+  label: string;
+  labelAr: string;
+  type: string;
+  typeAr: string;
+  href: string;
+};
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -15,7 +21,17 @@ const Header = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showLogo] = useState(true);
   const [headerVisible, setHeaderVisible] = useState(true);
-  const [showMedRecordsModal, setShowMedRecordsModal] = useState(false);
+  const doctorSearchItems = useMemo<SearchIndexItem[]>(
+    () =>
+      doctorSearchIndex.map((doc) => ({
+        label: doc.name,
+        labelAr: doc.nameAr,
+        type: `Doctor · ${doc.specialty}`,
+        typeAr: `طبيب · ${doc.specialtyAr}`,
+        href: `/doctors/${doc.id}`,
+      })),
+    [],
+  );
   const { lang, setLang, t } = useLanguage();
   const phoneDisplay = "+965 2536 0000";
   const phoneTextClass = "inline-block [direction:ltr] [unicode-bidi:isolate]";
@@ -30,8 +46,6 @@ const Header = () => {
     const handleScroll = () => {
       const currentY = window.scrollY;
       const isMobile = window.matchMedia("(max-width: 1023px)").matches;
-
-      // Mobile: keep logo nav + action bar fixed; only close menu on scroll
       if (isMobile) {
         if (currentY > lastScrollY.current && currentY > 80) {
           setMenuOpen(false);
@@ -39,8 +53,6 @@ const Header = () => {
         lastScrollY.current = currentY;
         return;
       }
-
-      // Keep desktop header stable to avoid flicker during scroll repaints.
       setHeaderVisible(true);
       if (currentY > lastScrollY.current && currentY > 80) {
         setMenuOpen(false);
@@ -76,9 +88,6 @@ const Header = () => {
       window.removeEventListener("resize", updateHeaderHeight);
     };
   }, [headerVisible, lang, menuOpen, searchOpen]);
-
-
-
   const aboutSubLinks = [
     { label: t("ourStory"), href: "/about-us?section=history", icon: BookOpen, desc: lang === "ar" ? "قصة مستشفى رويال حياة" : "The story of Royale Hayat Hospital" },
     { label: lang === "ar" ? "الرسالة والقيم" : "Mission & Values", href: "/about-us?section=mission", icon: Heart, desc: lang === "ar" ? "رسالتنا وقيمنا الأساسية" : "Our mission and core values" },
@@ -86,23 +95,20 @@ const Header = () => {
     { label: lang === "ar" ? "فريق القيادة" : "Leadership Team", href: "/about-us?section=leadership", icon: UserCheck, desc: lang === "ar" ? "تعرف على فريق القيادة" : "Meet our visionary leaders" },
     { label: lang === "ar" ? "المسؤولية الاجتماعية" : "CSR", href: "/csr", icon: Heart, desc: lang === "ar" ? "المسؤولية الاجتماعية للمؤسسة" : "Corporate Social Responsibility" },
   ];
-
   const medicalSubLinks = [
     { label: t("departments"), href: "/departments", icon: Building2, desc: t("deptCount") },
     { label: t("doctors"), href: "/doctors", icon: Stethoscope, desc: t("meetOurDoctors") },
     { label: lang === "ar" ? "رويال للرعاية المنزلية" : "Royale Home Health", href: "/home-health", icon: Home, desc: lang === "ar" ? "رعاية طبية متميزة في المنزل" : "Premium medical care at home" },
   ];
-
   const hospitalitySubLinks = [
-    { label: lang === "ar" ? "قاعات الاحتفالات" : "Birth Celebration Halls", href: "/hospitality?section=halls", icon: Star, desc: lang === "ar" ? "مساحة خاصة للاحتفال بقدوم مولودك" : "A private space to celebrate your baby's arrival" },
-    { label: lang === "ar" ? "الأجنحة الحصرية" : "Exclusive Suites", href: "/hospitality?section=suites", icon: Bed, desc: lang === "ar" ? "مساحة هادئة وشخصية للراحة والتعافي والتواصل" : "A calm, personal space to rest, recover, and bond" },
-    { label: lang === "ar" ? "تجارب الاحتفال داخل الجناح" : "In-Suite Celebration Experiences", href: "/in-room-events", icon: Sparkles, desc: lang === "ar" ? "احتفالات مميزة في خصوصية جناحك" : "Create meaningful celebrations in the comfort and privacy of your own suite" },
+    { label: lang === "ar" ? "قاعات الإستقبال" : "Birth Celebration Halls", href: "/hospitality?section=halls", icon: Star, desc: lang === "ar" ? "مساحة خاصة للاحتفال بقدوم مولودك" : "A private space to celebrate your baby's arrival" },
+    { label: lang === "ar" ? "الأجنحة الفاخرة" : "Exclusive Suites", href: "/hospitality?section=suites", icon: Bed, desc: lang === "ar" ? "مساحة هادئة وشخصية للراحة والتعافي والتواصل" : "A calm, personal space to rest, recover, and bond" },
+    { label: lang === "ar" ? "المناسبات داخل الأجنحة" : "In-Suite Celebration Experiences", href: "/in-room-events", icon: Sparkles, desc: lang === "ar" ? "احتفالات مميزة في خصوصية جناحك" : "Create meaningful celebrations in the comfort and privacy of your own suite" },
     { label: lang === "ar" ? "سبا إليمنتس (بانيان تري)" : "Elements Spa (by Banyan Tree)", href: "/hospitality?section=spa", icon: Droplets, desc: lang === "ar" ? "ملاذ هادئ للاسترخاء والتجديد" : "A serene sanctuary for relaxation and renewal" },
-    { label: lang === "ar" ? "بيسترو الليوان" : "Al Liwan Bistro", href: "/hospitality?section=cafe", icon: Coffee, desc: lang === "ar" ? "بيئة راقية لتجارب طعام استثنائية" : "A refined setting for exceptional dining experiences" },
+    { label: lang === "ar" ? "الليوان بيسترو" : "Al Liwan Bistro", href: "/hospitality?section=cafe", icon: Coffee, desc: lang === "ar" ? "بيئة راقية لتجارب طعام استثنائية" : "A refined setting for exceptional dining experiences" },
     { label: lang === "ar" ? "كافيه الطابق الخامس" : "The 5th Floor Café", href: "/fifth-floor-cafe", icon: Coffee, desc: lang === "ar" ? "مساحة مريحة للقهوة والمرطبات الخفيفة" : "A cozy space for light bites and refreshments" },
     { label: lang === "ar" ? "خدمات تصوير المواليد" : "Newborn Photography Services", href: "/newborn-photography", icon: Baby, desc: lang === "ar" ? "التقط أثمن لحظات الحياة" : "Capture Life's Most Precious Moments" },
   ];
-
   const patientsSubLinks = [
     { label: lang === "ar" ? "التمريض" : "Nursing", href: "/patients-visitors?tab=nursing", icon: Heart, desc: lang === "ar" ? "رعاية تمريضية متفانية" : "Dedicated nursing care" },
     { label: lang === "ar" ? "معلومات الدخول إلى المستشفى" : "Admission Information", href: "/patients-visitors?tab=admission", icon: ClipboardList, desc: lang === "ar" ? "ما تحتاجون معرفته قبل الدخول" : "What to know before admission" },
@@ -113,12 +119,10 @@ const Header = () => {
     { label: lang === "ar" ? "المرضى الدوليون" : "International Patient", href: "/international-patient", icon: MapPin, desc: lang === "ar" ? "دعم مخصص للمرضى الدوليين" : "Dedicated international patient support" },
     { label: lang === "ar" ? "نظام أمان الرضّع " : " Infant Security", href: "/infant-security", icon: Baby, desc: lang === "ar" ? "حماية متقدمة للمواليد على مدار الساعة" : "Advanced 24/7 newborn protection system" },
   ];
-
   const workWithUsSubLinks = [
     { label: lang === "ar" ? "ثقافة العمل" : "Work Culture", href: "/work-with-us?section=culture", icon: Heart, desc: lang === "ar" ? "الحياة في مستشفى رويال حياة" : "Life at Royale Hayat Hospital" },
     { label: lang === "ar" ? "الوظائف المتاحة" : "Open Positions", href: "/work-with-us?section=positions", icon: Users, desc: lang === "ar" ? "تصفح جميع الفرص الوظيفية" : "Browse all career opportunities" },
   ];
-
   const navItems: {
     label: string;
     href: string;
@@ -129,25 +133,20 @@ const Header = () => {
     { label: t("medicalServices"), href: "/medical-services", hasDropdown: "medical", icon: Stethoscope },
     { label: t("hospitalityServices"), href: "/hospitality", hasDropdown: "hospitality", icon: ConciergeBell },
     { label: t("patientsVisitors"), href: "/patients-visitors", hasDropdown: "patients", icon: Users },
-    { label: lang === "ar" ? "اعمل معنا" : "Work With Us", href: "/work-with-us", hasDropdown: "workwithus", icon: Briefcase },
-    // { label: lang === "ar" ? "اتصل بنا" : "Contact Us", href: "/contact-us", icon: Mail },
+    { label: lang === "ar" ? "إنضم الينا" : "Work With Us", href: "/work-with-us", hasDropdown: "workwithus", icon: Briefcase },
   ];
-
   const contactSubLinks = [
     { label: t("bookAppointment"), href: "/book-appointment", icon: Phone, desc: lang === "ar" ? "احجز موعدك مع أطبائنا" : "Schedule your visit with our doctors" },
     { label: lang === "ar" ? "المرضى الدوليون" : "International Patient", href: "/international-patient", icon: MapPin, desc: lang === "ar" ? "دعم مخصص للمرضى الدوليين" : "Dedicated support for international patients" },
     { label: lang === "ar" ? "اتصل بنا" : "Call Us", href: "tel:+96525360000", icon: Phone, desc: phoneDisplay },
   ];
-
   const handleDropdownEnter = (key: string) => {
     if (dropdownTimeout.current) clearTimeout(dropdownTimeout.current);
     setActiveDropdown(key);
   };
-
   const handleDropdownLeave = () => {
     dropdownTimeout.current = setTimeout(() => setActiveDropdown(null), 200);
   };
-
   const handleBookAppointmentClick = (e: any) => {
     if (location.pathname === "/book-appointment") {
       e.preventDefault();
@@ -157,12 +156,8 @@ const Header = () => {
       });
     }
   };
-
-  // Build comprehensive search index
   const searchIndex = useMemo(() => {
-    const items: { label: string; labelAr: string; type: string; typeAr: string; href: string }[] = [];
-
-    // Pages
+    const items: SearchIndexItem[] = [];
     items.push(
       { label: "Home", labelAr: "الرئيسية", type: "Page", typeAr: "صفحة", href: "/" },
       { label: "About Us", labelAr: "من نحن", type: "Page", typeAr: "صفحة", href: "/about-us" },
@@ -170,17 +165,15 @@ const Header = () => {
       { label: "Book Appointment", labelAr: "حجز موعد", type: "Page", typeAr: "صفحة", href: "/book-appointment" },
       { label: "Hospitality Services", labelAr: "خدمات الضيافة", type: "Page", typeAr: "صفحة", href: "/hospitality" },
       { label: "Patients Info", labelAr: "معلومات للمرضى والزوار", type: "Page", typeAr: "صفحة", href: "/patients-visitors" },
-      { label: "Work With Us", labelAr: "اعمل معنا", type: "Page", typeAr: "صفحة", href: "/work-with-us" },
+      { label: "Work With Us", labelAr: "إنضم الينا", type: "Page", typeAr: "صفحة", href: "/work-with-us" },
       { label: "Al Safwa Program", labelAr: "برنامج الصفوة", type: "Page", typeAr: "صفحة", href: "/al-safwa" },
       { label: "Home Health", labelAr: "الرعاية المنزلية", type: "Page", typeAr: "صفحة", href: "/home-health" },
       { label: "Doctors", labelAr: "الأطباء", type: "Page", typeAr: "صفحة", href: "/doctors" },
       { label: "Departments", labelAr: "الأقسام", type: "Page", typeAr: "صفحة", href: "/departments" },
       { label: "International Patient", labelAr: "المرضى الدوليون", type: "Page", typeAr: "صفحة", href: "/international-patient" },
       { label: "Downloads", labelAr: "التحميلات", type: "Page", typeAr: "صفحة", href: "/downloads" },
-      { label: "My Medical Reports", labelAr: "تقاريري الطبية", type: "Page", typeAr: "صفحة", href: "#" },
+      { label: "My Medical Reports", labelAr: "تقاريري الطبية", type: "Page", typeAr: "صفحة", href: "/my-medical-reports" },
     );
-
-    // Departments
     const deptNames = [
       { en: "Obstetrics & Gynecology", ar: "التوليد وأمراض النساء" },
       { en: "Family Medicine", ar: "طب الأسرة" },
@@ -206,23 +199,11 @@ const Header = () => {
     deptNames.forEach(d => {
       items.push({ label: d.en, labelAr: d.ar, type: "Department", typeAr: "قسم", href: "/departments" });
     });
-
-    // Doctors
-    doctors.forEach(doc => {
-      items.push({
-        label: doc.name,
-        labelAr: doc.nameAr,
-        type: `Doctor · ${doc.specialty}`,
-        typeAr: `طبيب · ${doc.specialtyAr}`,
-        href: `/doctors/${doc.id}`,
-      });
-    });
-
-    // Services / sections
+    items.push(...doctorSearchItems);
     const services = [
       { en: "Luxury Suites", ar: "الأجنحة الفاخرة", href: "/hospitality" },
       { en: "Elements Spa", ar: "سبا إليمنتس", href: "/hospitality" },
-      { en: "Al Liwan Bistro", ar: "بيسترو الليوان", href: "/hospitality" },
+      { en: "Al Liwan Bistro", ar: "الليوان بيسترو", href: "/hospitality" },
       { en: "Newborn Photography", ar: "تصوير المواليد", href: "/patients-visitors" },
       { en: "Health Insurance", ar: "التأمين الصحي", href: "/patients-visitors" },
       { en: "Nursing Services", ar: "خدمات التمريض", href: "/home-health" },
@@ -236,8 +217,6 @@ const Header = () => {
     services.forEach(s => {
       items.push({ label: s.en, labelAr: s.ar, type: "Service", typeAr: "خدمة", href: s.href });
     });
-
-    // Symptoms (mapped to departments)
     const symptoms = [
       { en: "Headache", ar: "صداع", href: "/departments" },
       { en: "Fever", ar: "حمى", href: "/departments" },
@@ -256,10 +235,8 @@ const Header = () => {
     symptoms.forEach(s => {
       items.push({ label: s.en, labelAr: s.ar, type: "Symptom", typeAr: "عرض", href: s.href });
     });
-
     return items;
-  }, []);
-
+  }, [doctorSearchItems]);
   const searchResults = useMemo(() => {
     if (!searchQuery || searchQuery.length < 2) return [];
     const q = searchQuery.toLowerCase();
@@ -267,10 +244,8 @@ const Header = () => {
       .filter(item => item.label.toLowerCase().includes(q) || item.labelAr.includes(searchQuery))
       .slice(0, 8);
   }, [searchQuery, searchIndex]);
-
   const linkClass =
     "text-foreground font-body text-[14px] tracking-wide hover:text-accent transition-colors duration-300 relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-[-4px] after:left-0 after:bg-accent after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left inline-flex items-center whitespace-nowrap";
-
   const isAr = lang === "ar";
   const dropdownSubLinkClass =
     "flex items-start gap-4 p-3 rounded-xl hover:bg-background transition-colors group w-full";
@@ -278,7 +253,6 @@ const Header = () => {
     "font-body text-sm font-medium text-foreground group-hover:text-primary transition-colors text-start";
   const dropdownSubDescClass =
     "font-body text-xs text-muted-foreground mt-0.5 text-start";
-
   const getSubLinks = (key: string) => {
     switch (key) {
       case "about": return aboutSubLinks;
@@ -290,8 +264,9 @@ const Header = () => {
       default: return [];
     }
   };
-
-  // Flag SVG components
+  const isScrollableDropdown = (key: string) => key === "hospitality" || key === "patients";
+  const dropdownScrollListClass =
+    "min-h-0 flex-1 overflow-y-auto overscroll-y-contain pe-1 pb-3 scroll-pb-3";
   const BritainFlag = () => (
     <svg viewBox="0 0 60 30" className="w-5 h-3 rounded-sm overflow-hidden" aria-hidden="true">
       <clipPath id="s"><path d="M0,0 v30 h60 v-30 z" /></clipPath>
@@ -305,7 +280,6 @@ const Header = () => {
       </g>
     </svg>
   );
-
   const KuwaitFlag = () => (
     <svg viewBox="0 0 60 30" className="w-5 h-3 rounded-sm overflow-hidden" aria-hidden="true">
       <rect width="60" height="10" fill="#007A3D" />
@@ -314,7 +288,6 @@ const Header = () => {
       <path d="M0,0 L15,15 L0,30 Z" fill="#000000" />
     </svg>
   )
-
   return (
     <>
       <header
@@ -322,7 +295,6 @@ const Header = () => {
         className="bg-popover border-b border-border fixed top-0 left-0 right-0 z-50"
       >
         <div className="lg:overflow-visible">
-        {/* Search Popup */}
         <AnimatePresence>
           {searchOpen && (
             <motion.div
@@ -383,8 +355,6 @@ const Header = () => {
             </motion.div>
           )}
         </AnimatePresence>
-
-        {/* Row 1: Logo — collapses on scroll (desktop) so no empty gap remains */}
         <div
           ref={logoRowRef}
           className={`hidden md:block border-b border-border/50 transition-all duration-300 ease-in-out overflow-hidden ${
@@ -395,10 +365,10 @@ const Header = () => {
         >
           <div className="container mx-auto flex items-center justify-between py-2.5 md:py-3 px-4 md:px-6 gap-3">
             <div className="flex-1 flex items-center justify-start">
-              {/* Language capsule toggle EN | العربية */}
               <div className="flex items-center bg-muted/40 rounded-full border border-border p-0.5 md:scale-95 lg:scale-100 origin-left">
                 <button
                   onClick={() => setLang("en")}
+                  lang="en"
                   className={`rounded-full font-body font-semibold tracking-wide transition-all duration-300 !leading-none flex items-center justify-center px-2 md:px-2.5 h-6.5 md:h-7 !text-[10px] md:!text-[11px] ${lang === "en"
                     ? "bg-accent text-accent-foreground shadow-sm"
                     : "bg-transparent text-muted-foreground hover:bg-background/60"
@@ -409,7 +379,8 @@ const Header = () => {
                 </button>
                 <button
                   onClick={() => setLang("ar")}
-                  className={`rounded-full font-body font-semibold transition-all duration-300 !leading-none flex items-center justify-center px-2 md:px-2.5 h-6.5 md:h-7 !text-[10px] md:!text-[11px] ${lang === "ar"
+                  lang="ar"
+                  className={`rounded-full font-arabic font-semibold transition-all duration-300 !leading-none flex items-center justify-center px-2 md:px-2.5 h-6.5 md:h-7 !text-[10px] md:!text-[11px] ${lang === "ar"
                     ? "bg-primary text-primary-foreground shadow-sm"
                     : "bg-transparent text-muted-foreground hover:bg-background/60"
                     }`}
@@ -434,15 +405,10 @@ const Header = () => {
             </div>
           </div>
         </div>
-
-        {/* Row 2: Navigation bar */}
         <div ref={navRowRef} className="container mx-auto flex items-center justify-between py-1.5 px-3 md:py-2 md:px-6 gap-2 md:gap-4">
-          {/* Mobile logo — always visible, left-aligned, smaller */}
           <Link to="/" className="md:hidden flex-shrink-0">
             <img src={logoFull} alt="Royale Hayat Hospital" className="h-7 w-auto" />
           </Link>
-
-          {/* Desktop nav - evenly spaced */}
           <nav className="hidden lg:flex items-center flex-1 justify-between">
             {navItems.map((item) => {
               const NavIcon = item.icon;
@@ -470,8 +436,6 @@ const Header = () => {
                     </span>
                   </a>
                 )}
-
-                {/* Mega Menu Dropdown test push*/}
                 <AnimatePresence>
                   {item.hasDropdown && activeDropdown === item.hasDropdown && (
                     <motion.div
@@ -481,6 +445,10 @@ const Header = () => {
                       transition={{ duration: 0.2 }}
                       dir={isAr ? "rtl" : "ltr"}
                       className={`absolute top-full mt-2 bg-popover border border-border rounded-2xl shadow-2xl z-[100] p-6 ${
+                        item.hasDropdown && isScrollableDropdown(item.hasDropdown)
+                          ? "flex max-h-[min(78vh,32rem)] flex-col"
+                          : ""
+                      } ${
                         isAr
                           ? "right-0"
                           : item.hasDropdown === "patients"
@@ -495,13 +463,13 @@ const Header = () => {
                             : "min(460px, calc(100vw - 2rem))",
                       }}
                     >
-                      <p className="text-xs tracking-[0.2em] uppercase font-body text-accent mb-4 text-start">
+                      <p className="mb-4 shrink-0 text-start font-body text-xs uppercase tracking-[0.2em] text-accent">
                         {item.hasDropdown === "patients" ? t("patientsVisitorsDropdownTitle") : item.label}
                       </p>
                       <div
                         className={`grid ${item.hasDropdown === "patients" ? "grid-cols-1 xl:grid-cols-2" : "grid-cols-1"} gap-2 ${
-                          item.hasDropdown === "hospitality"
-                            ? "max-h-[min(70vh,26rem)] overflow-y-auto overscroll-y-contain pr-1"
+                          item.hasDropdown && isScrollableDropdown(item.hasDropdown)
+                            ? dropdownScrollListClass
                             : ""
                         }`}
                       >
@@ -564,8 +532,6 @@ const Header = () => {
             );
             })}
           </nav>
-
-          {/* Right side buttons */}
           <div className="flex items-center gap-1.5 md:gap-4 ml-auto">
             <button
               onClick={() => setSearchOpen(!searchOpen)}
@@ -577,24 +543,22 @@ const Header = () => {
             <Link
               to="/book-appointment"
               onClick={handleBookAppointmentClick}
-              className={`hidden sm:inline-flex items-center justify-center h-8 md:h-9 bg-primary text-primary-foreground rounded-full font-body tracking-wide hover:bg-primary/90 transition-colors duration-300 ${lang === "ar" ? "px-2.5 text-[9px]" : "px-3.5 text-[11px]"
+              className={`hidden lg:inline-flex items-center justify-center h-8 md:h-9 bg-primary text-primary-foreground rounded-full font-body tracking-wide hover:bg-primary/90 transition-colors duration-300 ${lang === "ar" ? "px-2.5 text-[9px]" : "px-3.5 text-[11px]"
                 }`}
             >
               {t("bookAppointment")}
             </Link>
-
-            <button
-              onClick={() => setShowMedRecordsModal(true)}
-              className={`hidden md:inline-flex items-center justify-center h-8 md:h-9 rounded-full font-body tracking-wide border border-border text-foreground hover:bg-background transition-colors duration-300 ${lang === "ar" ? "px-2.5 text-[9px]" : "px-3.5 text-[11px]"
+            <Link
+              to="/my-medical-reports"
+              className={`hidden lg:inline-flex items-center justify-center h-8 md:h-9 rounded-full font-body tracking-wide border border-border text-foreground hover:bg-background transition-colors duration-300 ${lang === "ar" ? "px-2.5 text-[9px]" : "px-3.5 text-[11px]"
                 }`}
             >
               {t("login")}
-            </button>
-
-            {/* Language capsule for mobile/tablet */}
+            </Link>
             <div className="flex md:hidden items-center bg-muted/40 rounded-full border border-border p-0.5">
               <button
                 onClick={() => setLang("en")}
+                lang="en"
                 className={`rounded-full font-body font-semibold tracking-wide transition-all duration-300 !leading-none flex items-center justify-center px-2 h-7 !text-[10px] ${lang === "en"
                   ? "bg-accent text-accent-foreground shadow-sm"
                   : "bg-transparent text-muted-foreground hover:bg-background/60"
@@ -605,7 +569,8 @@ const Header = () => {
               </button>
               <button
                 onClick={() => setLang("ar")}
-                className={`rounded-full font-body font-semibold transition-all duration-300 !leading-none flex items-center justify-center px-2 h-7 !text-[10px] ${lang === "ar"
+                lang="ar"
+                className={`rounded-full font-arabic font-semibold transition-all duration-300 !leading-none flex items-center justify-center px-2 h-7 !text-[10px] ${lang === "ar"
                   ? "bg-primary text-primary-foreground shadow-sm"
                   : "bg-transparent text-muted-foreground hover:bg-background/60"
                   }`}
@@ -614,9 +579,6 @@ const Header = () => {
                 العربية
               </button>
             </div>
-
-
-
             <button
               className="lg:hidden w-8 h-8 md:w-10 md:h-10 flex items-center justify-center text-foreground flex-shrink-0"
               onClick={() => setMenuOpen(!menuOpen)}
@@ -626,8 +588,6 @@ const Header = () => {
             </button>
           </div>
         </div>
-
-        {/* Mobile menu */}
         <AnimatePresence>
           {menuOpen && (
             <motion.div
@@ -661,7 +621,6 @@ const Header = () => {
                           {item.label}
                         </a>
                       )}
-
                       {item.hasDropdown && (
                         <button
                           onClick={() => setMobileExpanded(mobileExpanded === item.hasDropdown ? null : item.hasDropdown)}
@@ -672,7 +631,6 @@ const Header = () => {
                         </button>
                       )}
                     </div>
-
                     <AnimatePresence>
                       {item.hasDropdown && mobileExpanded === item.hasDropdown && (
                         <motion.div
@@ -680,13 +638,13 @@ const Header = () => {
                           animate={{ height: "auto", opacity: 1 }}
                           exit={{ height: 0, opacity: 0 }}
                           transition={{ duration: 0.3, ease: "easeInOut" }}
-                          className="overflow-hidden bg-muted/20 rounded-xl mb-2"
+                          className="mb-2 overflow-hidden rounded-xl bg-muted/20"
                         >
                           <div
                             dir={isAr ? "rtl" : "ltr"}
-                            className={`py-2 px-4 flex flex-col gap-1 ${
-                              item.hasDropdown === "hospitality"
-                                ? "max-h-[min(55vh,18rem)] overflow-y-auto overscroll-y-contain"
+                            className={`flex flex-col gap-1 px-4 py-2 ${
+                              item.hasDropdown && isScrollableDropdown(item.hasDropdown)
+                                ? "max-h-[min(58vh,20rem)] overflow-y-auto overscroll-y-contain pb-4 scroll-pb-4"
                                 : ""
                             }`}
                           >
@@ -740,8 +698,6 @@ const Header = () => {
           )}
         </AnimatePresence>
         </div>
-
-        {/* Row 3 (Action Bar): fixed with logo nav on mobile */}
         <div className="lg:hidden border-t border-border bg-popover shadow-sm">
           <div className="flex w-full divide-x divide-border rtl:divide-x-reverse">
             <Link
@@ -752,70 +708,18 @@ const Header = () => {
               <Stethoscope className="w-4 h-4 text-[#816107]" />
               <span>{t("bookAppointment")}</span>
             </Link>
-            <button
-              onClick={() => setShowMedRecordsModal(true)}
+            <Link
+              to="/my-medical-reports"
               className="flex-1 py-3 flex items-center justify-center gap-2 font-body text-xs font-bold text-foreground hover:bg-muted/20 transition-colors tracking-wide"
             >
               <ClipboardList className="w-4 h-4 text-primary" />
               <span>{t("login")}</span>
-            </button>
+            </Link>
           </div>
         </div>
-
       </header>
-
-      {/* Medical Records Modal */}
-      {showMedRecordsModal && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-foreground/40 backdrop-blur-sm" onClick={() => setShowMedRecordsModal(false)}>
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-popover rounded-2xl border border-border shadow-2xl p-8 max-w-md w-full mx-4"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 className="font-serif text-xl text-foreground mb-2 text-center">
-              {lang === "ar" ? "تقاريري الطبية" : "My Medical Reports"}
-            </h3>
-            <p className="font-body text-sm text-muted-foreground mb-4 text-center">
-              {lang === "ar" ? "هل أنت من المسجلون لدى مستشفى رويال حياة؟" : "Are you a registered Royale Hayat patient?"}
-            </p>
-            <div className="flex gap-4 mt-6 justify-center">
-              <button
-                onClick={() => { setShowMedRecordsModal(false); window.open("https://afyati.royalehayat.com", "_blank"); }}
-                className="flex-1 bg-primary text-primary-foreground py-3 rounded-xl font-body text-sm tracking-wider uppercase hover:bg-primary/90 transition-colors text-center"
-              >
-                {lang === "ar" ? "نعم" : "YES"}
-              </button>
-              <button
-                onClick={() => setShowMedRecordsModal(false)}
-                className="flex-1 bg-secondary/40 text-foreground py-3 rounded-xl font-body text-sm tracking-wider uppercase hover:bg-secondary/60 transition-colors text-center"
-              >
-                {lang === "ar" ? "لا" : "NO"}
-              </button>
-            </div>
-            <div className="mt-4 p-4 bg-muted/30 rounded-xl">
-              <p className="font-body text-xs text-muted-foreground text-center leading-relaxed">
-                {lang === "ar"
-                  ? (
-                    <>
-                      في حال لم يتم تسجيلكم مسبقًا، يرجى التواصل مع المستشفى على الرقم:
-                      <br />
-                      <strong className={`text-foreground ${phoneTextClass}`}>{phoneDisplay}</strong>
-                      <br />
-                      لاستكمال إجراءات التسجيل.
-                    </>
-                  )
-                  : `If you are not yet registered, please call the hospital at ${phoneDisplay} to complete your registration.`}
-              </p>
-            </div>
-            <button onClick={() => setShowMedRecordsModal(false)} className="mt-4 w-full text-center font-body text-xs text-muted-foreground hover:text-foreground transition-colors">
-              {lang === "ar" ? "إغلاق" : "Close"}
-            </button>
-          </motion.div>
-        </div>
-      )}
     </>
   );
 };
-
 export default Header;
+

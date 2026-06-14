@@ -4,13 +4,18 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Doctor, getFeaturedDoctors } from "@/data/doctors";
-import { useIsMobile } from "@/hooks/use-mobile";
-
+import { Doctor } from "@/data/doctors";
+import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
+import { scrollDoctorCarousel, syncDoctorCarouselIndex } from "@/utils/doctorCarousel";
 const DoctorCard = ({ doc }: { doc: Doctor }) => {
   const { lang } = useLanguage();
+  const displayName = getDoctorDisplayName(doc, lang);
   return (
-    <Link to={`/doctors/${doc.id}`} className="block w-[280px] min-h-[430px] flex-shrink-0 relative z-0 hover:z-10 snap-center md:snap-start">
+    <Link
+      to={`/doctors/${doc.id}`}
+      data-doctor-carousel-card
+      className="relative z-0 block w-[280px] min-h-[430px] flex-shrink-0 snap-center hover:z-10 md:snap-start"
+    >
       <motion.div
         dir={lang === "ar" ? "rtl" : "ltr"}
         whileHover={{ y: -6, boxShadow: "0 20px 40px -12px hsl(var(--primary) / 0.12)" }}
@@ -18,7 +23,7 @@ const DoctorCard = ({ doc }: { doc: Doctor }) => {
       >
         <div className="bg-white h-64 flex items-center justify-center relative overflow-hidden shrink-0 rounded-t-2xl">
           {doc.image ? (
-            <img src={doc.image} alt={lang === "ar" ? doc.nameAr : doc.name} className="w-full h-full object-cover object-top" />
+            <img src={doc.image} alt={displayName} className="w-full h-full object-cover object-top" />
           ) : (
             <div className="w-20 h-20 rounded-full bg-popover/20 backdrop-blur-sm flex items-center justify-center border-2 border-popover/30">
               <span className="text-2xl font-serif text-primary-foreground">{doc.initials}</span>
@@ -26,21 +31,21 @@ const DoctorCard = ({ doc }: { doc: Doctor }) => {
           )}
           <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-popover/20 backdrop-blur-sm flex items-center justify-center">
             <Stethoscope className="w-3.5 h-3.5 text-primary-foreground" />
-          </div>
+          </div>  
         </div>
         <div className="p-5 flex flex-col flex-grow">
           <p className="text-accent text-[10px] tracking-[0.2em] uppercase font-body mb-1.5">
             {lang === "ar" ? doc.specialtyAr : doc.specialty}
           </p>
-          <h3 className="text-base font-serif text-foreground mb-1">{lang === "ar" ? doc.nameAr : doc.name}</h3>
+          <h3 className="text-[1.2rem] font-serif font-bold text-foreground mb-1">{displayName}</h3>
           <p className="text-muted-foreground font-body text-xs mb-3">{lang === "ar" ? doc.titleAr : doc.title}</p>
           {doc.hideBooking !== true && (
             <div className={`flex items-center gap-1.5 mb-2 ${doc.availableOnline !== false ? "text-green-600" : "text-destructive"}`}>
               <div className={`w-1.5 h-1.5 rounded-full ${doc.availableOnline !== false ? "bg-green-500" : "bg-destructive"}`} />
               <span className="font-body text-[10px]">
                 {doc.availableOnline !== false
-                  ? (lang === "ar" ? "متاح للحجز الإلكتروني" : "Book Online")
-                  : (lang === "ar" ? "غير متاح للحجز الإلكتروني" : "Not Available")}
+                  ? (lang === "ar" ? "متاح للحجز اونلاين" : "Book Online")
+                  : (lang === "ar" ? "غير متاح للحجز اونلاين" : "Not Available")}
               </span>
             </div>
           )}
@@ -52,26 +57,21 @@ const DoctorCard = ({ doc }: { doc: Doctor }) => {
     </Link>
   );
 };
-
-const DoctorsSection = () => {
+const DoctorsSection = ({ featuredDoctors }: { featuredDoctors: Doctor[] }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
   const { lang, t } = useLanguage();
-  const isMobile = useIsMobile();
-
-  const featuredDoctors = useMemo(() => getFeaturedDoctors(12), []);
-
   const checkScroll = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
+    syncDoctorCarouselIndex(el);
     const { scrollLeft, scrollWidth, clientWidth } = el;
     const maxScroll = Math.max(0, scrollWidth - clientWidth);
     setCanScrollLeft(scrollLeft > 10);
     setCanScrollRight(scrollLeft < maxScroll - 10);
   }, []);
-
   useEffect(() => {
     checkScroll();
     window.addEventListener("resize", checkScroll);
@@ -82,22 +82,15 @@ const DoctorsSection = () => {
       el?.removeEventListener("scroll", checkScroll);
     };
   }, [checkScroll, featuredDoctors]);
-
   const scroll = useCallback((dir: "left" | "right") => {
     if (!scrollRef.current) return;
-    const amount = isMobile ? 280 + 80 : (280 + 24) * 2;
-    scrollRef.current.scrollBy({
-      left: dir === "left" ? -amount : amount,
-      behavior: "smooth",
-    });
+    scrollDoctorCarousel(scrollRef.current, dir);
     setTimeout(checkScroll, 400);
-  }, [isMobile, checkScroll]);
-
+  }, [checkScroll]);
   const handleManualInteraction = (dir: "left" | "right") => {
     setIsPaused(true);
     scroll(dir);
   };
-
   useEffect(() => {
     if (isPaused || featuredDoctors.length <= 1) return;
     const timer = setInterval(() => {
@@ -113,16 +106,23 @@ const DoctorsSection = () => {
     }, 5000);
     return () => clearInterval(timer);
   }, [isPaused, scroll, checkScroll, featuredDoctors.length]);
-
   return (
     <section className="py-20 bg-background" id="our-doctors">
       <div className="container mx-auto px-6">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 md:mb-14">
           <ScrollAnimationWrapper>
             <div>
-              <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-4">{t("ourTeam")}</p>
-              <h2 className="text-3xl md:text-4xl font-serif text-foreground mb-3">{t("meetOurDoctors")}</h2>
-              <p className="text-muted-foreground font-body text-sm md:text-base max-w-xl">{t("meetOurDoctorsSubtitle")}</p>
+              <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-4">
+                {lang === "ar" ? "فريقنا الطبي" : "Our Medical Team"}
+              </p>
+              <h2 className="text-3xl md:text-4xl font-serif text-foreground mb-3">
+                {lang === "ar" ? "تعرف على أطبائنا" : "Meet Our Doctors"}
+              </h2>
+              <p className="text-muted-foreground font-body text-sm md:text-base max-w-xl">
+                {lang === "ar"
+                  ? "فريق من الأطباء المتخصصين يقدّم رعاية صحية على مستوى عالمي"
+                  : "A team of specialized physicians delivering world-class healthcare"}
+              </p>
             </div>
           </ScrollAnimationWrapper>
           <ScrollAnimationWrapper delay={0.1}>
@@ -131,8 +131,6 @@ const DoctorsSection = () => {
             </Link>
           </ScrollAnimationWrapper>
         </div>
-
-        {featuredDoctors.length > 0 && (
         <div
           className="relative group"
           dir="ltr"
@@ -148,7 +146,6 @@ const DoctorsSection = () => {
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
-
           <button
             type="button"
             onClick={() => handleManualInteraction("right")}
@@ -158,28 +155,13 @@ const DoctorsSection = () => {
           >
             <ChevronRight className="w-5 h-5" />
           </button>
-
           <div className="max-w-[1192px] mx-auto overflow-hidden">
             <div
               ref={scrollRef}
               dir="ltr"
               onScroll={checkScroll}
-              className="doctors-carousel-track flex items-stretch gap-20 md:gap-6 overflow-x-auto pb-8 scroll-smooth snap-x snap-mandatory px-[20px] md:px-0"
-              style={{
-                scrollbarWidth: "none",
-                msOverflowStyle: "none",
-                // Precise padding to center 280px card on mobile:
-                paddingLeft: "calc((100vw - 280px) / 2)",
-                paddingRight: "calc((100vw - 280px) / 2)",
-              }}
+              className="doctors-carousel-track flex items-stretch gap-4 overflow-x-auto pb-8 snap-x snap-mandatory max-md:scroll-px-[calc(50%-140px)] max-md:px-[calc(50%-140px)] md:gap-6 md:px-0 md:scroll-px-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden [-webkit-overflow-scrolling:touch]"
             >
-              {/* On desktop (md), we don't want the extreme padding, so we reset it via media-query-like logic or just standard classes */}
-              <style dangerouslySetInnerHTML={{
-                __html: `
-                @media (min-width: 768px) {
-                  .doctors-carousel-track { padding-left: 0 !important; padding-right: 0 !important; }
-                }
-              `}} />
               {featuredDoctors.map((doc) => (
                 <DoctorCard key={doc.id} doc={doc} />
               ))}
@@ -191,5 +173,4 @@ const DoctorsSection = () => {
     </section>
   );
 };
-
 export default DoctorsSection;

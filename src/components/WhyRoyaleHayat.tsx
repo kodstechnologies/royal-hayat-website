@@ -3,17 +3,14 @@ import { Shield, Star, Award, Heart } from "lucide-react";
 import { motion } from "framer-motion";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { useLanguage } from "@/contexts/LanguageContext";
-
 const WhyRoyaleHayat = () => {
   const { t } = useLanguage();
-
   const features = [
     { icon: Shield, titleKey: "internationallyAccredited", descKey: "internationallyAccreditedDesc" },
     { icon: Star, titleKey: "vipExperience", descKey: "vipExperienceDesc" },
     { icon: Award, titleKey: "awardWinningCare", descKey: "awardWinningCareDesc" },
     { icon: Heart, titleKey: "compassionateApproach", descKey: "compassionateApproachDesc" },
   ];
-
   return (
     <section className="py-16 md:py-24 bg-secondary/20">
       <div className="container mx-auto px-4 sm:px-6">
@@ -21,8 +18,6 @@ const WhyRoyaleHayat = () => {
           <ScrollAnimationWrapper direction="left" className="lg:w-1/2 w-full">
             <div className="relative rounded-2xl overflow-hidden shadow-xl">
               <img src="https://royal-hayat.s3.eu-central-1.amazonaws.com/home-luxury/DSC08672_ubs2ca.jpg.jpeg" alt="Luxury hospital suite at Royale Hayat" className="w-full h-auto" loading="lazy" width={1280} height={960} />
-              {/* <img src="https://res.cloudinary.com/dwhc8kzpv/image/upload/v1777546445/DSC08672_zc7pu9.jpg" alt="Luxury hospital suite at Royale Hayat" className="w-full h-auto" loading="lazy" width={1280} height={960} /> */}
-
               <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.5, duration: 0.6 }}
                 className="absolute bottom-2 right-2 sm:bottom-3 sm:right-3 bg-primary/90 backdrop-blur-sm rounded-md px-2 py-1 sm:px-2.5 sm:py-1.5 text-center shadow-md">
                 <p className="text-sm sm:text-base font-serif text-primary-foreground leading-tight mb-0">86%</p>
@@ -30,18 +25,24 @@ const WhyRoyaleHayat = () => {
               </motion.div>
             </div>
           </ScrollAnimationWrapper>
-
           <div className="lg:w-1/2 w-full">
             <ScrollAnimationWrapper direction="right">
               <div className="w-12 h-0.5 bg-accent mb-4 sm:mb-6" />
               <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3 sm:mb-4">{t("whyRoyaleHayat")}</p>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-foreground mb-2 leading-tight">
+              <h2
+                className={`text-2xl sm:text-3xl md:text-4xl font-serif text-foreground leading-tight ${
+                  t("medicine") ? "mb-2" : "mb-4 sm:mb-6"
+                }`}
+              >
                 {t("whereLuxuryMeets")} <span className="text-accent italic">{t("worldClass")}</span>
               </h2>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-foreground mb-4 sm:mb-6 leading-tight">{t("medicine")}</h2>
+              {t("medicine") ? (
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-foreground mb-4 sm:mb-6 leading-tight">
+                  {t("medicine")}
+                </h2>
+              ) : null}
               <p className="text-muted-foreground font-body text-sm leading-relaxed mb-8 sm:mb-10">{t("whyDesc")}</p>
             </ScrollAnimationWrapper>
-
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               {features.map((f, i) => (
                 <ScrollAnimationWrapper key={f.titleKey} delay={i * 0.1} direction="right">
@@ -63,5 +64,4 @@ const WhyRoyaleHayat = () => {
     </section>
   );
 };
-
 export default WhyRoyaleHayat;

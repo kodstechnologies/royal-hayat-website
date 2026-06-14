@@ -2,13 +2,11 @@ import { motion } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { pageVariants } from "../types";
-
 type ReviewRow = {
   label: string;
   value: string;
   icon: LucideIcon;
 };
-
 type BookingConfirmationProps = {
   isAr: boolean;
   isRequestMode: boolean;
@@ -18,7 +16,6 @@ type BookingConfirmationProps = {
   isSubmitting: boolean;
   onConfirm: () => void;
 };
-
 const BookingConfirmation = ({
   isAr,
   isRequestMode,
@@ -87,5 +84,4 @@ const BookingConfirmation = ({
     </div>
   </motion.div>
 );
-
 export default BookingConfirmation;

@@ -2,21 +2,16 @@ import { Link } from "react-router-dom";
 import { Phone, Mail, MapPin, Clock, Send, Facebook, Instagram, Youtube } from "lucide-react";
 import logo from "@/assets/rhh-logo-full.png";
 import { useLanguage } from "@/contexts/LanguageContext";
-
 const Footer = () => {
   const { lang, t } = useLanguage();
-
   const quickLinks = [
     { labelKey: "faq", href: "/faq", isRoute: true },
     { labelKey: "disclaimer", href: "/faq#disclaimer", isRoute: true },
-    // { labelKey: "exchangeLogin", href: "#", isRoute: false },
-    // { labelKey: "sitemailLogin", href: "#", isRoute: false },
     { labelKey: "internationalPatients", href: "/international-patient", isRoute: false },
     { labelKey: "termsPrivacy", href: "/faq#terms", isRoute: true },
     { labelKey: "medicalRepVisitBooking", href: "/medical-rep-visit-booking", isRoute: true },
     { labelKey: "medicalRecordsRequestForm", href: "/medical-records-request", isRoute: true },
   ];
-
   const deptNames = [
     { en: "Obstetrics & Gynecology", ar: "التوليد وأمراض النساء", slug: "obstetrics-gynecology" },
     { en: "Pediatrics", ar: "طب الأطفال", slug: "pediatrics" },
@@ -25,29 +20,28 @@ const Footer = () => {
     { en: "Royale Hayat Dental", ar: "عيادة رويال حياة للأسنان", slug: "dental-clinic" },
     { en: "Dermatology", ar: "الأمراض الجلدية", slug: "dermatology" },
   ];
-
   return (
     <footer className="bg-primary pt-14 pb-8">
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-y-10 gap-x-12 mb-10">
-          <div className="space-y-5 flex flex-col items-center text-center">
-            <img src={logo} alt="Royale Hayat Hospital" className="h-20 w-auto brightness-0 invert opacity-90" />
-            <p
-              className="text-primary-foreground/70 font-body text-sm leading-relaxed !text-center tracking-normal"
-              style={{ wordSpacing: "normal", textAlign: "center" }}
-            >
-              {t("footerDesc")}
-            </p>
+          <div className="space-y-6 flex flex-col items-center text-center">
+            <img
+              src={logo}
+              alt="Royale Hayat Hospital"
+              className="h-28 sm:h-32 w-auto max-w-[280px] sm:max-w-[320px] brightness-0 invert opacity-90"
+            />
             <div className="flex items-center gap-3">
               {[
-                { key: "instagram", icon: Instagram, href: "#", type: "outline" },
-                { key: "facebook", icon: Facebook, href: "#", type: "filled" },
-                { key: "x", href: "#", type: "x" },
-                { key: "youtube", href: "#", type: "youtube" },
+                { key: "instagram", icon: Instagram, href: "https://www.instagram.com/accounts/login/?next=%2Froyalehayat&source=omni_redirect", type: "outline" },
+                { key: "facebook", icon: Facebook, href: "https://www.facebook.com/RoyaleHayat", type: "filled" },
+                { key: "x", href: "https://x.com/royale_hayat", type: "x" },
+                { key: "youtube", href: "https://www.youtube.com/user/RoyaleHayatHospital", type: "youtube" },
               ].map((social) => (
                 <a
                   key={social.key}
                   href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-10 h-10 flex items-center justify-center text-primary-foreground/70 hover:text-accent hover:border-accent transition-colors"
                   aria-label={social.key}
                 >
@@ -69,7 +63,6 @@ const Footer = () => {
               ))}
             </div>
           </div>
-
           <div>
             <h4 className="text-primary-foreground font-body text-xs tracking-[0.3em] uppercase mb-6">{t("quickLinks")}</h4>
             <nav className="flex flex-col gap-3">
@@ -82,7 +75,6 @@ const Footer = () => {
               )}
             </nav>
           </div>
-
           <div>
             <h4 className="text-primary-foreground font-body text-xs tracking-[0.3em] uppercase mb-6">{t("departments")}</h4>
             <nav className="flex flex-col gap-3">
@@ -93,7 +85,6 @@ const Footer = () => {
               ))}
             </nav>
           </div>
-
           <div>
             <h4 className="text-primary-foreground font-body text-xs tracking-[0.3em] uppercase mb-6">{t("contact")}</h4>
             <div className="space-y-4 font-body text-sm">
@@ -126,23 +117,14 @@ const Footer = () => {
                 <Clock className="w-4 h-4 text-accent flex-shrink-0" />
                 <p className="text-accent text-xs tracking-wider uppercase">{t("emergencyServices247")}</p>
               </div>
-              <div className="border-t border-secondary/10 pt-3 mt-1">
-                {[{ key: "privacyPolicy" }].map((l) => (
-                  <a key={l.key} href="#" className="text-primary-foreground/50 font-body text-xs hover:text-accent transition-colors">
-                    {t(l.key)}
-                  </a>
-                ))}
-              </div>
             </div>
           </div>
         </div>
-
         <div className="border-t border-secondary/10 pt-5 pb-6 flex flex-col md:flex-row items-center justify-between gap-3">
           <p className="text-primary-foreground/50 font-body text-xs text-center md:text-left">{t("allRightsReserved")}</p>
         </div>
-      </div>  
+      </div>
     </footer>
   );
 };
-
 export default Footer;

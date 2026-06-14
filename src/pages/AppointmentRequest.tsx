@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 // import { createAppointmentRequest } from "@/api/appointmentRequest";
 import { toast } from "@/hooks/use-toast";
@@ -10,13 +10,45 @@ import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
-import { doctors as allDoctors } from "@/data/doctors";
-import { getDoctorById, mapApiDoctorRowToDoctor } from "@/api/doctors";
-import {
-  APPOINTMENT_REQUEST_TYPES,
-  createAppointmentRequest,
-} from "@/api/appointmentRequest";
-import type { Doctor } from "@/data/doctors";
+import { loadDoctorById, type Doctor } from "@/data/loadDoctors";
+import type { AppointmentRequestPrefillState } from "@/types/appointmentRequestPrefill";
+import type { AppointmentRequestType } from "@/api/appointmentRequest";
+
+const isDoctorRequestOnly = (doc: Pick<Doctor, "hideBooking" | "availableOnline">) =>
+  doc.hideBooking === true || doc.availableOnline === false;
+
+const resolveAppointmentSymptoms = (
+  prefill: AppointmentRequestPrefillState,
+  locationState: Record<string, unknown>,
+): string[] | undefined => {
+  if (Array.isArray(prefill.symptoms) && prefill.symptoms.length > 0) {
+    return prefill.symptoms.map((item) => String(item).trim()).filter(Boolean);
+  }
+  const saved = locationState.savedSymptoms;
+  if (!Array.isArray(saved) || saved.length === 0) return undefined;
+  const normalized = saved.map((item) => String(item).trim()).filter(Boolean);
+  return normalized.length > 0 ? normalized : undefined;
+};
+
+const resolveAppointmentRequestType = (
+  prefill: AppointmentRequestPrefillState,
+  doctorId: string | null,
+  prefilledDoctor: Doctor | null,
+  fromBookAppointment: boolean,
+): AppointmentRequestType => {
+  if (prefill.requestType) return prefill.requestType;
+  if (fromBookAppointment) return "appointment request";
+  if (prefilledDoctor && isDoctorRequestOnly(prefilledDoctor)) {
+    return "doctor unavailability request";
+  }
+  if (doctorId) return "doctor unavailability request";
+  return "appointment request";
+};
+
+type AppointmentRequestLocationState = {
+  appointmentRequestPrefill?: AppointmentRequestPrefillState;
+  fromBookAppointment?: boolean;
+};
 
 const AppointmentRequest = () => {
   const { lang, t } = useLanguage();
@@ -24,42 +56,52 @@ const AppointmentRequest = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const [submitted, setSubmitted] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState("");
-
-  const returnState = (location.state as { selectedDoctor?: string } | null) ?? {};
-
-  const doctorId = searchParams.get("doctor") || returnState.selectedDoctor || null;
-  const localPrefilledDoctor = doctorId
-    ? allDoctors.find((d) => d.id === doctorId)
-    : null;
-
-  const { data: apiPrefilledDoctor } = useQuery({
-    queryKey: ["appointment-request-doctor", doctorId],
-    queryFn: async () => {
-      if (!doctorId || !/^[0-9a-fA-F]{24}$/i.test(doctorId)) return null;
-      try {
-        const res = await getDoctorById(doctorId);
-        if (res.success && res.data) {
-          return mapApiDoctorRowToDoctor(res.data, "", "");
-        }
-      } catch (err) {
-        console.error("Failed to load doctor for appointment request:", err);
-      }
-      return null;
-    },
-    enabled: !!doctorId && !localPrefilledDoctor,
-  });
-
-  const prefilledDoctor: Doctor | null = localPrefilledDoctor ?? apiPrefilledDoctor ?? null;
-
+  const [submitting, setSubmitting] = useState(false);
+  useEffect(() => {
+    if (!submitted) return;
+    const scrollToTop = () => {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    };
+    scrollToTop();
+    const t1 = window.setTimeout(scrollToTop, 0);
+    const t2 = window.setTimeout(scrollToTop, 100);
+    return () => {
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+    };
+  }, [submitted]);
+  const locState = (location.state as AppointmentRequestLocationState | null) ?? {};
+  const prefill = locState.appointmentRequestPrefill ?? {};
+  const identityReadOnly = Boolean(prefill.readOnlyIdentity);
+  const returnState = (location.state as Record<string, unknown>) ?? {};
+  const doctorId = searchParams.get("doctor");
+  const [prefilledDoctor, setPrefilledDoctor] = useState<Doctor | null>(null);
+  useEffect(() => {
+    if (!doctorId) {
+      setPrefilledDoctor(null);
+      return;
+    }
+    let cancelled = false;
+    void loadDoctorById(doctorId).then((doc) => {
+      if (!cancelled) setPrefilledDoctor(doc ?? null);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [doctorId]);
   const [form, setForm] = useState({
-    fullName: "", phone: "", countryCode: "+965", dateOfBirth: "", gender: "",
-    department: "", preferredDate: "", message: ""
+    fullName: prefill.fullName?.trim() || "",
+    phone: "",
+    countryCode: "+965",
+    dateOfBirth: prefill.dateOfBirth || "",
+    gender: prefill.gender || "",
+    department: "",
+    preferredDate: "",
+    message: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [submitting, setSubmitting] = useState(false);
-
   const validate = () => {
     const e: Record<string, string> = {};
     if (!form.fullName.trim()) e.fullName = lang === "ar" ? "الاسم مطلوب" : "Full name is required";
@@ -67,39 +109,45 @@ const AppointmentRequest = () => {
     else if (!/^\d{8}$/.test(form.phone.trim())) e.phone = lang === "ar" ? "أدخل رقم هاتف مكون من 8 أرقام" : "Enter an 8-digit phone number";
     if (!form.dateOfBirth) e.dateOfBirth = lang === "ar" ? "تاريخ الميلاد مطلوب" : "Date of birth is required";
     if (!form.gender) e.gender = lang === "ar" ? "الجنس مطلوب" : "Gender is required";
-    // department validation removed
     setErrors(e);
     return Object.keys(e).length === 0;
   };
-
   const handleSubmit = async () => {
     if (!validate()) return;
     setSubmitting(true);
+    const requestType = resolveAppointmentRequestType(
+      prefill,
+      doctorId,
+      prefilledDoctor,
+      Boolean(locState.fromBookAppointment),
+    );
+    const symptoms = resolveAppointmentSymptoms(prefill, returnState);
     try {
-      const doctorName = prefilledDoctor
-        ? prefilledDoctor.name.trim()
-        : undefined;
-      const departmentName = prefilledDoctor
-        ? (prefilledDoctor.department || prefilledDoctor.specialty || "").trim()
-        : form.department.trim() || undefined;
-
       await createAppointmentRequest({
         fullname: form.fullName.trim(),
         phone: `${form.countryCode}${form.phone.trim()}`,
         requestType: APPOINTMENT_REQUEST_TYPES.DOCTOR_UNAVAILABILITY,
         dob: form.dateOfBirth,
-        gender: form.gender as "male" | "female" | "other",
-        preferredDate:
-          form.preferredDate ||
-          new Date().toISOString().split("T")[0],
-        timeSlot: {
-          period: "morning",
-          time: "09:00",
-        },
-        additionalNotes:
-          form.message.trim() || undefined,
-        doctor: doctorName || undefined,
-        department: departmentName || undefined,
+        gender: form.gender,
+        doctor: prefilledDoctor
+          ? lang === "ar"
+            ? prefilledDoctor.nameAr
+            : prefilledDoctor.name
+          : undefined,
+        department: prefilledDoctor
+          ? lang === "ar"
+            ? prefilledDoctor.departmentAr
+            : prefilledDoctor.department
+          : undefined,
+        preferredDate: form.preferredDate || undefined,
+        additionalNotes: [
+          prefill.civilId ? `Civil ID: ${prefill.civilId}` : "",
+          form.message.trim(),
+        ]
+          .filter(Boolean)
+          .join(". ") || undefined,
+        symptoms,
+        requestType,
       });
       setSubmitted(true);
     } catch (error) {
@@ -109,12 +157,21 @@ const AppointmentRequest = () => {
       setSubmitting(false);
     }
   };
-
   const updateField = (field: string, value: string) => {
     setForm(prev => ({ ...prev, [field]: value }));
     setErrors(prev => ({ ...prev, [field]: "" }));
   };
-
+  const handleGoBack = () => {
+    if (doctorId) {
+      navigate(`/doctors/${doctorId}`, { state: returnState });
+      return;
+    }
+    if (locState.appointmentRequestPrefill || locState.fromBookAppointment) {
+      navigate("/book-appointment", { state: returnState });
+      return;
+    }
+    navigate(-1);
+  };
   const formattedDob = form.dateOfBirth ? form.dateOfBirth.split("-").reverse().join("/") : "";
   const genderLabel =
     form.gender === "male"
@@ -122,7 +179,6 @@ const AppointmentRequest = () => {
       : form.gender === "female"
         ? t("female")
         : (lang === "ar" ? "غير محدد" : "Not specified");
-
   if (submitted) {
     return (
       <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
@@ -191,11 +247,9 @@ const AppointmentRequest = () => {
       </div>
     );
   }
-
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
       <Header />
-
       <div className="bg-primary py-12 text-center">
         <h1 className="text-3xl md:text-4xl font-serif text-primary-foreground mb-2">
           {lang === "ar" ? "نموذج طلب موعد" : "Appointment Request Form"}
@@ -204,16 +258,14 @@ const AppointmentRequest = () => {
           {lang === "ar" ? "املأ التفاصيل أدناه وسنتواصل معك قريباً" : "Fill in the details below and we'll get back to you shortly"}
         </p>
       </div>
-
-      <div className="container mx-auto px-6 py-8 max-w-2xl">
+      <div className="container mx-auto px-6 py-8 max-w-2xl min-w-0 overflow-x-hidden">
         <button
-          onClick={() => navigate("/book-appointment", { state: returnState })}
+          onClick={handleGoBack}
           className="inline-flex items-center gap-2 text-accent hover:text-accent/80 transition-colors font-body text-sm mb-6 px-0"
         >
           <ArrowLeft className={`w-4 h-4 ${lang === 'ar' ? 'rotate-180' : ''}`} />
           {lang === "ar" ? "العودة" : "Back"}
         </button>
-        {/* Pre-filled Doctor Info */}
         {prefilledDoctor && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
             className="bg-popover rounded-2xl p-5 border border-border shadow-sm mb-6 flex items-center gap-4">
@@ -222,7 +274,7 @@ const AppointmentRequest = () => {
                 <img
                   src={prefilledDoctor.image}
                   alt={lang === "ar" ? prefilledDoctor.nameAr : prefilledDoctor.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover object-top"
                 />
               ) : (
                 <span className="text-lg font-serif text-primary-foreground">{prefilledDoctor.initials}</span>
@@ -236,7 +288,7 @@ const AppointmentRequest = () => {
           </motion.div>
         )}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-          className="bg-popover rounded-2xl p-6 md:p-8 border border-border shadow-sm">
+          className="bg-popover rounded-2xl p-6 md:p-8 border border-border shadow-sm min-w-0 overflow-hidden">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
               <ClipboardList className="w-5 h-5 text-accent" />
@@ -246,20 +298,39 @@ const AppointmentRequest = () => {
               <p className="text-muted-foreground font-body text-xs">{t("provideInfo")}</p>
             </div>
           </div>
-
-          <div className="space-y-5">
-            {/* Full Name */}
+          {prefill.identityDetails && (
+            <div className="mb-6 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 via-background to-accent/5 p-4 sm:p-5">
+              <h4 className="font-body text-[11px] tracking-[0.18em] uppercase text-accent mb-3">
+                {lang === "ar" ? "تفاصيل الهوية" : "Identity Details"}
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {[
+                  { label: lang === "ar" ? "الاسم" : "Name", value: prefill.identityDetails.name },
+                  { label: lang === "ar" ? "تاريخ الميلاد" : "Date of Birth", value: prefill.identityDetails.dateOfBirth },
+                  { label: lang === "ar" ? "الرقم المدني" : "Civil ID Number", value: prefill.identityDetails.civilIdNumber },
+                  { label: lang === "ar" ? "الجنسية" : "Nationality", value: prefill.identityDetails.nationality },
+                  { label: lang === "ar" ? "الجنس" : "Gender", value: prefill.identityDetails.gender },
+                  { label: lang === "ar" ? "رقم جواز السفر" : "Passport Number", value: prefill.identityDetails.passportNumber },
+                ].map((row) => (
+                  <div key={row.label} className="rounded-xl border border-border/70 bg-popover/80 px-3 py-2.5">
+                    <p className="font-body text-[10px] uppercase tracking-wider text-muted-foreground">{row.label}</p>
+                    <p className="font-body text-sm text-foreground font-medium mt-0.5">{row.value}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          <div className="space-y-5 min-w-0">
             <div>
               <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
                 {t("fullName")} <span className="text-destructive">*</span>
               </label>
               <input type="text" value={form.fullName} onChange={(e) => updateField("fullName", e.target.value)}
+                readOnly={identityReadOnly}
                 placeholder={t("enterFullName")}
-                className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 ${errors.fullName ? "border-destructive" : "border-border"}`} />
+                className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 ${errors.fullName ? "border-destructive" : "border-border"} ${identityReadOnly ? "opacity-80 cursor-default" : ""}`} />
               {errors.fullName && <p className="font-body text-xs text-destructive mt-1">{errors.fullName}</p>}
             </div>
-
-            {/* Phone */}
             <div>
               <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
                 {t("phoneNumber")} <span className="text-destructive">*</span>
@@ -280,28 +351,30 @@ const AppointmentRequest = () => {
               </div>
               {errors.phone && <p className="font-body text-xs text-destructive mt-1">{errors.phone}</p>}
             </div>
-
-            {/* Date of Birth & Gender */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="min-w-0">
                 <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
                   {lang === "ar" ? "تاريخ الميلاد" : "Date of Birth"} <span className="text-destructive">*</span>
                 </label>
-                <input
-                  type="date"
-                  value={form.dateOfBirth}
-                  onChange={(e) => updateField("dateOfBirth", e.target.value)}
-                  max={new Date().toISOString().split("T")[0]}
-                  className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 ${errors.dateOfBirth ? "border-destructive" : "border-border"}`}
-                />
+                <div className="date-input-wrap">
+                  <input
+                    type="date"
+                    value={form.dateOfBirth}
+                    onChange={(e) => updateField("dateOfBirth", e.target.value)}
+                    readOnly={identityReadOnly}
+                    max={new Date().toISOString().split("T")[0]}
+                    className={`form-date-input w-full min-w-0 max-w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 ${errors.dateOfBirth ? "border-destructive" : "border-border"} ${identityReadOnly ? "opacity-80 cursor-default" : ""}`}
+                  />
+                </div>
                 {errors.dateOfBirth && <p className="font-body text-xs text-destructive mt-1">{errors.dateOfBirth}</p>}
               </div>
-              <div>
+              <div className="min-w-0">
                 <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
                   {t("gender")} <span className="text-destructive">*</span>
                 </label>
                 <select value={form.gender} onChange={(e) => updateField("gender", e.target.value)}
-                  className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 ${errors.gender ? "border-destructive" : "border-border"}`}>
+                  disabled={identityReadOnly}
+                  className={`w-full min-w-0 max-w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 ${errors.gender ? "border-destructive" : "border-border"} ${identityReadOnly ? "opacity-80 cursor-default" : ""}`}>
                   <option value="">{t("selectGender")}</option>
                   <option value="male">{t("male")}</option>
                   <option value="female">{t("female")}</option>
@@ -309,9 +382,6 @@ const AppointmentRequest = () => {
                 {errors.gender && <p className="font-body text-xs text-destructive mt-1">{errors.gender}</p>}
               </div>
             </div>
-
-
-            {/* Message */}
             <div>
               <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
                 {lang === "ar" ? "ملاحظات إضافية" : "Additional Notes"} ({lang === "ar" ? "اختياري" : "Optional"})
@@ -321,11 +391,6 @@ const AppointmentRequest = () => {
                 className="w-full h-24 px-4 py-3 rounded-xl border border-border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-2 focus:ring-accent/30" />
             </div>
           </div>
-
-          {submitError && (
-            <p className="font-body text-sm text-destructive mt-4">{submitError}</p>
-          )}
-
           <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} onClick={handleSubmit}
             disabled={submitting}
             className="w-full mt-6 bg-primary text-primary-foreground py-3.5 rounded-xl font-body text-sm tracking-widest uppercase hover:bg-primary/90 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed">
@@ -336,11 +401,9 @@ const AppointmentRequest = () => {
           </motion.button>
         </motion.div>
       </div>
-
       <Footer />
       <ScrollToTop />
     </div>
   );
-}
-
+};
 export default AppointmentRequest;

@@ -1,36 +1,30 @@
 import { useState, useCallback, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Volume2, VolumeX } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-
 const HeroSection = () => {
   const { t, lang, dir } = useLanguage();
   const isAr = lang === "ar";
-  /** Video copy is on the physical right; align block to that edge in both LTR/RTL page dirs */
   const heroAlignClass = isAr
     ? dir === "rtl"
       ? "items-start"
       : "items-end"
     : "items-start";
   const [isVisible, setIsVisible] = useState(true);
-  const [isMuted, setIsMuted] = useState(true);   // start muted so browser allows autoplay
+  const [isMuted, setIsMuted] = useState(true);
   const [isPlaying, setIsPlaying] = useState(true);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
-
-  // Show text for 10 seconds on mount, then hide
   useEffect(() => {
     timeoutRef.current = setTimeout(() => setIsVisible(false), 10000);
     return () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); };
   }, []);
-
-  // Play/pause based on visibility in viewport
   useEffect(() => {
     const video = videoRef.current;
     const section = sectionRef.current;
     if (!video || !section) return;
-
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -43,19 +37,14 @@ const HeroSection = () => {
       },
       { threshold: 0.2 }
     );
-
     observer.observe(section);
     return () => observer.disconnect();
   }, []);
-
-  // Sync muted state to video element
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.muted = isMuted;
     }
   }, [isMuted]);
-
-  // Click on video → toggle play/pause (no visible button)
   const handleVideoClick = () => {
     const video = videoRef.current;
     if (!video) return;
@@ -67,17 +56,52 @@ const HeroSection = () => {
       setIsPlaying(false);
     }
   };
-
   const handleMouseMove = useCallback(() => {
     setIsVisible(true);
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => setIsVisible(false), 2500);
   }, []);
-
   const handleMouseLeave = useCallback(() => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     setIsVisible(false);
   }, []);
+
+  const renderHeroDesc = () => {
+    const description = t("heroDesc");
+    const hospitalName = isAr ? "مستشفى رويال حياة" : "Royale Hayat Hospital";
+
+    const renderText = (text: string) => {
+      if (!text.includes(hospitalName)) {
+        return text;
+      }
+
+      const [before, after] = text.split(hospitalName);
+      return (
+        <>
+          {before}
+          <strong className="font-semibold">{hospitalName}</strong>
+          {after}
+        </>
+      );
+    };
+
+    return description.split("\n\n").map((paragraph, index) => (
+      <span key={index}>
+        {index > 0 && (
+          <>
+            <br />
+            <br />
+          </>
+        )}
+        {paragraph.split("\n").map((line, lineIndex) => (
+          <span key={lineIndex}>
+            {lineIndex > 0 && <br />}
+            {renderText(line)}
+          </span>
+        ))}
+      </span>
+    ));
+  };
 
   return (
     <section
@@ -86,26 +110,18 @@ const HeroSection = () => {
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
-      {/* Video — full bleed, click to pause/play */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <video
           ref={videoRef}
-         
           src="https://royal-hayat.s3.eu-central-1.amazonaws.com/static/RHH+SH+16+Website+(1).mp4"
           autoPlay
           loop
-          muted          /* must start muted for autoplay to work in all browsers */
+          muted
           playsInline
           onClick={handleVideoClick}
           className="absolute inset-0 w-full h-full object-cover cursor-pointer"
         />
-
-        {/* Paused overlay removed — no visible button when paused */}
-
-        {/* Light base gradient */}
         <div className="absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-transparent pointer-events-none" />
-
-        {/* Heavier overlay fades in on hover */}
         <motion.div
           className={`absolute inset-0 pointer-events-none ${
             isAr
@@ -117,18 +133,8 @@ const HeroSection = () => {
           transition={{ duration: 0.6 }}
         />
       </div>
-
-      {/* Mute / Unmute button — top right, icon only in gold color */}
-      {/* <button
-        onClick={() => setIsMuted((m) => !m)}
-        className="absolute top-4 right-4 z-20 flex items-center justify-center transition-opacity hover:opacity-70"
-        aria-label={isMuted ? "Unmute video" : "Mute video"}
-        style={{ color: '#9B804E' }}
-      >
-        {isMuted ? <VolumeX className="w-7 h-7" /> : <Volume2 className="w-7 h-7" />}
-      </button> */}
-
-      {/* Content — revealed on hover */}
+      {
+}
       <AnimatePresence>
         {isVisible && (
           <motion.div
@@ -183,23 +189,23 @@ const HeroSection = () => {
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.3 }}
-                className={`font-body leading-relaxed mb-3 max-lg:mb-4 md:mb-5 max-w-xl whitespace-pre-line ${
+                className={`font-body leading-relaxed mb-3 max-lg:mb-4 md:mb-5 max-w-xl ${
                   isAr
-                    ? "text-start text-sm sm:text-base md:text-lg text-[hsl(337,30%,26%)]"
+                    ? "text-start text-sm sm:text-base md:text-lg text-muted-foreground"
                     : "text-left text-sm md:text-base text-muted-foreground"
                 }`}
               >
-                {t("heroDesc")}
+                {renderHeroDesc()}
               </motion.p>
               {t("heroTagline") ? (
                 <motion.p
                   initial={{ opacity: 0, y: 14 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.38 }}
-                  className={`font-serif mb-5 max-lg:mb-6 md:mb-8 max-w-xl ${
+                  className={`font-serif mb-5 max-lg:mb-6 md:mb-8 max-w-xl text-burgundy ${
                     isAr
-                      ? "text-start text-base md:text-lg lg:text-xl text-gray-600"
-                      : "text-base md:text-xl text-gray-400"
+                      ? "text-start text-base md:text-lg lg:text-xl"
+                      : "text-base md:text-xl"
                   }`}
                 >
                   {t("heroTagline")}
@@ -211,19 +217,17 @@ const HeroSection = () => {
                 transition={{ duration: 0.4, delay: 0.45 }}
                 className={`flex flex-wrap gap-4 pointer-events-auto ${isAr ? "justify-start" : ""}`}
               >
-                <a
-                  href="/medical-services"
+                <Link
+                  to="/medical-services"
                   className="inline-flex items-center gap-3 border border-secondary text-foreground px-8 py-4 rounded-lg font-body text-sm tracking-widest uppercase hover:bg-secondary/30 transition-all duration-300 hover:scale-[1.03] active:scale-[0.97]"
                 >
                   {t("exploreServices")}
-                </a>
+                </Link>
               </motion.div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Scroll indicator */}
       <motion.button
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -245,9 +249,7 @@ const HeroSection = () => {
           </motion.div>
         </div>
       </motion.button>
-
     </section>
   );
 };
-
 export default HeroSection;

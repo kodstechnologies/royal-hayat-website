@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { ClipboardList, LogIn, UserPlus } from "lucide-react";
 import { pageVariants, type VerifiedIdentityDetails } from "../types";
-
 type PatientDetailsStepProps = {
   isAr: boolean;
   t: (key: string) => string;
@@ -27,7 +26,6 @@ type PatientDetailsStepProps = {
   onChangePatientType: () => void;
   resetReturningModalState: () => void;
 };
-
 const PatientDetailsStep = ({
   isAr,
   t,
@@ -163,28 +161,30 @@ const PatientDetailsStep = ({
                 <p className="font-body text-xs text-destructive mt-1">{patientErrors.phone}</p>
               )}
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="min-w-0">
                 <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
                   {isAr ? "تاريخ الميلاد" : "Date of Birth"} <span className="text-destructive">*</span>
                 </label>
-                <input
-                  type="date"
-                  value={patientDob}
-                  max={new Date().toISOString().split("T")[0]}
-                  onChange={(e) => {
-                    setPatientDob(e.target.value);
-                    setPatientErrors((prev) => ({ ...prev, dob: "" }));
-                  }}
-                  className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all ${
-                    patientErrors.dob ? "border-destructive" : "border-border"
-                  }`}
-                />
+                <div className="date-input-wrap">
+                  <input
+                    type="date"
+                    value={patientDob}
+                    max={new Date().toISOString().split("T")[0]}
+                    onChange={(e) => {
+                      setPatientDob(e.target.value);
+                      setPatientErrors((prev) => ({ ...prev, dob: "" }));
+                    }}
+                    className={`form-date-input w-full min-w-0 max-w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all ${
+                      patientErrors.dob ? "border-destructive" : "border-border"
+                    }`}
+                  />
+                </div>
                 {patientErrors.dob && (
                   <p className="font-body text-xs text-destructive mt-1">{patientErrors.dob}</p>
                 )}
               </div>
-              <div>
+              <div className="min-w-0">
                 <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
                   {t("gender")} <span className="text-destructive">*</span>
                 </label>
@@ -194,7 +194,7 @@ const PatientDetailsStep = ({
                     setPatientGender(e.target.value);
                     setPatientErrors((prev) => ({ ...prev, gender: "" }));
                   }}
-                  className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all ${
+                  className={`w-full min-w-0 max-w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all ${
                     patientErrors.gender ? "border-destructive" : "border-border"
                   }`}
                 >
@@ -300,5 +300,4 @@ const PatientDetailsStep = ({
     </div>
   </motion.div>
 );
-
 export default PatientDetailsStep;

@@ -1,7 +1,5 @@
 import api from "./axiosInstance";
-
 const BASE = "/api/v1/al-safwa";
-
 export type AlSafwaEnrollmentPayload = {
   firstName: string;
   familyName: string;
@@ -20,11 +18,9 @@ export type AlSafwaEnrollmentPayload = {
   smoker: "yes" | "no";
   alcohol: "yes" | "no";
 };
-
 export const createAlSafwaEnrollment = async (
   payload: AlSafwaEnrollmentPayload,
 ) => {
   const response = await api.post(BASE, payload);
   return response.data;
 };
-

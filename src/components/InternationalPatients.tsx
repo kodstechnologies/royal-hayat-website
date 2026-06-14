@@ -2,18 +2,15 @@ import { Globe, Plane, Phone, Shield, LogIn, UserPlus } from "lucide-react";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-
 const InternationalPatients = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
   const { t } = useLanguage();
-
   const features = [
     { icon: Plane, titleKey: "travelCoordination", descKey: "travelCoordinationDesc" },
     { icon: Phone, titleKey: "concierge247", descKey: "concierge247Desc" },
     { icon: Shield, titleKey: "insuranceLiaison", descKey: "insuranceLiaisonDesc" },
   ];
-
   return (
     <section className="py-16 bg-secondary/20" ref={ref}>
       <div className="container mx-auto px-6">
@@ -40,7 +37,6 @@ const InternationalPatients = () => {
                   </motion.div>
                 ))}
               </div>
-
               <motion.div initial={{ opacity: 0, y: 10 }} animate={isInView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.4, delay: 0.5 }}
                 className="flex flex-wrap gap-3">
                 <button className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-lg font-body text-xs tracking-wider uppercase hover:bg-primary/90 transition-all duration-300">
@@ -59,5 +55,4 @@ const InternationalPatients = () => {
     </section>
   );
 };
-
 export default InternationalPatients;

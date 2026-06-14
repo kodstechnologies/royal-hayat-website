@@ -1,13 +1,10 @@
 import { useLanguage } from "@/contexts/LanguageContext";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
-
 const ChairmanMessage = () => {
   const { lang, t } = useLanguage();
   const rtl = lang === "ar" ? "rtl-text" : "";
   const bodyClass = `text-muted-foreground font-body text-sm md:text-base leading-relaxed text-justify ${rtl}`;
-
   const paragraphs = ["chairmanP1", "chairmanP2", "chairmanP3", "chairmanP4", "chairmanP5"] as const;
-
   return (
     <section className="py-12 md:py-16 bg-background">
       <div className="container mx-auto px-4 md:px-6">
@@ -23,10 +20,10 @@ const ChairmanMessage = () => {
                     />
                     <source
                       media="(min-width: 768px)"
-                      srcSet="https://royal-hayat.s3.eu-central-1.amazonaws.com/chairman/Chairman-web.jpeg"
+                      srcSet="https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a22fff4c88e2e7932620105/1780685325295-chairman-web.png"
                     />
                     <img
-                      src="https://royal-hayat.s3.eu-central-1.amazonaws.com/chairman/Chairman-web.jpeg"
+                      src="https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a22fff4c88e2e7932620105/1780685325295-chairman-web.png"
                       alt={t("chairmanTitle")}
                       className="absolute inset-0 size-full object-cover object-top"
                       loading="eager"
@@ -36,18 +33,15 @@ const ChairmanMessage = () => {
                 </div>
               </div>
             </div>
-
             <div className="flex-1 w-full min-w-0 space-y-4 md:space-y-5 lg:pt-1">
               <ScrollAnimationWrapper>
                 <div className="space-y-4 lg:space-y-3.5 mt-4 md:mt-6 lg:pt-1">
                   <p className={bodyClass}>{t("chairmanGreeting")}</p>
-
                   {paragraphs.map((key) => (
                     <p key={key} className={bodyClass}>
                       {t(key)}
                     </p>
                   ))}
-
                   <div className="pt-4 space-y-3">
                     <p className={`text-muted-foreground font-body text-sm md:text-base leading-relaxed ${rtl}`}>
                       {t("chairmanRegards")}
@@ -60,14 +54,16 @@ const ChairmanMessage = () => {
                         {t("chairmanBestWishes")}
                       </p>
                     )}
-                    <p className={`font-serif text-xl md:text-2xl text-foreground pt-1 ${rtl}`}>
+                    <p className={`font-serif text-xl md:text-2xl font-bold text-foreground pt-1 ${rtl}`}>
                       {t("chairmanName")}
                     </p>
-                    {lang === "en" && (
-                      <p className="text-[#816107] font-body text-sm md:text-base leading-relaxed">
-                        {t("chairmanTitle")}
-                      </p>
-                    )}
+                    <p
+                      className={`text-[#816107] font-body text-sm md:text-base leading-relaxed ${
+                        lang === "ar" ? rtl : ""
+                      }`}
+                    >
+                      {t("chairmanTitle")}
+                    </p>
                   </div>
                 </div>
               </ScrollAnimationWrapper>
@@ -78,5 +74,4 @@ const ChairmanMessage = () => {
     </section>
   );
 };
-
 export default ChairmanMessage;

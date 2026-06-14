@@ -1,27 +1,181 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap');
+@font-face {
+  font-family: 'Avenir';
+  src:
+    url('/fonts/Avenir-Book.woff2') format('woff2'),
+    local('Avenir Book'),
+    local('Avenir-Book'),
+    local('Avenir');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Avenir';
+  src:
+    url('/fonts/Avenir-Book.woff2') format('woff2'),
+    local('Avenir Book'),
+    local('Avenir-Book'),
+    local('Avenir');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Avenir';
+  src:
+    url('/fonts/Avenir-Medium.woff2') format('woff2'),
+    local('Avenir Medium'),
+    local('Avenir-Medium');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Avenir';
+  src:
+    url('/fonts/Avenir-Medium.woff2') format('woff2'),
+    local('Avenir Medium'),
+    local('Avenir-Medium');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Avenir';
+  src:
+    url('/fonts/Avenir-Heavy.woff2') format('woff2'),
+    local('Avenir Heavy'),
+    local('Avenir-Heavy');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'GE Dinar One';
+  src:
+    url('/fonts/GEDinarOne-Light.woff2') format('woff2'),
+    local('GE Dinar One Light'),
+    local('GEDinarOne-Light');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'GE Dinar One';
+  src:
+    url('/fonts/GEDinarOne-Medium.woff2') format('woff2'),
+    local('GE Dinar One Medium'),
+    local('GEDinarOne-Medium');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'GE Dinar One';
+  src:
+    url('/fonts/GEDinarOne-Medium.woff2') format('woff2'),
+    local('GE Dinar One Medium'),
+    local('GEDinarOne-Medium');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'GE Dinar One';
+  src:
+    url('/fonts/GEDinarOne-Bold.woff2') format('woff2'),
+    local('GE Dinar One Bold'),
+    local('GEDinarOne-Bold');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'GE Dinar One';
+  src:
+    url('/fonts/GEDinarOne-Bold.woff2') format('woff2'),
+    local('GE Dinar One Bold'),
+    local('GEDinarOne-Bold');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 @font-face {
   font-family: 'Garamond';
-  src: url('/fonts/Garamond.ttc') format('truetype-collection');
+  src: url('/fonts/Garamond-Regular.woff2') format('woff2');
   font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Garamond';
+  src: url('/fonts/Garamond-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Garamond';
+  src: url('/fonts/Garamond-Bold.woff2') format('woff2');
+  font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 
 @layer base {
   html[lang="en"] {
-    font-family: system-ui, sans-serif;
+    font-family: 'Avenir', sans-serif;
+  }
+
+  html[lang="en"] body,
+  html[lang="en"] p,
+  html[lang="en"] .font-body,
+  [dir="ltr"] body,
+  [dir="ltr"] p,
+  [dir="ltr"] .font-body {
+    font-family: 'Avenir', sans-serif;
+  }
+
+  html[lang="en"] h1,
+  html[lang="en"] h2,
+  html[lang="en"] h3,
+  html[lang="en"] h4,
+  html[lang="en"] h5,
+  html[lang="en"] h6,
+  html[lang="en"] .font-serif,
+  [dir="ltr"] h1,
+  [dir="ltr"] h2,
+  [dir="ltr"] h3,
+  [dir="ltr"] h4,
+  [dir="ltr"] h5,
+  [dir="ltr"] h6,
+  [dir="ltr"] .font-serif {
+    font-family: 'Garamond', serif;
   }
 
   html[lang="ar"] {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'GE Dinar One', sans-serif;
   }
 
-  /* Force Arabic mode to use Roboto stack even when Tailwind font utilities are present */
   html[lang="ar"] body,
   html[lang="ar"] .font-body,
+  html[lang="ar"] .font-serif,
   [dir="rtl"] body,
-  [dir="rtl"] .font-body {
-    font-family: 'Roboto', sans-serif !important;
+  [dir="rtl"] .font-body,
+  [dir="rtl"] .font-serif {
+    font-family: 'GE Dinar One', sans-serif !important;
   }
 }
 @tailwind base;
@@ -61,7 +215,7 @@
 
     --radius: 0.75rem;
 
-    /* Brand colors */
+    
     --burgundy: 337 57% 32%;
     --rose: 359 30% 58%;
     --gold-olive: 43 45% 58%;
@@ -80,7 +234,7 @@
 
   @media (max-width: 1023px) {
     :root {
-      /* Mobile: nav row + Book Appointment / Medical Reports bar (JS overwrites after measure) */
+      
       --header-height: 7.5rem;
     }
   }
@@ -133,7 +287,7 @@
   }
 }
 
-/* Premium micro-interactions */
+
 @layer components {
   .card-hover {
     @apply transition-all duration-300;
@@ -142,9 +296,44 @@
     transform: translateY(-4px);
     box-shadow: 0 20px 40px -15px rgba(127, 35, 70, 0.12);
   }
+
+  /* iOS Safari gives date inputs a large intrinsic width — clip inside the form */
+  .date-input-wrap {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .form-date-input {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .form-date-input::-webkit-date-and-time-value {
+    text-align: start;
+    min-width: 0;
+  }
+
+  .form-date-input::-webkit-calendar-picker-indicator {
+    flex-shrink: 0;
+  }
 }
 
-/* Insurance marquee */
+@supports (-webkit-touch-callout: none) {
+  .form-date-input {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+}
+
+
 @keyframes marquee {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
@@ -183,7 +372,7 @@
   animation: marquee-reverse-rtl 30s linear infinite;
 }
 
-/* Insurance partners — same LTR scroll on Arabic pages as English (homepage / patients) */
+
 .insurance-marquee-ltr .animate-marquee {
   animation: marquee 30s linear infinite;
 }
@@ -192,22 +381,25 @@
   animation: marquee-reverse 30s linear infinite;
 }
 
-/* Feedback marquee */
+
 @keyframes feedbackMarquee {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
 
-/* Arabic text scaling for readability */
+
 [dir="rtl"] {
   font-size: 1.05em;
-  letter-spacing: 0.01em;
+  letter-spacing: normal;
   line-height: 1.75;
+  font-variant-ligatures: common-ligatures contextual;
+  -webkit-font-feature-settings: "liga" 1, "calt" 1;
+  font-feature-settings: "liga" 1, "calt" 1;
 }
 
 [dir="rtl"] h1, [dir="rtl"] h2, [dir="rtl"] h3, [dir="rtl"] h4 {
   font-size-adjust: 0.52;
-  letter-spacing: 0.02em;
+  letter-spacing: normal;
 }
 
 [dir="rtl"] p, [dir="rtl"] span, [dir="rtl"] a, [dir="rtl"] li, [dir="rtl"] label, [dir="rtl"] button {
@@ -223,7 +415,22 @@
   font-size: 0.925rem;
 }
 
-/* Arabic headings should not inherit the global serif heading font */
+.stats-value {
+  font-family: "Garamond", serif !important;
+  font-weight: 400;
+  font-size: 2.25rem !important;
+  line-height: 1 !important;
+  font-variant-numeric: tabular-nums;
+  color: #816107;
+}
+
+@media (min-width: 768px) {
+  .stats-value {
+    font-size: 3rem !important;
+  }
+}
+
+
 html[lang="ar"] h1,
 html[lang="ar"] h2,
 html[lang="ar"] h3,
@@ -236,15 +443,41 @@ html[lang="ar"] h6,
 [dir="rtl"] h4,
 [dir="rtl"] h5,
 [dir="rtl"] h6 {
-  font-family: 'Roboto', sans-serif !important;
+  font-family: 'GE Dinar One', sans-serif !important;
 }
 
-/* Prevent RTL from flipping directional icons */
+.font-arabic,
+[lang="ar"] {
+  font-family: 'GE Dinar One', sans-serif !important;
+  letter-spacing: normal;
+  font-variant-ligatures: common-ligatures contextual;
+  -webkit-font-feature-settings: "liga" 1, "calt" 1;
+  font-feature-settings: "liga" 1, "calt" 1;
+}
+
+/* Letter-spacing breaks Arabic cursive connections on iOS Safari */
+html[lang="ar"] [class*="tracking-"],
+[dir="rtl"] [class*="tracking-"] {
+  letter-spacing: normal !important;
+}
+
+html[lang="ar"] .uppercase,
+[dir="rtl"] .uppercase {
+  text-transform: none;
+}
+
+html[lang="ar"] .font-body[lang="en"],
+html[lang="ar"] [lang="en"],
+[lang="en"] {
+  font-family: 'Avenir', sans-serif !important;
+}
+
+
 [dir="rtl"] .ltr-icon {
   direction: ltr;
 }
 
-/* Feedback marquee - continuous loop */
+
 @keyframes feedbackMarquee {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
@@ -255,13 +488,13 @@ html[lang="ar"] h6,
   100% { transform: translateX(50%); }
 }
 
-/* Smooth scroll */
+
 html {
   scroll-behavior: smooth;
   overflow-x: hidden;
 }
 
-/* Hide scrollbar on large screens for a cleaner aesthetic */
+
 @media (min-width: 768px) {
   html::-webkit-scrollbar,
   body::-webkit-scrollbar,
@@ -269,8 +502,8 @@ html {
     display: none;
   }
   html, body, * {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none;    /* Firefox */
+    -ms-overflow-style: none; 
+    scrollbar-width: none;    
   }
 }
 
@@ -278,7 +511,7 @@ body {
   overflow-x: hidden;
 }
 
-/* Justify content paragraphs with hyphenation to prevent large word gaps */
+
 .text-justify,
 .whitespace-pre-line,
 article p,
@@ -314,7 +547,7 @@ h1, h2, h3, h4, h5, h6, button, a, label, span, .text-center p {
   text-align: right;
 }
 
-/* Work With Us culture hero — LTR + flat JPEG on desktop/phone */
+
 .work-culture-hero-wrap {
   direction: ltr;
   isolation: isolate;
@@ -338,10 +571,7 @@ h1, h2, h3, h4, h5, h6, button, a, label, span, .text-center p {
   }
 }
 
-/*
- * Touch tablets only (1024–1535px): WebKit mirror fix.
- * Excludes desktop browser zoom (pointer: fine) so zoom > 110% does not flip the image.
- */
+
 @media (min-width: 1024px) and (max-width: 1535px) and (pointer: coarse) {
   .work-culture-hero-wrap .work-culture-hero-img:not(.work-culture-hero-img--ar) {
     transform: scaleX(-1) !important;

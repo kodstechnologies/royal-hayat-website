@@ -2,10 +2,8 @@ import { CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { useLanguage } from "@/contexts/LanguageContext";
-
 const S3_BASE =
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a2005476231e1dda956d829";
-
 const partners = [
   {
     name: "Al Ahleia Insurance",
@@ -73,18 +71,12 @@ const partners = [
     logo: `${S3_BASE}/1780484740910-Gig_kuwait.png`,
   },
 ];
-
-// Double the list for seamless loop
 const marqueePartners = [...partners, ...partners];
-
 type InsurancePartnersProps = {
-  /** Footer copy on Patients & Visitors → Health Insurance tab */
   variant?: "default" | "patients-insurance";
 };
-
 const InsurancePartners = ({ variant = "default" }: InsurancePartnersProps) => {
   const { lang, t } = useLanguage();
-
   return (
     <section
       className={`insurance-partners-section py-16 bg-background overflow-hidden ${
@@ -104,7 +96,7 @@ const InsurancePartners = ({ variant = "default" }: InsurancePartnersProps) => {
               {t("trustedBy")}
             </p>
             <h2
-              className="insurance-partners-title text-3xl md:text-4xl font-serif text-foreground w-full"
+              className="insurance-partners-title text-3xl md:text-4xl font-serif font-normal text-foreground w-full"
               style={{ textAlign: "center", textAlignLast: "center" }}
             >
               {t("insurancePartners")}
@@ -112,9 +104,7 @@ const InsurancePartners = ({ variant = "default" }: InsurancePartnersProps) => {
           </div>
         </ScrollAnimationWrapper>
       </div>
-
       <div className="insurance-marquee-ltr" dir="ltr">
-      {/* Marquee ticker - row 1 */}
       <div className="relative w-full overflow-hidden mb-4">
         <div className="flex animate-marquee hover:[animation-play-state:paused]">
           {marqueePartners.map((p, i) => (
@@ -141,8 +131,6 @@ const InsurancePartners = ({ variant = "default" }: InsurancePartnersProps) => {
           ))}
         </div>
       </div>
-
-      {/* Marquee ticker - row 2 (reverse direction) */}
       <div className="relative w-full overflow-hidden mb-8">
         <div className="flex animate-marquee-reverse hover:[animation-play-state:paused]">
           {marqueePartners.map((p, i) => (
@@ -170,7 +158,6 @@ const InsurancePartners = ({ variant = "default" }: InsurancePartnersProps) => {
         </div>
       </div>
       </div>
-
       <div className="container mx-auto px-6">
         <p className="text-center !text-center text-muted-foreground font-body text-sm">
           {variant === "patients-insurance" ? (
@@ -201,5 +188,4 @@ const InsurancePartners = ({ variant = "default" }: InsurancePartnersProps) => {
     </section>
   );
 };
-
 export default InsurancePartners;

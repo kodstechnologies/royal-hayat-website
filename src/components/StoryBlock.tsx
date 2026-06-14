@@ -1,11 +1,9 @@
 import { motion } from "framer-motion";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { useLanguage } from "@/contexts/LanguageContext";
-
 const StoryBlock = () => {
   const { t, lang } = useLanguage();
   const isAr = lang === "ar";
-
   return (
     <section className="py-16 bg-background" id="about">
       <div className="container mx-auto px-6">
@@ -17,7 +15,7 @@ const StoryBlock = () => {
               {t("storyTitle")}
             </h2>
             <p
-              className={`text-muted-foreground font-body text-sm md:text-base leading-relaxed mb-4 text-justify ${
+              className={`text-muted-foreground font-body text-sm md:text-base leading-relaxed mb-4 text-justify whitespace-pre-line ${
                 isAr ? "story-rtl" : ""
               }`}
             >
@@ -46,5 +44,4 @@ const StoryBlock = () => {
     </section>
   );
 };
-
 export default StoryBlock;

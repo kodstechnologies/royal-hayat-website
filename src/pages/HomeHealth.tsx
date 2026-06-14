@@ -5,12 +5,12 @@ import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
 import { Home, Heart, Activity, Baby, Syringe, Stethoscope, CheckCircle2, Phone, MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
-
 const HomeHealth = () => {
   const { t, lang } = useLanguage();
   const isAr = lang === "ar";
-  const ltrPhoneClass = "inline-block [direction:ltr] [unicode-bidi:isolate]";
-
+  const ltrPhoneClass = "inline-block [direction:ltr] [unicode-bidi:isolate] tabular-nums tracking-normal";
+  const whatsAppDisplay = "+965 6632 0717";
+  const callDisplay = "+965 2536 0500";
   const rehabServices = isAr ? [
     "صحة المرأة والتعافي بعد الولادة",
     "التأهيل القلبي",
@@ -30,21 +30,20 @@ const HomeHealth = () => {
     "Therapeutic massage",
     "Pediatric rehabilitation",
   ];
-
   const shortTermServices = isAr ? [
-    "الحقن والرعاية المتعلقة بأطفال الأنابيب",
-    "العلاج الوريدي (تعويض السوائل، المضادات الحيوية)",
+    "الحقن والرعاية المتعلقة بعلاجات الإخصاب",
+    "العلاج الوريدي مثل تعويض السوائل والمضادات الحيوية",
     "العناية بالجروح وتغيير الضمادات",
-    "فحص المصارف وسحب الدم",
-    "رعاية ما بعد الولادة",
+    "متابعة الأنابيب الطبية وسحب عينات الدم",
+    "الرعاية بعد الولادة",
     "إدارة الألم والرعاية التلطيفية",
-    "القسطرة البولية",
-    "تخطيط القلب الكهربائي (ECG)",
-    "تخطيط القلب للجنين (CTG)",
+    "تركيب القسطرة البولية",
+    "تخطيط القلب",
+    "تخطيط نبضات الجنين وتقلصات الرحم",
     "التغذية المعوية والوريدية",
-    "رعاية الفغر",
-    "البخاخات",
-    "مراقبة سكر الدم والعلامات الحيوية",
+    "العناية بفتحات الإخراج الجراحية",
+    "العلاج بجهاز البخار",
+    "متابعة مستوى السكر والعلامات الحيوية",
   ] : [
     "Injections and IVF-related care",
     "IV therapy (fluid replacement, antibiotics)",
@@ -60,7 +59,6 @@ const HomeHealth = () => {
     "Nebulization",
     "Blood sugar and vital signs monitoring",
   ];
-
   const longTermServices = isAr ? [
     "رعاية الأطفال وحديثي الولادة",
     "رعاية كبار السن",
@@ -68,12 +66,9 @@ const HomeHealth = () => {
     "Baby care and newborn monitoring",
     "Senior (geriatric) care",
   ];
-
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
       <Header />
-
-      {/* Hero */}
       <section className="py-16 md:py-20 bg-primary/5">
         <div className="container mx-auto px-6 text-center">
           <ScrollAnimationWrapper>
@@ -81,12 +76,12 @@ const HomeHealth = () => {
               <Home className="w-8 h-8 text-accent" />
             </div>
             <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">{t("careAtHome")}</p>
-            <h1 className="text-4xl md:text-5xl font-serif text-foreground mb-4">{t("royaleHomeHealth")}</h1>
+            <h1 className="text-4xl md:text-5xl font-serif text-foreground mb-4">
+              {isAr ? "رويال هوم هيلث للرعاية المنزلية" : t("royaleHomeHealth")}
+            </h1>
           </ScrollAnimationWrapper>
         </div>
       </section>
-
-      {/* About Us */}
       <section className="py-16">
         <div className="container mx-auto px-6 max-w-4xl">
           <ScrollAnimationWrapper>
@@ -101,8 +96,6 @@ const HomeHealth = () => {
           </ScrollAnimationWrapper>
         </div>
       </section>
-
-      {/* Rehabilitation Services */}
       <section className="py-16 bg-primary/5">
         <div className="container mx-auto px-6 max-w-4xl">
           <ScrollAnimationWrapper>
@@ -129,8 +122,6 @@ const HomeHealth = () => {
           </div>
         </div>
       </section>
-
-      {/* Specialized Nursing Services */}
       <section className="py-16">
         <div className="container mx-auto px-6 max-w-4xl">
           <ScrollAnimationWrapper>
@@ -146,12 +137,10 @@ const HomeHealth = () => {
                 : "Our specialized nursing team offers comprehensive medical services in the comfort of your home, including:"}
             </p>
           </ScrollAnimationWrapper>
-
-          {/* Short-Term Visits */}
           <div className="mb-10">
             <div className="flex items-center gap-2 mb-4">
               <Syringe className="w-5 h-5 text-primary" />
-              <h3 className="font-serif text-lg text-foreground">{isAr ? "الزيارات قصيرة المدى" : "Short-Term Visits"}</h3>
+              <h3 className="font-serif text-lg font-bold text-foreground">{isAr ? "الزيارات قصيرة المدى" : "Short-Term Visits"}</h3>
             </div>
             <div className="grid gap-3 max-w-3xl mx-auto">
               {shortTermServices.map((item, i) => (
@@ -163,12 +152,10 @@ const HomeHealth = () => {
               ))}
             </div>
           </div>
-
-          {/* Long-Term Visits */}
           <div>
             <div className="flex items-center gap-2 mb-4">
               <Heart className="w-5 h-5 text-accent" />
-              <h3 className="font-serif text-lg text-foreground">{isAr ? "الزيارات طويلة المدى والرعاية على مدار الساعة" : "Long-Term Visits (24/7 Care)"}</h3>
+              <h3 className="font-serif text-lg font-bold text-foreground">{isAr ? "الزيارات طويلة المدى والرعاية على مدار الساعة" : "Long-Term Visits (24/7 Care)"}</h3>
             </div>
             <div className="grid gap-3 max-w-3xl mx-auto">
               {longTermServices.map((item, i) => (
@@ -180,8 +167,6 @@ const HomeHealth = () => {
               ))}
             </div>
           </div>
-
-
           <div>
             <section className="pb-12 mt-10">
               <div className="container mx-auto px-6">
@@ -194,28 +179,24 @@ const HomeHealth = () => {
                       <div className="flex flex-col sm:flex-row gap-3 justify-center">
                         <a
                           href="https://wa.me/96566320717"
-                          className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-full font-body text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-colors"
+                          className={`inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-full font-body text-xs hover:bg-primary/90 transition-colors ${isAr ? "tracking-normal normal-case" : "tracking-[0.2em] uppercase"}`}
                         >
-                          <MessageCircle className="w-4 h-4" />
+                          <MessageCircle className="w-4 h-4 shrink-0" />
                           {isAr ? (
-                            <>
-                              واتساب: <span className={ltrPhoneClass}>+965 66320717</span>
-                            </>
+                            <>واتساب: <span className={ltrPhoneClass}>{whatsAppDisplay}</span></>
                           ) : (
-                            <>WhatsApp: <span className={ltrPhoneClass}>+965 66320717</span></>
+                            <>WhatsApp: <span className={ltrPhoneClass}>{whatsAppDisplay}</span></>
                           )}
                         </a>
                         <a
                           href="tel:+96525360500"
-                          className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-full font-body text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-colors"
+                          className={`inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-full font-body text-xs hover:bg-primary/90 transition-colors ${isAr ? "tracking-normal normal-case" : "tracking-[0.2em] uppercase"}`}
                         >
-                          <Phone className="w-4 h-4" />
+                          <Phone className="w-4 h-4 shrink-0" />
                           {isAr ? (
-                            <>
-                              الهاتف: <span className={ltrPhoneClass}>+965 25360500</span>
-                            </>
+                            <>الهاتف: <span className={ltrPhoneClass}>{callDisplay}</span></>
                           ) : (
-                            <>Call: <span className={ltrPhoneClass}>+965 25360500</span></>
+                            <>Call: <span className={ltrPhoneClass}>{callDisplay}</span></>
                           )}
                         </a>
                       </div>
@@ -225,14 +206,11 @@ const HomeHealth = () => {
               </div>
             </section>
           </div>
-
         </div>
       </section>
-
       <Footer />
       <ScrollToTop />
     </div>
   );
 };
-
 export default HomeHealth;

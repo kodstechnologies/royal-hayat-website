@@ -31,16 +31,104 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
-import { Skeleton } from "@/components/ui/skeleton";
-
-type WorkWithUsProps = {
-  staffActivitiesImages?: string[];
-  galaDinnerImages?: string[];
-  hospitalityWeekImages?: string[];
-  rhhQuizImages?: string[];
-};
-
-type Employee = {
+import { getAllJobs, type JobPosting } from "@/api/job";
+const openPositions = [
+  {
+    title: "Registrar – Plastic Surgeon",
+    category: "La Cosmetique Royale",
+    location: "On-Site",
+    type: "Full-Time",
+    desc: "Candidates applying should have minimum Two years of experience as Plastic Surgery Registrar.",
+  },
+  {
+    title: "Floor Coordinator only Female, Bilingual (Arabic & English)",
+    category: "Hospitality / Guest Services",
+    location: "On-Site",
+    type: "Full-Time",
+    desc: "Royale Hayat Hospital have devoted considerable effort to applying established strategies for quality improvement thus they created a position of Floor coordinator.",
+  },
+  {
+    title:
+      "Birth Registration Assistant (Bilingual – Arabic & English, only local candidate)",
+    category: "Quality & Patient Safety",
+    location: "On-Site",
+    type: "Full-Time",
+    desc: "Birth Registration Clerk shall ensure complete documentation of Birth, Death, Sick Leave, Maternity Leave and other patient related records as per MOH guidelines and protocols.",
+  },
+  {
+    title: "Registered Nurse for Home Care Dept",
+    category: "Royale Home Health",
+    location: "On-Site",
+    type: "Full-Time",
+    desc: "To ensure the safe provision of nursing services in collaboration with the patient/family and the multidisciplinary health care team.",
+  },
+  {
+    title:
+      "Registered Nurse for Labor and Delivery Department – Local (Female with MOH Licence)",
+    category: "Nursing Support",
+    location: "On-Site",
+    type: "Full-Time",
+    desc: "Registered Nurse for Labor and Delivery Department - Local (Female with MOH Licence).",
+  },
+  {
+    title: "Anesthesia – Specialist",
+    category: "Specialist Doctors",
+    location: "On-Site",
+    type: "Full-Time",
+    desc: "Assesses and prepare patients for Anesthesia.",
+  },
+  {
+    title: "Registrar – Internal Medicine",
+    category: "Specialist Doctors",
+    location: "On-Site",
+    type: "Full-Time",
+    desc: "Active Listening, Critical Thinking, Active Learning, Monitoring, and Quality control Analysis.",
+  },
+  {
+    title: "Registrar – Obstetrician and Gynecologist",
+    category: "Specialist Doctors",
+    location: "On-Site",
+    type: "Full-Time",
+    desc: "To attend casualty cases and give emergency treatment, do the necessary admission procedures.",
+  },
+  {
+    title: "Consultant Pediatrician",
+    category: "Specialist Doctors",
+    location: "On-Site",
+    type: "Full-Time",
+    desc: "Contribution to the daytime weekly attending rota and covering clinic. Clinic will be both by appointment and emergency walk-ins.",
+  },
+  {
+    title:
+      "Registered Nurse for Cosmetic Center – Local (Female with MOH License & Laser Exp)",
+    category: "Nursing Support",
+    location: "On-Site",
+    type: "Full-Time",
+    desc: "Responsible for the nursing care of patients according to their scope of practice in liaison with Medical Staff and Allied Health Professionals.",
+  },
+  {
+    title: "Consultant Neonatologist",
+    category: "Specialist Doctors",
+    location: "On-Site",
+    type: "Full-Time",
+    desc: "Candidates applying should have minimum Five years of experience in SCBU/NICU.",
+  },
+  {
+    title: "Brand Manager",
+    category: "Marketing & Communications",
+    location: "On-Site",
+    type: "Full-Time",
+    desc: "The Brand Manager develops and executes strategies to enhance Royale Hayat Hospital's brand image. Responsibilities include managing social media campaigns, supervising team members, coordinating publicity for doctors.",
+  },
+  {
+    title: "Anesthesia Technician – Local (Female with MOH)",
+    category: "Surgical Services",
+    location: "On-Site",
+    type: "Full-Time",
+    desc: "Responsible for providing care to patients undergoing anesthesia in liaison with Medical Staff and Allied Health Professionals.",
+  },
+];
+type Position = {
   id: string;
   name: string;
   nameAr: string;
@@ -52,22 +140,12 @@ type Employee = {
   achievements: string[];
   achievementsAr: string[];
 };
-
-type GalleryCarousel = {
-  id: string;
-  titleEn: string;
-  titleAr: string;
-  subtitleEn: string;
-  subtitleAr: string;
-  images: string[];
-  variant?: "muted";
+type WorkWithUsProps = {
+  staffActivitiesImages: string[];
+  galaDinnerImages: string[];
+  hospitalityWeekImages: string[];
+  rhhQuizImages: string[];
 };
-
-const detectIOSWebKit = () =>
-  typeof navigator !== "undefined" &&
-  /iPad|iPhone|iPod/.test(navigator.userAgent) &&
-  !(typeof window !== "undefined" && "MSStream" in window);
-
 const toCarouselPhotos = (label: string, images: string[]): LifePhoto[] => {
   if (images.length === 0) {
     return [{ alt: `${label} — 1` }];
@@ -77,156 +155,46 @@ const toCarouselPhotos = (label: string, images: string[]): LifePhoto[] => {
     alt: `${label} — ${index + 1}`,
   }));
 };
-
-const mapRecognitionToEmployee = (item: EmployeeRecognition): Employee => {
-  const lines = achievementsTextToLines(item.achievements ?? "");
-  const achievements = lines.length > 0 ? lines : [item.achievements].filter(Boolean);
-  const linesAr = achievementsTextToLines(item.arabicAchievements ?? "");
-  const achievementsAr =
-    linesAr.length > 0
-      ? linesAr
-      : [item.arabicAchievements || item.achievements].filter(Boolean);
-  return {
-    id: item._id ?? item.employeeId ?? item.employeeID ?? item.employeeName,
-    name: item.employeeName,
-    nameAr: item.employeeNameArabic || item.employeeName,
-    dept: item.department ?? "",
-    deptAr: item.arabicDepartment ?? item.department ?? "",
-    role: item.title,
-    roleAr: item.arabicTitle || item.title,
-    image: item.image ?? "",
-    achievements,
-    achievementsAr,
-  };
-};
-
-const mapContentToCarousel = (
-  item: WorkCultureItem,
-  variant?: "muted",
-): GalleryCarousel => ({
-  id: item._id ?? item.heading,
-  titleEn: item.heading,
-  titleAr: item.headingArabic,
-  subtitleEn: item.description,
-  subtitleAr: item.descriptionArabic,
-  images: item.images ?? [],
-  variant,
-});
-
-const normalizeHeading = (heading: string) => heading.trim().toLowerCase();
-
-const EXPIRY_DATE_KEYS = [
-  "expiryDate",
-  "expirationDate",
-  "expiresAt",
-  "expiresOn",
-  "deadline",
-  "applicationDeadline",
-  "closingDate",
-  "lastDateToApply",
-  "validTill",
-  "validUntil",
-  "endDate",
-] as const;
-
-const parseDateValue = (value: unknown): Date | null => {
-  if (typeof value !== "string" && typeof value !== "number") return null;
-  const raw = String(value).trim();
-  if (!raw) return null;
-  const parsed = new Date(raw);
-  if (Number.isNaN(parsed.getTime())) return null;
-  return parsed;
-};
-
-const endOfDay = (date: Date) => {
-  const next = new Date(date);
-  next.setHours(23, 59, 59, 999);
-  return next;
-};
-
-const isJobNotExpired = (job: JobPosting) => {
-  const record = job as Record<string, unknown>;
-  const expiryRaw = EXPIRY_DATE_KEYS.map((key) => record[key]).find(
-    (value) => value !== undefined && value !== null && String(value).trim() !== "",
-  );
-
-  // If backend doesn't provide an expiry field, keep showing the job.
-  if (expiryRaw === undefined) return true;
-
-  const expiryDate = parseDateValue(expiryRaw);
-  if (!expiryDate) return true;
-
-  return endOfDay(expiryDate).getTime() >= Date.now();
-};
-
-const buildExistingWorkCultureCarousels = (
-  staffActivitiesImages: string[],
-  galaDinnerImages: string[],
-  hospitalityWeekImages: string[],
-  rhhQuizImages: string[],
-): GalleryCarousel[] => [
+const employees = [
   {
-    id: "staff-activities",
-    titleEn: "Staff Activities — Volley Ball Tournament",
-    titleAr: "أنشطة الموظفين — بطولة الكرة الطائرة",
-    subtitleEn:
-      "Achievements are acknowledged—because effort, excellence, and ethical conduct matter.",
-    subtitleAr:
-      "يُعترف بالإنجازات — لأن الجهد والتميّز والسلوك الأخلاقي أمور تهم.",
-    images: staffActivitiesImages,
+    name: "Rangaa Tara Mahawan",
+    nameAr: "رانجا تارا مهاوان",
+    sectorAr: "قطاع الضيافة",
+    dept: "Guest Relation Department",
+    deptAr: "قسم علاقات الضيوف",
+    role: "Bell Man - Guest Relations",
+    roleAr: "موظف استقبال الضيوف – قسم علاقات الضيوف",
+    image:
+      "/images/ranga-tara.png",
+    achievements: [
+      "Rangaa has earned this recognition through his exceptional helpfulness and a consistently positive attitude. A dependable team member with an exemplary attendance record, he ensures that our guests’ first impression of Royale Hayat is one of comfort and high-standard hospitality.",
+      "Dependable and dedicated team member who works harmoniously with others. He is reliable, always willing to extend his duty when needed, and completes tasks efficiently without complaint. Attentive in the lobby and consistently respectful, he is a valued part of the team.",
+    ],
+    achievementsAr: [
+      "حصل رانجا على هذا التكريم بفضل تعاونه الاستثنائي وروحه الإيجابية الدائمة. ويُعد عضوًا موثوقًا ومتفانيًا في فريق العمل، كما يتمتع بسجل حضور وانضباط مثالي، مما يساهم في منح ضيوف رويال حياة انطباعًا أوليًا يعكس الراحة وأعلى معايير الضيافة.",
+      "يتميز بروح التعاون والعمل الجماعي، ويُعرف باعتماديته واستعداده الدائم لتمديد ساعات العمل عند الحاجة، مع إنجاز المهام بكفاءة عالية ودون تذمر. كما يحرص دائمًا على متابعة احتياجات الضيوف في منطقة الاستقبال بأسلوب مهني ومحترم، مما يجعله عنصرًا قيّمًا ضمن الفريق.",
+    ],
   },
   {
-    id: "gala-dinner",
-    titleEn: "Gala Dinner",
-    titleAr: "حفل العشاء السنوي",
-    subtitleEn: "A night of elegance, gratitude and celebration.",
-    subtitleAr: "ليلة من الأناقة، الامتنان والاحتفال.",
-    images: galaDinnerImages,
-    variant: "muted",
-  },
-  {
-    id: "hospitality-week",
-    titleEn: "Hospitality Week",
-    titleAr: "أسبوع الضيافة",
-    subtitleEn:
-      "A week devoted to the hospitality spirit that defines Royale Hayat.",
-    subtitleAr: "أسبوع مكرّس لروح الضيافة التي تميّز رويال حياة.",
-    images: hospitalityWeekImages,
-  },
-  {
-    id: "rhh-quiz",
-    titleEn: "RHH Quiz",
-    titleAr: "مسابقة RHH",
-    subtitleEn: "Fun, friendly competition across teams.",
-    subtitleAr: "مرح ومنافسة ودي بين الفرق.",
-    images: rhhQuizImages,
-    variant: "muted",
+    name: "Mohammad Niyaz Salam",
+    nameAr: "محمد نياز سلام",
+    sectorAr: "",
+    dept: "Call Center Department",
+    deptAr: "قسم خدمة العملاء",
+    role: "Guest Services Operator - Call Center",
+    roleAr: "موظف خدمات الضيوف – مركز خدمة العملاء",
+    image:
+      "/images/mohammad-niyaz.png",
+    achievements: [
+      "Mohammad distinguishes himself through efficiency and a commitment to service excellence. His professional handling of guest inquiries, combined with his reliable attendance and disciplined work ethic, has been essential to the success of our Guest Services team.",
+      "Highly reliable and flexible team member who always brings positive energy and support to the workplace. He consistently completes tasks on time and never hesitates to step in when needed, even covering shifts at short notice while maintaining excellent performance.",
+    ],
+    achievementsAr: [
+      "يتميّز محمد بالكفاءة العالية والالتزام بتقديم أفضل مستويات الخدمة. وقد كان لتعامله المهني مع استفسارات الضيوف، إلى جانب انضباطه وسجله المتميز في الحضور، دور أساسي في نجاح فريق خدمات الضيوف.",
+      "كما يُعرف بمرونته العالية واعتماديته الكبيرة، حيث يحرص دائمًا على نشر الطاقة الإيجابية وتقديم الدعم لزملائه في بيئة العمل. ويتميز بإنجاز المهام في الوقت المحدد، واستعداده الدائم لتغطية المناوبات عند الحاجة حتى في الإشعارات القصيرة، مع الحفاظ على مستوى أداء متميز باستمرار.",
+    ],
   },
 ];
-
-const mergeApiWorkCulture = (
-  apiItems: WorkCultureItem[],
-  existing: GalleryCarousel[],
-): GalleryCarousel[] => {
-  const existingHeadings = new Set(
-    existing.flatMap((carousel) => [
-      normalizeHeading(carousel.titleEn),
-      normalizeHeading(carousel.titleAr),
-    ]),
-  );
-
-  return apiItems
-    .map((item, index) =>
-      mapContentToCarousel(item, index % 2 === 1 ? "muted" : undefined),
-    )
-    .filter(
-      (carousel) =>
-        !existingHeadings.has(normalizeHeading(carousel.titleEn)) &&
-        !existingHeadings.has(normalizeHeading(carousel.titleAr)),
-    )
-    .map((carousel) => ({ ...carousel, id: `api-${carousel.id}` }));
-};
-
 const WorkWithUs = ({
   staffActivitiesImages = [],
   galaDinnerImages = [],
@@ -267,112 +235,67 @@ const WorkWithUs = ({
   );
   const [empIndex, setEmpIndex] = useState(0);
   const [isEmpPaused, setIsEmpPaused] = useState(false);
-
   useEffect(() => {
     if (isEmpPaused || displayEmployees.length <= 1) return;
     const timer = setInterval(() => {
       setEmpIndex((prev) => (prev + 1) % displayEmployees.length);
     }, 5000);
     return () => clearInterval(timer);
-  }, [isEmpPaused, displayEmployees.length]);
-
+  }, [isEmpPaused]);
   useEffect(() => {
-    if (empIndex >= displayEmployees.length) {
-      setEmpIndex(0);
-    }
-  }, [displayEmployees.length, empIndex]);
-
+    if (employees.length <= 1) return;
+    const next = employees[(empIndex + 1) % employees.length]?.image;
+    if (!next) return;
+    const img = new Image();
+    img.src = next;
+  }, [empIndex]);
   useEffect(() => {
-    let cancelled = false;
-
-    const loadCultureContent = async () => {
-      setWorkCultureApiLoading(true);
-      setEmployeesApiLoading(true);
-      try {
-        const [workCulture, recognitions] = await Promise.all([
-          getAllWorkCulture(),
-          getAllEmployeeRecognitions(),
-        ]);
-        if (cancelled) return;
-
-        setApiWorkCultureCarousels(
-          mergeApiWorkCulture(workCulture, existingWorkCultureCarousels),
-        );
-
-        setApiEmployees(
-          recognitions
-            .filter((item) => item.visibilityStatus !== "hide")
-            .map(mapRecognitionToEmployee),
-        );
-      } catch {
-        if (!cancelled) {
-          setApiWorkCultureCarousels([]);
-          setApiEmployees([]);
-        }
-      } finally {
-        if (!cancelled) {
-          setWorkCultureApiLoading(false);
-          setEmployeesApiLoading(false);
-        }
-      }
-    };
-
-    void loadCultureContent();
-    return () => {
-      cancelled = true;
-    };
-  }, [existingWorkCultureCarousels]);
+    if (typeof window === "undefined") return;
+    const ua = window.navigator.userAgent || "";
+    const platform = window.navigator.platform || "";
+    const maxTouchPoints = window.navigator.maxTouchPoints || 0;
+    const isIOSDevice =
+      /iPad|iPhone|iPod/.test(ua) ||
+      (platform === "MacIntel" && maxTouchPoints > 1);
+    const isWebKit = /WebKit/i.test(ua) && !/CriOS|FxiOS|OPiOS|EdgiOS/i.test(ua);
+    setIsIOSWebKit(isIOSDevice && isWebKit);
+  }, []);
   const categoriesScrollRef = useRef<HTMLDivElement | null>(null);
   const [searchParams] = useSearchParams();
   const section = searchParams.get("section");
   const showAll = !section;
   const showSection = (s: string) => showAll || section === s;
-
   useEffect(() => {
-    let cancelled = false;
-    const loadJobs = async () => {
-      setJobsLoading(true);
-      setJobsError(false);
-      try {
-        const jobs = await getAllJobs({ limit: 100, isActive: true });
-        if (cancelled) return;
-        setJobPostings(
-          jobs.filter((job) => job.isActive !== false && isJobNotExpired(job)),
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [section]);
+  useEffect(() => {
+    getAllJobs({ isActive: true })
+      .then((jobs) => {
+        if (!jobs.length) return;
+        setPositions(
+          jobs.map((job: JobPosting) => ({
+            id: String(job._id ?? job.id ?? ""),
+            title: job.title,
+            category: String(
+              job.classification ?? job.category ?? job.department ?? "",
+            ),
+            location: job.location ?? "",
+            type: job.type ?? "",
+            desc: job.description ?? job.desc ?? "",
+          })),
         );
-      } catch {
-        if (!cancelled) {
-          setJobsError(true);
-          setJobPostings([]);
-        }
-      } finally {
-        if (!cancelled) setJobsLoading(false);
-      }
-    };
-
-    void loadJobs();
-    return () => {
-      cancelled = true;
-    };
+      })
+      .catch(() => {});
   }, []);
   const scrollCategories = (direction: "left" | "right") => {
     if (!categoriesScrollRef.current) return;
     const amount = direction === "left" ? -280 : 280;
     categoriesScrollRef.current.scrollBy({ left: amount, behavior: "smooth" });
   };
-
-  const positions = useMemo(
-    () =>
-      jobPostings
-        .map((job, index) => localizeJobPosting(job, isAr, index))
-        .filter((job): job is LocalizedJob => job !== null),
-    [jobPostings, isAr],
-  );
-
   const categories = [
     "View All",
     ...Array.from(new Set(positions.map((p) => p.category))),
   ];
-
   const categoryLabelAr: Record<string, string> = {
     "View All": "عرض الكل",
     "La Cosmetique Royale": "لا كوزمتيك رويال",
@@ -384,13 +307,10 @@ const WorkWithUs = ({
     "Marketing & Communications": "التسويق والاتصال المؤسسي",
     "Surgical Services": "الخدمات الجراحية",
   };
-
   const filtered =
     activeCategory === "View All"
       ? positions
       : positions.filter((p) => p.category === activeCategory);
-
-  /* --- Work Culture / People Promise from the uploaded document --- */
   const beliefPillars = [
     {
       icon: Heart,
@@ -408,13 +328,6 @@ const WorkWithUs = ({
         ? "تلتقي المعايير بالتعاطف، ويحمل العمل هدفاً. الشفاء ليس فقط بالطب، بل بالتجربة."
         : "Standards meet empathy, and work carries purpose. Healing is not only about medicine, but about experience.",
     },
-    // {
-    //   icon: HandHeart,
-    //   title: isAr ? "وعدنا للناس" : "Our People Promise",
-    //   desc: isAr
-    //     ? "يبدأ وعدنا للمرضى بوعدنا لفريقنا. مكان عمل يُحترم فيه الموظفون ويُوثَق بهم ويُدعمون."
-    //     : "Our promise to patients begins with our promise to our people — a workplace where employees are respected, trusted, and supported.",
-    // },
     {
       icon: GraduationCap,
       title: isAr ? "التعلّم والنمو" : "Learning & Growth",
@@ -437,23 +350,18 @@ const WorkWithUs = ({
         : "Effort, excellence, and ethical conduct never go unnoticed — because appreciation matters, and care deserves to be recognized.",
     },
   ];
-
   const cultureNarrativeClass = isAr
-    ? "culture-narrative space-y-5 font-body text-foreground leading-relaxed text-justify [text-align-last:right]"
-    : "culture-narrative space-y-5 font-body text-foreground leading-relaxed text-justify hyphens-auto [text-align-last:left] [&_p]:hyphens-auto";
-
+    ? "culture-narrative space-y-5 font-body tracking-normal text-foreground leading-relaxed text-start"
+    : "culture-narrative space-y-5 font-body tracking-normal text-foreground leading-relaxed text-start";
   return (
     <div
       id="work-culture-page"
       className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107] [&_p]:text-start [&_li]:text-start"
     >
       <Header />
-
-      {/* Hero */}
       {showSection("culture") && (
         <section className="py-0 bg-primary/5 overflow-x-clip">
           <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_0.7fr] gap-0 items-stretch lg:items-start">
-            {/* LEFT — height follows image (no extra space below) */}
             <div
               dir="ltr"
               className="work-culture-hero-wrap relative w-full min-w-0 bg-background lg:h-auto"
@@ -467,15 +375,13 @@ const WorkWithUs = ({
                 }
               />
             </div>
-
-            {/* RIGHT — content */}
             <ScrollAnimationWrapper className="flex w-full flex-col justify-center px-4 py-10 sm:px-6 md:px-14 md:py-12 lg:px-16 lg:self-center lg:py-12 2xl:py-16">
               <div
                 dir={isAr ? "rtl" : "ltr"}
                 lang={isAr ? "ar" : "en"}
                 className={isAr ? "text-right" : "text-left"}
               >
-              <h1 className="text-4xl md:text-5xl font-serif text-primary mb-6 leading-tight">
+              <h1 className={`text-4xl md:text-5xl font-serif text-primary mb-6 leading-tight ${isAr ? "!font-bold" : "font-bold"}`}>
                 {isAr
                   ? "الحياة في مستشفى رويال حياة"
                   : "Life at Royale Hayat Hospital"}
@@ -483,7 +389,7 @@ const WorkWithUs = ({
               <div className="work-body-copy space-y-4 font-body tracking-normal text-[13px] sm:text-sm text-foreground leading-relaxed text-start">
                 <p>
                   {isAr
-                    ? "في مستشفى رويال حياة، نؤمن بفكرة بسيطة: قد ينسى الناس ما قلناه، لكنهم لن ينسوا أبداً كيف جعلناهم يشعرون كمرضى، أو أفراد عائلة، أو زملاء."
+                    ? "في مستشفى رويال حياة، نؤمن بأن الناس قد ينسون ما قلناه، لكنهم لن ينسوا أبدًا كيف جعلناهم يشعرون كمرضى، أو أفراد عائلة، أو زملاء عمل."
                     : "At Royale Hayat Hospital, we hold a simple belief: people may forget what we said, but they will never forget how we made them feel as patients, family members, or colleagues."}
                 </p>
                 <p>
@@ -502,13 +408,11 @@ const WorkWithUs = ({
           </div>
         </section>
       )}
-
-      {/* Our People Promise — narrative from document */}
       {showSection("culture") && (
         <section className="py-14 bg-background">
           <div className="container mx-auto px-3 md:px-6 max-w-none md:max-w-5xl lg:max-w-6xl">
             <ScrollAnimationWrapper>
-              <h2 className="text-2xl md:text-3xl font-serif text-foreground text-center mb-3 text-pretty px-1">
+              <h2 className={`text-2xl md:text-3xl font-serif text-foreground text-center mb-3 text-pretty px-1 ${isAr ? "!font-bold" : "font-bold"}`}>
                 {isAr ? "وعدنا لموظفينا" : "‘Our People Promise’"}
               </h2>
               <p className="text-center !text-center text-accent font-body text-sm mb-8 italic text-pretty px-1">
@@ -520,30 +424,34 @@ const WorkWithUs = ({
                 <p>
                   {isAr
                     ? "نعد بتوفير بيئة عمل يشعر فيها كل موظف بالاحترام، الثقة، والدعم، حيث لا تُقاس قيمة الإنسان بالمسمى الوظيفي، بل بما يقدمه من احترافية، نزاهة، وإسهام حقيقي."
-                    : "We promise a work\u00ADplace where em\u00ADploy\u00ADees are re\u00ADspect\u00ADed, trust\u00ADed, and sup\u00ADport\u00ADed not de\u00ADfined by ti\u00ADtles, but val\u00ADued for their pro\u00ADfes\u00ADsion\u00ADal\u00ADism, in\u00ADteg\u00ADri\u00ADty, and con\u00ADtri\u00ADbu\u00ADtion."}
+                    : "We promise a workplace where employees are respected, trusted, and supported, not defined by titles, but valued for their professionalism, integrity, and contribution."}
                 </p>
                 <p>
                   {isAr
                     ? "نستثمر بوعي في التطوير والتعلم المستمر، من خلال البرامج التدريبية، والتعرّف على المعايير العالمية، والتعاون بين التخصصات، وتوفير الفرص التي تساعد موظفينا على النمو بثقة وتميّز."
-                    : "We in\u00ADvest de\u00ADlib\u00ADer\u00ADate\u00ADly in learn\u00ADing and de\u00ADvel\u00ADop\u00ADment, through con\u00ADtin\u00ADu\u00ADous train\u00ADing, ex\u00ADpo\u00ADsure to in\u00ADter\u00ADna\u00ADtion\u00ADal stan\u00ADdards, col\u00ADlab\u00ADo\u00ADra\u00ADtion across dis\u00ADci\u00ADplines, and op\u00ADpor\u00ADtu\u00ADni\u00ADties to grow with con\u00ADfi\u00ADdence."}
+                    : "We invest deliberately in learning and development through continuous training, exposure to international standards, collaboration across disciplines, and opportunities to grow with confidence."}
                 </p>
                 <p>
-                  {isAr
-                    ? "فنحن نؤمن بأن التميّز يُبنى بالتعلم، ويستمر بالثقة. ووعدنا بسيط: سندعم تطوركم، ونقدّر جهودكم، ونرافقكم في بناء مسيرة مهنية تفتخرون بها."
-                    : "We be\u00ADlieve ex\u00ADcel\u00ADlence is built through learn\u00ADing-and sus\u00ADtained through trust. Our prom\u00ADise is sim\u00ADple: we will help you grow, we will rec\u00ADog\u00ADnize your ef\u00ADfort, and we will walk with you as you build a ca\u00ADreer you can be proud of."}
+                  {isAr ? (
+                    <>
+                      فنحن نؤمن بأن التميّز يُبنى بالتعلم، ويستمر بالثقة. ووعدنا بسيط:
+                      <br />
+                      سندعم تطوركم، ونقدّر جهودكم، ونرافقكم في بناء مسيرة مهنية تفتخرون بها.
+                    </>
+                  ) : (
+                    "We believe excellence is built through learning—and sustained through trust. Our promise is simple: we will help you grow, we will recognize your effort, and we will walk with you as you build a career you can be proud of."
+                  )}
                 </p>
               </div>
             </ScrollAnimationWrapper>
           </div>
         </section>
       )}
-
-      {/* Where We Belong Together */}
       {showSection("culture") && (
         <section className="py-14 bg-secondary/10">
           <div className="container mx-auto px-3 md:px-6 max-w-none md:max-w-5xl lg:max-w-6xl">
             <ScrollAnimationWrapper>
-              <h2 className="text-2xl md:text-3xl font-serif text-foreground text-center mb-8 text-pretty px-1">
+              <h2 className={`text-2xl md:text-3xl font-serif text-foreground text-center mb-8 text-pretty px-1 ${isAr ? "!font-bold" : "font-bold"}`}>
                 {isAr ? "معًا… حيث ننتمي" : "‘Where We Belong Together.’"}
               </h2>
               <div dir={isAr ? "rtl" : "ltr"} lang={isAr ? "ar" : "en"} className={cultureNarrativeClass}>
@@ -559,16 +467,19 @@ const WorkWithUs = ({
                 </p>
                 <p>
                   {isAr
-                    ? "وفي رويال حياة، لا تمر الجهود والإنجازات دون تقدير، لأن الامتنان جزء أساسي من ثقافتنا، والرعاية تستحق أن تُحتفى بها. هنا، العمل ليس مجرد وظيفة، بل مكان تشعر فيه بالتقدير والانتماء."
-                    : "Effort and excellence never go unnoticed here because appreciation matters, and care deserves recognition. At Royale Hayat, it is more than work; it is a place to belong and be valued."}
+                    ? "وفي رويال حياة، لا تمر الجهود والإنجازات دون تقدير، لأن الامتنان جزء أساسي من ثقافتنا، والرعاية تستحق أن تُحتفى بها."
+                    : "Effort and excellence never go unnoticed here—because appreciation matters, and care deserves to be recognized. At Royale Hayat, it's more than work. It's a place to belong and be valued"}
                 </p>
+                {isAr && (
+                  <p>
+                    هنا، العمل ليس مجرد وظيفة، بل مكان تشعر فيه بالتقدير والانتماء.
+                  </p>
+                )}
               </div>
             </ScrollAnimationWrapper>
           </div>
         </section>
       )}
-
-      {/* Recognition & Appreciation gallery */}
       {showSection("culture") && (
         <section className="py-16 bg-secondary/10">
           <div className="container mx-auto px-3 md:px-6">
@@ -576,17 +487,14 @@ const WorkWithUs = ({
               <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3 !text-center">
                 {isAr ? "التكريم والتقدير" : "Life at Royale Hayat"}
               </p>
-              {/* <h2 className="text-xl md:text-2xl font-serif text-foreground">
-                {isAr ? "موظفو الشهر" : "Employees of the Month"}
-              </h2> */}
-
+              {
+}
               <div className="mt-4 space-y-2">
-                <h3 className="text-xl md:text-4xl font-serif text-foreground">
+                <h3 className={`text-xl md:text-4xl font-serif text-foreground ${isAr ? "!font-bold" : "font-bold"}`}>
                   {isAr ? "أفضل موظفي شهر أبريل" : "Employees of the Month"}{" "}
                 </h3>
               </div>
             </div>
-
             <div
               className="max-w-5xl mx-auto relative"
               onMouseEnter={() => setIsEmpPaused(true)}
@@ -604,32 +512,34 @@ const WorkWithUs = ({
                 >
                   <div className="flex flex-col md:flex-row">
                     <div className="md:w-96 flex-shrink-0 bg-primary/5 p-6 flex items-center justify-center">
-                      {displayEmployees[empIndex]?.image ? (
-                        <img
-                          src={displayEmployees[empIndex].image}
-                          alt={displayEmployees[empIndex].name}
-                          className="w-full h-[400px] object-cover rounded-2xl"
-                        />
-                      ) : (
-                        <div className="w-full h-[400px] rounded-2xl bg-muted flex items-center justify-center">
-                          <Award className="w-16 h-16 text-muted-foreground/40" />
-                        </div>
-                      )}
+                      <img
+                        src={employees[empIndex].image}
+                        alt={
+                          isAr
+                            ? employees[empIndex].nameAr
+                            : employees[empIndex].name
+                        }
+                        className="w-full max-h-[420px] object-contain rounded-2xl"
+                        loading="eager"
+                        decoding="sync"
+                      />
                     </div>
-
                     <div className="flex-1 p-6 md:p-8">
-                      <h3 className="font-serif text-2xl text-foreground mb-1">
+                      {isAr && employees[empIndex].sectorAr && (
+                        <p className="font-body text-xs text-muted-foreground uppercase tracking-wide mb-2">
+                          {employees[empIndex].sectorAr}
+                        </p>
+                      )}
+                      <h3 className={`font-serif text-2xl text-foreground mb-1 ${isAr ? "!font-bold" : "font-bold"}`}>
                         {isAr
                           ? displayEmployees[empIndex].nameAr
                           : displayEmployees[empIndex].name}
                       </h3>
-
                       <p className="font-body text-xs text-accent uppercase tracking-wide mb-2">
                         {isAr
                           ? displayEmployees[empIndex].deptAr
                           : displayEmployees[empIndex].dept}
                       </p>
-
                       <p
                         className={`font-body text-sm text-accent mb-5 ${isAr ? "" : "justified-body-en"}`}
                         lang={isAr ? "ar" : "en"}
@@ -638,12 +548,10 @@ const WorkWithUs = ({
                           ? displayEmployees[empIndex].roleAr
                           : displayEmployees[empIndex].role}
                       </p>
-
                       <div>
                         <h4 className="font-serif text-base text-foreground mb-3">
                           {isAr ? "الإنجازات" : "Achievements"}
                         </h4>
-
                         <div className="space-y-4 text-sm text-muted-foreground leading-relaxed font-body">
                           {(isAr
                             ? displayEmployees[empIndex].achievementsAr
@@ -659,16 +567,7 @@ const WorkWithUs = ({
                   </div>
                 </motion.div>
               </AnimatePresence>
-              )}
-
-              {employeesApiLoading && (
-                <p className="text-center font-body text-xs text-muted-foreground mt-4">
-                  {isAr ? "جاري تحميل المزيد..." : "Loading more recognitions..."}
-                </p>
-              )}
-
-              {/* Navigation Arrows */}
-              {displayEmployees.length > 1 && (
+              {employees.length > 1 && (
                 <>
                   <button
                     type="button"
@@ -698,64 +597,68 @@ const WorkWithUs = ({
                   </button>
                 </>
               )}
-
-              {/* counter */}
-              {displayEmployees.length > 0 && (
-                <div className="flex items-center justify-center gap-3 mt-5">
-                  <span className="font-body text-xs text-muted-foreground tracking-widest">
-                    {String(empIndex + 1).padStart(2, "0")} /{" "}
-                    {String(displayEmployees.length).padStart(2, "0")}
-                  </span>
-                </div>
-              )}
+              <div className="flex items-center justify-center gap-3 mt-5">
+                <span className="font-body text-xs text-muted-foreground tracking-widest">
+                  {String(empIndex + 1).padStart(2, "0")} /{" "}
+                  {String(employees.length).padStart(2, "0")}
+                </span>
+              </div>
             </div>
           </div>
         </section>
       )}
-
-      {/* Work culture galleries — existing images + API additions */}
-      {showSection("culture") &&
-        existingWorkCultureCarousels.map((carousel) => (
-          <LifePhotoCarousel
-            key={carousel.id}
-            variant={carousel.variant}
-            title={isAr ? carousel.titleAr : carousel.titleEn}
-            subtitle={isAr ? carousel.subtitleAr : carousel.subtitleEn}
-            photos={toCarouselPhotos(
-              isAr ? carousel.titleAr : carousel.titleEn,
-              carousel.images,
-            )}
-          />
-        ))}
-
-      {showSection("culture") && workCultureApiLoading && (
-        <section className="py-16 bg-secondary/10">
-          <div className="container mx-auto px-6 max-w-5xl space-y-6">
-            <Skeleton className="h-8 w-64 mx-auto" />
-            <Skeleton className="h-64 w-full rounded-2xl" />
-          </div>
-        </section>
+      {showSection("culture") && (
+        <LifePhotoCarousel
+          title={
+            isAr
+              ? "أنشطة الموظفين | بطولة الكرة الطائرة"
+              : "Staff Activities — Volley Ball Tournament"
+          }
+          subtitle={
+            isAr
+              ? "يتم تقدير الإنجازات والاعتراف بها، لأن الجهد والتميّز والسلوك المهني القائم على القيم يشكّلون أساس نجاحنا."
+              : "Achievements are acknowledged—because effort, excellence, and ethical conduct matter."
+          }
+          photos={toCarouselPhotos(
+            "Staff Activities — Volley Ball Tournament",
+            staffActivitiesImages,
+          )}
+        />
       )}
-
-      {showSection("culture") &&
-        !workCultureApiLoading &&
-        apiWorkCultureCarousels.map((carousel) => (
+      {showSection("culture") && (
+        <>
           <LifePhotoCarousel
-            key={carousel.id}
-            variant={carousel.variant}
-            title={isAr ? carousel.titleAr : carousel.titleEn}
-            subtitle={isAr ? carousel.subtitleAr : carousel.subtitleEn}
-            photos={toCarouselPhotos(
-              isAr ? carousel.titleAr : carousel.titleEn,
-              carousel.images,
-            )}
+            variant="muted"
+            title={isAr ? "حفل العشاء السنوي" : "Gala Dinner"}
+            subtitle={
+              isAr
+                ? "أمسية استثنائية تجمع بين الأناقة، والامتنان، والاحتفال بإنجازات فريقنا."
+                : "A night of elegance, gratitude and celebration."
+            }
+            photos={toCarouselPhotos("Gala Dinner", galaDinnerImages)}
           />
-        ))}
-
-      {/* Voices from Our People (Testimonials) */}
+          <LifePhotoCarousel
+            title={isAr ? "أسبوع الضيافة" : "Hospitality Week"}
+            subtitle={
+              isAr
+                ? "أسبوع مخصص للاحتفاء بروح الضيافة التي تميّز مستشفى رويال حياة وتعكس هويتنا الإنسانية."
+                : "A week devoted to the hospitality spirit that defines Royale Hayat."
+            }
+            photos={toCarouselPhotos("Hospitality Week", hospitalityWeekImages)}
+          />
+          <LifePhotoCarousel
+            variant="muted"
+            title={isAr ? "مسابقة رويال حياة" : "Royale Hayat Hospital Quiz"}
+            subtitle={
+              isAr
+                ? "أجواء من التفاعل، والمتعة، والمنافسة الودية التي تجمع فرق العمل بروح واحدة."
+                : "Fun, friendly competition across teams."
+            }
+            photos={toCarouselPhotos("Royale Hayat Hospital Quiz", rhhQuizImages)}
+          />
+        </>
+      )}
       {showSection("culture") && <VoicesFromOurPeople />}
-
-      {/* Explore Careers heading */}
       {showSection("culture") && (
         <section className="py-12 bg-background text-center">
           <div className="container mx-auto px-3 md:px-6">
@@ -772,8 +675,6 @@ const WorkWithUs = ({
           </div>
         </section>
       )}
-
-      {/* Open Positions */}
       {showSection("positions") && (
         <section className="py-16 bg-secondary/10" id="open-positions">
           <div className="container mx-auto px-3 md:px-6">
@@ -795,73 +696,41 @@ const WorkWithUs = ({
                 </p>
               </div>
             </ScrollAnimationWrapper>
-
-            {jobsLoading ? (
-              <div className="max-w-5xl mx-auto space-y-4 py-2">
-                <div className="flex gap-2 overflow-hidden">
-                  <Skeleton className="h-10 w-28 rounded-full shrink-0" />
-                  <Skeleton className="h-10 w-36 rounded-full shrink-0" />
-                  <Skeleton className="h-10 w-32 rounded-full shrink-0" />
-                </div>
-                <Skeleton className="h-48 w-full rounded-2xl" />
-                <Skeleton className="h-48 w-full rounded-2xl" />
-              </div>
-            ) : jobsError ? (
-              <div className="max-w-2xl mx-auto rounded-2xl border border-destructive/30 bg-destructive/5 px-6 py-12 text-center">
-                <p className="font-serif text-lg text-foreground mb-2">
-                  {isAr ? "تعذر تحميل الوظائف" : "Could not load open positions"}
-                </p>
-                <p className="text-muted-foreground font-body text-sm">
-                  {isAr
-                    ? "تحقق من الاتصال أو حاول مرة أخرى لاحقًا."
-                    : "Check your connection or try again later."}
-                </p>
-              </div>
-            ) : (
-              <>
-                {/* Category filter tabs */}
-                <div className="flex items-center gap-2 mb-8">
+            <div className="flex items-center gap-2 mb-8">
+              <button
+                onClick={() => scrollCategories("left")}
+                aria-label={isAr ? "مرر لليسار" : "Slide left"}
+                className="w-10 h-10 rounded-full border border-border bg-popover flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors flex-shrink-0"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <div
+                ref={categoriesScrollRef}
+                className="flex items-center gap-2 overflow-x-auto pb-4 -mb-4 scrollbar-hide flex-1"
+                style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+              >
+                {categories.map((cat) => (
                   <button
-                    type="button"
-                    onClick={() => scrollCategories("left")}
-                    aria-label={isAr ? "مرر لليسار" : "Slide left"}
-                    className="w-10 h-10 rounded-full border border-border bg-popover flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors flex-shrink-0"
+                    key={cat}
+                    onClick={() => setActiveCategory(cat)}
+                    className={`whitespace-nowrap px-5 py-2 rounded-full text-xs font-body tracking-wide border transition-all ${
+                      activeCategory === cat
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-popover text-foreground border-border hover:border-primary/40"
+                    }`}
                   >
-                    <ChevronLeft className="w-5 h-5" />
+                    {isAr ? (categoryLabelAr[cat] ?? cat) : cat.toUpperCase()}
                   </button>
-                  <div
-                    ref={categoriesScrollRef}
-                    className="flex items-center gap-2 overflow-x-auto pb-4 -mb-4 scrollbar-hide flex-1"
-                    style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-                  >
-                    {categories.map((cat) => (
-                      <button
-                        type="button"
-                        key={cat}
-                        onClick={() => setActiveCategory(cat)}
-                        className={`whitespace-nowrap px-5 py-2 rounded-full text-xs font-body tracking-wide border transition-all ${
-                          activeCategory === cat
-                            ? "bg-primary text-primary-foreground border-primary"
-                            : "bg-popover text-foreground border-border hover:border-primary/40"
-                        }`}
-                      >
-                        {isAr
-                          ? (categoryLabelAr[cat] ?? cat)
-                          : cat.toUpperCase()}
-                      </button>
-                    ))}
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => scrollCategories("right")}
-                    aria-label={isAr ? "مرر لليمين" : "Slide right"}
-                    className="w-10 h-10 rounded-full border border-border bg-popover flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors flex-shrink-0"
-                  >
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
-                </div>
-
-            {/* Job cards */}
+                ))}
+              </div>
+              <button
+                onClick={() => scrollCategories("right")}
+                aria-label={isAr ? "مرر لليمين" : "Slide right"}
+                className="w-10 h-10 rounded-full border border-border bg-popover flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors flex-shrink-0"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
             <div className="max-w-5xl mx-auto space-y-5">
               {filtered.map((pos) => (
                   <motion.div
@@ -914,7 +783,6 @@ const WorkWithUs = ({
                   </motion.div>
                 ))}
             </div>
-
             <div className="text-center mt-10">
               <p className="font-body text-sm text-muted-foreground !text-center">
                 {isAr
@@ -933,7 +801,6 @@ const WorkWithUs = ({
           </div>
         </section>
       )}
-
       <style>{`
         #work-culture-page .ios-flicker-fix {
           transform: translateZ(0);
@@ -942,13 +809,11 @@ const WorkWithUs = ({
           -webkit-backface-visibility: hidden;
           will-change: transform, opacity;
         }
-
         #work-culture-page .culture-narrative[dir="rtl"],
         #work-culture-page .work-body-copy[dir="rtl"] {
           -webkit-hyphens: none;
           hyphens: none;
         }
-
         #work-culture-page .culture-narrative[lang="en"] p,
         #work-culture-page .work-body-copy[lang="en"] p {
           text-align: justify;
@@ -964,7 +829,6 @@ const WorkWithUs = ({
           letter-spacing: normal !important;
           font-kerning: normal;
         }
-
         #work-culture-page .justified-body-en {
           text-align: justify;
           text-justify: inter-word;
@@ -977,13 +841,11 @@ const WorkWithUs = ({
           letter-spacing: normal !important;
           font-kerning: normal;
         }
-
         @media (max-width: 767px) {
           #work-culture-page section .container {
             padding-left: 0.75rem;
             padding-right: 0.75rem;
           }
-
           #work-culture-page .culture-narrative[lang="en"] p,
           #work-culture-page .work-body-copy[lang="en"] p {
             text-align: justify !important;
@@ -1001,7 +863,6 @@ const WorkWithUs = ({
             letter-spacing: normal !important;
             font-kerning: normal;
           }
-
           #work-culture-page .justified-body-en {
             text-align: justify !important;
             text-align-last: auto !important;
@@ -1012,11 +873,9 @@ const WorkWithUs = ({
           }
         }
       `}</style>
-
       <Footer />
       <ScrollToTop />
     </div>
   );
 };
-
 export default WorkWithUs;

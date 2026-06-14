@@ -2,6 +2,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
+import MedicalRecordDatePicker from "@/components/MedicalRecordDatePicker";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,8 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -18,8 +17,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CalendarIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { useState } from "react";
 import axios from "axios";
@@ -41,12 +38,55 @@ const DOCUMENT_TYPES: SpecificDocumentType[] = [
   "Others",
 ];
 
+const MAX_ATTACHMENT_SIZE_BYTES = 5 * 1024 * 1024;
+
+const CURRENT_YEAR = new Date().getFullYear();
+const DOB_FROM_YEAR = CURRENT_YEAR - 100;
+const DOB_TO_YEAR = CURRENT_YEAR;
+const SERVICE_FROM_YEAR = 1990;
+const SERVICE_TO_DATE_MAX_YEAR = CURRENT_YEAR + 5;
+
+const isFutureDate = (date: Date) => date > new Date();
+
+const isBeforeDay = (date: Date, min: Date) => {
+  const day = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+  return day(date) < day(min);
+};
+
 const sanitizeCivilIdInput = (raw: string) => {
   const digits = raw.replace(/\D/g, "");
   if (!digits) return "";
   if (digits[0] !== "2" && digits[0] !== "3") return "";
   return digits.slice(0, 12);
 };
+
+type SpecialRequestFieldProps = {
+  id: string;
+  value: string;
+  onChange: (value: string) => void;
+  isAr: boolean;
+};
+
+const SpecialRequestField = ({
+  id,
+  value,
+  onChange,
+  isAr,
+}: SpecialRequestFieldProps) => (
+  <div className="space-y-2">
+    <Label htmlFor={id}>{isAr ? "طلب خاص" : "Special Request"}</Label>
+    <Textarea
+      id={id}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={
+        isAr ? "أدخل الطلب الخاص (اختياري)" : "Enter special request (optional)"
+      }
+      className="min-h-[100px]"
+      dir={isAr ? "rtl" : "ltr"}
+    />
+  </div>
+);
 
 const MedicalRecordsRequest = () => {
   const { lang } = useLanguage();
@@ -71,11 +111,46 @@ const MedicalRecordsRequest = () => {
 
   const [recipientName, setRecipientName] = useState("");
   const [recipientEmail, setRecipientEmail] = useState("");
-  const [recipientPhone, setRecipientPhone] = useState("");
+  const [recipientPhone, setRecipientPhone] = useState("965");
   const [mobileCountry, setMobileCountry] = useState<{ countryCode: string; dialCode: string }>({
     countryCode: "kw",
     dialCode: "965",
   });
+
+  const getRecipientLocalDigits = (phone: string, dialCode: string) => {
+    const digits = phone.replace(/\D/g, "");
+    return digits.startsWith(dialCode) ? digits.slice(dialCode.length) : digits;
+  };
+
+  const isAttachmentTooLarge = (file: File) => file.size > MAX_ATTACHMENT_SIZE_BYTES;
+
+  const showAttachmentTooLargeToast = () => {
+    toast({
+      title: isAr ? "حجم الملف كبير جداً" : "File too large",
+      description: isAr
+        ? "يجب ألا يتجاوز حجم الملف 5 ميجابايت."
+        : "File size must not exceed 5 MB.",
+      variant: "destructive",
+    });
+  };
+
+  const handleIdentityAttachmentChange = (
+    file: File | undefined,
+    setAttachment: (file: File | null) => void,
+    input: HTMLInputElement | null,
+  ) => {
+    if (!file) {
+      setAttachment(null);
+      return;
+    }
+    if (isAttachmentTooLarge(file)) {
+      showAttachmentTooLargeToast();
+      if (input) input.value = "";
+      setAttachment(null);
+      return;
+    }
+    setAttachment(file);
+  };
 
   const [purposeValue, setPurposeValue] = useState("");
   const [otherPurpose, setOtherPurpose] = useState("");
@@ -123,7 +198,8 @@ const MedicalRecordsRequest = () => {
     setSpecificDocumentsOther("");
     setRecipientName("");
     setRecipientEmail("");
-    setRecipientPhone("");
+    setRecipientPhone("965");
+    setMobileCountry({ countryCode: "kw", dialCode: "965" });
     setPurposeValue("");
     setOtherPurpose("");
     setRequestedBy("");
@@ -175,14 +251,24 @@ const MedicalRecordsRequest = () => {
         });
         return;
       }
+      if (isAttachmentTooLarge(civilIdAttachment)) {
+        showAttachmentTooLargeToast();
+        return;
+      }
     }
-    if (validIdentification === "passportORGovtId" && !passportAttachment) {
-      toast({
-        title: isAr ? "حقل مطلوب" : "Required",
-        description: isAr ? "يرجى إرفاق الهوية الحكومية." : "Please attach the government ID.",
-        variant: "destructive",
-      });
-      return;
+    if (validIdentification === "passportORGovtId") {
+      if (!passportAttachment) {
+        toast({
+          title: isAr ? "حقل مطلوب" : "Required",
+          description: isAr ? "يرجى إرفاق الهوية الحكومية." : "Please attach the government ID.",
+          variant: "destructive",
+        });
+        return;
+      }
+      if (isAttachmentTooLarge(passportAttachment)) {
+        showAttachmentTooLargeToast();
+        return;
+      }
     }
     if (!dob) {
       toast({
@@ -316,7 +402,11 @@ const MedicalRecordsRequest = () => {
         return;
       }
     }
-    if (!recipientPhone.trim()) {
+    const recipientLocalDigits = getRecipientLocalDigits(
+      recipientPhone,
+      mobileCountry.dialCode,
+    );
+    if (!recipientLocalDigits.length) {
       toast({
         title: isAr ? "حقل مطلوب" : "Required",
         description: isAr ? "يرجى إدخال رقم هاتف المستلم." : "Please enter recipient contact number.",
@@ -324,11 +414,8 @@ const MedicalRecordsRequest = () => {
       });
       return;
     }
-    if (mobileCountry.countryCode === "kw" && recipientPhone.trim()) {
-      const mobileDigits = recipientPhone.replace(/\D/g, "");
-      const localDigits = mobileDigits.startsWith(mobileCountry.dialCode)
-        ? mobileDigits.slice(mobileCountry.dialCode.length)
-        : mobileDigits;
+    if (mobileCountry.countryCode === "kw") {
+      const localDigits = recipientLocalDigits;
       if (localDigits.length !== 8) {
         toast({
           title: isAr ? "رقم غير صالح" : "Invalid number",
@@ -359,15 +446,19 @@ const MedicalRecordsRequest = () => {
         passportOrGovernmentIdAttachment:
           validIdentification === "passportORGovtId" ? passportAttachment ?? undefined : undefined,
         specificAuthorization,
-        specificFromDate: format(serviceFromDate, "yyyy-MM-dd"),
-        specificToDate:
+        specificAuthorizationDate:
           specificAuthorization === "Discharge Summary"
             ? format(serviceFromDate, "yyyy-MM-dd")
-            : format(serviceToDate!, "yyyy-MM-dd"),
-        specialRequest:
-          specificAuthorization === "specific documents"
-            ? specialRequest.trim() || undefined
             : undefined,
+        specificFromDate:
+          specificAuthorization === "specific documents"
+            ? format(serviceFromDate, "yyyy-MM-dd")
+            : undefined,
+        specificToDate:
+          specificAuthorization === "specific documents"
+            ? format(serviceToDate!, "yyyy-MM-dd")
+            : undefined,
+        specialRequest: specialRequest.trim() || undefined,
         specificDocumentTypes:
           specificAuthorization === "specific documents" ? documentTypes : undefined,
         specificDocumentsOther:
@@ -416,120 +507,64 @@ const MedicalRecordsRequest = () => {
     }
   };
 
-  const DatePickerField = ({
-    label,
-    value,
-    onChange,
-    id,
-    required = true,
-    showLabel = true,
-    placeholder,
-    ariaLabel,
-  }: {
-    label: string;
-    value?: Date;
-    onChange: (date?: Date) => void;
-    id: string;
-    required?: boolean;
-    showLabel?: boolean;
-    placeholder?: string;
-    ariaLabel?: string;
-  }) => (
-    <div className="space-y-2">
-      {showLabel && (
-        <Label htmlFor={id}>
-          {label} {required && <span className="text-destructive">*</span>}
-        </Label>
-      )}
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button
-            id={id}
-            type="button"
-            variant="outline"
-            aria-label={ariaLabel ?? label}
-            className={cn(
-              "w-full justify-start text-left font-normal",
-              !value && "text-muted-foreground",
-            )}
-          >
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            {value
-              ? format(value, "PPP")
-              : placeholder ?? (isAr ? "اختر التاريخ" : "Select date")}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
-          <Calendar
-            mode="single"
-            selected={value}
-            onSelect={onChange}
-            initialFocus
-            className={cn("p-3 pointer-events-auto")}
-          />
-        </PopoverContent>
-      </Popover>
-    </div>
-  );
-
-  const DischargeSummaryDateFields = () => (
-    <div className="space-y-3 pt-4 mt-2 border-t border-border">
-      <DatePickerField
-        id="discharge-serviceDate"
-        label={
-          isAr
-            ? "ملخص الخروج مع تواريخ الخدمة المحددة:"
-            : "Discharge summary with specific dates of service:"
-        }
-        value={serviceFromDate}
-        onChange={(date) => {
-          setServiceFromDate(date);
-          setServiceToDate(undefined);
-        }}
-        placeholder={isAr ? "اختر التاريخ" : "Select date"}
-        ariaLabel={
-          isAr
-            ? "تاريخ الخدمة لملخص الخروج"
-            : "Date of service for discharge summary"
-        }
-      />
-    </div>
-  );
-
-  const SpecificDocumentsServiceDatesFields = ({ idPrefix }: { idPrefix: string }) => (
-    <>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <DatePickerField
-          id={`${idPrefix}-serviceFromDate`}
-          label={isAr ? "من تاريخ" : "From date"}
-          value={serviceFromDate}
-          onChange={setServiceFromDate}
-        />
-        <DatePickerField
-          id={`${idPrefix}-serviceToDate`}
-          label={isAr ? "إلى تاريخ" : "To date"}
-          value={serviceToDate}
-          onChange={setServiceToDate}
-        />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor={`${idPrefix}-specialRequest`}>
-          {isAr ? "طلب خاص" : "Special Request"}
-        </Label>
-        <Textarea
-          id={`${idPrefix}-specialRequest`}
-          value={specialRequest}
-          onChange={(e) => setSpecialRequest(e.target.value)}
-          placeholder={
-            isAr ? "أدخل الطلب الخاص (اختياري)" : "Enter special request (optional)"
-          }
-        />
-      </div>
-    </>
-  );
-
   return (
     <div className="min-h-screen bg-background">
+      {isAr && (
+        <style>{`
+          .medical-record-phone-input[dir="rtl"] .react-tel-input .flag-dropdown {
+            height: 2.5rem;
+            background: hsl(var(--background));
+            border-color: hsl(var(--input));
+            left: auto !important;
+            right: 0 !important;
+            width: 3.25rem !important;
+            border-radius: 0 0.375rem 0.375rem 0;
+          }
+          .medical-record-phone-input[dir="rtl"] .react-tel-input .selected-flag {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 100% !important;
+            height: 100% !important;
+            gap: 0.3rem !important;
+            padding: 0 0.3rem !important;
+          }
+          .medical-record-phone-input[dir="rtl"] .react-tel-input .selected-flag .flag,
+          .medical-record-phone-input[dir="rtl"] .react-tel-input .selected-flag .arrow {
+            position: static !important;
+            inset: auto !important;
+            left: auto !important;
+            right: auto !important;
+            top: auto !important;
+            margin: 0 !important;
+            transform: none !important;
+            flex: 0 0 auto !important;
+          }
+          .medical-record-phone-input[dir="rtl"] .react-tel-input .selected-flag::before {
+            content: "";
+            order: 1;
+            width: 0;
+            height: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-top: 5px solid #6b7280;
+            flex-shrink: 0;
+          }
+          .medical-record-phone-input[dir="rtl"] .react-tel-input .selected-flag .arrow {
+            display: none !important;
+          }
+          .medical-record-phone-input[dir="rtl"] .react-tel-input .selected-flag .flag {
+            order: 2;
+            flex-shrink: 0;
+          }
+          .medical-record-phone-input[dir="rtl"] .react-tel-input .form-control {
+            padding-right: 3.5rem !important;
+            padding-left: 0.75rem !important;
+            text-align: right;
+          }
+        `}</style>
+      )}
       <Header />
 
       <section className="pt-40 pb-16 bg-primary">
@@ -658,12 +693,18 @@ const MedicalRecordsRequest = () => {
                           accept=".png,.jpg,.jpeg,.pdf"
                           required
                           onChange={(e) =>
-                            setCivilIdAttachment(e.target.files?.[0] || null)
+                            handleIdentityAttachmentChange(
+                              e.target.files?.[0],
+                              setCivilIdAttachment,
+                              e.target,
+                            )
                           }
                           className="text-sm"
                         />
                         <p className="text-xs text-muted-foreground">
-                          {isAr ? "الصيغ المقبولة: PNG، JPG، PDF" : "Accepted formats: PNG, JPG, PDF"}
+                          {isAr
+                            ? "الصيغ المقبولة: PNG، JPG، PDF. الحد الأقصى: 5 ميجابايت."
+                            : "Accepted formats: PNG, JPG, PDF. Max size: 5 MB."}
                         </p>
                       </div>
                     </>
@@ -681,12 +722,18 @@ const MedicalRecordsRequest = () => {
                         accept=".png,.jpg,.jpeg,.pdf"
                         required
                         onChange={(e) =>
-                          setPassportAttachment(e.target.files?.[0] || null)
+                          handleIdentityAttachmentChange(
+                            e.target.files?.[0],
+                            setPassportAttachment,
+                            e.target,
+                          )
                         }
                         className="text-sm"
                       />
                       <p className="text-xs text-muted-foreground">
-                        {isAr ? "الصيغ المقبولة: PNG، JPG، PDF" : "Accepted formats: PNG, JPG, PDF"}
+                        {isAr
+                          ? "الصيغ المقبولة: PNG، JPG، PDF. الحد الأقصى: 5 ميجابايت."
+                          : "Accepted formats: PNG, JPG, PDF. Max size: 5 MB."}
                       </p>
                     </div>
                   )}
@@ -704,40 +751,18 @@ const MedicalRecordsRequest = () => {
                       placeholder={isAr ? "أدخل رقم ملف المريض" : "Enter patient file number"}
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label>
-                      {isAr ? "تاريخ الميلاد" : "Date of Birth"}{" "}
-                      <span className="text-destructive">*</span>
-                    </Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-full justify-start text-left font-normal",
-                            !dob && "text-muted-foreground",
-                          )}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {dob
-                            ? format(dob, "PPP")
-                            : isAr
-                              ? "اختر تاريخ الميلاد"
-                              : "Select date of birth"}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={dob}
-                          onSelect={setDob}
-                          disabled={(date) => date > new Date()}
-                          initialFocus
-                          className={cn("p-3 pointer-events-auto")}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
+                  <MedicalRecordDatePicker
+                    id="dateOfBirth"
+                    label={isAr ? "تاريخ الميلاد" : "Date of Birth"}
+                    value={dob}
+                    onChange={setDob}
+                    isAr={isAr}
+                    placeholder={isAr ? "اختر تاريخ الميلاد" : "Select date of birth"}
+                    ariaLabel={isAr ? "تاريخ الميلاد" : "Date of birth"}
+                    fromYear={DOB_FROM_YEAR}
+                    toYear={DOB_TO_YEAR}
+                    disabledDates={isFutureDate}
+                  />
                 </div>
               </div>
             </ScrollAnimationWrapper>
@@ -787,7 +812,6 @@ const MedicalRecordsRequest = () => {
                       setDocumentTypes([]);
                       setSpecificDocumentsOther("");
                       if (next === "Discharge Summary") {
-                        setSpecialRequest("");
                         setServiceToDate(undefined);
                       }
                     }}
@@ -808,7 +832,38 @@ const MedicalRecordsRequest = () => {
                   </Select>
                 </div>
 
-                {specificAuthorization === "Discharge Summary" && <DischargeSummaryDateFields />}
+                {specificAuthorization === "Discharge Summary" && (
+                  <div className="space-y-4 pt-4 mt-2 border-t border-border">
+                    <MedicalRecordDatePicker
+                      id="discharge-serviceDate"
+                      label={
+                        isAr
+                          ? "ملخص الخروج مع تواريخ الخدمة المحددة:"
+                          : "Discharge summary with specific dates of service:"
+                      }
+                      value={serviceFromDate}
+                      onChange={(date) => {
+                        setServiceFromDate(date);
+                        setServiceToDate(undefined);
+                      }}
+                      isAr={isAr}
+                      placeholder={isAr ? "اختر التاريخ" : "Select date"}
+                      ariaLabel={
+                        isAr
+                          ? "تاريخ الخدمة لملخص الخروج"
+                          : "Date of service for discharge summary"
+                      }
+                      fromYear={SERVICE_FROM_YEAR}
+                      toYear={SERVICE_TO_DATE_MAX_YEAR}
+                    />
+                    <SpecialRequestField
+                      id="discharge-specialRequest"
+                      value={specialRequest}
+                      onChange={setSpecialRequest}
+                      isAr={isAr}
+                    />
+                  </div>
+                )}
 
                 {specificAuthorization === "specific documents" && (
                   <>
@@ -871,7 +926,43 @@ const MedicalRecordsRequest = () => {
                       <h4 className="text-base font-serif text-foreground">
                         {isAr ? "تواريخ الخدمة المحددة" : "Specific dates of service"}
                       </h4>
-                      <SpecificDocumentsServiceDatesFields idPrefix="specific-docs" />
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <MedicalRecordDatePicker
+                          id="specific-docs-serviceFromDate"
+                          label={isAr ? "من تاريخ" : "From date"}
+                          value={serviceFromDate}
+                          onChange={(date) => {
+                            setServiceFromDate(date);
+                            if (
+                              date &&
+                              serviceToDate &&
+                              isBeforeDay(serviceToDate, date)
+                            ) {
+                              setServiceToDate(undefined);
+                            }
+                          }}
+                          isAr={isAr}
+                          fromYear={SERVICE_FROM_YEAR}
+                          toYear={SERVICE_TO_DATE_MAX_YEAR}
+                        />
+                        <MedicalRecordDatePicker
+                          id="specific-docs-serviceToDate"
+                          label={isAr ? "إلى تاريخ" : "To date"}
+                          value={serviceToDate}
+                          onChange={setServiceToDate}
+                          isAr={isAr}
+                          fromYear={SERVICE_FROM_YEAR}
+                          toYear={SERVICE_TO_DATE_MAX_YEAR}
+                          minDate={serviceFromDate}
+                          defaultMonth={serviceToDate ?? serviceFromDate}
+                        />
+                      </div>
+                      <SpecialRequestField
+                        id="specific-docs-specialRequest"
+                        value={specialRequest}
+                        onChange={setSpecialRequest}
+                        isAr={isAr}
+                      />
                     </div>
                   </>
                 )}
@@ -916,20 +1007,39 @@ const MedicalRecordsRequest = () => {
                       {isAr ? "رقم هاتف المستلم" : "Recipient's Contact Number"}{" "}
                       <span className="text-destructive">*</span>
                     </Label>
-                    <PhoneInput
-                      country="kw"
-                      value={recipientPhone}
-                      onChange={handleMobileChange}
-                      placeholder={isAr ? "أدخل الرقم" : "Enter contact number"}
-                      masks={{ kw: "........" }}
-                      enableLongNumbers={false}
-                      inputClass="!w-full !h-10 !rounded-md !border !border-input !bg-background !px-12 !text-sm"
-                      buttonClass="!border-input !bg-background"
-                      containerClass="!w-full"
-                      dropdownClass="!text-sm"
-                      enableSearch
-                      countryCodeEditable={false}
-                    />
+                    {isAr ? (
+                      <div className="medical-record-phone-input" dir="rtl">
+                        <PhoneInput
+                          country="kw"
+                          value={recipientPhone}
+                          onChange={handleMobileChange}
+                          placeholder="أدخل الرقم"
+                          masks={{ kw: "........" }}
+                          enableLongNumbers={false}
+                          inputClass="!w-full !h-10 !rounded-md !border !border-input !bg-background !text-sm !font-body !text-foreground"
+                          buttonClass="!h-10 !border-input !bg-background"
+                          containerClass="!w-full"
+                          dropdownClass="!text-sm"
+                          enableSearch
+                          countryCodeEditable={false}
+                        />
+                      </div>
+                    ) : (
+                      <PhoneInput
+                        country="kw"
+                        value={recipientPhone}
+                        onChange={handleMobileChange}
+                        placeholder="Enter contact number"
+                        masks={{ kw: "........" }}
+                        enableLongNumbers={false}
+                        inputClass="!w-full !h-10 !rounded-md !border !border-input !bg-background !px-12 !text-sm"
+                        buttonClass="!border-input !bg-background"
+                        containerClass="!w-full"
+                        dropdownClass="!text-sm"
+                        enableSearch
+                        countryCodeEditable={false}
+                      />
+                    )}
                   </div>
                 </div>
                 <div className="space-y-3">
@@ -991,7 +1101,6 @@ const MedicalRecordsRequest = () => {
                       : "I have read, understand, and agree to the terms of this Electronic Authorization."}
                   </Label>
                 </div>
-
                 <div className="space-y-4">
                   <Label>
                     {isAr ? "مقدم الطلب:" : "Requested by:"}{" "}
@@ -1016,7 +1125,6 @@ const MedicalRecordsRequest = () => {
                     </div>
                   </RadioGroup>
                 </div>
-
                 {requestedBy === "patient" && (
                   <div className="space-y-2">
                     <Label htmlFor="eSignature">
@@ -1094,7 +1202,6 @@ const MedicalRecordsRequest = () => {
                 )}
               </div>
             </ScrollAnimationWrapper>
-
             <ScrollAnimationWrapper>
               <div className="space-y-4">
                 <p className="font-body text-xs text-muted-foreground">
@@ -1116,11 +1223,9 @@ const MedicalRecordsRequest = () => {
           </form>
         </div>
       </section>
-
       <Footer />
       <ScrollToTop />
     </div>
   );
 };
-
 export default MedicalRecordsRequest;

@@ -79,8 +79,17 @@ export const getAllHospitalFeedbacks = async (): Promise<
   return normalizeHospitalFeedbackList(response.data);
 };
 
-
 // ================= DOCTOR FEEDBACK =================
+
+export type CreateDoctorFeedbackPayload = {
+  doctorName: string;
+  userName?: string;
+  arabicUserName?: string;
+  feedback?: string;
+  arabicFeedback?: string;
+  stars: number;
+  shownOnWebsite?: boolean;
+};
 
 export type DoctorFeedbackRecord = {
   _id: string;
@@ -92,48 +101,63 @@ export type DoctorFeedbackRecord = {
   shownOnWebsite?: boolean;
   addedBy?: string;
   createdAt?: string;
-  doctor?: string | { _id?: string; doctorId?: string };
+  doctor?: string | { _id?: string; name?: string; nameAr?: string };
 };
 
-export type CreateDoctorFeedbackPayload = {
-  /** Doctor document MongoDB _id */
-  doctor: string;
-  stars: number;
-  userName?: string;
-  arabicUserName?: string;
-  feedback?: string;
-  arabicFeedback?: string;
-  shownOnWebsite?: boolean;
+export type CreateDoctorFeedbackResponse = {
+  success?: boolean;
+  message?: string;
+  data?: DoctorFeedbackRecord;
 };
 
-export const createDoctorFeedback = async (
+export const extractDoctorFeedbackRecord = (
+  res: unknown,
+): DoctorFeedbackRecord | null => {
+  if (!res || typeof res !== "object") return null;
+  const wrapped = res as CreateDoctorFeedbackResponse & DoctorFeedbackRecord;
+  if (wrapped.data && typeof wrapped.data === "object") {
+    return wrapped.data;
+  }
+  if (wrapped._id || (wrapped as { id?: string }).id) {
+    return wrapped as DoctorFeedbackRecord;
+  }
+  return null;
+};
+
+export const normalizeDoctorFeedbackList = (
+  res: unknown,
+): DoctorFeedbackRecord[] => {
+  if (Array.isArray(res)) return res as DoctorFeedbackRecord[];
+  if (!res || typeof res !== "object") return [];
+  const obj = res as Record<string, unknown>;
+  if (Array.isArray(obj.data)) return obj.data as DoctorFeedbackRecord[];
+  return [];
+};
+
+/** Create doctor feedback by doctor name (POST /api/v1/doctor-feedback/create/by-name). */
+export const createDoctorFeedbackByName = async (
   data: CreateDoctorFeedbackPayload,
-  options?: { addedBy?: "patient" | "admin"; language?: string }
-) => {
+  options?: { addedBy?: "patient" | "admin" },
+): Promise<CreateDoctorFeedbackResponse> => {
   const query = new URLSearchParams();
   if (options?.addedBy) query.append("addedBy", options.addedBy);
-  if (options?.language) query.append("language", options.language);
-
   const qs = query.toString();
-  const response = await api.post(
-    `/api/v1/doctor-feedback/create${qs ? `?${qs}` : ""}`,
-    data
+
+  const response = await api.post<CreateDoctorFeedbackResponse>(
+    `/api/v1/doctor-feedback/create/by-name${qs ? `?${qs}` : ""}`,
+    data,
   );
 
   return response.data;
 };
 
-/** Fetch all doctor feedbacks (GET /api/v1/doctor-feedback/all). */
-export const getAllDoctorFeedbacks = async () => {
-  const response = await api.get("/api/v1/doctor-feedback/all");
-  return response.data;
-};
-
-/** Fetch all feedback for a doctor by MongoDB _id. */
-export const getDoctorFeedbacksByDoctorId = async (doctorMongoId: string) => {
+/** Fetch doctor feedbacks by doctor name (GET /api/v1/doctor-feedback/by-name). */
+export const getDoctorFeedbacksByDoctorName = async (
+  doctorName: string,
+): Promise<DoctorFeedbackRecord[]> => {
+  const query = new URLSearchParams({ doctorName });
   const response = await api.get(
-    `/api/v1/doctor-feedback/${encodeURIComponent(doctorMongoId)}`
+    `/api/v1/doctor-feedback/by-name?${query.toString()}`,
   );
-
-  return response.data;
+  return normalizeDoctorFeedbackList(response.data);
 };

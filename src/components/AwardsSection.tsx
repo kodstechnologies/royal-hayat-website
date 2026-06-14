@@ -3,36 +3,29 @@ import { Award, Shield, Star } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { useLanguage } from "@/contexts/LanguageContext";
-
 import diamondAward from "@/assets/awards/diamond-award.png";
 import capAccredited from "@/assets/awards/cap-accredited.png";
 import pccAward from "@/assets/awards/pcc-award.png";
 import serviceHero from "@/assets/awards/service-hero-16th.png";
-
 const awards = [
   { image: serviceHero, name: "16th Service Hero Award", nameAr: "جائزة بطل الخدمة السادسة عشرة", year: "2010–2025", source: "Best Hospital in Kuwait", sourceAr: "مؤشر بطل الخدمة", desc: "Best Hospital in Kuwait for 16 consecutive years.", descAr: "أفضل مستشفى في الكويت لمدة 16 عامًا متتاليًا.", stat: "16", statLabel: "Consecutive Years", statLabelAr: "سنة متتالية" },
   { image: diamondAward, name: "Diamond Canadian Accreditation", nameAr: "اعتماد الماس الكندي", year: "2023", source: "Accreditation Canada", sourceAr: "اعتماد كندا", desc: "Highest level of excellence in patient safety and quality.", descAr: "أعلى مستوى من التميز في سلامة المرضى والجودة.", stat: "Diamond", statLabel: "Tier Level", statLabelAr: "مستوى التميز" },
   { image: capAccredited, name: "Lab CAP Accreditation", nameAr: "اعتماد CAP للمختبر", year: "2024", source: "College of American Pathologists", sourceAr: "كلية علماء الأمراض الأمريكية", desc: "Accredited 8 times in a row — gold standard in laboratory quality.", descAr: "معتمد 8 مرات متتالية — المعيار الذهبي في جودة المختبرات.", stat: "8×", statLabel: "Consecutive Accreditations", statLabelAr: "اعتمادات متتالية" },
   { image: pccAward, name: "People-Centered Care Commitment Award", nameAr: "جائزة الالتزام بالرعاية المتمحورة حول الإنسان", year: "2025", source: "Accreditation Canada", sourceAr: "اعتماد كندا", desc: "Commitment to patient-centred care excellence.", descAr: "الالتزام بالتميز في الرعاية المتمحورة حول المريض.", stat: "2025", statLabel: "Latest Recognition", statLabelAr: "أحدث تقدير" },
 ];
-
 const AwardsSection = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const { lang, t } = useLanguage();
-
   useEffect(() => {
     const timer = setInterval(() => {
       setActiveIndex((p) => (p + 1) % awards.length);
     }, 4000);
     return () => clearInterval(timer);
   }, []);
-
   const next = () => setActiveIndex((p) => (p + 1) % awards.length);
   const prev = () => setActiveIndex((p) => (p - 1 + awards.length) % awards.length);
-
   const featured = awards[activeIndex];
   const otherAwards = awards.filter((_, i) => i !== activeIndex);
-
   return (
     <section className="py-20 bg-primary">
       <div className="container mx-auto px-6">
@@ -45,9 +38,7 @@ const AwardsSection = () => {
             </h2>
           </div>
         </ScrollAnimationWrapper>
-
         <div className="relative flex flex-col lg:flex-row gap-6 max-w-6xl mx-auto items-stretch">
-          {/* Featured award — larger with bigger image */}
           <AnimatePresence mode="wait">
             <motion.div
               key={activeIndex}
@@ -76,10 +67,7 @@ const AwardsSection = () => {
               </p>
             </motion.div>
           </AnimatePresence>
-
-          {/* Right side: awards grid + stats row filling space */}
           <div className="flex-1 flex flex-col gap-4 md:gap-5">
-            {/* Awards grid — responsive: 1 col on mobile, 3 on desktop */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-5 flex-1">
               {otherAwards.map((a, i) => (
                 <ScrollAnimationWrapper key={a.name + i} delay={i * 0.05} className="h-full">
@@ -101,8 +89,6 @@ const AwardsSection = () => {
                 </ScrollAnimationWrapper>
               ))}
             </div>
-
-            {/* Stats strip filling the bottom space */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-5">
               {otherAwards.map((a, i) => {
                 const icons = [Shield, Award, Star];
@@ -130,8 +116,6 @@ const AwardsSection = () => {
             </div>
           </div>
         </div>
-
-        {/* Navigation dots */}
         <div className="flex items-center justify-center gap-3 mt-10">
           <div className="flex gap-1.5">
             {awards.map((_, i) => (
@@ -143,5 +127,4 @@ const AwardsSection = () => {
     </section>
   );
 };
-
 export default AwardsSection;

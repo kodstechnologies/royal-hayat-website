@@ -76,6 +76,7 @@ export const getAllHospitalFeedbacks = async (): Promise<
   HospitalFeedbackRecord[]
 > => {
   const response = await api.get("/api/v1/hospital-feedback/all");
+  console.log("response", response);
   return normalizeHospitalFeedbackList(response.data);
 };
 

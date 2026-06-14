@@ -168,7 +168,6 @@ const DoctorsSection = ({ featuredDoctors }: { featuredDoctors: Doctor[] }) => {
             </div>
           </div>
         </div>
-        )}
       </div>
     </section>
   );

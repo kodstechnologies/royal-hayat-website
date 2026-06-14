@@ -16,6 +16,7 @@ export interface Department {
   category: string;
   clinicCode?: string;
   mainCategory?: MainCategory;
+  mongoId?: string;
   subs?: {
     name: string;
     nameAr: string;

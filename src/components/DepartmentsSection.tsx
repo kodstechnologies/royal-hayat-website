@@ -1,13 +1,21 @@
 import { useState, useRef, useMemo, useEffect } from "react";
-import { ChevronLeft, ChevronRight, ArrowRight, X, Stethoscope, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight, ArrowRight, X, Stethoscope, Search, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { fetchAllDepartmentsPages, getDepartmentSubspecialitiesAndDoctors } from "@/api/department";
 import { departments as staticDepartments, type Department, MAIN_CATEGORIES } from "@/data/departments";
 import { loadDoctors, type Doctor } from "@/data/loadDoctors";
+import { mapApiDepartmentsToDisplay } from "@/utils/mapApiDepartment";
+import {
+  getDepartmentCardCacheKey,
+  getDepartmentLookupId,
+  mapApiDepartmentDetailResponse,
+  mapApiSubspecialitiesToDepartmentSubs,
+} from "@/utils/mapApiDepartmentDetail";
 import { doctorMatchesDepartment } from "@/data/departments";
-import { getSubSlugForDepartment, normalizeSubSlug } from "@/utils/departmentSubSlug";
+import { getSubSlugForDepartment, normalizeSubSlug, slugifySubName } from "@/utils/departmentSubSlug";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
 import { sortDoctorsInDepartment } from "@/utils/sortDoctorsInDepartment";
 import { scrollDoctorCarousel } from "@/utils/doctorCarousel";
@@ -43,25 +51,48 @@ type DeptRestoreState = {
   fromDepartments?: boolean;
   returnPath?: string;
 };
+type DeptCardData = {
+  subs: NonNullable<Department["subs"]>;
+  doctors: Doctor[];
+  fromApi: boolean;
+};
 const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [selectedSubByDept, setSelectedSubByDept] = useState<Record<number, string>>({});
-  const [departments] = useState<Department[]>(
-    staticDepartments.filter((dept) => dept.name !== "Allergy & Immunology")
+  const fallbackDepartments = staticDepartments.filter(
+    (dept) => dept.name !== "Allergy & Immunology"
   );
+  const [departments, setDepartments] = useState<Department[]>(fallbackDepartments);
   const doctorScrollRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef(null);
   const restoreScrollYRef = useRef<number | null>(null);
   const { lang, t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
   const [doctorCatalog, setDoctorCatalog] = useState<Doctor[]>([]);
+  const [deptCardCache, setDeptCardCache] = useState<Record<string, DeptCardData>>({});
+  const [loadingDeptKey, setLoadingDeptKey] = useState<string | null>(null);
   useEffect(() => {
     let cancelled = false;
     void loadDoctors().then((list) => {
       if (!cancelled) setDoctorCatalog(list);
     });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+  useEffect(() => {
+    let cancelled = false;
+    void fetchAllDepartmentsPages({ isActive: true })
+      .then((rows) => {
+        if (cancelled) return;
+        const mapped = mapApiDepartmentsToDisplay(rows);
+        if (mapped.length > 0) setDepartments(mapped);
+      })
+      .catch(() => {
+        /* keep static fallback */
+      });
     return () => {
       cancelled = true;
     };
@@ -76,6 +107,50 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
       setSelectedSubByDept(state.restoreSelectedSubByDept);
     }
   }, [location.state]);
+  useEffect(() => {
+    if (openIndex === null) return;
+    const dept = departments[openIndex];
+    if (!dept) return;
+
+    const cacheKey = getDepartmentCardCacheKey(dept);
+    if (deptCardCache[cacheKey]) return;
+
+    const lookupId = getDepartmentLookupId(dept);
+    if (!lookupId) return;
+
+    let cancelled = false;
+    setLoadingDeptKey(cacheKey);
+
+    void getDepartmentSubspecialitiesAndDoctors(lookupId)
+      .then((response) => {
+        if (cancelled || !response?.success || !response.data) return;
+
+        const mapped = mapApiDepartmentDetailResponse(response.data, dept.slug);
+        const apiSubs = mapApiSubspecialitiesToDepartmentSubs(response.data.subspecialities ?? []);
+        const fallbackSubs = dept.subs ?? [];
+
+        setDeptCardCache((prev) => ({
+          ...prev,
+          [cacheKey]: {
+            subs: apiSubs.length > 0 ? apiSubs : fallbackSubs,
+            doctors: mapped.doctors,
+            fromApi: true,
+          },
+        }));
+      })
+      .catch(() => {
+        /* static subs/doctors fallback below */
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setLoadingDeptKey((current) => (current === cacheKey ? null : current));
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [openIndex, departments, deptCardCache]);
   useEffect(() => {
     if (openIndex === null || restoreScrollYRef.current == null) return;
     const scrollY = restoreScrollYRef.current;
@@ -116,7 +191,8 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
   const openDepartmentDetail = (
     deptSlug: string,
     origIdx: number,
-    subSlug?: string
+    subSlug?: string,
+    departmentMongoId?: string
   ) => {
     const path = subSlug
       ? `/medical-services/${deptSlug}/${subSlug}`
@@ -128,6 +204,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
         restoreDeptOpenIndex: origIdx,
         restoreSelectedSubByDept: selectedSubByDept,
         restoreScrollY: window.scrollY,
+        departmentMongoId,
       },
     });
   };
@@ -159,9 +236,19 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
   const handleToggle = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
   };
-  const getSubSlug = (deptSlug: string, subName: string) =>
-    getSubSlugForDepartment(deptSlug, subName);
+  const getSubSlug = (dept: Department, subName: string, cardData?: DeptCardData) => {
+    if (cardData?.fromApi) return slugifySubName(subName);
+    return getSubSlugForDepartment(dept.slug, subName);
+  };
+  const normalizeCardSubSlug = (dept: Department, subSlug: string, cardData?: DeptCardData) => {
+    if (cardData?.fromApi) return subSlug;
+    return normalizeSubSlug(dept.slug, subSlug);
+  };
   const selectedDept = openIndex !== null ? departments[openIndex] : null;
+  const selectedCardData = selectedDept ? deptCardCache[getDepartmentCardCacheKey(selectedDept)] : undefined;
+  const selectedCardLoading = selectedDept
+    ? loadingDeptKey === getDepartmentCardCacheKey(selectedDept)
+    : false;
   const deptDoctorsMap = useMemo<Record<string, Doctor[]>>(
     () =>
       Object.fromEntries(
@@ -176,9 +263,12 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
   );
   const deptDoctors = useMemo(() => {
     if (!selectedDept) return [];
+    if (selectedCardLoading) return [];
     const origIdx = openIndex!;
+    const cardData = selectedCardData;
+    const cardSubs = cardData?.subs ?? selectedDept.subs ?? [];
     const selectedSubSlug = selectedSubByDept[origIdx]
-      ? normalizeSubSlug(selectedDept.slug, selectedSubByDept[origIdx])
+      ? normalizeCardSubSlug(selectedDept, selectedSubByDept[origIdx], cardData)
       : undefined;
     const subSpecialtyDoctorMap: Record<string, string[]> = {
       "cardiology": ["alturki", "turki"],
@@ -206,12 +296,14 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
     } else if (selectedDept.name === "General & Laparoscopic Surgery") {
       extraTerms.push("Nutricare", "La Cosmetique");
     }
-    const allDeptDoctors = doctorCatalog.filter((doc) =>
-      doctorMatchesDepartment(selectedDept.name, doc, extraTerms)
-    );
-    if (selectedSubSlug && selectedDept.subs) {
+    const allDeptDoctors = cardData?.doctors?.length
+      ? cardData.doctors
+      : doctorCatalog.filter((doc) =>
+          doctorMatchesDepartment(selectedDept.name, doc, extraTerms)
+        );
+    if (selectedSubSlug && cardSubs.length > 0) {
       const mapKey = Object.keys(subSpecialtyDoctorMap).find((k) => selectedSubSlug.includes(k) || k.includes(selectedSubSlug));
-      if (mapKey && subSpecialtyDoctorMap[mapKey].length > 0) {
+      if (mapKey && subSpecialtyDoctorMap[mapKey].length > 0 && !cardData?.fromApi) {
         const keywords = subSpecialtyDoctorMap[mapKey];
         const filtered = allDeptDoctors.filter((doc) =>
           keywords.some((kw) => doc.id.toLowerCase().includes(kw) || doc.name.toLowerCase().includes(kw))
@@ -220,13 +312,13 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
           return sortDoctorsInDepartment(filtered, selectedDept.name, lang);
         }
       }
-      const selectedSub = selectedDept.subs.find(
-        (s) => getSubSlug(selectedDept.slug, s.name) === selectedSubSlug
+      const selectedSub = cardSubs.find(
+        (s) => getSubSlug(selectedDept, s.name, cardData) === selectedSubSlug
       );
       if (selectedSub) {
         const subKeywords = selectedSub.name.toLowerCase().split(/[\s&,/()+]+/).filter(w => w.length > 3);
         const filtered = allDeptDoctors.filter((doc) => {
-          const haystack = `${doc.title} ${doc.specialty} ${doc.titleAr} ${doc.id}`.toLowerCase();
+          const haystack = `${doc.title} ${doc.specialty} ${doc.titleAr} ${doc.specialtyAr} ${doc.id}`.toLowerCase();
           return subKeywords.some((kw) => haystack.includes(kw));
         });
         if (filtered.length > 0) {
@@ -234,9 +326,11 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
         }
       }
     }
-    const baseDoctors = deptDoctorsMap[selectedDept.name] || [];
+    const baseDoctors = cardData?.doctors?.length
+      ? cardData.doctors
+      : deptDoctorsMap[selectedDept.name] || [];
     return sortDoctorsInDepartment(baseDoctors, selectedDept.name, lang);
-  }, [deptDoctorsMap, selectedDept, openIndex, selectedSubByDept, lang, doctorCatalog]);
+  }, [deptDoctorsMap, selectedDept, selectedCardData, selectedCardLoading, openIndex, selectedSubByDept, lang, doctorCatalog]);
   useEffect(() => {
     if (doctorScrollRef.current) {
       doctorScrollRef.current.scrollTo({ left: 0, behavior: "auto" });
@@ -306,8 +400,14 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                   {catDepts.map((dept) => {
                     const origIdx = getOriginalIndex(dept);
                     const isExpanded = openIndex === origIdx;
+                    const cardData = deptCardCache[getDepartmentCardCacheKey(dept)];
+                    const cardSubs = cardData?.subs ?? dept.subs ?? [];
+                    const isCardLoading =
+                      isExpanded &&
+                      loadingDeptKey === getDepartmentCardCacheKey(dept) &&
+                      !cardData;
                     const selectedSubSlug = selectedSubByDept[origIdx]
-                      ? normalizeSubSlug(dept.slug, selectedSubByDept[origIdx])
+                      ? normalizeCardSubSlug(dept, selectedSubByDept[origIdx], cardData)
                       : undefined;
                     return (
                       <motion.div
@@ -365,7 +465,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                         openAlSafwaProgram(origIdx);
                                         return;
                                       }
-                                      openDepartmentDetail(dept.slug, origIdx);
+                                      openDepartmentDetail(dept.slug, origIdx, undefined, dept.mongoId);
                                     }}
                                     className="inline-flex w-full justify-end items-center gap-1.5 text-primary font-body text-xs tracking-wide hover:text-accent transition-colors"
                                   >
@@ -377,33 +477,40 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                             <div className="lg:w-3/5 p-6 lg:p-8 flex flex-col">
                               <div className="flex justify-between items-start mb-6">
                                 <div>
-                                  {dept.subs && dept.subs.length > 0 && (
+                                  {isCardLoading ? (
+                                    <div className="flex items-center gap-2 text-muted-foreground py-2">
+                                      <Loader2 className="h-4 w-4 animate-spin text-primary" aria-hidden />
+                                      <span className="font-body text-xs">
+                                        {lang === "ar" ? "جاري التحميل..." : "Loading..."}
+                                      </span>
+                                    </div>
+                                  ) : cardSubs.length > 0 ? (
                                     <>
                                       <p className="text-accent text-xs tracking-[0.2em] uppercase font-body mb-2">{lang === "ar" ? "التخصصات الفرعية" : "Sub-specialties"}</p>
                                       <div className="flex flex-wrap gap-2">
-                                        {dept.subs.map((sub) => (
+                                        {cardSubs.map((sub) => (
                                           <button key={sub.name} type="button"
                                             onClick={(e) => {
                                               e.stopPropagation();
-                                              const subSlug = getSubSlug(dept.slug, sub.name);
+                                              const subSlug = getSubSlug(dept, sub.name, cardData);
                                               const isAlreadySelected = selectedSubSlug === subSlug;
                                               setSelectedSubByDept((prev) => ({ ...prev, [origIdx]: isAlreadySelected ? "" : subSlug }));
                                               if (doctorScrollRef.current) doctorScrollRef.current.scrollTo({ left: 0, behavior: "smooth" });
                                             }}
-                                            className={`px-3 py-1.5 rounded-full text-xs font-body border transition-colors ${selectedSubSlug === getSubSlug(dept.slug, sub.name) ? "bg-primary text-primary-foreground border-primary" : "bg-secondary/50 text-foreground border-border/30 hover:bg-secondary"}`}
+                                            className={`px-3 py-1.5 rounded-full text-xs font-body border transition-colors ${selectedSubSlug === getSubSlug(dept, sub.name, cardData) ? "bg-primary text-primary-foreground border-primary" : "bg-secondary/50 text-foreground border-border/30 hover:bg-secondary"}`}
                                           >
                                             {lang === "ar" ? sub.nameAr : sub.name}
                                           </button>
                                         ))}
                                       </div>
                                     </>
-                                  )}
+                                  ) : null}
                                 </div>
                                 <button onClick={() => setOpenIndex(null)} className="w-8 h-8 rounded-full bg-secondary/50 flex items-center justify-center hover:bg-primary/20 transition-colors flex-shrink-0 ml-4">
                                   <X className="w-4 h-4 text-muted-foreground" />
                                 </button>
                               </div>
-                              {deptDoctors.length > 0 && (
+                              {!isCardLoading && deptDoctors.length > 0 && (
                                 <div className="mt-auto">
                                   <p className="text-accent text-center text-xs tracking-[0.2em] uppercase font-body mb-4">
                                     {lang === "ar" ? "فريقنا الطبي" : "Our Medical Team"}
@@ -496,7 +603,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                       </div>
                                     )}
                                   </div>
-                                  {dept.subs && dept.subs.length > 0 && selectedSubSlug && (
+                                  {cardSubs.length > 0 && selectedSubSlug && (
                                     <div className="mt-4 text-center">
                                       <button
                                         type="button"
@@ -504,7 +611,8 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                           openDepartmentDetail(
                                             dept.slug,
                                             origIdx,
-                                            selectedSubSlug
+                                            selectedSubSlug,
+                                            dept.mongoId
                                           )
                                         }
                                         className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-full font-body text-xs tracking-[0.15em] uppercase hover:bg-primary/90 transition-colors"

@@ -6,6 +6,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { fetchAllDoctorsByDepartment } from "@/api/doctors";
 import { loadDoctors, type Doctor } from "@/data/loadDoctors";
 import { departments, deptDoctorAliases, MAIN_CATEGORIES, type MainCategory } from "@/data/departments";
 import { Input } from "@/components/ui/input";
@@ -253,11 +254,27 @@ const Doctors = () => {
   const { lang, t } = useLanguage();
   useEffect(() => {
     let cancelled = false;
-    void loadDoctors().then((list) => {
-      if (cancelled) return;
-      setDoctorCatalog(list);
-      setCatalogLoading(false);
-    });
+    void (async () => {
+      try {
+        const apiList = await fetchAllDoctorsByDepartment();
+        if (cancelled) return;
+        if (apiList.length > 0) {
+          setDoctorCatalog(apiList);
+        } else {
+          setDoctorCatalog(await loadDoctors());
+        }
+      } catch {
+        if (!cancelled) {
+          try {
+            setDoctorCatalog(await loadDoctors());
+          } catch {
+            setDoctorCatalog([]);
+          }
+        }
+      } finally {
+        if (!cancelled) setCatalogLoading(false);
+      }
+    })();
     return () => {
       cancelled = true;
     };

@@ -7,7 +7,7 @@ import Footer from "@/components/Footer";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { loadDoctorById, type Doctor } from "@/data/loadDoctors";
 import { departments, deptDoctorAliases } from "@/data/departments";
-import { getDoctorById, mapApiDoctorRowToDoctor } from "@/api/doctors";
+import { fetchDoctorProfileById, isMongoDoctorId } from "@/api/doctors";
 import {
   createDoctorFeedbackByName,
   extractDoctorFeedbackRecord,
@@ -245,41 +245,20 @@ const DoctorProfile = () => {
       navigate(-1);
     }
   };
-  const [localDoctor, setLocalDoctor] = useState<Doctor | undefined>();
-  const [localResolved, setLocalResolved] = useState(false);
-  useEffect(() => {
-    if (!id) {
-      setLocalResolved(true);
-      return;
-    }
-    let cancelled = false;
-    void loadDoctorById(id).then((doc) => {
-      if (!cancelled) {
-        setLocalDoctor(doc);
-        setLocalResolved(true);
-      }
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [id]);
-  const { data: apiDoctor, isLoading: apiLoading } = useQuery({
-    queryKey: ["doctor", id],
+  const { data: doctor, isLoading } = useQuery({
+    queryKey: ["doctor-profile", id],
     queryFn: async () => {
-      if (!id || !/^[0-9a-fA-F]{24}$/i.test(id)) return null;
-      try {
-        const res = await getDoctorById(id);
-        if (res.success && res.data) {
-          return mapApiDoctorRowToDoctor(res.data, "", "");
-        }
-      } catch (err) {
-        console.error("Error fetching doctor from API:", err);
+      if (!id) return null;
+
+      if (isMongoDoctorId(id)) {
+        const apiDoctor = await fetchDoctorProfileById(id);
+        if (apiDoctor) return apiDoctor;
       }
-      return null;
+
+      return (await loadDoctorById(id)) ?? null;
     },
-    enabled: !!id && localResolved && !localDoctor,
+    enabled: !!id,
   });
-  const doctor = localDoctor || apiDoctor;
 
   useEffect(() => {
     if (!doctor?.name) return;
@@ -314,7 +293,7 @@ const DoctorProfile = () => {
     };
   }, [doctor?.name]);
 
-  if (!localResolved || apiLoading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
         <Header />

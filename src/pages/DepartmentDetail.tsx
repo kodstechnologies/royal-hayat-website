@@ -8,8 +8,13 @@ import {
   type DepartmentDetail as DepartmentDetailData,
   type DepartmentDetailSection,
 } from "@/data/loadDepartmentDetails";
+import { getDepartmentSubspecialitiesAndDoctors } from "@/api/department";
 import { departments as staticDepartments, MAIN_CATEGORIES, ROYALE_HAYAT_PHARMACY_DOCTOR_IDS, CLINICAL_PHARMACY_DOCTOR_IDS, PAIN_MANAGEMENT_DOCTOR_IDS, type MainCategory } from "@/data/departments";
 import { loadDoctors, type Doctor } from "@/data/loadDoctors";
+import {
+  mapApiDepartmentDetailResponse,
+  mergeDepartmentDetail,
+} from "@/utils/mapApiDepartmentDetail";
 import { motion } from "framer-motion";
 import { ChevronRight, ChevronLeft, ArrowLeft, ArrowRight, CheckCircle2, ChevronDown, Stethoscope, MessageCircle, Phone, Loader2 } from "lucide-react";
 import { useState, useRef, useEffect, useMemo, memo } from "react";
@@ -319,6 +324,7 @@ const DepartmentDetail = () => {
     restoreScrollY?: number;
     restoreExpandedIndex?: number | null;
     restoreSelectedSubByService?: Record<string, string>;
+    departmentMongoId?: string;
   } | null) ?? {};
   const fromBookAppointment = Boolean(navState.fromBookAppointment);
   const fromSpecializedCare = Boolean(navState.fromSpecializedCare);
@@ -335,25 +341,55 @@ const DepartmentDetail = () => {
   const [expandedSub, setExpandedSub] = useState<string | null>(subSlug || null);
   const [dept, setDept] = useState<DepartmentDetailData | null | undefined>(undefined);
   const [allDoctors, setAllDoctors] = useState<Doctor[]>([]);
+  const [deptImage, setDeptImage] = useState("");
+
   useEffect(() => {
     let cancelled = false;
-    void loadDepartmentDetails().then((details) => {
+
+    void (async () => {
+      const staticDetails = await loadDepartmentDetails();
       if (cancelled) return;
-      setDept(resolveDepartmentBySlug(slug, details) ?? null);
-    });
+
+      const staticDeptDetail = resolveDepartmentBySlug(slug, staticDetails) ?? null;
+      const staticDeptMeta = staticDeptDetail
+        ? staticDepartments.find((item) => item.slug === staticDeptDetail.slug)
+        : undefined;
+
+      const lookupId =
+        navState.departmentMongoId ||
+        staticDeptMeta?.mongoId ||
+        staticDeptMeta?.clinicCode ||
+        staticDeptDetail?.name ||
+        slug;
+
+      if (lookupId) {
+        try {
+          const response = await getDepartmentSubspecialitiesAndDoctors(String(lookupId));
+          if (cancelled) return;
+
+          if (response?.success && response.data) {
+            const mapped = mapApiDepartmentDetailResponse(response.data, slug ?? "");
+            setDept(mergeDepartmentDetail(mapped.detail, staticDeptDetail ?? undefined));
+            setAllDoctors(mapped.doctors);
+            setDeptImage(mapped.image || staticDeptMeta?.img || "");
+            return;
+          }
+        } catch {
+          /* fall back to static content below */
+        }
+      }
+
+      if (cancelled) return;
+      setDept(staticDeptDetail);
+      setDeptImage(staticDeptMeta?.img || "");
+      const doctors = await loadDoctors();
+      if (!cancelled) setAllDoctors(doctors);
+    })();
+
     return () => {
       cancelled = true;
     };
-  }, [slug]);
-  useEffect(() => {
-    let cancelled = false;
-    void loadDoctors().then((list) => {
-      if (!cancelled) setAllDoctors(list);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  }, [slug, navState.departmentMongoId]);
   const goBackToSpecializedCare = () => {
     navigate(navState.returnPath || "/", {
       state: {
@@ -437,7 +473,6 @@ const DepartmentDetail = () => {
   const activeSub = resolvedSubSlug ? resolveSubDepartment(dept, resolvedSubSlug) : null;
   const displayDept = activeSub || dept;
   const staticDept = staticDepartments.find((d) => d.slug === dept.slug);
-  const deptImage = staticDept?.img || "";
   const deptNameToDoctorDept: Record<string, string[]> = {
     "Obstetrics & Gynecology": ["Obstetrics & Gynecology"],
     "Reproductive Medicine & IVF": ["IVF"],
@@ -460,7 +495,14 @@ const DepartmentDetail = () => {
     "Physiotherapy": ["Physiotherapy"],
   };
   const matchingDepts = deptNameToDoctorDept[displayDept.name] || deptNameToDoctorDept[dept.name] || [];
-  const baseDeptDoctors = dept.name === "Royale Hayat Pharmacy"
+  const apiDeptDoctors = allDoctors.filter(
+    (doc) =>
+      doc.department === dept.name ||
+      doc.department.toLowerCase() === dept.name.toLowerCase(),
+  );
+  const baseDeptDoctors = apiDeptDoctors.length > 0
+    ? apiDeptDoctors
+    : dept.name === "Royale Hayat Pharmacy"
     ? allDoctors.filter((doc) => (ROYALE_HAYAT_PHARMACY_DOCTOR_IDS as readonly string[]).includes(doc.id))
     : dept.name === "Clinical Pharmacy"
       ? allDoctors.filter((doc) => (CLINICAL_PHARMACY_DOCTOR_IDS as readonly string[]).includes(doc.id))

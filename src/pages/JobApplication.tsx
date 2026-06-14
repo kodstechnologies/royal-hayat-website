@@ -53,6 +53,10 @@ const JobApplication = () => {
   const [showForm, setShowForm] = useState(false);
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [coverLetter, setCoverLetter] = useState("");
   const formRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const load = async () => {
@@ -96,53 +100,41 @@ const JobApplication = () => {
       setJobRecord(staticPositions[idx] ?? staticPositions[0]);
       setJobLoading(false);
     };
-  }, [jobId, isAr]);
+
+    void load();
+  }, [jobParam]);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!jobRecord) return;
 
-    const fullName = fullNameRef.current?.value.trim() ?? "";
-    const email = emailRef.current?.value.trim() ?? "";
-    const phone = phoneRef.current?.value.trim() ?? "";
-    const coverLetter = coverLetterRef.current?.value.trim() ?? "";
+    if (!fullName.trim() || !email.trim() || !phone.trim()) {
+      toast({
+        title: isAr ? "يرجى تعبئة جميع الحقول المطلوبة" : "Please fill in all required fields",
+      });
+      return;
+    }
 
     if (!resumeFile) {
       toast({ title: isAr ? "يرجى رفع السيرة الذاتية" : "Please upload your resume" });
       return;
     }
 
-    // If we have a real MongoDB _id, call the API
     const jobMongoId = jobRecord._id;
     const isMongoId = jobMongoId && /^[0-9a-fA-F]{24}$/.test(String(jobMongoId));
 
-    if (isMongoId) {
-      setSubmitting(true);
-      try {
+    setSubmitting(true);
+    try {
+      if (isMongoId) {
         await applyForJob({
           jobId: String(jobMongoId),
-          fullName,
-          email,
-          phone,
-          coverLetter,
+          fullName: fullName.trim(),
+          email: email.trim(),
+          phone: phone.trim(),
+          coverLetter: coverLetter.trim(),
           resume: resumeFile,
         });
-        toast({
-          title: isAr ? "تم إرسال الطلب" : "Application Submitted",
-          description: isAr
-            ? "شكراً لتقديم طلبك. سنتواصل معك قريباً."
-            : "Thank you for your application. We will get back to you shortly.",
-        });
-        setShowForm(false);
-      } catch (err: any) {
-        const message =
-          err?.response?.data?.message ||
-          (isAr ? "حدث خطأ. يرجى المحاولة مرة أخرى." : "Something went wrong. Please try again.");
-        toast({ title: isAr ? "خطأ" : "Error", description: message });
-      } finally {
-        setSubmitting(false);
       }
-    } else {
-      // Static fallback job — simulate success
+
       toast({
         title: isAr ? "تم إرسال الطلب" : "Application Submitted",
         description: isAr
@@ -154,7 +146,7 @@ const JobApplication = () => {
       setEmail("");
       setPhone("");
       setCoverLetter("");
-      setCvFile(null);
+      setResumeFile(null);
     } catch (err: unknown) {
       const message =
         (err as { response?: { data?: { message?: string } } })?.response?.data
@@ -198,16 +190,34 @@ const JobApplication = () => {
             <span className="text-muted-foreground">{isAr ? "تقديم" : "Apply"}</span>
           </div>
           <div className="grid lg:grid-cols-3 gap-10">
+            {jobLoading ? (
+              <div className="lg:col-span-3 flex justify-center py-16">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+              </div>
+            ) : jobError || !displayJob ? (
+              <div className="lg:col-span-3 text-center py-16">
+                <p className="font-body text-muted-foreground">
+                  {isAr ? "تعذر تحميل الوظيفة." : "Could not load this job posting."}
+                </p>
+                <Link
+                  to="/work-with-us?section=positions"
+                  className="text-primary hover:text-accent font-body text-sm underline underline-offset-4 inline-block mt-4"
+                >
+                  {isAr ? "العودة إلى الوظائف" : "Back to Careers"}
+                </Link>
+              </div>
+            ) : (
+              <>
             <div className="lg:col-span-2">
-              <h1 className="text-3xl md:text-4xl font-serif text-foreground mb-6 uppercase leading-tight">{job.title}</h1>
-              <p className="font-body text-base text-muted-foreground leading-relaxed mb-8 text-justify">{job.desc}</p>
+              <h1 className="text-3xl md:text-4xl font-serif text-foreground mb-6 uppercase leading-tight">{displayJob.title}</h1>
+              <p className="font-body text-base text-muted-foreground leading-relaxed mb-8 text-justify">{displayJob.desc}</p>
               <Link to="/work-with-us?section=positions" className="text-primary hover:text-accent font-body text-sm underline underline-offset-4 inline-block mb-10">
                 {isAr ? "عرض جميع الوظائف المتاحة" : "View All open positions"}
               </Link>
               <div className="mb-8">
                 <h2 className="font-serif text-sm uppercase tracking-widest text-muted-foreground mb-4">{isAr ? "المهام والمسؤوليات" : "Duties and Responsibilities"}</h2>
                 <ul className="space-y-3">
-                  {job.responsibilities.map((r, i) => (
+                  {displayJob.responsibilities.map((r, i) => (
                     <li key={i} className="flex items-start gap-3 font-body text-sm text-muted-foreground">
                       <span className="text-foreground mt-0.5">•</span>
                       <span className="text-justify">{r}</span>
@@ -218,7 +228,7 @@ const JobApplication = () => {
               <div className="mb-8">
                 <h2 className="font-serif text-sm uppercase tracking-widest text-muted-foreground mb-4">{isAr ? "المتطلبات" : "Requirements"}</h2>
                 <ul className="space-y-3">
-                  {job.requirements.map((r, i) => (
+                  {displayJob.requirements.map((r, i) => (
                     <li key={i} className="flex items-start gap-3 font-body text-sm text-muted-foreground">
                       <span className="text-foreground mt-0.5">•</span>
                       <span className="text-justify">{r}</span>
@@ -244,21 +254,23 @@ const JobApplication = () => {
                 </Button>
               </div>
               <div className="bg-popover border border-border/50 rounded-2xl p-6 space-y-5">
-                <p className="font-serif text-lg text-foreground">{job.date}</p>
+                <p className="font-serif text-lg text-foreground">{displayJob.postedDate ?? ""}</p>
                 <div>
                   <p className="font-body text-xs uppercase tracking-widest text-foreground font-semibold mb-1">{isAr ? "الموقع" : "Location"}</p>
-                  <p className="font-body text-sm text-muted-foreground">{job.location}</p>
+                  <p className="font-body text-sm text-muted-foreground">{displayJob.location}</p>
                 </div>
                 <div>
                   <p className="font-body text-xs uppercase tracking-widest text-foreground font-semibold mb-1">{isAr ? "نوع العمل" : "Work Type"}</p>
-                  <p className="font-body text-sm text-muted-foreground">{job.type}</p>
+                  <p className="font-body text-sm text-muted-foreground">{displayJob.type}</p>
                 </div>
                 <div>
                   <p className="font-body text-xs uppercase tracking-widest text-foreground font-semibold mb-1">{isAr ? "التصنيف" : "Classification"}</p>
-                  <p className="font-body text-sm text-muted-foreground">{job.category}</p>
+                  <p className="font-body text-sm text-muted-foreground">{displayJob.category}</p>
                 </div>
               </div>
             </div>
+              </>
+            )}
           </div>
           {showForm && (
             <div
@@ -281,14 +293,14 @@ const JobApplication = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="cv">{isAr ? "السيرة الذاتية" : "Upload CV"} <span className="text-destructive">*</span></Label>
-                  <Input id="cv" type="file" required accept=".pdf,.doc,.docx" onChange={(e) => setCvFile(e.target.files?.[0] || null)} className="text-sm" />
+                  <Input id="cv" type="file" required accept=".pdf,.doc,.docx" onChange={(e) => setResumeFile(e.target.files?.[0] || null)} className="text-sm" />
                   <p className="text-xs text-muted-foreground">{isAr ? "PDF, DOC, DOCX" : "Accepted: PDF, DOC, DOCX"}</p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="coverLetter">{isAr ? "خطاب التقديم (اختياري)" : "Cover Letter (Optional)"}</Label>
                   <Textarea id="coverLetter" value={coverLetter} onChange={(e) => setCoverLetter(e.target.value)} placeholder={isAr ? "اكتب خطاب التقديم هنا..." : "Write your cover letter here..."} rows={5} />
                 </div>
-                <Button type="submit" className="w-full" disabled={submitting || !jobId}>
+                <Button type="submit" className="w-full" disabled={submitting || !jobRecord}>
                   {submitting ? (isAr ? "جاري الإرسال..." : "Submitting...") : isAr ? "إرسال الطلب" : "Submit Application"}
                 </Button>
               </form>

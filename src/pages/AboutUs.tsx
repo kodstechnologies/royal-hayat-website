@@ -3,7 +3,6 @@ import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
 import ChairmanMessage from "@/components/ChairmanMessage";
-import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Heart, Star, Sparkles, Shield, Target, BookOpen, Users, ChevronDown, ChevronUp } from "lucide-react";
@@ -151,12 +150,12 @@ const leaders = [
 const LeaderCard = ({ leader, lang }: { leader: typeof leaders[0] & { image?: string }; lang: string }) => {
   const { t } = useLanguage();
   const [expanded, setExpanded] = useState(false);
-  const nameBase = lang === "ar" ? leader.nameAr : leader.nameEn;
-  const namePrefix = lang === "ar" ? leader.initialsAr : leader.initials;
-  const name = formatNameWithPrefix(nameBase, namePrefix, lang);
-  const roles = lang === "ar" ? leader.rolesAr : leader.rolesEn;
+  const name = lang === "ar" ? leader.nameAr : leader.nameEn;
+  const role = lang === "ar" ? leader.roleAr : leader.roleEn;
+  const roles = role.split("\n").map((line) => line.trim()).filter(Boolean);
+  const credentials = lang === "ar" ? leader.credentialsAr : leader.credentialsEn;
   const bio = lang === "ar" ? leader.bioAr : leader.bioEn;
-  const roles = role.split("\n");
+  const displayInitials = leader.initials;
   const mobileImageOverride: Record<string, string> = {
     "Dr. Abubakr Elmardi": "",
     "Dr. Sulaiman Al Mazeedi": "",
@@ -470,28 +469,9 @@ const AboutUs = () => {
             </div>
           </ScrollAnimationWrapper>
           <div className="max-w-5xl mx-auto space-y-6">
-            {leadersLoading && (
-              <>
-                <Skeleton className="h-48 w-full rounded-2xl" />
-                <Skeleton className="h-48 w-full rounded-2xl" />
-                <Skeleton className="h-48 w-full rounded-2xl" />
-              </>
-            )}
-
-            {!leadersLoading && leaders.length === 0 && (
-              <p
-                className={`text-center text-muted-foreground font-body text-sm py-8 ${
-                  lang === "ar" ? "rtl-text" : ""
-                }`}
-              >
-                {lang === "ar" ? "لا يوجد أعضاء قيادة متاحون حالياً." : "No leadership profiles available at the moment."}
-              </p>
-            )}
-
-            {!leadersLoading &&
-              leaders.map((leader) => (
-                <LeaderCard key={leader.id} leader={leader} lang={lang} />
-              ))}
+            {leaders.map((leader) => (
+              <LeaderCard key={leader.nameEn} leader={leader} lang={lang} />
+            ))}
           </div>
         </div>
       </section>}

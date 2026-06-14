@@ -38,7 +38,7 @@ const shouldShowDepartmentDoctorsHeading = (dept: Department, selectedSubSlug?: 
 };
 type DeptRestoreState = {
   restoreDeptOpenIndex?: number;
-  restoreSelectedSubByDept?: Record<number, string>;
+  restoreSelectedSubByDept?: Record<string, string>;
   restoreScrollY?: number;
   fromDepartments?: boolean;
   returnPath?: string;
@@ -72,25 +72,23 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
     if (state?.restoreDeptOpenIndex == null) return;
     restoreScrollYRef.current =
       typeof state.restoreScrollY === "number" ? state.restoreScrollY : null;
-    setOpenIndex(state.restoreDeptOpenIndex);
+    const deptSlug = departments[state.restoreDeptOpenIndex]?.slug;
+    if (deptSlug) setOpenSlug(deptSlug);
     if (state.restoreSelectedSubByDept) {
       setSelectedSubByDept(state.restoreSelectedSubByDept);
     }
-  }, [location.state]);
+  }, [location.state, departments]);
   useEffect(() => {
-    if (openIndex === null || restoreScrollYRef.current == null) return;
+    if (openSlug === null || restoreScrollYRef.current == null) return;
     const scrollY = restoreScrollYRef.current;
-    const deptSlug = departments[openIndex]?.slug;
     const scrollToSavedPosition = () => {
       if (scrollY > 0) {
         window.scrollTo({ top: scrollY, left: 0, behavior: "auto" });
         return;
       }
-      if (deptSlug) {
-        document
-          .getElementById(`dept-card-${deptSlug}`)
-          ?.scrollIntoView({ block: "center", behavior: "auto" });
-      }
+      document
+        .getElementById(`dept-card-${openSlug}`)
+        ?.scrollIntoView({ block: "center", behavior: "auto" });
     };
     scrollToSavedPosition();
     const raf = window.requestAnimationFrame(scrollToSavedPosition);
@@ -102,7 +100,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
       window.cancelAnimationFrame(raf);
       window.clearTimeout(timer);
     };
-  }, [openIndex, departments]);
+  }, [openSlug]);
   const openDoctorProfile = (docId: string, origIdx: number) => {
     navigate(`/doctors/${docId}`, {
       state: {
@@ -157,12 +155,14 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
       scrollDoctorCarousel(doctorScrollRef.current, direction);
     }
   };
-  const handleToggle = (index: number) => {
-    setOpenIndex(openIndex === index ? null : index);
+  const handleToggle = (slug: string) => {
+    setOpenSlug(openSlug === slug ? null : slug);
   };
   const getSubSlug = (deptSlug: string, subName: string) =>
     getSubSlugForDepartment(deptSlug, subName);
-  const selectedDept = openIndex !== null ? departments[openIndex] : null;
+  const selectedDept = openSlug
+    ? departments.find((dept) => dept.slug === openSlug) ?? null
+    : null;
   const deptDoctorsMap = useMemo<Record<string, Doctor[]>>(
     () =>
       Object.fromEntries(
@@ -177,9 +177,8 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
   );
   const deptDoctors = useMemo(() => {
     if (!selectedDept) return [];
-    const origIdx = openIndex!;
-    const selectedSubSlug = selectedSubByDept[origIdx]
-      ? normalizeSubSlug(selectedDept.slug, selectedSubByDept[origIdx])
+    const selectedSubSlug = selectedSubByDept[selectedDept.slug]
+      ? normalizeSubSlug(selectedDept.slug, selectedSubByDept[selectedDept.slug])
       : undefined;
     const subSpecialtyDoctorMap: Record<string, string[]> = {
       "cardiology": ["alturki", "turki"],
@@ -237,12 +236,12 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
     }
     const baseDoctors = deptDoctorsMap[selectedDept.name] || [];
     return sortDoctorsInDepartment(baseDoctors, selectedDept.name, lang);
-  }, [deptDoctorsMap, selectedDept, openIndex, selectedSubByDept, lang, doctorCatalog]);
+  }, [deptDoctorsMap, selectedDept, selectedSubByDept, lang, doctorCatalog]);
   useEffect(() => {
     if (doctorScrollRef.current) {
       doctorScrollRef.current.scrollTo({ left: 0, behavior: "auto" });
     }
-  }, [openIndex, selectedSubByDept, deptDoctors]);
+  }, [openSlug, selectedSubByDept, deptDoctors]);
   const getOriginalIndex = (dept: Department) =>
     departments.findIndex((d) => d.name === dept.name);
   return (
@@ -306,9 +305,9 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
                   {catDepts.map((dept) => {
                     const origIdx = getOriginalIndex(dept);
-                    const isExpanded = openIndex === origIdx;
-                    const selectedSubSlug = selectedSubByDept[origIdx]
-                      ? normalizeSubSlug(dept.slug, selectedSubByDept[origIdx])
+                    const isExpanded = openSlug === dept.slug;
+                    const selectedSubSlug = selectedSubByDept[dept.slug]
+                      ? normalizeSubSlug(dept.slug, selectedSubByDept[dept.slug])
                       : undefined;
                     return (
                       <motion.div

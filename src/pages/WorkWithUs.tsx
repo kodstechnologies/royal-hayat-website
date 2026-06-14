@@ -8,14 +8,6 @@ import type { LifePhoto } from "@/components/LifePhotoCarousel.tsx";
 import VoicesFromOurPeople from "@/components/VoicesFromOurPeople.tsx";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { getAllJobs, type JobPosting } from "@/api/job";
-import { localizeJobPosting, type LocalizedJob } from "@/lib/jobLocale";
-import { getAllWorkCulture, type WorkCultureItem } from "@/api/workCulture";
-import {
-  getAllEmployeeRecognitions,
-  achievementsTextToLines,
-  type EmployeeRecognition,
-} from "@/api/employeeRecognition";
 import {
   Heart,
   Sparkles,
@@ -29,7 +21,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { getAllJobs, type JobPosting } from "@/api/job";
 const openPositions = [
@@ -130,15 +122,11 @@ const openPositions = [
 ];
 type Position = {
   id: string;
-  name: string;
-  nameAr: string;
-  dept: string;
-  deptAr: string;
-  role: string;
-  roleAr: string;
-  image: string;
-  achievements: string[];
-  achievementsAr: string[];
+  title: string;
+  category: string;
+  location: string;
+  type: string;
+  desc: string;
 };
 type WorkWithUsProps = {
   staffActivitiesImages: string[];
@@ -196,49 +184,31 @@ const employees = [
   },
 ];
 const WorkWithUs = ({
-  staffActivitiesImages = [],
-  galaDinnerImages = [],
-  hospitalityWeekImages = [],
-  rhhQuizImages = [],
+  staffActivitiesImages,
+  galaDinnerImages,
+  hospitalityWeekImages,
+  rhhQuizImages,
 }: WorkWithUsProps) => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
-  const isIOSWebKit = useMemo(() => detectIOSWebKit(), []);
   const [activeCategory, setActiveCategory] = useState("View All");
-// <<<<<<<<< Temporary merge branch 1
-  const [jobPostings, setJobPostings] = useState<JobPosting[]>([]);
-  const [jobsLoading, setJobsLoading] = useState(true);
-  const [jobsError, setJobsError] = useState(false);
-  const [apiEmployees, setApiEmployees] = useState<Employee[]>([]);
-  const [employeesApiLoading, setEmployeesApiLoading] = useState(true);
-
-  const displayEmployees = useMemo(() => apiEmployees, [apiEmployees]);
-  const [apiWorkCultureCarousels, setApiWorkCultureCarousels] = useState<
-    GalleryCarousel[]
-  >([]);
-  const [workCultureApiLoading, setWorkCultureApiLoading] = useState(true);
-
-  const existingWorkCultureCarousels = useMemo(
-    () =>
-      buildExistingWorkCultureCarousels(
-        staffActivitiesImages,
-        galaDinnerImages,
-        hospitalityWeekImages,
-        rhhQuizImages,
-      ),
-    [
-      staffActivitiesImages,
-      galaDinnerImages,
-      hospitalityWeekImages,
-      rhhQuizImages,
-    ],
+  const [isIOSWebKit, setIsIOSWebKit] = useState(false);
+  const [positions, setPositions] = useState<Position[]>(() =>
+    openPositions.map((p, index) => ({
+      id: String(index),
+      title: p.title,
+      category: p.category,
+      location: p.location,
+      type: p.type,
+      desc: p.desc,
+    })),
   );
   const [empIndex, setEmpIndex] = useState(0);
   const [isEmpPaused, setIsEmpPaused] = useState(false);
   useEffect(() => {
-    if (isEmpPaused || displayEmployees.length <= 1) return;
+    if (isEmpPaused || employees.length <= 1) return;
     const timer = setInterval(() => {
-      setEmpIndex((prev) => (prev + 1) % displayEmployees.length);
+      setEmpIndex((prev) => (prev + 1) % employees.length);
     }, 5000);
     return () => clearInterval(timer);
   }, [isEmpPaused]);
@@ -496,19 +466,18 @@ const WorkWithUs = ({
               </div>
             </div>
             <div
-              className="max-w-5xl mx-auto relative"
+              className="relative max-w-5xl mx-auto"
               onMouseEnter={() => setIsEmpPaused(true)}
               onMouseLeave={() => setIsEmpPaused(false)}
             >
-              {displayEmployees.length > 0 && (
               <AnimatePresence mode="wait">
                 <motion.div
-                  key={displayEmployees[empIndex]?.id ?? empIndex}
-                  initial={isIOSWebKit ? false : { opacity: 0, x: 20 }}
+                  key={empIndex}
+                  initial={isIOSWebKit ? false : { opacity: 0, x: isAr ? -30 : 30 }}
                   animate={isIOSWebKit ? { opacity: 1 } : { opacity: 1, x: 0 }}
-                  exit={isIOSWebKit ? { opacity: 0 } : { opacity: 0, x: -20 }}
-                  transition={{ duration: 0.3 }}
-                  className="ios-flicker-fix ios-flicker-fix bg-popover border border-border/50 rounded-2xl overflow-hidden"
+                  exit={isIOSWebKit ? { opacity: 0 } : { opacity: 0, x: isAr ? 30 : -30 }}
+                  transition={{ duration: 0.4 }}
+                  className="ios-flicker-fix bg-popover border border-border/50 rounded-2xl overflow-hidden shadow-lg"
                 >
                   <div className="flex flex-col md:flex-row">
                     <div className="md:w-96 flex-shrink-0 bg-primary/5 p-6 flex items-center justify-center">
@@ -532,21 +501,21 @@ const WorkWithUs = ({
                       )}
                       <h3 className={`font-serif text-2xl text-foreground mb-1 ${isAr ? "!font-bold" : "font-bold"}`}>
                         {isAr
-                          ? displayEmployees[empIndex].nameAr
-                          : displayEmployees[empIndex].name}
+                          ? employees[empIndex].nameAr
+                          : employees[empIndex].name}
                       </h3>
                       <p className="font-body text-xs text-accent uppercase tracking-wide mb-2">
                         {isAr
-                          ? displayEmployees[empIndex].deptAr
-                          : displayEmployees[empIndex].dept}
+                          ? employees[empIndex].deptAr
+                          : employees[empIndex].dept}
                       </p>
                       <p
                         className={`font-body text-sm text-accent mb-5 ${isAr ? "" : "justified-body-en"}`}
                         lang={isAr ? "ar" : "en"}
                       >
                         {isAr
-                          ? displayEmployees[empIndex].roleAr
-                          : displayEmployees[empIndex].role}
+                          ? employees[empIndex].roleAr
+                          : employees[empIndex].role}
                       </p>
                       <div>
                         <h4 className="font-serif text-base text-foreground mb-3">
@@ -554,8 +523,8 @@ const WorkWithUs = ({
                         </h4>
                         <div className="space-y-4 text-sm text-muted-foreground leading-relaxed font-body">
                           {(isAr
-                            ? displayEmployees[empIndex].achievementsAr
-                            : displayEmployees[empIndex].achievements
+                            ? employees[empIndex].achievementsAr
+                            : employees[empIndex].achievements
                           ).map((ach, idx) => (
                             <p key={idx} className={isAr ? "" : "justified-body-en"} lang={isAr ? "ar" : "en"}>
                               {ach}
@@ -574,8 +543,7 @@ const WorkWithUs = ({
                     onClick={() =>
                       setEmpIndex(
                         (prev) =>
-                          (prev - 1 + displayEmployees.length) %
-                          displayEmployees.length,
+                          (prev - 1 + employees.length) % employees.length,
                       )
                     }
                     aria-label={isAr ? "السابق" : "Previous"}
@@ -586,9 +554,7 @@ const WorkWithUs = ({
                   <button
                     type="button"
                     onClick={() =>
-                      setEmpIndex(
-                        (prev) => (prev + 1) % displayEmployees.length,
-                      )
+                      setEmpIndex((prev) => (prev + 1) % employees.length)
                     }
                     aria-label={isAr ? "التالي" : "Next"}
                     className="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 active:scale-95 [webkit-tap-highlight-color:transparent]"
@@ -732,15 +698,18 @@ const WorkWithUs = ({
               </button>
             </div>
             <div className="max-w-5xl mx-auto space-y-5">
-              {filtered.map((pos) => (
+              {filtered.map((pos) => {
+                const originalIndex = positions.findIndex(
+                  (p) => p.id === pos.id,
+                );
+                return (
                   <motion.div
-                    key={pos._id}
-                    dir={isAr ? "rtl" : "ltr"}
-                    initial={isIOSWebKit ? false : false}
+                    key={pos.title}
+                    initial={isIOSWebKit ? false : { opacity: 0, y: 20 }}
                     whileInView={isIOSWebKit ? { opacity: 1 } : { opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.4 }}
-                    className="ios-flicker-fix ios-flicker-fix bg-popover border border-border/50 rounded-2xl p-6 md:p-8 hover:shadow-lg transition-shadow"
+                    className="ios-flicker-fix bg-popover border border-border/50 rounded-2xl p-6 md:p-8 hover:shadow-lg transition-shadow"
                   >
                     <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                       <div className="flex-1">
@@ -761,8 +730,11 @@ const WorkWithUs = ({
                       </div>
                       <div className="flex flex-col items-end gap-3 flex-shrink-0">
                         <Link
-                          to={`/job-application?job=${pos._id}`}
-                          dir={isAr ? "rtl" : "ltr"}
+                          to={
+                            pos.id && /^[0-9a-fA-F]{24}$/.test(pos.id)
+                              ? `/job-application?jobId=${pos.id}`
+                              : `/job-application?job=${originalIndex}`
+                          }
                           className="inline-flex items-center gap-1 text-accent font-body text-sm font-semibold hover:underline"
                         >
                           {isAr ? "تقدم الآن" : "Apply Now"}{" "}
@@ -781,7 +753,8 @@ const WorkWithUs = ({
                       </div>
                     </div>
                   </motion.div>
-                ))}
+                );
+              })}
             </div>
             <div className="text-center mt-10">
               <p className="font-body text-sm text-muted-foreground !text-center">
@@ -796,8 +769,6 @@ const WorkWithUs = ({
                 </a>
               </p>
             </div>
-              </>
-            )}
           </div>
         </section>
       )}
@@ -807,7 +778,7 @@ const WorkWithUs = ({
           -webkit-transform: translateZ(0);
           backface-visibility: hidden;
           -webkit-backface-visibility: hidden;
-          will-change: transform, opacity;
+          will-change: opacity;
         }
         #work-culture-page .culture-narrative[dir="rtl"],
         #work-culture-page .work-body-copy[dir="rtl"] {

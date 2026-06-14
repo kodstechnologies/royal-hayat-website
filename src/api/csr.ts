@@ -6,8 +6,8 @@ export type CSRItem = {
   headingArabic: string;
   subheading?: string;
   subheadingArabic?: string;
-  description: string;
-  descriptionArabic: string;
+  description: string[];
+  descriptionArabic: string[];
   images: string[];
   createdAt?: string;
   updatedAt?: string;

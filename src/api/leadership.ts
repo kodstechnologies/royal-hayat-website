@@ -8,12 +8,44 @@ export type LeadershipItem = {
   nameArabic: string;
   title: string;
   titleArabic: string;
-  description: string;
-  descriptionArabic: string;
+  description: string[];
+  descriptionArabic: string[];
   image: string;
   createdAt?: string;
   updatedAt?: string;
 };
+
+export type LeaderDisplay = {
+  key: string;
+  initials: string;
+  nameEn: string;
+  nameAr: string;
+  roleEn: string;
+  roleAr: string;
+  credentialsEn: string;
+  credentialsAr: string;
+  credentialsAfterRole?: boolean;
+  bioEn: string[];
+  bioAr: string[];
+  image?: string;
+};
+
+const normalizeLineBreaks = (text: string) =>
+  text.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+
+export const mapLeadershipToDisplay = (item: LeadershipItem): LeaderDisplay => ({
+  key: item._id ?? item.name,
+  initials: item.initials?.trim() || item.initialsArabic?.trim() || "",
+  nameEn: item.name,
+  nameAr: item.nameArabic,
+  roleEn: normalizeLineBreaks(item.title ?? ""),
+  roleAr: normalizeLineBreaks(item.titleArabic ?? ""),
+  credentialsEn: "",
+  credentialsAr: "",
+  bioEn: item.description ?? [],
+  bioAr: item.descriptionArabic ?? [],
+  image: item.image,
+});
 
 export const getAllLeadership = async (): Promise<LeadershipItem[]> => {
   const response = await api.get("/api/v1/leadership");

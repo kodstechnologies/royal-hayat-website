@@ -1,10 +1,12 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { ChevronLeft, ChevronRight, Stethoscope } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2, Stethoscope } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Doctor } from "@/data/doctors";
+import { fetchFeaturedDoctors } from "@/api/doctors";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
 import { scrollDoctorCarousel, syncDoctorCarouselIndex } from "@/utils/doctorCarousel";
 const DoctorCard = ({ doc }: { doc: Doctor }) => {
@@ -57,12 +59,26 @@ const DoctorCard = ({ doc }: { doc: Doctor }) => {
     </Link>
   );
 };
-const DoctorsSection = ({ featuredDoctors }: { featuredDoctors: Doctor[] }) => {
+const DoctorsSection = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
   const { lang, t } = useLanguage();
+  const { data: featuredDoctors = [], isLoading } = useQuery({
+    queryKey: ["featured-doctors"],
+    queryFn: fetchFeaturedDoctors,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  useEffect(() => {
+    featuredDoctors.forEach((doc) => {
+      if (doc.image) {
+        const img = new Image();
+        img.src = doc.image;
+      }
+    });
+  }, [featuredDoctors]);
   const checkScroll = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
@@ -106,6 +122,11 @@ const DoctorsSection = ({ featuredDoctors }: { featuredDoctors: Doctor[] }) => {
     }, 5000);
     return () => clearInterval(timer);
   }, [isPaused, scroll, checkScroll, featuredDoctors.length]);
+
+  if (!isLoading && featuredDoctors.length === 0) {
+    return null;
+  }
+
   return (
     <section className="py-20 bg-background" id="our-doctors">
       <div className="container mx-auto px-6">
@@ -162,9 +183,14 @@ const DoctorsSection = ({ featuredDoctors }: { featuredDoctors: Doctor[] }) => {
               onScroll={checkScroll}
               className="doctors-carousel-track flex items-stretch gap-4 overflow-x-auto pb-8 snap-x snap-mandatory max-md:scroll-px-[calc(50%-140px)] max-md:px-[calc(50%-140px)] md:gap-6 md:px-0 md:scroll-px-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden [-webkit-overflow-scrolling:touch]"
             >
-              {featuredDoctors.map((doc) => (
-                <DoctorCard key={doc.id} doc={doc} />
-              ))}
+              {isLoading ? (
+                <div className="flex w-full items-center justify-center py-16 text-muted-foreground">
+                  <Loader2 className="h-8 w-8 animate-spin" aria-hidden />
+                  <span className="sr-only">{lang === "ar" ? "جاري التحميل" : "Loading doctors"}</span>
+                </div>
+              ) : (
+                featuredDoctors.map((doc) => <DoctorCard key={doc.id} doc={doc} />)
+              )}
             </div>
           </div>
         </div>

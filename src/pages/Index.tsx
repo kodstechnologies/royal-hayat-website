@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense } from "react";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import StatsRow from "@/components/StatsRow";
@@ -8,7 +8,6 @@ import SpecializedCare from "@/components/SpecializedCare";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import LazyWhenInView, { sectionPlaceholder } from "@/components/LazyWhenInView";
-import { featuredDoctors } from "@/data/featuredDoctors";
 const InsurancePartners = lazy(() => import("@/components/InsurancePartners"));
 const DoctorsSection = lazy(() => import("@/components/DoctorsSection"));
 const WhyRoyaleHayat = lazy(() => import("@/components/WhyRoyaleHayat"));
@@ -18,14 +17,6 @@ const AwardsSection = lazy(() => import("@/components/AwardsSection"));
 const PatientsQuickLinks = lazy(() => import("@/components/PatientsQuickLinks"));
 const TestimonialsSection = lazy(() => import("@/components/TestimonialsSection"));
 const Index = () => {
-  useEffect(() => {
-    featuredDoctors.forEach((doc) => {
-      if (doc.image) {
-        const img = new Image();
-        img.src = doc.image;
-      }
-    });
-  }, []);
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)] max-lg:pt-[var(--header-height,7.5rem)] [&_.text-accent]:text-[#816107]">
       <Header />
@@ -41,7 +32,7 @@ const Index = () => {
       </LazyWhenInView>
       <LazyWhenInView placeholder={sectionPlaceholder("min-h-[480px]")}>
         <Suspense fallback={sectionPlaceholder("min-h-[480px]")}>
-          <DoctorsSection featuredDoctors={featuredDoctors} />
+          <DoctorsSection />
         </Suspense>
       </LazyWhenInView>
       <LazyWhenInView placeholder={sectionPlaceholder()}>

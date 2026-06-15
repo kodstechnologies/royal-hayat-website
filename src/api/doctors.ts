@@ -341,6 +341,42 @@ export const getDoctorById = async (id: string) => {
   return response.data;
 };
 
+type FeaturedDoctorApiRecord = {
+  _id: string;
+  doctor: Record<string, unknown> | string;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+/** Featured doctors for homepage / medical-services (populated doctor profiles). */
+export async function fetchFeaturedDoctors(): Promise<Doctor[]> {
+  const res = await api.get("/api/v1/featured-doctors");
+  const records = res?.data?.data as FeaturedDoctorApiRecord[] | undefined;
+  if (!Array.isArray(records)) return [];
+
+  const doctors: Doctor[] = [];
+  for (const record of records) {
+    const doc = record.doctor;
+    if (!doc || typeof doc !== "object") continue;
+
+    const row = doc as Record<string, unknown>;
+    if (row.isActive === false) continue;
+
+    const dep = row.department;
+    let deptName = "";
+    let deptNameAr = "";
+    if (dep && typeof dep === "object" && dep !== null && "name" in dep) {
+      const d = dep as { name?: string; arabicName?: string; nameAr?: string };
+      deptName = String(d.name ?? "");
+      deptNameAr = String(d.arabicName ?? d.nameAr ?? deptName);
+    }
+
+    doctors.push(mapApiDoctorRowToDoctor(row, deptName, deptNameAr));
+  }
+
+  return doctors;
+}
+
 /** Loads a single doctor profile from GET /api/v1/doctors/:id. */
 export async function fetchDoctorProfileById(id: string): Promise<Doctor | null> {
   if (!isMongoDoctorId(id)) return null;

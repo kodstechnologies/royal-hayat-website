@@ -92,6 +92,8 @@ export function mapApiDepartmentRow(
   const desc = String(row.description ?? staticMatch?.desc ?? "").trim();
   const descAr = String(row.arabicDescription ?? staticMatch?.descAr ?? "").trim();
   const nameAr = String(row.arabicName ?? staticMatch?.nameAr ?? name).trim();
+  const medicalField = String(row.medicalField ?? "").trim();
+  const medicalFieldAr = String(row.medicalFieldAr ?? "").trim();
   const img = String(row.image ?? staticMatch?.img ?? "").trim();
 
   return {
@@ -100,6 +102,8 @@ export function mapApiDepartmentRow(
     nameAr,
     desc: desc || staticMatch?.desc || "",
     descAr: descAr || staticMatch?.descAr || "",
+    medicalField: medicalField || undefined,
+    medicalFieldAr: medicalFieldAr || undefined,
     img: img || staticMatch?.img || "",
     slug: staticMatch?.slug ?? departmentSlug(name, mongoId),
     icon: staticMatch?.icon ?? inferDepartmentIcon(name),

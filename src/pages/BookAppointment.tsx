@@ -12,9 +12,15 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import type { DoctorWithClinicCode as Doctor } from "@/data/doctorsWithClinicCodes";
-import { loadDoctorsWithClinicCodes } from "@/data/loadDoctorsWithClinicCodes";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
-import { departmentsWithDoctors, getDepartmentsWithClinicCodes } from "@/data/departmentWithDoctors";
+import { fetchAllDepartmentsPages } from "@/api/department";
+import {
+  fetchAllBookingDoctors,
+  getDoctorsByDepartment,
+  mapApiDoctorRowToBookingDoctor,
+} from "@/api/doctors";
+import { mapApiDepartmentsToDisplay } from "@/utils/mapApiDepartment";
+import type { Department } from "@/data/departments";
 import { createAppointmentRequest } from "@/api/appointmentRequest";
 import { createAppointmentBookingRecord } from "@/api/appointmentBookingRecord";
 import {
@@ -36,7 +42,6 @@ import {
 import type { AppointmentRequestPrefillState, PaciIdentityDetails } from "@/types/appointmentRequestPrefill";
 import {
   departments as staticDepts,
-  doctorMatchesDepartment,
   MAIN_CATEGORIES,
 } from "@/data/departments";
 import { Calendar as DatePickerCalendar } from "@/components/ui/calendar";
@@ -59,6 +64,8 @@ type BookingDeptRow = {
   desc: string;
   descAr: string;
   category: string;
+  medicalField: string;
+  medicalFieldAr: string;
   slug: string;
   specialityCode?: string;
   mainCategory: string;
@@ -107,47 +114,24 @@ function buildCollectedSymptoms(chips: string[], text: string): string[] {
     return true;
   });
 }
-function departmentSlug(name: string, mongoId: string): string {
-  const base = name
-    .toLowerCase()
-    .replace(/&/g, "and")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-  return `${base}-${mongoId.slice(-6)}`;
-}
-function apiRowToBookingDept(row: Record<string, unknown>): BookingDeptRow | null {
-  const id = String(row._id ?? "");
+function displayDeptToBookingRow(dept: Department): BookingDeptRow | null {
+  const id = dept.mongoId ?? "";
   if (!OID.test(id)) return null;
-  const name = String(row.name ?? "").trim();
-  if (!name) return null;
-  if (["Clinical Pharmacy", "Royale Hayat Pharmacy"].includes(name)) return null;
-  const cat = row.catagory;
-  let category = "";
-  if (cat && typeof cat === "object" && cat !== null && "name" in cat) {
-    category = String((cat as { name?: string }).name ?? "").trim();
-  }
-  const mainCategory = category || "Others";
-  let icon = Stethoscope;
-  const lowerName = name.toLowerCase();
-  if (lowerName.includes("dental")) icon = Smile;
-  else if (lowerName.includes("pediatric") || lowerName.includes("neonatology")) icon = Baby;
-  else if (lowerName.includes("plastic") || lowerName.includes("cosmetic")) icon = Scissors;
-  else if (lowerName.includes("dermatology")) icon = Sparkles;
-  else if (lowerName.includes("diagnostic") || lowerName.includes("imaging")) icon = Microscope;
-  else if (lowerName.includes("surgery")) icon = Scissors;
-  else if (lowerName.includes("home health")) icon = Building2;
-  else if (lowerName.includes("physio")) icon = Activity;
+  if (["Clinical Pharmacy", "Royale Hayat Pharmacy"].includes(dept.name)) return null;
+
   return {
     id,
-    name,
-    nameAr: name,
-    desc: "",
-    descAr: "",
-    category: category || "—",
-    slug: departmentSlug(name, id),
-    specialityCode: typeof row.departmentId === "string" ? row.departmentId : undefined,
-    mainCategory,
-    icon
+    name: dept.name,
+    nameAr: dept.nameAr,
+    desc: dept.desc,
+    descAr: dept.descAr,
+    category: dept.category || "—",
+    medicalField: dept.medicalField ?? "",
+    medicalFieldAr: dept.medicalFieldAr ?? "",
+    slug: dept.slug,
+    specialityCode: dept.clinicCode,
+    mainCategory: dept.mainCategory || "Clinical Speciality",
+    icon: dept.icon,
   };
 }
 function normalizeRestoredDeptId(v: unknown): string | null {
@@ -455,30 +439,24 @@ const BookAppointment = () => {
       setCatalogLoading(true);
       setCatalogError("");
       try {
+        const [apiDeptRows, apiDoctors] = await Promise.all([
+          fetchAllDepartmentsPages({ isActive: true }),
+          fetchAllBookingDoctors(),
+        ]);
         if (cancelled) return;
-        const combinedDepartments = staticDepts.map(dept => ({
-          id: dept.id.toString(),
-          name: dept.name,
-          nameAr: dept.nameAr,
-          desc: dept.desc || "",
-          descAr: dept.descAr || "",
-          category: dept.category || "Others",
-          slug: dept.slug,
-          specialityCode: dept.clinicCode,
-          mainCategory: dept.mainCategory || "Others",
-          icon: dept.icon || Stethoscope
-        }));
-        setDepartmentsList(combinedDepartments);
-        const staticDoctors = await loadDoctorsWithClinicCodes();
-        const enrichedDoctors = staticDoctors.map((doc) => ({
-          ...doc,
-          clinicCode: doc.clinicCode || doc.departmentClinicCode
-        }));
-        setAllApiDoctors(enrichedDoctors);
+
+        const bookingDepartments = mapApiDepartmentsToDisplay(apiDeptRows)
+          .map(displayDeptToBookingRow)
+          .filter((dept): dept is BookingDeptRow => dept !== null);
+
+        setDepartmentsList(bookingDepartments);
+        setAllApiDoctors(apiDoctors);
       } catch (err) {
-        console.error("Error in static load:", err);
+        console.error("Error loading booking catalog:", err);
         if (!cancelled) {
           setCatalogError(isAr ? "تعذر تحميل البيانات." : "Could not load data.");
+          setDepartmentsList([]);
+          setAllApiDoctors([]);
         }
       } finally {
         if (!cancelled) setCatalogLoading(false);
@@ -502,17 +480,16 @@ const BookAppointment = () => {
           if (!cancelled) setDeptDoctorList([]);
           return;
         }
-        const filtered = allApiDoctors
-          .filter((doc) => doctorMatchesDepartment(dept.name, doc))
-          .map((doc) => ({
-            ...doc,
-            clinicCode: doc.clinicCode || doc.departmentClinicCode,
-          }));
-        if (!cancelled) {
-          setDeptDoctorList(filtered);
-        }
+
+        const rows = await getDoctorsByDepartment(selectedDept);
+        if (cancelled) return;
+
+        const mapped = rows.map((row) =>
+          mapApiDoctorRowToBookingDoctor(row, dept.name, dept.nameAr),
+        );
+        setDeptDoctorList(mapped);
       } catch (err) {
-        console.error("Error in static doctor filter:", err);
+        console.error("Error loading department doctors:", err);
         if (!cancelled) setDeptDoctorList([]);
       } finally {
         if (!cancelled) setDeptDoctorLoading(false);
@@ -521,7 +498,7 @@ const BookAppointment = () => {
     return () => {
       cancelled = true;
     };
-  }, [selectedDept, bookingPath, departmentsList, allApiDoctors]);
+  }, [selectedDept, bookingPath, departmentsList]);
   useEffect(() => {
     if (locState.step != null) return;
     const pathParam = searchParams.get("path");
@@ -593,7 +570,9 @@ const BookAppointment = () => {
         d.nameAr.toLowerCase().includes(query) ||
         d.desc.toLowerCase().includes(query) ||
         d.descAr.toLowerCase().includes(query) ||
-        d.category.toLowerCase().includes(query)
+        d.category.toLowerCase().includes(query) ||
+        d.medicalField.toLowerCase().includes(query) ||
+        d.medicalFieldAr.toLowerCase().includes(query)
     );
   }, [departmentsList, deptSearch]);
   const displayDepts = useMemo(() => {
@@ -603,16 +582,28 @@ const BookAppointment = () => {
     if (!sel || expanded.some((d) => d.id === selectedDept)) return expanded;
     return [sel, ...expanded.filter((d) => d.id !== selectedDept)];
   }, [deptSearch, showAllDepts, filteredDepts, selectedDept]);
-  const groupedDisplayDepts = useMemo(
-    () =>
+  const groupedDisplayDepts = useMemo(() => {
+    const groups: { key: string; label: string; labelAr: string; depts: BookingDeptRow[] }[] =
       MAIN_CATEGORIES.map((cat) => ({
         key: cat.key,
         label: cat.label,
         labelAr: cat.labelAr,
         depts: displayDepts.filter((d) => d.mainCategory === cat.key),
-      })).filter((group) => group.depts.length > 0),
-    [displayDepts]
-  );
+      })).filter((group) => group.depts.length > 0);
+
+    const categorizedIds = new Set(groups.flatMap((group) => group.depts.map((dept) => dept.id)));
+    const uncategorized = displayDepts.filter((dept) => !categorizedIds.has(dept.id));
+    if (uncategorized.length > 0) {
+      groups.push({
+        key: "Other",
+        label: "Other Departments",
+        labelAr: "أقسام أخرى",
+        depts: uncategorized,
+      });
+    }
+
+    return groups;
+  }, [displayDepts]);
   const goToStep = (i: number) => {
     if (i > step) return;
     if (i === 1 && step > 1) setShowAllDoctors(true);
@@ -1778,9 +1769,13 @@ Clinic Code:`;
                               <dept.icon className={`w-5 h-5 flex-shrink-0 ${selectedDept === dept.id ? "" : "text-accent"}`} />
                               <div className="min-w-0">
                                 <p className="font-body text-sm font-medium truncate">{isAr ? dept.nameAr : dept.name}</p>
-                                {!isAr && (
-                                  <p className={`font-body text-xs ${selectedDept === dept.id ? "text-primary-foreground/60" : "text-muted-foreground"}`}>{dept.category}</p>
-                                )}
+                                {(isAr ? dept.medicalFieldAr : dept.medicalField) ? (
+                                  <p
+                                    className={`font-body text-xs truncate ${selectedDept === dept.id ? "text-primary-foreground/60" : "text-muted-foreground"}`}
+                                  >
+                                    {isAr ? dept.medicalFieldAr : dept.medicalField}
+                                  </p>
+                                ) : null}
                               </div>
                             </motion.button>
                           ))}

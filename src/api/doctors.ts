@@ -252,7 +252,7 @@ export function mapApiDoctorRowToBookingDoctor(
 
   return {
     ...base,
-    departmentId: staticDept ? String(staticDept.id) : base.departmentId,
+    departmentId: base.departmentId ?? (staticDept ? String(staticDept.id) : undefined),
     providerCode: base.providerCode,
     departmentClinicCode,
     clinicCode,

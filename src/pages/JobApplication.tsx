@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Mail, Share2, ChevronRight, Loader2 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "@/hooks/use-toast";
-import { applyForJob, getJobById, type JobPosting } from "@/api/job";
+import { applyForJob, getAllJobs, getJobById, type JobPosting } from "@/api/job";
+import { localizeJobPosting } from "@/lib/jobLocale";
 
 const formatJobPostedDate = (value: string): string => {
   if (!value) return "";
@@ -35,6 +36,20 @@ const openPositions = [
   { title: "Human Resources Coordinator", category: "Administrative", location: "Royale Hayat Hospital", type: "Full-time", date: "February 10, 2026", desc: "Support HR operations including recruitment, onboarding, employee relations, and benefits administration.", responsibilities: ["Coordinate recruitment and onboarding processes", "Manage employee records and documentation", "Assist with benefits administration", "Support employee relations activities"], requirements: ["Bachelor's degree in HR or related field", "2+ years HR experience", "Knowledge of labor laws", "Proficiency in HR information systems"] },
   { title: "Medical Records Specialist", category: "Administrative", location: "Royale Hayat Hospital", type: "Full-time", date: "February 8, 2026", desc: "Manage and maintain accurate medical records, ensuring compliance with healthcare regulations and standards.", responsibilities: ["Maintain and organize medical records", "Ensure compliance with privacy regulations", "Process record requests accurately", "Support audits and quality reviews"], requirements: ["Experience in medical records management", "Knowledge of healthcare regulations", "Attention to detail", "Proficiency in electronic health records"] },
 ];
+const staticFallbackJobs: JobPosting[] = openPositions.map((pos, index) => ({
+  id: String(index),
+  title: pos.title,
+  classification: pos.category,
+  category: pos.category,
+  location: pos.location,
+  type: pos.type,
+  postedDate: pos.date,
+  date: pos.date,
+  description: pos.desc,
+  desc: pos.desc,
+  responsibilities: pos.responsibilities,
+  requirements: pos.requirements,
+}));
 const mapApiJobToDisplay = (apiJob: JobPosting) => ({
   title: apiJob.title,
   category: String(apiJob.classification ?? apiJob.category ?? apiJob.department ?? ""),
@@ -106,8 +121,8 @@ const JobApplication = () => {
       }
 
       // Final fallback: static list by numeric index
-      const idx = isNaN(numericIndex) ? 0 : Math.min(numericIndex, staticPositions.length - 1);
-      setJobRecord(staticPositions[idx] ?? staticPositions[0]);
+      const idx = isNaN(numericIndex) ? 0 : Math.min(numericIndex, staticFallbackJobs.length - 1);
+      setJobRecord(staticFallbackJobs[idx] ?? staticFallbackJobs[0]);
       setJobLoading(false);
     };
 
@@ -142,7 +157,7 @@ const JobApplication = () => {
       });
       return;
     }
-    if (cvFile.size > MAX_CV_SIZE_BYTES) {
+    if (resumeFile.size > MAX_CV_SIZE_BYTES) {
       toast({
         title: isAr ? "حجم الملف كبير جداً" : "File too large",
         description: isAr
@@ -201,12 +216,12 @@ const JobApplication = () => {
   const handleCvChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) {
-      setCvFile(null);
+      setResumeFile(null);
       return;
     }
     if (file.size > MAX_CV_SIZE_BYTES) {
       e.target.value = "";
-      setCvFile(null);
+      setResumeFile(null);
       toast({
         title: isAr ? "حجم الملف كبير جداً" : "File too large",
         description: isAr
@@ -216,7 +231,7 @@ const JobApplication = () => {
       });
       return;
     }
-    setCvFile(file);
+    setResumeFile(file);
   };
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
@@ -302,7 +317,7 @@ const JobApplication = () => {
                 </Button>
               </div>
               <div className="bg-popover border border-border/50 rounded-2xl p-6 space-y-5">
-                <p className="font-serif text-lg text-foreground">{formatJobPostedDate(job.date)}</p>
+                <p className="font-serif text-lg text-foreground">{formatJobPostedDate(displayJob.postedDate ?? "")}</p>
                 <div>
                   <p className="font-body text-xs uppercase tracking-widest text-foreground font-semibold mb-1">{isAr ? "الموقع" : "Location"}</p>
                   <p className="font-body text-sm text-muted-foreground">{displayJob.location}</p>

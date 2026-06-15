@@ -27,3 +27,33 @@ export const getSymptomChipLabel = (value: string, isAr: boolean): string => {
 
 export const formatSymptomsForDisplay = (symptoms: string[], isAr: boolean): string =>
   symptoms.map((item) => getSymptomChipLabel(item, isAr)).join(", ");
+
+export const parseSymptomTextParts = (text: string): string[] =>
+  text
+    .split(/[,;\n]+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+const chipMatchesTextPart = (chip: SymptomChipOption, part: string): boolean => {
+  const normalized = part.toLowerCase();
+  return (
+    normalized === chip.value.toLowerCase() ||
+    normalized === chip.en.toLowerCase() ||
+    normalized === chip.ar.toLowerCase()
+  );
+};
+
+/** Keep chip selection in sync when the user edits the symptom text field. */
+export const syncSymptomChipsFromText = (
+  text: string,
+  currentChips: string[],
+): string[] => {
+  const parts = parseSymptomTextParts(text);
+  return currentChips.filter((chipValue) => {
+    const chip = SYMPTOM_CHIP_OPTIONS.find(
+      (item) => item.value.toLowerCase() === chipValue.toLowerCase(),
+    );
+    if (!chip) return true;
+    return parts.some((part) => chipMatchesTextPart(chip, part));
+  });
+};

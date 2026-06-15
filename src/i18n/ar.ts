@@ -249,7 +249,7 @@ export const ar = {
   "appointmentConfirmed": "تم استلام طلب الموعد!",
   "requestConfirmMsg": "شكراً لطلبك، سنتواصل معك قريباً.",
   "bookingConfirmMsg": "شكراً لطلبك، سنتواصل معك قريباً.",
-  "appointmentDetails": "تفاصيل الموعد",
+  "appointmentDetails": "تفاصيل طلب الموعد",
   "date": "التاريخ",
   "time": "الوقت",
   "status": "الحالة",

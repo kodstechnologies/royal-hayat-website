@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { CheckCircle2, Search, Stethoscope } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import type { DoctorWithClinicCode as Doctor } from "@/data/doctorsWithClinicCodes";
+import type { DoctorWithClinicCode as Doctor } from "@/types/doctor";
 import { filterDoctorsBySearch } from "@/utils/doctorSearch";
 import { pageVariants } from "../types";
 

@@ -1,7 +1,5 @@
 import api from "./axiosInstance";
-import type { Doctor } from "@/data/doctors";
-import type { DoctorWithClinicCode } from "@/data/doctorsWithClinicCodes";
-import { departments as staticDepts, deptDoctorAliases } from "@/data/departments";
+import type { Doctor, DoctorWithClinicCode } from "@/types/doctor";
 import { resolveDoctorArabicName } from "@/utils/doctorDisplayName";
 
 /** Departments that have at least one active doctor (with names). */
@@ -47,20 +45,6 @@ function parseAvailableOnline(value: unknown): boolean {
 
 export function isDoctorAvailableOnline(value: unknown): boolean {
   return parseAvailableOnline(value);
-}
-
-function resolveStaticDepartment(apiDeptName: string) {
-  const normalized = apiDeptName.trim().toLowerCase();
-  for (const dept of staticDepts) {
-    const aliases = deptDoctorAliases[dept.name] ?? [dept.name];
-    if (
-      dept.name.toLowerCase() === normalized ||
-      aliases.some((alias) => alias.toLowerCase() === normalized)
-    ) {
-      return dept;
-    }
-  }
-  return undefined;
 }
 
 function flattenExpertiseFromApi(raw: unknown): { en: string[]; ar: string[] } {
@@ -237,22 +221,25 @@ export function mapApiDoctorRowToBookingDoctor(
 
   const depRaw = row.department;
   let apiClinicalCode: string | undefined;
+  let apiDepartmentMongoId: string | undefined;
   if (depRaw && typeof depRaw === "object" && depRaw !== null) {
-    const d = depRaw as { departmentId?: string };
+    const d = depRaw as { departmentId?: string; _id?: unknown };
     if (typeof d.departmentId === "string" && d.departmentId.trim()) {
       apiClinicalCode = d.departmentId.trim();
     }
+    if (d._id != null) {
+      apiDepartmentMongoId = String(d._id);
+    }
   }
 
-  const staticDept = resolveStaticDepartment(base.department);
   const rowClinicCode =
     typeof row.clinicCode === "string" && row.clinicCode.trim() ? row.clinicCode.trim() : undefined;
-  const departmentClinicCode = staticDept?.clinicCode ?? apiClinicalCode;
+  const departmentClinicCode = apiClinicalCode;
   const clinicCode = rowClinicCode || departmentClinicCode;
 
   return {
     ...base,
-    departmentId: base.departmentId ?? (staticDept ? String(staticDept.id) : undefined),
+    departmentId: base.departmentId ?? apiDepartmentMongoId,
     providerCode: base.providerCode,
     departmentClinicCode,
     clinicCode,

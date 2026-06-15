@@ -15,11 +15,7 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { DepartmentListItem } from "@/api/department";
-import {
-  departments as staticDepartments,
-  type Department,
-  type MainCategory,
-} from "@/data/departments";
+import type { Department, MainCategory } from "@/types/department";
 import { departmentSlug } from "@/pages/book-appointment/utils";
 
 const OID = /^[0-9a-fA-F]{24}$/i;
@@ -32,16 +28,6 @@ const API_CATEGORY_TO_MAIN: Record<string, MainCategory> = {
 
 function normalizeMainCategory(categoryName: string): MainCategory | undefined {
   return API_CATEGORY_TO_MAIN[categoryName.trim().toUpperCase()];
-}
-
-function findStaticDepartment(name: string, departmentId?: string): Department | undefined {
-  if (departmentId) {
-    const byCode = staticDepartments.find((dept) => dept.clinicCode === departmentId);
-    if (byCode) return byCode;
-  }
-  return staticDepartments.find(
-    (dept) => dept.name.localeCompare(name, undefined, { sensitivity: "accent" }) === 0
-  );
 }
 
 function inferDepartmentIcon(name: string): LucideIcon {
@@ -68,7 +54,7 @@ function inferDepartmentIcon(name: string): LucideIcon {
 
 export function mapApiDepartmentRow(
   row: Record<string, unknown>,
-  index: number
+  index: number,
 ): Department | null {
   const mongoId = String(row._id ?? "");
   if (!OID.test(mongoId)) return null;
@@ -78,7 +64,6 @@ export function mapApiDepartmentRow(
 
   const departmentId =
     typeof row.departmentId === "string" ? row.departmentId.trim() : undefined;
-  const staticMatch = findStaticDepartment(name, departmentId);
 
   const cat = row.catagory;
   let apiCategoryName = "";
@@ -86,39 +71,36 @@ export function mapApiDepartmentRow(
     apiCategoryName = String((cat as { name?: string }).name ?? "").trim();
   }
 
-  const mainCategory =
-    normalizeMainCategory(apiCategoryName) ?? staticMatch?.mainCategory;
-
-  const desc = String(row.description ?? staticMatch?.desc ?? "").trim();
-  const descAr = String(row.arabicDescription ?? staticMatch?.descAr ?? "").trim();
-  const nameAr = String(row.arabicName ?? staticMatch?.nameAr ?? name).trim();
+  const mainCategory = normalizeMainCategory(apiCategoryName);
+  const desc = String(row.description ?? "").trim();
+  const descAr = String(row.arabicDescription ?? "").trim();
+  const nameAr = String(row.arabicName ?? name).trim();
   const medicalField = String(row.medicalField ?? "").trim();
   const medicalFieldAr = String(row.medicalFieldAr ?? "").trim();
-  const img = String(row.image ?? staticMatch?.img ?? "").trim();
+  const img = String(row.image ?? "").trim();
 
   return {
-    id: staticMatch?.id ?? index + 1,
+    id: index + 1,
     name,
     nameAr,
-    desc: desc || staticMatch?.desc || "",
-    descAr: descAr || staticMatch?.descAr || "",
+    desc,
+    descAr,
     medicalField: medicalField || undefined,
     medicalFieldAr: medicalFieldAr || undefined,
-    img: img || staticMatch?.img || "",
-    slug: staticMatch?.slug ?? departmentSlug(name, mongoId),
-    icon: staticMatch?.icon ?? inferDepartmentIcon(name),
-    category: staticMatch?.category ?? apiCategoryName,
-    clinicCode: departmentId || staticMatch?.clinicCode,
+    img,
+    slug: departmentSlug(name, mongoId),
+    icon: inferDepartmentIcon(name),
+    category: apiCategoryName,
+    clinicCode: departmentId,
     mainCategory,
     mongoId,
-    subs: staticMatch?.subs,
-    departmentContentBlocks: staticMatch?.departmentContentBlocks,
+    order: typeof row.order === "number" ? row.order : Number(row.order) || index,
   };
 }
 
 export function mapApiDepartmentsToDisplay(rows: DepartmentListItem[]): Department[] {
   const sortedRows = [...rows].sort(
-    (a, b) => (Number(a.order) || 0) - (Number(b.order) || 0)
+    (a, b) => (Number(a.order) || 0) - (Number(b.order) || 0),
   );
 
   return sortedRows

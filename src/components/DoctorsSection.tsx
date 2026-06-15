@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Doctor } from "@/data/doctors";
+import type { Doctor } from "@/types/doctor";
 import { fetchFeaturedDoctors } from "@/api/doctors";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
 import { scrollDoctorCarousel, syncDoctorCarouselIndex } from "@/utils/doctorCarousel";

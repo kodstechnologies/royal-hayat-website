@@ -3,23 +3,20 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
+import type { DepartmentDetail as DepartmentDetailData, DepartmentDetailSection } from "@/types/departmentDetail";
+import { fetchAllDepartmentsPages, getDepartmentSubspecialitiesAndDoctors } from "@/api/department";
+import { MAIN_CATEGORIES, type MainCategory } from "@/types/department";
+import type { Doctor } from "@/types/doctor";
 import {
-  loadDepartmentDetails,
-  type DepartmentDetail as DepartmentDetailData,
-  type DepartmentDetailSection,
-} from "@/data/loadDepartmentDetails";
-import { getDepartmentSubspecialitiesAndDoctors } from "@/api/department";
-import { departments as staticDepartments, MAIN_CATEGORIES, ROYALE_HAYAT_PHARMACY_DOCTOR_IDS, CLINICAL_PHARMACY_DOCTOR_IDS, PAIN_MANAGEMENT_DOCTOR_IDS, type MainCategory } from "@/data/departments";
-import { loadDoctors, type Doctor } from "@/data/loadDoctors";
-import {
+  filterDepartmentDoctors,
   mapApiDepartmentDetailResponse,
-  mergeDepartmentDetail,
 } from "@/utils/mapApiDepartmentDetail";
+import { mapApiDepartmentsToDisplay } from "@/utils/mapApiDepartment";
+import { findDepartmentBySlug } from "@/utils/findDepartmentBySlug";
 import { motion } from "framer-motion";
 import { ChevronRight, ChevronLeft, ArrowLeft, ArrowRight, CheckCircle2, ChevronDown, Stethoscope, MessageCircle, Phone, Loader2 } from "lucide-react";
 import { useState, useRef, useEffect, useMemo, memo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { resolveDepartmentBySlug } from "@/utils/resolveDepartmentSlug";
 import { normalizeSubSlug, resolveSubDepartment } from "@/utils/departmentSubSlug";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
 import { sortDoctorsInDepartment } from "@/utils/sortDoctorsInDepartment";
@@ -342,48 +339,45 @@ const DepartmentDetail = () => {
   const [dept, setDept] = useState<DepartmentDetailData | null | undefined>(undefined);
   const [allDoctors, setAllDoctors] = useState<Doctor[]>([]);
   const [deptImage, setDeptImage] = useState("");
+  const [deptMainCategory, setDeptMainCategory] = useState<MainCategory | undefined>();
 
   useEffect(() => {
     let cancelled = false;
 
     void (async () => {
-      const staticDetails = await loadDepartmentDetails();
-      if (cancelled) return;
+      try {
+        const rows = await fetchAllDepartmentsPages({ isActive: true });
+        if (cancelled) return;
 
-      const staticDeptDetail = resolveDepartmentBySlug(slug, staticDetails) ?? null;
-      const staticDeptMeta = staticDeptDetail
-        ? staticDepartments.find((item) => item.slug === staticDeptDetail.slug)
-        : undefined;
+        const mappedDepartments = mapApiDepartmentsToDisplay(rows);
+        const deptMeta = findDepartmentBySlug(slug, mappedDepartments);
+        const lookupId =
+          navState.departmentMongoId || deptMeta?.mongoId || deptMeta?.clinicCode;
 
-      const lookupId =
-        navState.departmentMongoId ||
-        staticDeptMeta?.mongoId ||
-        staticDeptMeta?.clinicCode ||
-        staticDeptDetail?.name ||
-        slug;
-
-      if (lookupId) {
-        try {
-          const response = await getDepartmentSubspecialitiesAndDoctors(String(lookupId));
-          if (cancelled) return;
-
-          if (response?.success && response.data) {
-            const mapped = mapApiDepartmentDetailResponse(response.data, slug ?? "");
-            setDept(mergeDepartmentDetail(mapped.detail, staticDeptDetail ?? undefined));
-            setAllDoctors(mapped.doctors);
-            setDeptImage(mapped.image || staticDeptMeta?.img || "");
-            return;
-          }
-        } catch {
-          /* fall back to static content below */
+        if (!lookupId) {
+          setDept(null);
+          return;
         }
-      }
 
-      if (cancelled) return;
-      setDept(staticDeptDetail);
-      setDeptImage(staticDeptMeta?.img || "");
-      const doctors = await loadDoctors();
-      if (!cancelled) setAllDoctors(doctors);
+        const response = await getDepartmentSubspecialitiesAndDoctors(String(lookupId));
+        if (cancelled) return;
+
+        if (response?.success && response.data) {
+          const mapped = mapApiDepartmentDetailResponse(
+            response.data,
+            slug ?? deptMeta?.slug ?? "",
+          );
+          setDept(mapped.detail);
+          setAllDoctors(mapped.doctors);
+          setDeptImage(mapped.image);
+          setDeptMainCategory(mapped.mainCategory ?? deptMeta?.mainCategory);
+          return;
+        }
+
+        setDept(null);
+      } catch {
+        if (!cancelled) setDept(null);
+      }
     })();
 
     return () => {
@@ -469,102 +463,17 @@ const DepartmentDetail = () => {
       </div>
     );
   }
-  const resolvedSubSlug = subSlug && dept ? normalizeSubSlug(dept.slug, subSlug) : subSlug;
+  const resolvedSubSlug = subSlug && dept ? normalizeSubSlug(dept.slug, subSlug, dept.subDepartments) : subSlug;
   const activeSub = resolvedSubSlug ? resolveSubDepartment(dept, resolvedSubSlug) : null;
   const displayDept = activeSub || dept;
-  const staticDept = staticDepartments.find((d) => d.slug === dept.slug);
-  const deptNameToDoctorDept: Record<string, string[]> = {
-    "Obstetrics & Gynecology": ["Obstetrics & Gynecology"],
-    "Reproductive Medicine & IVF": ["IVF"],
-    "Pediatrics": ["Pediatric"],
-    "Neonatal": ["Neonatal"],
-    "Internal Medicine": ["Internal Medicine"],
-    "General & Laparoscopic Surgery": ["General Surgery"],
-    "Plastic Surgery & Cosmetology": ["La Cosmetique"],
-    "Dermatology": ["Dermatology"],
-    "ENT (Ear, Nose & Throat)": ["ENT (Ear, Nose & Throat)"],
-    "Family Medicine": ["Family Medicine"],
-    "Dental Clinic": ["Dental"],
-    "Anesthesia": ["Anesthesia"],
-    "Intensive Care": ["Anesthesia"],
-    "Center for Diagnostic Imaging": ["Radiology"],
-    "Laboratory Services": ["Laboratory"],
-    "Royale Hayat Pharmacy": ["Pharmacy"],
-    "Clinical Pharmacy": ["Clinical Pharmacy"],
-    "Clinical Nutrition & Dietetics": ["Nutricare"],
-    "Physiotherapy": ["Physiotherapy"],
-  };
-  const matchingDepts = deptNameToDoctorDept[displayDept.name] || deptNameToDoctorDept[dept.name] || [];
-  const apiDeptDoctors = allDoctors.filter(
-    (doc) =>
-      doc.department === dept.name ||
-      doc.department.toLowerCase() === dept.name.toLowerCase(),
+  const baseDeptDoctors = filterDepartmentDoctors(allDoctors, dept.name);
+  const deptDoctors = sortDoctorsInDepartment(
+    activeSub
+      ? filterDepartmentDoctors(allDoctors, dept.name, activeSub.name)
+      : baseDeptDoctors,
+    dept.name,
+    lang,
   );
-  const baseDeptDoctors = apiDeptDoctors.length > 0
-    ? apiDeptDoctors
-    : dept.name === "Royale Hayat Pharmacy"
-    ? allDoctors.filter((doc) => (ROYALE_HAYAT_PHARMACY_DOCTOR_IDS as readonly string[]).includes(doc.id))
-    : dept.name === "Clinical Pharmacy"
-      ? allDoctors.filter((doc) => (CLINICAL_PHARMACY_DOCTOR_IDS as readonly string[]).includes(doc.id))
-      : dept.name === "Pain Management"
-        ? allDoctors.filter((doc) => (PAIN_MANAGEMENT_DOCTOR_IDS as readonly string[]).includes(doc.id))
-      : matchingDepts.length > 0
-      ? allDoctors.filter((doc) => matchingDepts.includes(doc.department))
-      : allDoctors.filter((doc) =>
-        doc.department.toLowerCase().includes(dept.name.toLowerCase().split(" ")[0]) ||
-        dept.name.toLowerCase().includes(doc.department.toLowerCase().split(" ")[0])
-      );
-  const deptDoctors = (() => {
-    if (!resolvedSubSlug) {
-      return sortDoctorsInDepartment(baseDeptDoctors, dept.name, lang);
-    }
-    const subSpecialtyDoctorMap: Record<string, string[]> = {
-      "cardiology": ["alturki", "turki"],
-      "nephrology": ["qallaf"],
-      "gastroenterology": ["swait", "jaser"],
-      "endocrinology-metabolism": ["ramadhan", "alroudhan", "roudhan"],
-      "rheumatology": ["aldei", "dei"],
-      "clinical-nutrition-dietetics": ["hachem", "khreis", "salamah"],
-      "respiratory-clinic-pulmonology": ["alia", "ibrahim"],
-      "allergy-and-immunology": ["othman", "yassmin"],
-      "cosmetic-gynecology": ["abubakr", "elmardi", "nada", "samar", "nagaty"],
-      "gynecologic-oncology": ["nourah-al-ibrahim"],
-      "urogynecology": ["abubakr", "elmardi", "nada"],
-      "womens-health": [],
-      "physiotherapy": [],
-      "parent-childbirth-education": [],
-      "obesity-bariatric-surgery": ["ahmed-al-mulla", "mulla", "humoud", "alrasheedi", "hussein", "faour", "sulaiman", "almazeedi"],
-      "breast-surgical-oncology": ["noha", "alsaleh"],
-      "abdominal-wall-reconstruction": ["humoud", "alrasheedi", "sarah", "youha"],
-      "nutrition-and-diet-surgery": ["hachem", "khreis", "salamah"],
-    };
-    const mapKey = Object.keys(subSpecialtyDoctorMap).find(
-      (k) => resolvedSubSlug.includes(k) || k.includes(resolvedSubSlug)
-    );
-    if (mapKey && subSpecialtyDoctorMap[mapKey].length > 0) {
-      const keywords = subSpecialtyDoctorMap[mapKey];
-      const filtered = baseDeptDoctors.filter((doc) =>
-        keywords.some((kw) => doc.id.toLowerCase().includes(kw) || doc.name.toLowerCase().includes(kw))
-      );
-      if (filtered.length > 0) {
-        return sortDoctorsInDepartment(filtered, dept.name, lang);
-      }
-    }
-    if (activeSub) {
-      const subKeywords = activeSub.name
-        .toLowerCase()
-        .split(/[\s&,/()+]+/)
-        .filter((w) => w.length > 3);
-      const filtered = baseDeptDoctors.filter((doc) => {
-        const haystack = `${doc.title} ${doc.specialty} ${doc.titleAr} ${doc.id}`.toLowerCase();
-        return subKeywords.some((kw) => haystack.includes(kw));
-      });
-      if (filtered.length > 0) {
-        return sortDoctorsInDepartment(filtered, dept.name, lang);
-      }
-    }
-    return sortDoctorsInDepartment(baseDeptDoctors, dept.name, lang);
-  })();
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
       <Header />
@@ -645,7 +554,7 @@ const DepartmentDetail = () => {
               <p className="text-accent text-xs tracking-[0.3em] uppercase font-body font-bold mb-3">
                 {activeSub
                   ? pickDeptText(lang, dept.name, dept.nameAr)
-                  : getDeptSubheading(lang, staticDept?.mainCategory, t("medicalServices"))}
+                  : getDeptSubheading(lang, deptMainCategory, t("medicalServices"))}
               </p>
               <h1
                 className={`text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-foreground mb-4 ${

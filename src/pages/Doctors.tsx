@@ -7,8 +7,10 @@ import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { fetchAllDoctorsByDepartment } from "@/api/doctors";
-import { loadDoctors, type Doctor } from "@/data/loadDoctors";
-import { departments, deptDoctorAliases, MAIN_CATEGORIES, type MainCategory } from "@/data/departments";
+import { fetchAllDepartmentsPages } from "@/api/department";
+import type { Doctor } from "@/types/doctor";
+import { MAIN_CATEGORIES, type MainCategory } from "@/types/department";
+import { mapApiDepartmentsToDisplay } from "@/utils/mapApiDepartment";
 import { Input } from "@/components/ui/input";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
 import { sortDoctorsInDepartment } from "@/utils/sortDoctorsInDepartment";
@@ -81,55 +83,26 @@ const DoctorCard = memo(({ doc }: { doc: Doctor }) => {
   );
 });
 DoctorCard.displayName = "DoctorCard";
-const departmentDescriptions: Record<string, { en: string; ar: string }> = {
-  "Obstetrics & Gynecology": { en: "Complete maternity care from prenatal through postpartum recovery. Our team provides expert guidance for high-risk pregnancies, minimally invasive gynecological procedures, and comprehensive family planning services.", ar: "رعاية شاملة للأم خلال جميع مراحل الحمل، من المتابعة قبل الولادة وحتى التعافي بعد الولادة. يقدم فريقنا الطبي رعاية متخصصة للحمل عالي الخطورة، وإجراءات أمراض النساء طفيفة التوغل، بالإضافة إلى خدمات شاملة لتنظيم الأسرة." },
-  "Internal Medicine": { en: "Comprehensive diagnosis and treatment of complex adult diseases. Our internists specialize in managing chronic conditions, preventive health screenings, and coordinating multidisciplinary care for optimal patient outcomes.", ar: "تشخيص وعلاج شامل لأمراض البالغين المعقدة. يتخصص أطباؤنا في إدارة الحالات المزمنة والفحوصات الوقائية وتنسيق الرعاية متعددة التخصصات لتحقيق أفضل النتائج." },
-  "Dermatology": { en: "Expert care for all dermatological needs for adults and children. Our dermatologists offer advanced treatments for skin conditions, cosmetic procedures, and laser therapies using the latest diagnostic technologies.", ar: "رعاية متخصصة لجميع احتياجات الأمراض الجلدية للبالغين والأطفال. يقدم أطباء الجلدية لدينا علاجات متقدمة للأمراض الجلدية والإجراءات التجميلية والعلاج بالليزر باستخدام أحدث التقنيات." },
-  "Family Medicine": { en: "Continuous, personalized care for individuals and families of all ages. Our family physicians build lasting relationships with patients, managing everything from routine check-ups to chronic disease management.", ar: "رعاية مستمرة ومخصصة للأفراد والعائلات من جميع الأعمار. يبني أطباء الأسرة لدينا علاقات دائمة مع المرضى ويديرون كل شيء من الفحوصات الروتينية إلى إدارة الأمراض المزمنة." },
-  "Anesthesia": { en: "Top-tier anesthesia services ensuring patient safety and comfort. Our anesthesiologists provide pre-operative assessments, pain-free surgical experiences, and post-operative pain management using modern monitoring equipment.", ar: "نقدّم خدمات تخدير متقدمة على أعلى مستوى لضمان سلامة المريض وراحته قبل وأثناء وبعد العمليات الجراحية. يقوم أطباء التخدير لدينا بإجراء تقييمات ما قبل العملية، وتوفير تجربة جراحية خالية من الألم، بالإضافة إلى إدارة فعّالة للألم بعد العمليات باستخدام أحدث تقنيات وأجهزة المراقبة الطبية." },
-  "Anesthesia & Intensive Care": { en: "Top-tier anesthesia services ensuring patient safety and comfort. Our anesthesiologists provide pre-operative assessments, pain-free surgical experiences, and post-operative pain management using modern monitoring equipment.", ar: "نقدّم خدمات تخدير متقدمة على أعلى مستوى لضمان سلامة المريض وراحته قبل وأثناء وبعد العمليات الجراحية. يقوم أطباء التخدير لدينا بإجراء تقييمات ما قبل العملية، وتوفير تجربة جراحية خالية من الألم، بالإضافة إلى إدارة فعّالة للألم بعد العمليات باستخدام أحدث تقنيات وأجهزة المراقبة الطبية." },
-  "Neonatal": { en: "Dedicated care for newborns requiring specialized medical attention. Our neonatal unit provides advanced life support, developmental care, and family-centered services for premature and critically ill infants.", ar: "رعاية متخصصة ومتكاملة لحديثي الولادة الذين يحتاجون إلى عناية طبية دقيقة. يوفر قسم حديثي الولادة لدينا دعمًا متقدمًا لإنقاذ الحياة، ورعاية لنمو وتطور الطفل، إلى جانب خدمات تركز على الأسرة لضمان أفضل رعاية للرضع الخدّج والحالات الحرجة." },
-  "General Surgery": { en: "Exceptional surgical care combining precision, safety, and rapid recovery. Our surgeons perform a wide range of minimally invasive and laparoscopic procedures, including bariatric surgery, hernia repair, and oncological operations.", ar: "رعاية جراحية متميزة تجمع بين الدقة العالية، ومعايير الأمان، وسرعة التعافي. يقدم جراحونا مجموعة واسعة من الإجراءات الجراحية طفيفة التوغل وجراحات المنظار، بما في ذلك جراحات السمنة، وإصلاح الفتق، وجراحات الأورام، وذلك باستخدام أحدث التقنيات الطبية لضمان أفضل النتائج للمرضى." },
-  "La Cosmetique": { en: "Advanced cosmetic and reconstructive surgery in a luxurious clinical setting. Our board-certified surgeons combine artistry with precision for body contouring, facial rejuvenation, rhinoplasty, and non-surgical aesthetic treatments.", ar: "جراحة تجميلية وترميمية متقدمة في بيئة سريرية فاخرة. يجمع جراحونا المعتمدون بين الفن والدقة لنحت الجسم وتجديد الوجه وتجميل الأنف والعلاجات التجميلية غير الجراحية." },
-  "Pediatric": { en: "World-class pediatric care with warmth and a child-centered approach. From routine wellness visits to specialized treatments, our pediatricians ensure every child receives compassionate, evidence-based medical attention.", ar: "رعاية أطفال على مستوى عالمي تجمع بين الدفء الإنساني والنهج المتمحورة حول الطفل. من الزيارات الدورية والفحوصات الوقائية إلى العلاجات التخصصية، يحرص أطباؤنا على تقديم رعاية طبية شاملة ومبنية على الأدلة، تضمن حصول كل طفل على اهتمام طبي متعاطف وعالي الجودة في بيئة آمنة وداعمة." },
-  "Radiology": { en: "State-of-the-art diagnostic imaging services including MRI, CT, ultrasound, and interventional radiology. Our radiologists provide accurate, timely interpretations to support clinical decision-making across all departments.", ar: "خدمات متقدمة للتصوير التشخيصي باستخدام أحدث التقنيات الطبية، تشمل التصوير بالرنين المغناطيسي (MRI)، والأشعة المقطعية (CT)، والموجات فوق الصوتية، والأشعة التداخلية. يقدّم أخصائيو الأشعة لدينا تقارير دقيقة وسريعة لدعم التشخيص واتخاذ القرارات العلاجية في مختلف التخصصات الطبية." },
-  "Nutricare": { en: "Personalized clinical nutrition and dietetic services for all ages. Our registered dietitians provide medical nutrition therapy for chronic diseases, weight management, pre/post bariatric surgery diets, and pregnancy nutrition.", ar: "خدمات تغذية علاجية وحمية مخصصة لجميع الفئات العمرية. يقدم أخصائيو التغذية المعتمدون لدينا علاجًا غذائيًا طبيًا للحالات المزمنة، وإدارة الوزن، وخططًا غذائية قبل وبعد جراحات السمنة، بالإضافة إلى التغذية خلال فترة الحمل، وذلك وفق أعلى المعايير الطبية لدعم الصحة العامة وتحسين جودة الحياة." },
-  "Pharmacy": { en: "Full-service hospital pharmacy offering prescription medications, patient counseling, and medication safety. Our pharmacists ensure accurate dispensing and provide expert guidance on medication use and interactions.", ar: "صيدلية متكاملة داخل المستشفى توفر الأدوية الموصوفة، والاستشارات الدوائية، وخدمات تعزيز سلامة استخدام الأدوية. يحرص فريق الصيادلة لدينا على صرف الأدوية بدقة عالية، مع تقديم إرشادات متخصصة حول طريقة الاستخدام والتداخلات الدوائية لضمان أفضل النتائج العلاجية للمرضى." },
-  "Clinical Pharmacy": { en: "Patient-focused pharmaceutical care ensuring safe and effective medication use. Our clinical pharmacists collaborate with medical teams to optimize drug therapy, prevent interactions, and provide medication counseling.", ar: "رعاية دوائية متخصصة تتمحور حول سلامة المريض وفعالية العلاج. يعمل الصيادلة الإكلينيكيون لدينا بالتعاون مع الفرق الطبية لتحسين الخطط الدوائية، والحد من التداخلات والمضاعفات الدوائية، إلى جانب تقديم التوعية والإرشادات اللازمة لضمان الاستخدام الآمن والفعّال للأدوية." },
-  "Dental": { en: "Exceptional dental care in a luxurious setting using advanced technology. From pediatric dentistry and endodontics to prosthodontics, cosmetic smile makeovers, and periodontal treatments.", ar: "رعاية متقدمة لصحة الفم والأسنان ضمن بيئة فاخرة وباستخدام أحدث التقنيات الطبية. نقدم مجموعة شاملة من خدمات طب الأسنان، تشمل طب أسنان الأطفال، وعلاج جذور الأسنان، وتركيبات الأسنان، وتجميل الابتسامة، وعلاج أمراض اللثة، لضمان ابتسامة صحية وجميلة بأعلى معايير الجودة والرعاية." },
-  "IVF": { en: "At Royale Hayat Hospital, we blend expertise with cutting-edge technology to offer the most advanced infertility treatments. Our dedicated team of physicians, counselors, and specialists ensures high-quality, compassionate care in a luxurious setting.", ar: "في مستشفى رويال حياة، نجمع بين الخبرة الطبية والتقنيات الحديثة المتقدمة لتقديم أحدث علاجات تأخر الإنجاب، ضمن بيئة علاجية راقية وفريق متخصص من الأطباء والاستشاريين والمرشدين لضمان رعاية طبية وإنسانية عالية الجودة." },
-  "Reproductive Medicine & IVF": { en: "At Royale Hayat Hospital, we blend expertise with cutting-edge technology to offer the most advanced infertility treatments. Our dedicated team of physicians, counselors, and specialists ensures high-quality, compassionate care in a luxurious setting.", ar: "في مستشفى رويال حياة، نجمع بين الخبرة الطبية والتقنيات الحديثة المتقدمة لتقديم أحدث علاجات تأخر الإنجاب، ضمن بيئة علاجية راقية وفريق متخصص من الأطباء والاستشاريين والمرشدين لضمان رعاية طبية وإنسانية عالية الجودة." },
-  "Laboratory": { en: "Comprehensive clinical laboratory and pathology services with rapid, accurate diagnostic testing. Our team includes histopathologists, microbiologists, and hematologists performing specialized analyses.", ar: "خدمات متكاملة للمختبرات الطبية وعلم الأمراض، مع فحوصات تشخيصية دقيقة وسريعة وفق أعلى المعايير الطبية. يضم فريقنا نخبة من اخصائيي علم الأمراض النسيجية، والأحياء الدقيقة، وأمراض الدم، لتقديم تحاليل متخصصة تدعم التشخيص الدقيق وخطط العلاج الفعّالة." },
-  "Laboratory Services": { en: "Comprehensive clinical laboratory and pathology services with rapid, accurate diagnostic testing. Our team includes histopathologists, microbiologists, and hematologists performing specialized analyses.", ar: "خدمات متكاملة للمختبرات الطبية وعلم الأمراض، مع فحوصات تشخيصية دقيقة وسريعة وفق أعلى المعايير الطبية. يضم فريقنا نخبة من اخصائيي علم الأمراض النسيجية، والأحياء الدقيقة، وأمراض الدم، لتقديم تحاليل متخصصة تدعم التشخيص الدقيق وخطط العلاج الفعّالة." },
-  "ENT (Ear, Nose & Throat)": { en: "Expert care for conditions affecting the ear, nose, throat, head, and neck. Our ENT specialists provide surgical and non-surgical treatments for hearing disorders, sinus conditions, voice disorders, and head & neck tumors.", ar: "رعاية طبية متخصصة لحالات الأذن والأنف والحنجرة والرأس والرقبة. يقدم أخصائيو الأنف والأذن والحنجرة لدينا علاجات جراحية وغير جراحية لمشكلات السمع، واضطرابات الجيوب الأنفية، واضطرابات الصوت، وأورام الرأس والرقبة، باستخدام أحدث التقنيات الطبية لضمان أفضل النتائج للمرضى." },
+
+type DeptMeta = {
+  nameAr: string;
+  desc: string;
+  descAr: string;
+  mainCategory?: MainCategory;
+  order: number;
 };
-const departmentEnLabels: Record<string, string> = {
-  "Laboratory": "Laboratory Services",
-  "Laboratory Services": "Laboratory Services",
-  "Radiology": "Center for Diagnostic Imaging",
-};
-const departmentArLabels: Record<string, string> = {
-  "Dental": "طب الأسنان",
-  "Obstetrics & Gynecology": "امراض النساء والولادة",
-  "Neonatal": "طب حديثي الولادة",
-  "Anesthesia": "التخدير",
-  "Anesthesia & Intensive Care": "التخدير",
-  "Internal Medicine": "الطب الباطنية",
-  "Family Medicine": "طب العائلة",
-  "Dermatology": "الأمراض الجلدية",
-  "ENT (Ear, Nose & Throat)": "الأنف والأذن والحنجرة",
-  "Nutricare": "قسم التغذية",
-  "La Cosmetique": "قسم جراحة التجميل",
-  "IVF": "طب الإنجاب وأطفال الأنابيب",
-  "Reproductive Medicine & IVF": "طب الإنجاب وأطفال الأنابيب",
-  "Reproductive Medicine": "طب الإنجاب وأطفال الأنابيب",
-  "Laboratory": "الخدمات المخبرية",
-  "Laboratory Services": "الخدمات المخبرية",
-  "Radiology": "الأشعة التشخيصية",
-  "Pharmacy": "الصيدلية",
-  "Clinical Pharmacy": "الصيدلة الإكلينيكية",
-};
-const DepartmentRow = memo(({ department, departmentAr, docs }: { department: string; departmentAr: string; docs: Doctor[] }) => {
+
+const DepartmentRow = memo(({
+  department,
+  departmentAr,
+  docs,
+  deptMeta,
+}: {
+  department: string;
+  departmentAr: string;
+  docs: Doctor[];
+  deptMeta?: DeptMeta;
+}) => {
   const { lang } = useLanguage();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -187,12 +160,14 @@ const DepartmentRow = memo(({ department, departmentAr, docs }: { department: st
     },
     [updateScrollState],
   );
-  const deptDesc = departmentDescriptions[department];
+  const deptDesc = deptMeta && (deptMeta.desc || deptMeta.descAr)
+    ? { en: deptMeta.desc, ar: deptMeta.descAr }
+    : undefined;
   return (
     <div className="mb-14">
       <div className="max-w-[1192px] mx-auto mb-6">
         <h3 className="text-2xl font-serif font-bold text-foreground mb-3">
-          {lang === "ar" ? (departmentArLabels[department] ?? departmentAr) : (departmentEnLabels[department] ?? department)}
+          {lang === "ar" ? (deptMeta?.nameAr || departmentAr) : department}
         </h3>
         {deptDesc && (
           <div className="bg-popover border border-border/50 rounded-2xl p-4 md:p-5 shadow-sm">
@@ -251,25 +226,38 @@ const Doctors = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [doctorCatalog, setDoctorCatalog] = useState<Doctor[]>([]);
   const [catalogLoading, setCatalogLoading] = useState(true);
+  const [catalogError, setCatalogError] = useState("");
+  const [deptMetaByName, setDeptMetaByName] = useState<Record<string, DeptMeta>>({});
   const { lang, t } = useLanguage();
   useEffect(() => {
     let cancelled = false;
     void (async () => {
       try {
-        const apiList = await fetchAllDoctorsByDepartment();
+        const [apiList, deptRows] = await Promise.all([
+          fetchAllDoctorsByDepartment(),
+          fetchAllDepartmentsPages({ isActive: true }),
+        ]);
         if (cancelled) return;
-        if (apiList.length > 0) {
-          setDoctorCatalog(apiList);
-        } else {
-          setDoctorCatalog(await loadDoctors());
-        }
+        setDoctorCatalog(apiList);
+        const mapped = mapApiDepartmentsToDisplay(deptRows);
+        setDeptMetaByName(
+          Object.fromEntries(
+            mapped.map((dept, index) => [
+              dept.name,
+              {
+                nameAr: dept.nameAr,
+                desc: dept.desc,
+                descAr: dept.descAr,
+                mainCategory: dept.mainCategory,
+                order: dept.order ?? index,
+              },
+            ]),
+          ),
+        );
       } catch {
         if (!cancelled) {
-          try {
-            setDoctorCatalog(await loadDoctors());
-          } catch {
-            setDoctorCatalog([]);
-          }
+          setDoctorCatalog([]);
+          setCatalogError("Failed to load doctors.");
         }
       } finally {
         if (!cancelled) setCatalogLoading(false);
@@ -281,48 +269,21 @@ const Doctors = () => {
   }, []);
   const deptToMainCategory = useMemo<Record<string, MainCategory>>(() => {
     const map: Record<string, MainCategory> = {};
-    departments.forEach((d) => {
-      map[d.name] = d.mainCategory;
+    Object.entries(deptMetaByName).forEach(([name, meta]) => {
+      if (meta.mainCategory) map[name] = meta.mainCategory;
     });
     return map;
-  }, []);
+  }, [deptMetaByName]);
   const doctorDeptOrderIndex = useMemo(() => {
     const m = new Map<string, number>();
-    departments.forEach((d, i) => {
-      m.set(d.name, i);
-      deptDoctorAliases[d.name]?.forEach((alias) => {
-        m.set(alias, i);
-      });
+    Object.entries(deptMetaByName).forEach(([name, meta]) => {
+      m.set(name, meta.order);
     });
-    const pharmacyIdx = departments.findIndex((d) => d.name === "Royale Hayat Pharmacy");
-    if (pharmacyIdx >= 0) {
-      m.set("Pharmacy", pharmacyIdx);
-      m.set("Clinical Pharmacy", pharmacyIdx + 0.5);
-    }
     return m;
-  }, []);
+  }, [deptMetaByName]);
   const DEPT_ORDER_FALLBACK = 100_000;
   const getDeptMainCategory = useCallback((dept: string): MainCategory => {
     if (deptToMainCategory[dept]) return deptToMainCategory[dept];
-    for (const d of departments) {
-      const aliases = deptDoctorAliases[d.name];
-      if (aliases?.includes(dept)) return d.mainCategory;
-    }
-    const clinicalSpeciality: string[] = [
-      "Obstetrics & Gynecology", "Neonatal", "Pediatric", "Pediatrics",
-      "General Surgery", "Anesthesia", "Anesthesia & Intensive Care",
-      "Internal Medicine", "Family Medicine", "ENT (Ear, Nose & Throat)", "ENT",
-      "La Cosmetique", "Plastic Surgery & Cosmetology", "IVF", "Reproductive Medicine",
-      "Dermatology", "Dental", "Dental Clinic", "Pain Management", "Nutricare",
-    ];
-    const clinicalSupport: string[] = [
-      "Laboratory", "Radiology", "Intensive Care", "Clinical Pharmacy",
-      "Pharmacy", "Al Safwa",
-    ];
-    const homeCare: string[] = ["Royale Home Health", "Physiotherapy", "Home Health"];
-    if (clinicalSpeciality.some(a => dept.toLowerCase().includes(a.toLowerCase()) || a.toLowerCase().includes(dept.toLowerCase()))) return "Clinical Speciality";
-    if (clinicalSupport.some(a => dept.toLowerCase().includes(a.toLowerCase()) || a.toLowerCase().includes(dept.toLowerCase()))) return "Clinical Support Service";
-    if (homeCare.some(a => dept.toLowerCase().includes(a.toLowerCase()) || a.toLowerCase().includes(dept.toLowerCase()))) return "Home Care Service";
     return "Clinical Speciality";
   }, [deptToMainCategory]);
   const grouped = useMemo<Record<string, Doctor[]>>(() => {
@@ -379,6 +340,9 @@ const Doctors = () => {
       <Header />
       <section className="py-16 md:py-24">
         <div className="container mx-auto px-4 md:px-6">
+          {catalogError && !catalogLoading && (
+            <p className="text-center text-muted-foreground font-body mb-8">{catalogError}</p>
+          )}
           {catalogLoading && (
             <div className="flex min-h-[30vh] items-center justify-center text-muted-foreground mb-8">
               <Loader2 className="h-8 w-8 animate-spin text-primary" aria-hidden />
@@ -448,6 +412,7 @@ const Doctors = () => {
                         department={dept}
                         departmentAr={docs[0]?.departmentAr || dept}
                         docs={docs}
+                        deptMeta={deptMetaByName[dept]}
                       />
                     ))}
                   </div>

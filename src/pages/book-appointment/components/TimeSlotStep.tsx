@@ -3,7 +3,7 @@ import { AlertCircle, ArrowRight, Calendar, Clock } from "lucide-react";
 import { Calendar as DatePickerCalendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import type { Slot } from "@/api/royalhayat";
-import type { DoctorWithClinicCode as Doctor } from "@/data/doctorsWithClinicCodes";
+import type { DoctorWithClinicCode as Doctor } from "@/types/doctor";
 import { pageVariants, type BookingDeptRow } from "../types";
 type TimeSlotStepProps = {
   isAr: boolean;

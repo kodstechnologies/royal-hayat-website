@@ -3,7 +3,7 @@ import { Building2, CheckCircle2, ClipboardList, Clock, FileText, User } from "l
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
-import type { DoctorWithClinicCode as Doctor } from "@/data/doctorsWithClinicCodes";
+import type { DoctorWithClinicCode as Doctor } from "@/types/doctor";
 import type { BookingDeptRow } from "../types";
 type BookingSuccessProps = {
   isAr: boolean;

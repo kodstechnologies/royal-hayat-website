@@ -11,7 +11,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
-import type { DoctorWithClinicCode as Doctor } from "@/data/doctorsWithClinicCodes";
+import type { DoctorWithClinicCode as Doctor } from "@/types/doctor";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
 import { fetchAllDepartmentsPages } from "@/api/department";
 import {
@@ -20,7 +20,8 @@ import {
   mapApiDoctorRowToBookingDoctor,
 } from "@/api/doctors";
 import { mapApiDepartmentsToDisplay } from "@/utils/mapApiDepartment";
-import type { Department } from "@/data/departments";
+import type { Department } from "@/types/department";
+import { MAIN_CATEGORIES } from "@/types/department";
 import { createAppointmentRequest } from "@/api/appointmentRequest";
 import { createAppointmentBookingRecord } from "@/api/appointmentBookingRecord";
 import {
@@ -40,10 +41,6 @@ import {
   type RegisteredPatientHmsDetails,
 } from "@/utils/appointmentBookingRecord";
 import type { AppointmentRequestPrefillState, PaciIdentityDetails } from "@/types/appointmentRequestPrefill";
-import {
-  departments as staticDepts,
-  MAIN_CATEGORIES,
-} from "@/data/departments";
 import { Calendar as DatePickerCalendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import type { Slot } from "@/api/royalhayat";
@@ -271,14 +268,9 @@ const BookAppointment = () => {
           deptDoctorList.find((d) => d.id === selectedDoctor);
         const finalCode = doc?.clinicCode || doc?.departmentClinicCode || dept.specialityCode;
         setSpecialityCode(finalCode);
-      } else if (dept) {
-        const sDept = staticDepts.find((s) => s.name.toLowerCase() === dept.name.toLowerCase());
-        if (sDept?.clinicCode) {
-          setSpecialityCode(sDept.clinicCode);
-        }
       }
     }
-  }, [selectedDept, departmentsList, selectedDoctor]);
+  }, [selectedDept, departmentsList, selectedDoctor, allApiDoctors, deptDoctorList]);
   const slotsFetchReady = Boolean(serviceCode && specialityCode && providerCode);
 
   useEffect(() => {

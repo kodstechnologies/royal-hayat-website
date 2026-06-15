@@ -10,11 +10,21 @@ import { Button } from "@/components/ui/button";
 import { Mail, Share2, ChevronRight, Loader2 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "@/hooks/use-toast";
-import { getAllJobs, getJobById, applyForJob, type JobPosting } from "@/api/job";
-import { localizeJobPosting } from "@/lib/jobLocale";
+import { applyForJob, getJobById, type JobPosting } from "@/api/job";
 
-// ── Static fallback positions (same as WorkWithUs) ────────────────────────────
-const staticPositions: JobPosting[] = [
+const formatJobPostedDate = (value: string): string => {
+  if (!value) return "";
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return value;
+  const day = String(parsed.getUTCDate()).padStart(2, "0");
+  const month = String(parsed.getUTCMonth() + 1).padStart(2, "0");
+  const year = parsed.getUTCFullYear();
+  return `${day}-${month}-${year}`;
+};
+
+const MAX_CV_SIZE_BYTES = 5 * 1024 * 1024;
+
+const openPositions = [
   { title: "Floor Coordinator only Female, Bilingual (Arabic & English)", category: "Hospitality / Guest Services", location: "Royale Hayat Hospital", type: "Full-time", date: "March 19, 2026", desc: "Royale Hayat Hospital have devoted considerable effort to applying established strategies for quality improvement thus they created a position of Floor coordinator that make patient experience more valuable and focusing on patient satisfaction in the inpatient setting and how to improve it.", responsibilities: ["To ensure a differences and service recovery every day with every patient throughout his or her hospitalization.", "Positive outcomes of stay.", "Improved quality outcomes, and patient satisfaction which may help transform the acute care delivery model toward a more rational and safe approach.", "Coordinate floor operations and ensure smooth patient flow", "Liaise between departments to resolve patient concerns"], requirements: ["Bilingual proficiency in Arabic and English (mandatory)", "Female candidates only", "Minimum 2 years of experience in hospitality or healthcare coordination", "Excellent communication and organizational skills"] },
   { title: "Guest Relations Officer", category: "Hospitality / Guest Services", location: "Royale Hayat Hospital", type: "Full-time", date: "March 15, 2026", desc: "Provide outstanding hospitality and patient experience throughout the hospital premises.", responsibilities: ["Welcome and assist patients and visitors", "Handle complaints and feedback professionally", "Coordinate with departments for patient needs", "Maintain guest satisfaction records"], requirements: ["Experience in hospitality or guest relations", "Excellent interpersonal skills", "Bilingual preferred", "Professional appearance and demeanor"] },
   { title: "Marketing Specialist – Digital & Social Media", category: "Marketing & Communications", location: "Royale Hayat Hospital", type: "Full-time", date: "March 10, 2026", desc: "Drive digital marketing campaigns, manage social media channels, and enhance brand visibility for the hospital.", responsibilities: ["Plan and execute digital marketing campaigns", "Manage hospital social media accounts", "Analyze campaign performance metrics", "Create engaging content for various platforms"], requirements: ["Bachelor's degree in Marketing or related field", "3+ years of digital marketing experience", "Proficiency in social media management tools", "Strong analytical and creative skills"] },
@@ -132,7 +142,16 @@ const JobApplication = () => {
       });
       return;
     }
-
+    if (cvFile.size > MAX_CV_SIZE_BYTES) {
+      toast({
+        title: isAr ? "حجم الملف كبير جداً" : "File too large",
+        description: isAr
+          ? "يجب ألا يتجاوز حجم السيرة الذاتية 5 ميجابايت."
+          : "CV file size must not exceed 5 MB.",
+        variant: "destructive",
+      });
+      return;
+    }
     setSubmitting(true);
     try {
       await applyForJob({
@@ -178,6 +197,26 @@ const JobApplication = () => {
       void navigator.clipboard.writeText(window.location.href);
       toast({ title: isAr ? "تم نسخ الرابط" : "Link Copied" });
     }
+  };
+  const handleCvChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      setCvFile(null);
+      return;
+    }
+    if (file.size > MAX_CV_SIZE_BYTES) {
+      e.target.value = "";
+      setCvFile(null);
+      toast({
+        title: isAr ? "حجم الملف كبير جداً" : "File too large",
+        description: isAr
+          ? "يجب ألا يتجاوز حجم السيرة الذاتية 5 ميجابايت."
+          : "CV file size must not exceed 5 MB.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setCvFile(file);
   };
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
@@ -263,7 +302,7 @@ const JobApplication = () => {
                 </Button>
               </div>
               <div className="bg-popover border border-border/50 rounded-2xl p-6 space-y-5">
-                <p className="font-serif text-lg text-foreground">{displayJob.postedDate ?? ""}</p>
+                <p className="font-serif text-lg text-foreground">{formatJobPostedDate(job.date)}</p>
                 <div>
                   <p className="font-body text-xs uppercase tracking-widest text-foreground font-semibold mb-1">{isAr ? "الموقع" : "Location"}</p>
                   <p className="font-body text-sm text-muted-foreground">{displayJob.location}</p>
@@ -302,8 +341,10 @@ const JobApplication = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="cv">{isAr ? "السيرة الذاتية" : "Upload CV"} <span className="text-destructive">*</span></Label>
-                  <Input id="cv" type="file" required accept=".pdf,.doc,.docx" onChange={(e) => setResumeFile(e.target.files?.[0] || null)} className="text-sm" />
-                  <p className="text-xs text-muted-foreground">{isAr ? "PDF, DOC, DOCX" : "Accepted: PDF, DOC, DOCX"}</p>
+                  <Input id="cv" type="file" required accept=".pdf,.doc,.docx" onChange={handleCvChange} className="text-sm" />
+                  <p className="text-xs text-muted-foreground">
+                    {isAr ? "PDF, DOC, DOCX — الحد الأقصى 5 ميجابايت" : "Accepted: PDF, DOC, DOCX — Max 5 MB"}
+                  </p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="coverLetter">{isAr ? "خطاب التقديم (اختياري)" : "Cover Letter (Optional)"}</Label>

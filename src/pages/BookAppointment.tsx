@@ -16,9 +16,9 @@ import { loadDoctorsWithClinicCodes } from "@/data/loadDoctorsWithClinicCodes";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
 import { departmentsWithDoctors, getDepartmentsWithClinicCodes } from "@/data/departmentWithDoctors";
 import { createAppointmentRequest } from "@/api/appointmentRequest";
+import { createAppointmentBookingRecord } from "@/api/appointmentBookingRecord";
 import {
   getAvailability,
-  bookAppointment,
   getPatient,
 } from "@/api/royalhayat";
 import {
@@ -28,14 +28,11 @@ import {
 } from "@/api/identity";
 import { subscribeToIdentityVerification } from "@/api/identitySocket";
 import { extractPatientId, getPatientLookupUserMessage } from "@/utils/patientLookupErrors";
-import {
-  formatBookingConflictAlert,
-  isAlertOnlyBookingConflict,
-  resolveBookingConflict,
-  type BookingConflictDetails,
-} from "@/utils/bookingErrors";
 import { identityDateToIso, mapPaciSexToGender } from "@/utils/mapPaciGender";
-import type { AppointmentBookingFallbackState } from "@/types/appointmentBookingFallback";
+import {
+  buildRegisteredPatientBookingPayload,
+  type RegisteredPatientHmsDetails,
+} from "@/utils/appointmentBookingRecord";
 import type { AppointmentRequestPrefillState, PaciIdentityDetails } from "@/types/appointmentRequestPrefill";
 import {
   departments as staticDepts,
@@ -49,6 +46,7 @@ import { filterDoctorsBySearch } from "@/utils/doctorSearch";
 import {
   SYMPTOM_CHIP_OPTIONS,
   formatSymptomsForDisplay,
+  syncSymptomChipsFromText,
 } from "@/data/symptomChipOptions";
 const DOCTOR_PATH_EXCLUDED_IDS = new Set<string>(["dr-madiha-khisaf", "dr-wael-ibrahim", "dr-fatima-alazemi"]);
 const SKIP_CIVIL_ID_VERIFICATION = false;
@@ -248,6 +246,9 @@ const BookAppointment = () => {
   const [serviceCode, setServiceCode] = useState<string>("R01-FMC001-F010");
   const [fetchedSlots, setFetchedSlots] = useState<Slot[]>([]);
   const [patientId, setPatientId] = useState<string | null>(null);
+  const [registeredPatientHmsDetails, setRegisteredPatientHmsDetails] =
+    useState<RegisteredPatientHmsDetails | null>(null);
+  const paciOperationIdRef = useRef<string | null>(null);
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [bookingError, setBookingError] = useState<string | null>(null);
@@ -687,46 +688,6 @@ const BookAppointment = () => {
     return hour < 12 ? "morning" : "afternoon";
   };
 
-  const redirectToBookingFallback = useCallback(
-    (errorMessage: string) => {
-      const gender = mapPaciSexToGender(verifiedIdentityDetails?.gender || "");
-      const state: AppointmentBookingFallbackState = {
-        fullname: patientName.trim(),
-        gender,
-        genderDisplay: verifiedIdentityDetails?.gender,
-        civilId: verifiedIdentityDetails?.civilIdNumber || nationalId || undefined,
-        patientId: patientId || undefined,
-        doctorName: selectedDoctorObj?.name || "",
-        doctorNameAr: selectedDoctorObj?.nameAr,
-        departmentName: selectedDeptObj?.name || selectedDoctorObj?.specialty || "",
-        departmentNameAr: selectedDeptObj?.nameAr ?? selectedDoctorObj?.specialtyAr,
-        formattedDate: formattedSelectedDate,
-        selectedDate,
-        selectedSlot: selectedSlot || "",
-        formattedTime: formatTimeString(selectedSlot) || selectedSlot || "",
-        slotPeriod: getSelectedSlotPeriod(),
-        symptoms: collectedSymptoms.length > 0 ? collectedSymptoms : undefined,
-        bookingError: errorMessage,
-        suggestedDob: patientDobIso || undefined,
-      };
-      navigate("/appointment-request/fallback", { replace: true, state });
-    },
-    [
-      collectedSymptoms,
-      formattedSelectedDate,
-      nationalId,
-      navigate,
-      patientDobIso,
-      patientId,
-      patientName,
-      selectedDate,
-      selectedDeptObj,
-      selectedDoctorObj,
-      selectedSlot,
-      verifiedIdentityDetails,
-    ],
-  );
-
   const steps = [
     { label: isAr ? "القسم" : "Department", icon: Building2 },
     { label: isAr ? "الطبيب" : "Doctor", icon: User },
@@ -757,19 +718,6 @@ const BookAppointment = () => {
       default: return true;
     }
   };
-  const showBookingConflictAlert = useCallback(
-    (conflict: BookingConflictDetails) => {
-      setBookingPopupGoHome(true);
-      setBookingPopupMessage(
-        formatBookingConflictAlert(conflict, isAr, {
-          doctorName: selectedDoctorObj ? getDoctorDisplayName(selectedDoctorObj, isAr ? "ar" : "en") : undefined,
-          date: formattedSelectedDate || selectedDate,
-          time: formatTimeString(selectedSlot) || selectedSlot || "",
-        }),
-      );
-    },
-    [formattedSelectedDate, isAr, selectedDate, selectedDoctorObj, selectedSlot],
-  );
   const handleConfirm = async () => {
     setIsSubmitting(true);
     setBookingError(null);
@@ -779,29 +727,31 @@ const BookAppointment = () => {
       return cleaned.replace(/care provider/gi, "doctor");
     };
     try {
-      if (patientType === "returning" && patientId && selectedSlotId) {
-        const res = await bookAppointment({
-          patientId: patientId,
+      if (patientType === "returning" && patientId) {
+        const payload = buildRegisteredPatientBookingPayload({
+          patientName,
+          patientId,
+          patientDobIso: patientDobIso || undefined,
+          gender: verifiedIdentityDetails
+            ? mapPaciSexToGender(verifiedIdentityDetails.gender)
+            : undefined,
+          nationalId: nationalId || undefined,
+          verifiedIdentityDetails,
+          verifiedPersonName,
+          hmsDetails: registeredPatientHmsDetails,
+          doctor: (isAr ? selectedDoctorObj?.nameAr : selectedDoctorObj?.name) || undefined,
+          department:
+            (isAr
+              ? selectedDeptObj?.nameAr ?? selectedDoctorObj?.specialtyAr
+              : selectedDeptObj?.name ?? selectedDoctorObj?.specialty) || undefined,
+          date: formattedSelectedDate || selectedDate,
+          time: formatTimeString(selectedSlot) || selectedSlot || undefined,
+          symptoms: collectedSymptoms.length > 0 ? collectedSymptoms : undefined,
           slotBookingId: selectedSlotId,
-          doctorId: selectedDoctor || undefined,
-          date: selectedDate || undefined,
-          slotTime: selectedSlot || undefined,
+          verifyOperationId: paciOperationIdRef.current,
         });
-        if (res.success) {
-          setBooked(true);
-          return;
-        }
-        const rawMessage = res?.meta?.status || res?.message || res?.status;
-        const conflict = resolveBookingConflict(rawMessage, res?.meta);
-        if (conflict) {
-          showBookingConflictAlert(conflict);
-          return;
-        }
-        const messageToShow = formatBookingErrorMessage(rawMessage);
-        setBookingError(messageToShow);
-        if (!isAlertOnlyBookingConflict(rawMessage, res?.meta)) {
-          redirectToBookingFallback(messageToShow);
-        }
+        await createAppointmentBookingRecord(payload);
+        setBooked(true);
         return;
       }
       if (patientType === "new") {
@@ -832,30 +782,23 @@ const BookAppointment = () => {
       setBooked(true);
     } catch (err: any) {
       console.error("Booking failed:", err);
-      const apiMeta = err?.response?.data?.meta;
+      if (err?.message === "REGISTERED_PATIENT_PHONE_MISSING") {
+        const phoneMessage = isAr
+          ? "تعذر العثور على رقم هاتف مسجل. يرجى التواصل مع الاستقبال."
+          : "No registered phone number was found. Please contact reception.";
+        setBookingError(phoneMessage);
+        setBookingPopupGoHome(false);
+        setBookingPopupMessage(phoneMessage);
+        return;
+      }
       const apiErrorMessage =
-        apiMeta?.status ||
         err?.response?.data?.message ||
         err?.response?.data?.status ||
         err?.message;
-      const conflict = resolveBookingConflict(apiErrorMessage, apiMeta);
-      if (patientType === "returning" && patientId && selectedSlotId && conflict) {
-        showBookingConflictAlert(conflict);
-        return;
-      }
       const finalMessage = formatBookingErrorMessage(apiErrorMessage);
       setBookingError(finalMessage);
-      if (
-        patientType === "returning" &&
-        patientId &&
-        selectedSlotId &&
-        !isAlertOnlyBookingConflict(apiErrorMessage, apiMeta)
-      ) {
-        redirectToBookingFallback(finalMessage);
-      } else {
-        setBookingPopupGoHome(false);
-        setBookingPopupMessage(finalMessage);
-      }
+      setBookingPopupGoHome(false);
+      setBookingPopupMessage(finalMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -1065,6 +1008,8 @@ const BookAppointment = () => {
     setPatientName("");
     setPatientType(null);
     setPatientId(null);
+    setRegisteredPatientHmsDetails(null);
+    paciOperationIdRef.current = null;
     setPatientDobIso("");
     setVerifiedPersonName(null);
     setVerifiedIdentityDetails(null);
@@ -1131,6 +1076,14 @@ const BookAppointment = () => {
         if (!pRes.success || !patientId) {
           throw { response: { data: { meta: { code: "PATIENT_NOT_FOUND" }, message: "Error: Patient not found" } } };
         }
+        const patient = pRes?.data?.patient as Record<string, unknown> | undefined;
+        setRegisteredPatientHmsDetails({
+          mobile_number: String(patient?.mobile_number || ""),
+          urn: String(patient?.urn || ""),
+          email: String(patient?.email || ""),
+          address: String(patient?.address || ""),
+          national_id: String(patient?.national_id || params.civilId),
+        });
         await loadVerifiedIdentityDetails(params.civilId, params.pickedName);
         setPatientId(patientId);
         setPatientName(params.pickedName);
@@ -1191,6 +1144,8 @@ const BookAppointment = () => {
     setPatientType(null);
     setPatientName("");
     setPatientId(null);
+    setRegisteredPatientHmsDetails(null);
+    paciOperationIdRef.current = null;
     setVerifiedPersonName(null);
     setVerifiedIdentityDetails(null);
     setShowReturningPatientModal(false);
@@ -1275,6 +1230,7 @@ const BookAppointment = () => {
         return;
       }
       if (response?.operationId) {
+        paciOperationIdRef.current = response.operationId;
         setVerifyOperationId(response.operationId);
         setIsWaitingForApproval(true);
         return;
@@ -1361,6 +1317,8 @@ const BookAppointment = () => {
     setPatientType(null);
     setPatientName("");
     setPatientId(null);
+    setRegisteredPatientHmsDetails(null);
+    paciOperationIdRef.current = null;
     setPatientDobIso("");
     setNationalId("");
     setNationalIdError("");
@@ -1650,7 +1608,13 @@ Clinic Code:`;
                     }`}>{isAr ? chip.ar : chip.en}</motion.button>
               ))}
             </div>
-            <textarea value={symptomText} onChange={(e) => setSymptomText(e.target.value)}
+            <textarea
+              value={symptomText}
+              onChange={(e) => {
+                const nextText = e.target.value;
+                setSymptomText(nextText);
+                setSymptomChips((prev) => syncSymptomChipsFromText(nextText, prev));
+              }}
               placeholder={t("describeInDetail")}
               className="w-full h-24 bg-muted/20 border border-border rounded-xl p-4 font-body text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-2 focus:ring-accent/30 mb-4" />
             <div className="bg-destructive/10 rounded-xl p-4 border-2 border-destructive/30 mb-4">

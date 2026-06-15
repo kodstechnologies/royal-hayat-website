@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import type { SymptomChipOption } from "@/data/symptomChipOptions";
+import { syncSymptomChipsFromText } from "@/data/symptomChipOptions";
 
 type SymptomCheckerProps = {
   lang: string;
@@ -94,7 +95,11 @@ const SymptomChecker = ({
         </div>
         <textarea
           value={symptomText}
-          onChange={(e) => setSymptomText(e.target.value)}
+          onChange={(e) => {
+            const nextText = e.target.value;
+            setSymptomText(nextText);
+            setSymptomChips((prev) => syncSymptomChipsFromText(nextText, prev));
+          }}
           placeholder={t("describeInDetail")}
           className="w-full h-24 bg-muted/20 border border-border rounded-xl p-4 font-body text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-2 focus:ring-accent/30 mb-4"
         />

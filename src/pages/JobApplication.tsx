@@ -38,7 +38,7 @@ const mapApiJobToDisplay = (apiJob: JobPosting) => ({
 const JobApplication = () => {
   const { lang } = useLanguage();
   const [searchParams] = useSearchParams();
-  const jobParam = searchParams.get("job") ?? "0";
+  const jobParam = searchParams.get("jobId") ?? searchParams.get("job") ?? "0";
   const isAr = lang === "ar";
 
   const [jobRecord, setJobRecord] = useState<JobPosting | null>(null);
@@ -122,18 +122,27 @@ const JobApplication = () => {
     const jobMongoId = jobRecord._id;
     const isMongoId = jobMongoId && /^[0-9a-fA-F]{24}$/.test(String(jobMongoId));
 
+    if (!isMongoId) {
+      toast({
+        title: isAr ? "خطأ" : "Error",
+        description: isAr
+          ? "تعذر ربط هذا الإعلان بالنظام. يرجى المحاولة من صفحة الوظائف."
+          : "This posting could not be linked to an active job. Please apply from the careers page.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setSubmitting(true);
     try {
-      if (isMongoId) {
-        await applyForJob({
-          jobId: String(jobMongoId),
-          fullName: fullName.trim(),
-          email: email.trim(),
-          phone: phone.trim(),
-          coverLetter: coverLetter.trim(),
-          resume: resumeFile,
-        });
-      }
+      await applyForJob({
+        jobId: String(jobMongoId),
+        fullName: fullName.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
+        coverLetter: coverLetter.trim(),
+        resume: resumeFile,
+      });
 
       toast({
         title: isAr ? "تم إرسال الطلب" : "Application Submitted",

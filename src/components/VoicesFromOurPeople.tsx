@@ -1,17 +1,55 @@
 import { Quote, Star } from "lucide-react";
 import { motion } from "framer-motion";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { patientTestimonials } from "@/data/patientTestimonials";
+import { patientTestimonials, type PatientTestimonial } from "@/data/patientTestimonials";
+import {
+  getAllHospitalFeedbacks,
+  type HospitalFeedbackRecord,
+} from "@/api/feedback";
 
-const duplicated = [...patientTestimonials, ...patientTestimonials];
+const mapHospitalFeedbackToTestimonial = (
+  record: HospitalFeedbackRecord,
+): PatientTestimonial => ({
+  name: record.userName || record.arabicUserName || "",
+  nameAr: record.arabicUserName || record.userName || "",
+  text: record.feedback || record.arabicFeedback || "",
+  textAr: record.arabicFeedback || record.feedback || "",
+  stars: record.stars,
+});
 
 const VoicesFromOurPeople = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
+  const [testimonials, setTestimonials] = useState(patientTestimonials);
   const { lang } = useLanguage();
   const isAr = lang === "ar";
+
+  useEffect(() => {
+    let cancelled = false;
+
+    getAllHospitalFeedbacks()
+      .then((feedbacks) => {
+        if (cancelled) return;
+
+        const visible = feedbacks
+          .filter((fb) => fb.shownOnWebsite !== false)
+          .map(mapHospitalFeedbackToTestimonial)
+          .filter((item) => item.text || item.textAr);
+
+        setTestimonials([...visible, ...patientTestimonials]);
+      })
+      .catch((error) => {
+        console.error("Failed to load hospital feedbacks:", error);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const duplicated = [...testimonials, ...testimonials];
 
   return (
     <section className="py-20 bg-popover overflow-hidden">

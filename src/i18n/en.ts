@@ -249,7 +249,7 @@ export const en = {
   "appointmentConfirmed": "Appointment Confirmed",
   "requestConfirmMsg": "Thank you for your request, we will contact you soon",
   "bookingConfirmMsg": "Thank you for your request, we will contact you soon",
-  "appointmentDetails": "Appointment Details",
+  "appointmentDetails": "Appointment Request Details",
   "date": "Date",
   "time": "Time",
   "status": "Status",

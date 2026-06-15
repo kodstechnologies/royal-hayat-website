@@ -375,7 +375,7 @@ const translations: Translations = {
   appointmentConfirmed: { en: "Appointment Confirmed", ar: "تم استلام طلب الموعد!" },
   requestConfirmMsg: { en: "Thank you for your request, we will contact you soon", ar: "شكراً لطلبك، سنتواصل معك قريباً." },
   bookingConfirmMsg: { en: "Thank you for your request, we will contact you soon", ar: "شكراً لطلبك، سنتواصل معك قريباً." },
-  appointmentDetails: { en: "Appointment Details", ar: "تفاصيل الموعد" },
+  appointmentDetails: { en: "Appointment Request Details", ar: "تفاصيل طلب الموعد" },
   date: { en: "Date", ar: "التاريخ" },
   time: { en: "Time", ar: "الوقت" },
   status: { en: "Status", ar: "الحالة" },

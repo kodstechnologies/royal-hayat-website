@@ -16,7 +16,7 @@ import { loadDoctorsWithClinicCodes } from "@/data/loadDoctorsWithClinicCodes";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
 import { departmentsWithDoctors, getDepartmentsWithClinicCodes } from "@/data/departmentWithDoctors";
 import { createAppointmentRequest } from "@/api/appointmentRequest";
-import { createAppointmentBookingRecord } from "@/api/appointmentBookingRecord";
+import { createAppointmentBookingRecord } from "../api/appointmentBookingRecord";
 import {
   getAvailability,
   getPatient,
@@ -32,7 +32,7 @@ import { identityDateToIso, mapPaciSexToGender } from "@/utils/mapPaciGender";
 import {
   buildRegisteredPatientBookingPayload,
   type RegisteredPatientHmsDetails,
-} from "@/utils/appointmentBookingRecord";
+} from "../utils/appointmentBookingRecord";
 import type { AppointmentRequestPrefillState, PaciIdentityDetails } from "@/types/appointmentRequestPrefill";
 import {
   departments as staticDepts,

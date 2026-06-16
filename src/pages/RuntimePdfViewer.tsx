@@ -1,40 +1,22 @@
-import { useEffect, useState } from "react";
+import { useLayoutEffect } from "react";
 import { useLocation } from "react-router-dom";
 import {
   buildRuntimePdfStreamUrl,
   isMobilePdfClient,
-  openRuntimePdf,
 } from "@/utils/buildRuntimePdfUrl";
 
 const RuntimePdfViewer = () => {
   const { pathname } = useLocation();
-  const [useNativeViewer] = useState(() => isMobilePdfClient());
-  const [openError, setOpenError] = useState(false);
   const streamUrl = buildRuntimePdfStreamUrl(pathname);
+  const isMobile = isMobilePdfClient();
 
-  useEffect(() => {
-    if (!useNativeViewer) return;
+  useLayoutEffect(() => {
+    if (!isMobile) return;
+    window.location.replace(streamUrl);
+  }, [isMobile, streamUrl]);
 
-    setOpenError(false);
-    void openRuntimePdf(pathname).then((opened) => {
-      if (!opened) setOpenError(true);
-    });
-  }, [pathname, useNativeViewer]);
-
-  if (useNativeViewer) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-background px-6 text-center">
-        <p className="font-body text-sm text-muted-foreground">
-          {openError ? "Could not open PDF." : "Opening PDF…"}
-        </p>
-        <a
-          href={streamUrl}
-          className="font-body text-sm font-medium text-primary underline underline-offset-2"
-        >
-          Tap here if the document does not open
-        </a>
-      </div>
-    );
+  if (isMobile) {
+    return null;
   }
 
   return (

@@ -47,6 +47,11 @@ export const achievementsTextToLines = (text: string): string[] =>
     .map((line) => line.trim())
     .filter(Boolean);
 
+export const DEFAULT_EMPLOYEE_IMAGE = "/images/default-employee-avatar.svg";
+
+export const getEmployeeImageSrc = (image?: string) =>
+  image?.trim() || DEFAULT_EMPLOYEE_IMAGE;
+
 export type EmployeeOfMonthDisplay = {
   key: string;
   name: string;
@@ -72,7 +77,7 @@ export const mapEmployeeRecognitionToDisplay = (
   deptAr: item.arabicDepartment ?? item.department ?? "",
   role: item.title,
   roleAr: item.arabicTitle ?? item.title,
-  image: item.image ?? "",
+  image: getEmployeeImageSrc(item.image),
   achievements: achievementsTextToLines(item.achievements),
   achievementsAr: achievementsTextToLines(
     item.arabicAchievements ?? item.achievements,

@@ -26,6 +26,8 @@ import { useSearchParams, Link } from "react-router-dom";
 import { getAllJobs, type JobPosting } from "@/api/job";
 import {
   getAllEmployeeRecognitions,
+  getEmployeeImageSrc,
+  DEFAULT_EMPLOYEE_IMAGE,
   mapEmployeeRecognitionToDisplay,
   type EmployeeOfMonthDisplay,
   type EmployeeRecognition,
@@ -250,7 +252,7 @@ const mapStaticEmployeeToDisplay = (
   deptAr: employee.deptAr,
   role: employee.role,
   roleAr: employee.roleAr,
-  image: employee.image,
+  image: getEmployeeImageSrc(employee.image),
   achievements: employee.achievements,
   achievementsAr: employee.achievementsAr,
 });
@@ -363,8 +365,9 @@ const WorkWithUs = ({
   }, [isEmpPaused, displayEmployees.length]);
   useEffect(() => {
     if (displayEmployees.length <= 1) return;
-    const next = displayEmployees[(empIndex + 1) % displayEmployees.length]?.image;
-    if (!next) return;
+    const next = getEmployeeImageSrc(
+      displayEmployees[(empIndex + 1) % displayEmployees.length]?.image,
+    );
     const img = new Image();
     img.src = next;
   }, [empIndex, displayEmployees]);
@@ -630,11 +633,17 @@ const WorkWithUs = ({
                   <div className="flex flex-col md:flex-row">
                     <div className="md:w-96 flex-shrink-0 bg-primary/5 p-6 flex items-center justify-center">
                       <img
-                        src={currentEmployee.image}
+                        src={getEmployeeImageSrc(currentEmployee.image)}
                         alt={isAr ? currentEmployee.nameAr : currentEmployee.name}
                         className="w-full max-h-[420px] object-contain rounded-2xl"
                         loading="eager"
                         decoding="sync"
+                        onError={(event) => {
+                          const img = event.currentTarget;
+                          if (img.dataset.fallbackApplied === "true") return;
+                          img.dataset.fallbackApplied = "true";
+                          img.src = DEFAULT_EMPLOYEE_IMAGE;
+                        }}
                       />
                     </div>
                     <div className="flex-1 p-6 md:p-8">

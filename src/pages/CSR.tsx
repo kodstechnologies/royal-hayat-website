@@ -4,6 +4,8 @@ import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
 import LazyViewportVideo from "@/components/LazyViewportVideo";
+import ImageCarousel from "@/components/ImageCarousel";
+import { preloadCarouselImages } from "@/hooks/useCarouselPreload";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { motion } from "framer-motion";
 import { getAllCSR, type CSRItem } from "@/api/csr";
@@ -25,7 +27,7 @@ type CSRInitiativeDisplay = {
   title: string;
   date: string;
   paragraphs: string[];
-  image: string;
+  images: string[];
   alt: string;
 };
 
@@ -73,7 +75,7 @@ const mapApiCSRToDisplay = (item: CSRItem, isAr: boolean): CSRInitiativeDisplay 
   title: isAr ? item.headingArabic : item.heading,
   date: isAr ? item.subheadingArabic ?? item.subheading ?? "" : item.subheading ?? "",
   paragraphs: isAr ? item.descriptionArabic : item.description,
-  image: item.images?.[0] ?? "",
+  images: (item.images ?? []).filter(Boolean),
   alt: isAr ? item.headingArabic : item.heading,
 });
 
@@ -85,9 +87,52 @@ const mapStaticCSRToDisplay = (
   title: t(item.titleKey),
   date: t(item.dateKey),
   paragraphs: [t(item.p1Key), t(item.p2Key)],
-  image: item.image,
+  images: item.image ? [item.image] : [],
   alt: item.alt,
 });
+
+type CSRInitiativeMediaProps = {
+  images: string[];
+  alt: string;
+  isAr: boolean;
+};
+
+const CSRInitiativeMedia = ({ images, alt, isAr }: CSRInitiativeMediaProps) => {
+  const [slide, setSlide] = useState(0);
+
+  useEffect(() => {
+    setSlide(0);
+    if (images.length > 0) {
+      preloadCarouselImages(images, 0);
+    }
+  }, [images]);
+
+  if (images.length === 0) return null;
+
+  if (images.length === 1) {
+    return (
+      <div className="max-w-3xl mx-auto rounded-3xl overflow-hidden shadow-xl aspect-video bg-muted">
+        <img src={images[0]} alt={alt} className="w-full h-full object-cover" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-3xl mx-auto">
+      <ImageCarousel
+        images={images}
+        slide={slide}
+        setSlide={setSlide}
+        altForIndex={(index) => `${alt} — ${index + 1}`}
+        autoPlay
+        aspectClass="aspect-video"
+        frameClass="relative overflow-hidden rounded-3xl bg-muted shadow-xl"
+        imageClass="h-full w-full object-cover"
+        isAr={isAr}
+      />
+    </div>
+  );
+};
 
 const CSR = () => {
   const { lang, t } = useLanguage();
@@ -183,11 +228,7 @@ const CSR = () => {
                       </p>
                     ) : null}
                   </div>
-                  {item.image ? (
-                    <div className="max-w-3xl mx-auto rounded-3xl overflow-hidden shadow-xl aspect-video bg-muted">
-                      <img src={item.image} alt={item.alt} className="w-full h-full object-cover" />
-                    </div>
-                  ) : null}
+                  <CSRInitiativeMedia images={item.images} alt={item.alt} isAr={isAr} />
                   <div className={`max-w-3xl mx-auto space-y-4 ${isAr ? "rtl-text" : ""}`}>
                     {item.paragraphs.map((paragraph, index) => (
                       <p

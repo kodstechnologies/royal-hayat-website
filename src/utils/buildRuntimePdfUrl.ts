@@ -1,14 +1,32 @@
-/** iOS/Android Safari and Chrome mishandle PDFs embedded in iframes — open the file directly. */
-export function isMobilePdfClient(): boolean {
+/** iOS Safari mishandles PDFs in iframes — open the stream URL directly instead. */
+export function isIOSPdfClient(): boolean {
   if (typeof navigator === "undefined") return false;
   const ua = navigator.userAgent || "";
   const platform = navigator.platform || "";
   const maxTouchPoints = navigator.maxTouchPoints || 0;
-  const isIOS =
+  return (
     /iPad|iPhone|iPod/i.test(ua) ||
-    (platform === "MacIntel" && maxTouchPoints > 1);
-  const isAndroid = /Android/i.test(ua);
-  return isIOS || isAndroid;
+    (platform === "MacIntel" && maxTouchPoints > 1)
+  );
+}
+
+export function isAndroidPdfClient(): boolean {
+  if (typeof navigator === "undefined") return false;
+  return /Android/i.test(navigator.userAgent || "");
+}
+
+/** iOS/Android — use platform-specific open/embed behaviour. */
+export function isMobilePdfClient(): boolean {
+  return isIOSPdfClient() || isAndroidPdfClient();
+}
+
+const RUNTIME_PDF_PATH_RE =
+  /^\/(?:Runtime\/uploads|wp-content\/uploads)\/.+\.pdf$/i;
+
+export function isRuntimePdfPath(pathOrFilename: string): boolean {
+  const trimmed = pathOrFilename.trim();
+  if (!trimmed.startsWith("/")) return false;
+  return RUNTIME_PDF_PATH_RE.test(trimmed.split("?")[0].split("#")[0]);
 }
 
 /** Relative legacy path with encoded segments, e.g. /Runtime/uploads/foo%20bar.pdf */
@@ -43,10 +61,24 @@ export function buildRuntimePdfStreamUrl(pathOrFilename: string): string {
   return `/api/v1/runtime-pdf-viewer/file/${encoded}`;
 }
 
-/** Best URL for the current device — direct stream on mobile, in-app viewer route on desktop. */
+/** Direct PDF stream — skips the React app so the browser shows the file immediately. */
 export function buildRuntimePdfOpenUrl(pathOrFilename: string): string {
-  if (isMobilePdfClient()) {
-    return buildRuntimePdfStreamUrl(pathOrFilename);
-  }
-  return buildRuntimePdfUrl(pathOrFilename);
+  return buildRuntimePdfStreamUrl(pathOrFilename);
+}
+
+/**
+ * Hard redirect before React mounts (full page load on a legacy PDF URL).
+ * Returns true when a redirect was started.
+ */
+export function redirectRuntimePdfIfNeeded(pathname: string): boolean {
+  if (!isRuntimePdfPath(pathname)) return false;
+  window.location.replace(buildRuntimePdfStreamUrl(pathname));
+  return true;
+}
+
+/**
+ * Opens a legacy PDF path on the current device.
+ */
+export function openRuntimePdf(pathOrFilename: string): void {
+  window.location.assign(buildRuntimePdfStreamUrl(pathOrFilename));
 }

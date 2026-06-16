@@ -2,6 +2,7 @@ import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 import { isChunkLoadError, reloadForStaleChunks } from "./utils/chunkReload";
+import { redirectRuntimePdfIfNeeded } from "./utils/buildRuntimePdfUrl";
 
 window.addEventListener("vite:preloadError", (event) => {
   event.preventDefault();
@@ -17,4 +18,6 @@ window.addEventListener("unhandledrejection", (event) => {
   }
 });
 
-createRoot(document.getElementById("root")!).render(<App />);
+if (!redirectRuntimePdfIfNeeded(window.location.pathname)) {
+  createRoot(document.getElementById("root")!).render(<App />);
+}

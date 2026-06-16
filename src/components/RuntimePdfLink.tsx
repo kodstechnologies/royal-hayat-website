@@ -9,12 +9,7 @@ type RuntimePdfLinkProps = {
 };
 
 const RuntimePdfLink = ({ path, children, className }: RuntimePdfLinkProps) => (
-  <a
-    href={buildRuntimePdfOpenUrl(path)}
-    target="_blank"
-    rel="noopener noreferrer"
-    className={className}
-  >
+  <a href={buildRuntimePdfOpenUrl(path)} className={className}>
     {children}
   </a>
 );

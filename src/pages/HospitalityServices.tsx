@@ -669,7 +669,7 @@ const HospitalityServices = ({
             <h2 className="text-2xl font-serif text-foreground">{t("alLiwanCafe")}</h2>
           </div>
           <div className="grid lg:grid-cols-2 gap-10 items-start">
-            <div className="relative order-2 lg:order-2">
+            <div className="order-1 lg:order-2">
               <ImageCarousel
                 images={cafeImages}
                 slide={cafeSlide}
@@ -680,13 +680,13 @@ const HospitalityServices = ({
                 isAr={isAr}
               />
             </div>
-            <ScrollAnimationWrapper className="order-3 lg:order-1">
-              <div>
-                <div className="hidden lg:flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
+            <ScrollAnimationWrapper className="order-2 lg:order-1 min-w-0">
+              <div className="min-w-0">
+                <div className="hidden lg:flex items-center gap-3 mb-4 min-w-0">
+                  <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
                     <Coffee className="w-6 h-6 text-accent" />
                   </div>
-                  <h2 className="text-2xl md:text-3xl font-serif text-foreground">{t("alLiwanCafe")}</h2>
+                  <h2 className="text-2xl md:text-3xl font-serif text-foreground min-w-0">{t("alLiwanCafe")}</h2>
                 </div>
                 <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify mb-4">
                   {isAr
@@ -703,7 +703,7 @@ const HospitalityServices = ({
                     {CAFE_AR_DESSERT}
                   </p>
                 )}
-                <p className="font-body text-sm text-muted-foreground leading-relaxed text-start md:text-justify">
+                <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify">
                   {isAr
                     ? CAFE_AR_HOURS
                     : "Open daily from 8 a.m. to 11 p.m., Al Liwan Bistro is an ideal destination for breakfast, lunch, dinner, or a light bite at any time of day."}
@@ -715,16 +715,14 @@ const HospitalityServices = ({
       </section>}
       {section === "spa" && <section className="py-6 bg-primary/5">
         <div className="container mx-auto px-6 max-w-7xl">
-          <div className="flex flex-col gap-10 lg:grid lg:grid-cols-2 lg:gap-10 lg:items-start">
-            <div className="lg:col-start-2 lg:row-start-1">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Sparkles className="w-6 h-6 text-primary" />
-                </div>
-                <h2 className="text-2xl md:text-3xl font-serif text-foreground">{isAr ? "Elements Spa" : "Elements Spa by Banyan Tree"}</h2>
-              </div>
+          <div className="lg:hidden flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <Sparkles className="w-6 h-6 text-primary" />
             </div>
-            <div className="lg:col-start-1 lg:row-start-1 lg:row-span-2">
+            <h2 className="text-2xl font-serif text-foreground">{isAr ? "Elements Spa" : "Elements Spa by Banyan Tree"}</h2>
+          </div>
+          <div className="flex flex-col gap-10 lg:grid lg:grid-cols-2 lg:gap-10 lg:items-start">
+            <div className="lg:col-start-1 lg:row-start-1">
               <ImageCarousel
                 images={spaImages}
                 slide={spaSlide}
@@ -735,8 +733,14 @@ const HospitalityServices = ({
                 isAr={isAr}
               />
             </div>
-            <ScrollAnimationWrapper className="lg:col-start-2 lg:row-start-2">
+            <ScrollAnimationWrapper className="lg:col-start-2 lg:row-start-1">
               <div>
+                <div className="hidden lg:flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Sparkles className="w-6 h-6 text-primary" />
+                  </div>
+                  <h2 className="text-2xl md:text-3xl font-serif text-foreground">{isAr ? "Elements Spa" : "Elements Spa by Banyan Tree"}</h2>
+                </div>
                 <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify mb-5">
                   {isAr
                     ? SPA_AR_DESC
@@ -1085,7 +1089,7 @@ const HospitalityServices = ({
             </h2>
           </div>
           <div className="grid lg:grid-cols-2 gap-10 items-start">
-            <div className="order-1">
+            <div className="order-2 lg:order-2">
               {inRoomEventGalleryImages.length > 0 ? (
                 <ImageCarousel
                   images={inRoomEventGalleryImages}
@@ -1107,7 +1111,7 @@ const HospitalityServices = ({
                 </div>
               )}
             </div>
-            <ScrollAnimationWrapper className="order-2">
+            <ScrollAnimationWrapper className="order-1 lg:order-1">
               <div>
                 <div className="hidden lg:flex items-center gap-3 mb-4">
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
@@ -1231,16 +1235,14 @@ const HospitalityServices = ({
       </section>}
       {showAll && <section className="py-6 bg-primary/5">
         <div className="container mx-auto px-6 max-w-6xl">
-          <div className="flex flex-col gap-10 lg:grid lg:grid-cols-2 lg:gap-10 lg:items-start">
-            <div className="lg:col-start-2 lg:row-start-1">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Sparkles className="w-6 h-6 text-primary" />
-                </div>
-                <h2 className="text-2xl md:text-3xl font-serif text-foreground">{isAr ? "Elements Spa" : "Elements Spa by Banyan Tree"}</h2>
-              </div>
+          <div className="lg:hidden flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <Sparkles className="w-6 h-6 text-primary" />
             </div>
-            <div className="lg:col-start-1 lg:row-start-1 lg:row-span-2">
+            <h2 className="text-2xl font-serif text-foreground">{isAr ? "Elements Spa" : "Elements Spa by Banyan Tree"}</h2>
+          </div>
+          <div className="flex flex-col gap-10 lg:grid lg:grid-cols-2 lg:gap-10 lg:items-start">
+            <div className="lg:col-start-1 lg:row-start-1">
               <ImageCarousel
                 images={spaImages}
                 slide={spaSlide}
@@ -1251,8 +1253,14 @@ const HospitalityServices = ({
                 isAr={isAr}
               />
             </div>
-            <ScrollAnimationWrapper className="lg:col-start-2 lg:row-start-2">
+            <ScrollAnimationWrapper className="lg:col-start-2 lg:row-start-1">
               <div>
+                <div className="hidden lg:flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Sparkles className="w-6 h-6 text-primary" />
+                  </div>
+                  <h2 className="text-2xl md:text-3xl font-serif text-foreground">{isAr ? "Elements Spa" : "Elements Spa by Banyan Tree"}</h2>
+                </div>
                 <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify mb-5">
                   {isAr
                     ? SPA_AR_DESC
@@ -1279,7 +1287,7 @@ const HospitalityServices = ({
         </div>
       </section>}
       {showAll && <section className="py-6 bg-white">
-        <div className="container mx-auto px-6 max-w-7xl">
+        <div className="container mx-auto px-6 max-w-6xl">
           <div className="lg:hidden flex items-center gap-3 mb-4">
             <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
               <Coffee className="w-6 h-6 text-accent" />
@@ -1287,7 +1295,7 @@ const HospitalityServices = ({
             <h2 className="text-2xl font-serif text-foreground">{t("alLiwanCafe")}</h2>
           </div>
           <div className="grid lg:grid-cols-2 gap-10 items-start">
-            <div className="relative order-2 lg:order-1">
+            <div className="order-1 lg:order-2">
               <ImageCarousel
                 images={cafeImages}
                 slide={cafeSlide}
@@ -1298,13 +1306,13 @@ const HospitalityServices = ({
                 isAr={isAr}
               />
             </div>
-            <ScrollAnimationWrapper className="order-3 lg:order-2">
-              <div>
-                <div className="hidden lg:flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
+            <ScrollAnimationWrapper className="order-2 lg:order-1 min-w-0">
+              <div className="min-w-0">
+                <div className="hidden lg:flex items-center gap-3 mb-4 min-w-0">
+                  <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
                     <Coffee className="w-6 h-6 text-accent" />
                   </div>
-                  <h2 className="text-2xl md:text-3xl font-serif text-foreground">{t("alLiwanCafe")}</h2>
+                  <h2 className="text-2xl md:text-3xl font-serif text-foreground min-w-0">{t("alLiwanCafe")}</h2>
                 </div>
                 <p className="font-body text-sm text-muted-foreground leading-relaxed text-justify mb-4">
                   {isAr
@@ -1333,17 +1341,40 @@ const HospitalityServices = ({
       </section>}
       {showAll && <section className="py-6 bg-muted/10">
         <div className="container mx-auto px-6 max-w-6xl">
+          <div className="lg:hidden text-center mb-4">
+            <h2 className="text-2xl font-serif text-foreground mb-2">
+              {isAr ? FIFTH_FLOOR_AR_TITLE : "The 5th Floor Café"}
+            </h2>
+            {isAr && (
+              <p className="font-body text-sm text-accent tracking-wide">
+                {FIFTH_FLOOR_AR_SUBTITLE}
+              </p>
+            )}
+          </div>
           <div className="grid lg:grid-cols-2 gap-10 items-start">
-            <ScrollAnimationWrapper className="order-2 lg:order-1">
-              <div className="text-justify">
-                <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-2 text-center">
-                  {isAr ? FIFTH_FLOOR_AR_TITLE : "The 5th Floor Café"}
-                </h2>
-                {isAr && (
-                  <p className="font-body text-sm text-accent tracking-wide text-center mb-4">
-                    {FIFTH_FLOOR_AR_SUBTITLE}
-                  </p>
-                )}
+            <div className="order-2 lg:order-1">
+              <ImageCarousel
+                images={fifthFloorCafeImages}
+                slide={fifthCafeSlide}
+                setSlide={setFifthCafeSlide}
+                altForIndex={(i) => (isAr ? `${FIFTH_FLOOR_AR_TITLE} ${i + 1}` : `The 5th Floor Cafe image ${i + 1}`)}
+                autoPlay
+                onImageClick={setLightboxImage}
+                isAr={isAr}
+              />
+            </div>
+            <ScrollAnimationWrapper className="order-3 lg:order-2 min-w-0">
+              <div className="text-justify min-w-0">
+                <div className="hidden lg:block text-center mb-4">
+                  <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-2">
+                    {isAr ? FIFTH_FLOOR_AR_TITLE : "The 5th Floor Café"}
+                  </h2>
+                  {isAr && (
+                    <p className="font-body text-sm text-accent tracking-wide">
+                      {FIFTH_FLOOR_AR_SUBTITLE}
+                    </p>
+                  )}
+                </div>
                 <p className="w-full font-body text-sm text-muted-foreground leading-relaxed text-justify mb-4">
                   {isAr ? (
                     <>
@@ -1377,17 +1408,6 @@ const HospitalityServices = ({
                 </p>
               </div>
             </ScrollAnimationWrapper>
-            <div className="order-1 lg:order-2">
-              <ImageCarousel
-                images={fifthFloorCafeImages}
-                slide={fifthCafeSlide}
-                setSlide={setFifthCafeSlide}
-                altForIndex={(i) => (isAr ? `${FIFTH_FLOOR_AR_TITLE} ${i + 1}` : `The 5th Floor Cafe image ${i + 1}`)}
-                autoPlay
-                onImageClick={setLightboxImage}
-                isAr={isAr}
-              />
-            </div>
           </div>
         </div>
       </section>}
@@ -1400,7 +1420,7 @@ const HospitalityServices = ({
             <h2 className="text-2xl font-serif text-foreground">{isAr ? "خدمات تصوير حديثي الولادة" : "Newborn Photography Services"}</h2>
           </div>
           <div className="grid lg:grid-cols-2 gap-10 items-start">
-            <div className="order-1 lg:order-1">
+            <div className="order-1 lg:order-2">
               <ImageCarousel
                 images={babyImages}
                 slide={babySlide}
@@ -1411,7 +1431,7 @@ const HospitalityServices = ({
                 isAr={isAr}
               />
             </div>
-            <ScrollAnimationWrapper className="order-2 lg:order-2">
+            <ScrollAnimationWrapper className="order-2 lg:order-1">
               <div>
                 <div className="hidden lg:flex items-center gap-3 mb-4">
                   <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">

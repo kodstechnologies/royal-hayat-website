@@ -11,6 +11,7 @@ import { ChatProvider } from "@/contexts/ChatContext";
 import ChatButton from "@/components/ChatButton";
 import ScrollToTopOnNav from "@/components/ScrollToTopOnNav";
 import Index from "./pages/Index.tsx";
+import RuntimePdfViewer from "./pages/RuntimePdfViewer.tsx";
 import {
   inRoomEventsTopCarouselImages,
   inRoomEventGalleryImages,
@@ -53,7 +54,6 @@ const JobApplication = lazyWithRetry(() => import("./pages/JobApplication.tsx"))
 const CSR = lazyWithRetry(() => import("./pages/CSR.tsx"));
 const FifthFloorCafe = lazyWithRetry(() => import("./pages/FifthFloorCafe.tsx"));
 const NewbornPhotography = lazyWithRetry(() => import("./pages/NewbornPhotography.tsx"));
-const RuntimePdfViewer = lazyWithRetry(() => import("./pages/RuntimePdfViewer.tsx"));
 const NotFound = lazyWithRetry(() => import("./pages/NotFound.tsx"));
 const queryClient = new QueryClient({
   defaultOptions: {

@@ -1,14 +1,23 @@
-/** iOS/Android Safari and Chrome mishandle PDFs embedded in iframes — open the file directly. */
-export function isMobilePdfClient(): boolean {
+/** iOS Safari mishandles PDFs in iframes — open the stream URL directly instead. */
+export function isIOSPdfClient(): boolean {
   if (typeof navigator === "undefined") return false;
   const ua = navigator.userAgent || "";
   const platform = navigator.platform || "";
   const maxTouchPoints = navigator.maxTouchPoints || 0;
-  const isIOS =
+  return (
     /iPad|iPhone|iPod/i.test(ua) ||
-    (platform === "MacIntel" && maxTouchPoints > 1);
-  const isAndroid = /Android/i.test(ua);
-  return isIOS || isAndroid;
+    (platform === "MacIntel" && maxTouchPoints > 1)
+  );
+}
+
+export function isAndroidPdfClient(): boolean {
+  if (typeof navigator === "undefined") return false;
+  return /Android/i.test(navigator.userAgent || "");
+}
+
+/** iOS/Android — use platform-specific open/embed behaviour. */
+export function isMobilePdfClient(): boolean {
+  return isIOSPdfClient() || isAndroidPdfClient();
 }
 
 /** Relative legacy path with encoded segments, e.g. /Runtime/uploads/foo%20bar.pdf */
@@ -43,9 +52,13 @@ export function buildRuntimePdfStreamUrl(pathOrFilename: string): string {
   return `/api/v1/runtime-pdf-viewer/file/${encoded}`;
 }
 
-/** Best URL for the current device — direct stream on mobile, in-app viewer route on desktop. */
+/**
+ * Best href for links:
+ * - iOS: stream URL (native viewer)
+ * - Android / desktop: legacy path → viewer embeds the PDF inline
+ */
 export function buildRuntimePdfOpenUrl(pathOrFilename: string): string {
-  if (isMobilePdfClient()) {
+  if (isIOSPdfClient()) {
     return buildRuntimePdfStreamUrl(pathOrFilename);
   }
   return buildRuntimePdfUrl(pathOrFilename);
@@ -53,16 +66,17 @@ export function buildRuntimePdfOpenUrl(pathOrFilename: string): string {
 
 /**
  * Opens a legacy PDF path on the current device.
- * On mobile, navigate straight to the API stream URL so the native PDF viewer opens immediately.
  */
 export function openRuntimePdf(pathOrFilename: string): void {
-  const streamUrl = buildRuntimePdfStreamUrl(pathOrFilename);
-  const viewerUrl = buildRuntimePdfUrl(pathOrFilename);
-
   if (!isMobilePdfClient()) {
-    window.open(viewerUrl, "_blank", "noopener,noreferrer");
+    window.open(buildRuntimePdfUrl(pathOrFilename), "_blank", "noopener,noreferrer");
     return;
   }
 
-  window.location.assign(streamUrl);
+  if (isIOSPdfClient()) {
+    window.location.assign(buildRuntimePdfStreamUrl(pathOrFilename));
+    return;
+  }
+
+  window.location.assign(buildRuntimePdfUrl(pathOrFilename));
 }

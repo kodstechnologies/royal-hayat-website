@@ -2,29 +2,34 @@ import { useLayoutEffect } from "react";
 import { useLocation } from "react-router-dom";
 import {
   buildRuntimePdfStreamUrl,
-  isMobilePdfClient,
+  isIOSPdfClient,
 } from "@/utils/buildRuntimePdfUrl";
+
+const embedClassName = "fixed inset-0 h-full w-full border-0 bg-background";
 
 const RuntimePdfViewer = () => {
   const { pathname } = useLocation();
   const streamUrl = buildRuntimePdfStreamUrl(pathname);
-  const isMobile = isMobilePdfClient();
+  const isIOS = isIOSPdfClient();
 
   useLayoutEffect(() => {
-    if (!isMobile) return;
+    if (!isIOS) return;
     window.location.replace(streamUrl);
-  }, [isMobile, streamUrl]);
+  }, [isIOS, streamUrl]);
 
-  if (isMobile) {
+  if (isIOS) {
     return null;
   }
 
   return (
-    <iframe
-      src={streamUrl}
-      title="PDF document"
-      className="fixed inset-0 h-full w-full border-0 bg-background"
-    />
+    <object
+      data={streamUrl}
+      type="application/pdf"
+      className={embedClassName}
+      aria-label="PDF document"
+    >
+      <iframe src={streamUrl} title="PDF document" className={embedClassName} />
+    </object>
   );
 };
 

@@ -21,7 +21,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type FC } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { getAllJobs, type JobPosting } from "@/api/job";
 import {
@@ -256,6 +256,38 @@ const mapStaticEmployeeToDisplay = (
   achievements: employee.achievements,
   achievementsAr: employee.achievementsAr,
 });
+const mergeWorkCultureImages = (
+  apiImages: string[],
+  staticImages: string[],
+): string[] => {
+  const api = apiImages.filter(Boolean);
+  if (api.length > 1) return api;
+  const fallback = staticImages.filter(Boolean);
+  return fallback.length > 0 ? fallback : api;
+};
+
+const WorkCultureCarouselSection: FC<{
+  section: WorkCultureSectionDisplay;
+  variant?: "default" | "muted";
+  isAr: boolean;
+}> = ({ section, variant, isAr }) => {
+  const label = isAr ? section.titleAr : section.titleEn;
+  const imagesKey = section.images.join("\0");
+  const photos = useMemo(
+    () => toCarouselPhotos(label, section.images),
+    [label, imagesKey, section.images],
+  );
+
+  return (
+    <LifePhotoCarousel
+      variant={variant}
+      title={label}
+      subtitle={isAr ? section.subtitleAr : section.subtitleEn}
+      photos={photos}
+    />
+  );
+};
+
 const WorkWithUs = ({
   staffActivitiesImages,
   galaDinnerImages,
@@ -336,7 +368,16 @@ const WorkWithUs = ({
 
   const displayWorkCultureSections = useMemo(() => {
     if (apiWorkCultureLoaded && apiWorkCulture && apiWorkCulture.length > 0) {
-      return apiWorkCulture.map(mapWorkCultureToDisplay);
+      return apiWorkCulture.map((item, index) => {
+        const display = mapWorkCultureToDisplay(item);
+        const staticSection = staticWorkCultureSections[index];
+        if (!staticSection) return display;
+
+        return {
+          ...display,
+          images: mergeWorkCultureImages(display.images, staticSection.images),
+        };
+      });
     }
     return staticWorkCultureSections;
   }, [apiWorkCultureLoaded, apiWorkCulture, staticWorkCultureSections]);
@@ -722,18 +763,14 @@ const WorkWithUs = ({
         </section>
       )}
       {showSection("culture") &&
-        displayWorkCultureSections.map((section, index) => {
-          const label = isAr ? section.titleAr : section.titleEn;
-          return (
-            <LifePhotoCarousel
-              key={section.key}
-              variant={index % 2 === 1 ? "muted" : undefined}
-              title={label}
-              subtitle={isAr ? section.subtitleAr : section.subtitleEn}
-              photos={toCarouselPhotos(label, section.images)}
-            />
-          );
-        })}
+        displayWorkCultureSections.map((section, index) => (
+          <WorkCultureCarouselSection
+            key={section.key}
+            section={section}
+            variant={index % 2 === 1 ? "muted" : undefined}
+            isAr={isAr}
+          />
+        ))}
       {/* {showSection("culture") && <VoicesFromOurPeople />} */}
       {showSection("culture") && (
         <section className="py-12 bg-background text-center">

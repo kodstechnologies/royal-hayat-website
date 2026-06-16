@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, ImageIcon, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import CarouselImageFrame from "@/components/CarouselImageFrame";
@@ -33,13 +33,25 @@ const LifePhotoCarousel = ({
   const [index, setIndex] = useState(0);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 
-  const total = photos.length;
-  const imageUrls = photos.map((photo) => photo.src ?? "");
-  const current = photos[index];
+  const photosKey = useMemo(
+    () => photos.map((photo) => photo.src ?? "").join("\0"),
+    [photos],
+  );
+  const imageUrls = useMemo(
+    () => photos.map((photo) => photo.src ?? "").filter(Boolean),
+    [photosKey, photos],
+  );
+  const slideCount = imageUrls.length;
+
+  useEffect(() => {
+    setIndex((current) => (current >= slideCount ? 0 : current));
+  }, [slideCount]);
+
+  const current = photos[index] ?? photos[0];
   const { goNext, goPrev } = useSafeSlideChange(imageUrls, index, setIndex);
   const { setHovered } = useCarouselAutoplay({
-    enabled: total > 1,
-    length: total,
+    enabled: slideCount > 1,
+    length: slideCount,
     onAdvance: goNext,
     intervalMs: interval,
     containerRef,
@@ -69,20 +81,23 @@ const LifePhotoCarousel = ({
           onMouseLeave={() => setHovered(false)}
         >
           <div className="relative aspect-[16/10] md:aspect-[16/9] rounded-2xl overflow-hidden bg-muted border border-border/50 shadow-lg">
-            {current?.src ? (
+            {imageUrls.length > 0 ? (
               <CarouselImageFrame
                 images={imageUrls}
                 index={index}
-                alt={current.alt}
+                alt={current?.alt ?? title}
                 className="h-full w-full object-cover cursor-zoom-in"
-                onClick={() => setLightboxImage(current.src!)}
+                onClick={() => {
+                  const src = imageUrls[index];
+                  if (src) setLightboxImage(src);
+                }}
               />
             ) : (
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-primary/5 via-background to-accent/5 text-muted-foreground">
                 <ImageIcon className="w-12 h-12 mb-3 opacity-40" />
                 <p className="font-body text-xs tracking-widest uppercase">{current?.alt}</p>
                 <p className="font-body text-[10px] mt-1 opacity-70">
-                  {isAr ? `الصورة ${index + 1} من ${total}` : `Photo ${index + 1} of ${total}`}
+                  {isAr ? `الصورة ${index + 1} من ${slideCount || photos.length}` : `Photo ${index + 1} of ${slideCount || photos.length}`}
                 </p>
               </div>
             )}
@@ -92,7 +107,7 @@ const LifePhotoCarousel = ({
               </div>
             )}
           </div>
-          {total > 1 && (
+          {slideCount > 1 && (
             <>
               <button
                 type="button"
@@ -114,7 +129,7 @@ const LifePhotoCarousel = ({
           )}
           <div className="flex items-center justify-center gap-3 mt-5">
             <span className="font-body text-xs text-muted-foreground tracking-widest">
-              {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
+              {String(index + 1).padStart(2, "0")} / {String(slideCount).padStart(2, "0")}
             </span>
           </div>
         </div>

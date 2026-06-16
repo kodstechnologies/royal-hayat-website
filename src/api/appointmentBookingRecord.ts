@@ -1,31 +1,5 @@
 import api from "./axiosInstance";
-
-export type CreateAppointmentBookingRecordPayload = {
-  fullname: string;
-  phone: string;
-  gender?: string;
-  age?: number;
-  additionalNotes?: string;
-  dob?: string;
-  patient_id?: string;
-  urn?: string;
-  national_id?: string;
-  mobile_number?: string;
-  email?: string;
-  address?: string;
-  englishName?: string;
-  arabicName?: string;
-  paciRequestId?: string;
-  date?: string;
-  time?: string;
-  nationality?: string;
-  passportNumber?: string;
-  symptoms?: string[];
-  doctor?: string;
-  department?: string;
-  patient?: Record<string, unknown>;
-  raw?: Record<string, unknown>;
-};
+import type { CreateAppointmentBookingRecordPayload } from "@/utils/appointmentBookingRecord";
 
 export const createAppointmentBookingRecord = async (
   data: CreateAppointmentBookingRecordPayload,

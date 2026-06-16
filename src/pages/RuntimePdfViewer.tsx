@@ -1,36 +1,17 @@
 import { useLayoutEffect } from "react";
 import { useLocation } from "react-router-dom";
-import {
-  buildRuntimePdfStreamUrl,
-  isIOSPdfClient,
-} from "@/utils/buildRuntimePdfUrl";
+import { buildRuntimePdfStreamUrl } from "@/utils/buildRuntimePdfUrl";
 
-const embedClassName = "fixed inset-0 h-full w-full border-0 bg-background";
-
+/** Fallback when client-side routing lands on a legacy PDF path without a full reload. */
 const RuntimePdfViewer = () => {
   const { pathname } = useLocation();
   const streamUrl = buildRuntimePdfStreamUrl(pathname);
-  const isIOS = isIOSPdfClient();
 
   useLayoutEffect(() => {
-    if (!isIOS) return;
     window.location.replace(streamUrl);
-  }, [isIOS, streamUrl]);
+  }, [streamUrl]);
 
-  if (isIOS) {
-    return null;
-  }
-
-  return (
-    <object
-      data={streamUrl}
-      type="application/pdf"
-      className={embedClassName}
-      aria-label="PDF document"
-    >
-      <iframe src={streamUrl} title="PDF document" className={embedClassName} />
-    </object>
-  );
+  return null;
 };
 
 export default RuntimePdfViewer;

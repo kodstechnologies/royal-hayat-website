@@ -20,6 +20,15 @@ export function isMobilePdfClient(): boolean {
   return isIOSPdfClient() || isAndroidPdfClient();
 }
 
+const RUNTIME_PDF_PATH_RE =
+  /^\/(?:Runtime\/uploads|wp-content\/uploads)\/.+\.pdf$/i;
+
+export function isRuntimePdfPath(pathOrFilename: string): boolean {
+  const trimmed = pathOrFilename.trim();
+  if (!trimmed.startsWith("/")) return false;
+  return RUNTIME_PDF_PATH_RE.test(trimmed.split("?")[0].split("#")[0]);
+}
+
 /** Relative legacy path with encoded segments, e.g. /Runtime/uploads/foo%20bar.pdf */
 export function buildRuntimePdfPath(pathOrFilename: string): string {
   const trimmed = pathOrFilename.trim();
@@ -52,31 +61,24 @@ export function buildRuntimePdfStreamUrl(pathOrFilename: string): string {
   return `/api/v1/runtime-pdf-viewer/file/${encoded}`;
 }
 
-/**
- * Best href for links:
- * - iOS: stream URL (native viewer)
- * - Android / desktop: legacy path → viewer embeds the PDF inline
- */
+/** Direct PDF stream — skips the React app so the browser shows the file immediately. */
 export function buildRuntimePdfOpenUrl(pathOrFilename: string): string {
-  if (isIOSPdfClient()) {
-    return buildRuntimePdfStreamUrl(pathOrFilename);
-  }
-  return buildRuntimePdfUrl(pathOrFilename);
+  return buildRuntimePdfStreamUrl(pathOrFilename);
+}
+
+/**
+ * Hard redirect before React mounts (full page load on a legacy PDF URL).
+ * Returns true when a redirect was started.
+ */
+export function redirectRuntimePdfIfNeeded(pathname: string): boolean {
+  if (!isRuntimePdfPath(pathname)) return false;
+  window.location.replace(buildRuntimePdfStreamUrl(pathname));
+  return true;
 }
 
 /**
  * Opens a legacy PDF path on the current device.
  */
 export function openRuntimePdf(pathOrFilename: string): void {
-  if (!isMobilePdfClient()) {
-    window.open(buildRuntimePdfUrl(pathOrFilename), "_blank", "noopener,noreferrer");
-    return;
-  }
-
-  if (isIOSPdfClient()) {
-    window.location.assign(buildRuntimePdfStreamUrl(pathOrFilename));
-    return;
-  }
-
-  window.location.assign(buildRuntimePdfUrl(pathOrFilename));
+  window.location.assign(buildRuntimePdfStreamUrl(pathOrFilename));
 }

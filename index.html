@@ -34,6 +34,20 @@
 </head>
 
 <body>
+  <script>
+    (function () {
+      var path = window.location.pathname || "";
+      if (!/^\/(?:Runtime\/uploads|wp-content\/uploads)\/.+\.pdf$/i.test(path)) return;
+      var segments = path.split("/").filter(Boolean).map(function (segment) {
+        try {
+          return encodeURIComponent(decodeURIComponent(segment));
+        } catch (e) {
+          return encodeURIComponent(segment);
+        }
+      });
+      window.location.replace("/api/v1/runtime-pdf-viewer/file/" + segments.join("/"));
+    })();
+  </script>
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
 </body>

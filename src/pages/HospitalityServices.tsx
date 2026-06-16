@@ -454,7 +454,7 @@ const HospitalityServices = ({
               {section === "halls" ? (isAr ? "قاعات احتفالات الولادة" : "Birth Celebration Halls")
                 : section === "suites" ? (isAr ? "الأجنحة الفاخرة" : "Exclusive Suites")
                   : section === "spa" ? "Elements Spa"
-                    : section === "cafe" ? (isAr ? "كافيه الليوان بيسترو" : "Al Liwan Bistro")
+                    : section === "cafe" ? (isAr ? "الليوان بيسترو" : "Al Liwan Bistro")
                       : (isAr ? "خدمات الضيافة" : "Hospitality Services")}
             </h1>
           </ScrollAnimationWrapper>
@@ -729,7 +729,7 @@ const HospitalityServices = ({
                 images={spaImages}
                 slide={spaSlide}
                 setSlide={setSpaSlide}
-                altForIndex={(i) => (isAr ? `سبا إليمنتس ${i + 1}` : `Elements Spa image ${i + 1}`)}
+                altForIndex={(i) => (isAr ? `إليمنتس سبا ${i + 1}` : `Elements Spa image ${i + 1}`)}
                 autoPlay
                 onImageClick={setLightboxImage}
                 isAr={isAr}
@@ -1245,7 +1245,7 @@ const HospitalityServices = ({
                 images={spaImages}
                 slide={spaSlide}
                 setSlide={setSpaSlide}
-                altForIndex={(i) => (isAr ? `سبا إليمنتس ${i + 1}` : `Elements Spa image ${i + 1}`)}
+                altForIndex={(i) => (isAr ? `إليمنتس سبا ${i + 1}` : `Elements Spa image ${i + 1}`)}
                 autoPlay
                 onImageClick={setLightboxImage}
                 isAr={isAr}

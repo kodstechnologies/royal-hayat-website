@@ -104,7 +104,7 @@ const Header = () => {
     { label: lang === "ar" ? "قاعات الإستقبال" : "Birth Celebration Halls", href: "/hospitality?section=halls", icon: Star, desc: lang === "ar" ? "مساحة خاصة للاحتفال بقدوم مولودك" : "A private space to celebrate your baby's arrival" },
     { label: lang === "ar" ? "الأجنحة الفاخرة" : "Exclusive Suites", href: "/hospitality?section=suites", icon: Bed, desc: lang === "ar" ? "مساحة هادئة وشخصية للراحة والتعافي والتواصل" : "A calm, personal space to rest, recover, and bond" },
     { label: lang === "ar" ? "المناسبات داخل الأجنحة" : "In-Suite Celebration Experiences", href: "/in-room-events", icon: Sparkles, desc: lang === "ar" ? "احتفالات مميزة في خصوصية جناحك" : "Create meaningful celebrations in the comfort and privacy of your own suite" },
-    { label: lang === "ar" ? "سبا إليمنتس (بانيان تري)" : "Elements Spa (by Banyan Tree)", href: "/hospitality?section=spa", icon: Droplets, desc: lang === "ar" ? "ملاذ هادئ للاسترخاء والتجديد" : "A serene sanctuary for relaxation and renewal" },
+    { label: lang === "ar" ? "إليمنتس سبا (بانيان تري)" : "Elements Spa (by Banyan Tree)", href: "/hospitality?section=spa", icon: Droplets, desc: lang === "ar" ? "ملاذ هادئ للاسترخاء والتجديد" : "A serene sanctuary for relaxation and renewal" },
     { label: lang === "ar" ? "الليوان بيسترو" : "Al Liwan Bistro", href: "/hospitality?section=cafe", icon: Coffee, desc: lang === "ar" ? "بيئة راقية لتجارب طعام استثنائية" : "A refined setting for exceptional dining experiences" },
     { label: lang === "ar" ? "كافيه الطابق الخامس" : "The 5th Floor Café", href: "/fifth-floor-cafe", icon: Coffee, desc: lang === "ar" ? "مساحة مريحة للقهوة والمرطبات الخفيفة" : "A cozy space for light bites and refreshments" },
     { label: lang === "ar" ? "خدمات تصوير المواليد" : "Newborn Photography Services", href: "/newborn-photography", icon: Baby, desc: lang === "ar" ? "التقط أثمن لحظات الحياة" : "Capture Life's Most Precious Moments" },
@@ -202,7 +202,7 @@ const Header = () => {
     items.push(...doctorSearchItems);
     const services = [
       { en: "Luxury Suites", ar: "الأجنحة الفاخرة", href: "/hospitality" },
-      { en: "Elements Spa", ar: "سبا إليمنتس", href: "/hospitality" },
+      { en: "Elements Spa", ar: "إليمنتس سبا", href: "/hospitality" },
       { en: "Al Liwan Bistro", ar: "الليوان بيسترو", href: "/hospitality" },
       { en: "Newborn Photography", ar: "تصوير المواليد", href: "/patients-visitors" },
       { en: "Health Insurance", ar: "التأمين الصحي", href: "/patients-visitors" },

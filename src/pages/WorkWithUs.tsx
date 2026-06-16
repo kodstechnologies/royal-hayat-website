@@ -734,7 +734,7 @@ const WorkWithUs = ({
             />
           );
         })}
-      {showSection("culture") && <VoicesFromOurPeople />}
+      {/* {showSection("culture") && <VoicesFromOurPeople />} */}
       {showSection("culture") && (
         <section className="py-12 bg-background text-center">
           <div className="container mx-auto px-3 md:px-6">

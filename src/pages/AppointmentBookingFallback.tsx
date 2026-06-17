@@ -123,9 +123,12 @@ const AppointmentBookingFallback = () => {
           ? fallbackState.departmentNameAr || fallbackState.departmentName
           : fallbackState.departmentName,
         date: fallbackState.formattedDate || fallbackState.selectedDate,
+        slot_from_time: fallbackState.selectedSlot || undefined,
+        slot_to_time: fallbackState.selectedSlotTo || undefined,
         timeSlot: {
           period: fallbackState.slotPeriod,
-          time: fallbackState.formattedTime || fallbackState.selectedSlot,
+          slot_from_time: fallbackState.selectedSlot || "",
+          slot_to_time: fallbackState.selectedSlotTo || "",
         },
         symptoms: fallbackState.symptoms?.length ? fallbackState.symptoms : undefined,
         additionalNotes: buildAdditionalNotes(),

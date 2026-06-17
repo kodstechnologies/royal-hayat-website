@@ -11,6 +11,7 @@ export type AppointmentBookingFallbackState = {
   formattedDate: string;
   selectedDate: string;
   selectedSlot: string;
+  selectedSlotTo?: string;
   formattedTime: string;
   slotPeriod: "morning" | "afternoon";
   symptoms?: string[];

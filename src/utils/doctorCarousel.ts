@@ -37,6 +37,60 @@ function getMaxScroll(container: HTMLElement) {
   return Math.max(0, container.scrollWidth - container.clientWidth);
 }
 
+function isRtlCarousel(container: HTMLElement) {
+  return getComputedStyle(container).direction === "rtl";
+}
+
+function getNormalizedScrollLeft(container: HTMLElement) {
+  const maxScroll = getMaxScroll(container);
+  if (!isRtlCarousel(container)) {
+    return container.scrollLeft;
+  }
+
+  if (container.scrollLeft < 0) {
+    return Math.abs(container.scrollLeft);
+  }
+
+  return container.scrollLeft;
+}
+
+function setNormalizedScrollLeft(
+  container: HTMLElement,
+  value: number,
+  behavior: ScrollBehavior,
+) {
+  const maxScroll = getMaxScroll(container);
+  const clamped = Math.max(0, Math.min(value, maxScroll));
+
+  if (!isRtlCarousel(container)) {
+    container.scrollTo({ left: clamped, behavior });
+    return;
+  }
+
+  if (container.scrollLeft <= 0 && maxScroll > 0) {
+    container.scrollTo({ left: -clamped, behavior });
+    return;
+  }
+
+  container.scrollTo({ left: clamped, behavior });
+}
+
+export function scrollDoctorCarouselToStart(container: HTMLElement) {
+  const maxScroll = getMaxScroll(container);
+  if (!isRtlCarousel(container)) {
+    container.scrollTo({ left: 0, behavior: "auto" });
+    return;
+  }
+
+  container.scrollTo({ left: 0, behavior: "auto" });
+  requestAnimationFrame(() => {
+    if (maxScroll <= 0) return;
+    if (Math.abs(getNormalizedScrollLeft(container)) > 8) {
+      setNormalizedScrollLeft(container, 0, "auto");
+    }
+  });
+}
+
 function getTargetScrollLeft(container: HTMLElement, card: HTMLElement) {
   const maxScroll = getMaxScroll(container);
 
@@ -54,7 +108,7 @@ export function getActiveDoctorCarouselIndex(container: HTMLElement) {
   if (!cards.length) return 0;
 
   if (!isMobileCarousel()) {
-    const scrollLeft = container.scrollLeft;
+    const scrollLeft = getNormalizedScrollLeft(container);
     let leadingIndex = 0;
     for (let i = 0; i < cards.length; i++) {
       if (cards[i].offsetLeft <= scrollLeft + 8) {
@@ -66,7 +120,7 @@ export function getActiveDoctorCarouselIndex(container: HTMLElement) {
     return leadingIndex;
   }
 
-  const scrollCenter = container.scrollLeft + container.clientWidth / 2;
+  const scrollCenter = getNormalizedScrollLeft(container) + container.clientWidth / 2;
   let activeIndex = 0;
   let minDistance = Number.POSITIVE_INFINITY;
 
@@ -96,7 +150,7 @@ function getStepTargetIndex(
     return next;
   }
 
-  const scrollLeft = container.scrollLeft;
+  const scrollLeft = getNormalizedScrollLeft(container);
   const viewportRight = scrollLeft + container.clientWidth;
 
   if (direction === "right") {
@@ -122,10 +176,7 @@ function snapToIndex(container: HTMLElement, index: number, behavior: ScrollBeha
   const card = cards[index];
   if (!card) return;
 
-  container.scrollTo({
-    left: getTargetScrollLeft(container, card),
-    behavior,
-  });
+  setNormalizedScrollLeft(container, getTargetScrollLeft(container, card), behavior);
 }
 
 function clearSettleTimer(state: CarouselState) {
@@ -259,7 +310,7 @@ export function getDoctorCarouselScrollState(container: HTMLElement) {
     };
   }
 
-  const scrollLeft = container.scrollLeft;
+  const scrollLeft = getNormalizedScrollLeft(container);
   return {
     canScrollLeft: scrollLeft > 8,
     canScrollRight: scrollLeft < maxScroll - 8,

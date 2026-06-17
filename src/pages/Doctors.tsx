@@ -14,7 +14,7 @@ import { mapApiDepartmentsToDisplay } from "@/utils/mapApiDepartment";
 import { Input } from "@/components/ui/input";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
 import { sortDoctorsInDepartment } from "@/utils/sortDoctorsInDepartment";
-import { getDoctorCarouselScrollState, scrollDoctorCarousel, syncDoctorCarouselIndex } from "@/utils/doctorCarousel";
+import { getDoctorCarouselScrollState, scrollDoctorCarousel, scrollDoctorCarouselToStart, syncDoctorCarouselIndex } from "@/utils/doctorCarousel";
 
 
 const DoctorCard = memo(({ doc }: { doc: Doctor }) => {
@@ -104,6 +104,7 @@ const DepartmentRow = memo(({
   deptMeta?: DeptMeta;
 }) => {
   const { lang } = useLanguage();
+  const isAr = lang === "ar";
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -126,9 +127,16 @@ const DepartmentRow = memo(({
     };
 
     scheduleUpdate();
+    scrollDoctorCarouselToStart(el);
     const delayedChecks = [
-      window.setTimeout(scheduleUpdate, 150),
-      window.setTimeout(scheduleUpdate, 600),
+      window.setTimeout(() => {
+        scrollDoctorCarouselToStart(el);
+        scheduleUpdate();
+      }, 150),
+      window.setTimeout(() => {
+        scrollDoctorCarouselToStart(el);
+        scheduleUpdate();
+      }, 600),
     ];
 
     const observer = new ResizeObserver(scheduleUpdate);
@@ -146,7 +154,7 @@ const DepartmentRow = memo(({
       el.removeEventListener("load", scheduleUpdate, true);
       window.removeEventListener("resize", scheduleUpdate);
     };
-  }, [docs, updateScrollState]);
+  }, [docs, lang, updateScrollState]);
 
   const scroll = useCallback(
     (dir: "left" | "right") => {
@@ -177,7 +185,7 @@ const DepartmentRow = memo(({
           </div>
         )}
       </div>
-      <div className="relative isolate" dir="ltr">
+      <div className="relative isolate" dir={isAr ? "rtl" : "ltr"}>
         <button
           type="button"
           aria-label={lang === "ar" ? "التمرير لليسار" : "Scroll left"}
@@ -209,7 +217,7 @@ const DepartmentRow = memo(({
         <div className="relative z-0 max-w-[1192px] mx-auto overflow-hidden">
           <div
             ref={scrollRef}
-            dir="ltr"
+            dir={isAr ? "rtl" : "ltr"}
             className="doctors-carousel-track flex w-full items-stretch gap-4 overflow-x-auto pb-8 snap-x snap-mandatory max-md:scroll-px-[calc(50%-140px)] max-md:px-[calc(50%-140px)] md:gap-6 md:px-0 md:scroll-px-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden [-webkit-overflow-scrolling:touch]"
           >
             {docs.map((doc) => (

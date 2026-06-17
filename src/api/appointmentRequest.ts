@@ -15,9 +15,13 @@ export type CreateAppointmentRequestPayload = {
   age?: number;
   preferredDate?: string;
   date?: string;
+  slot_from_time?: string;
+  slot_to_time?: string;
   timeSlot?: {
     period: "morning" | "afternoon";
-    time: string;
+    slot_from_time?: string;
+    slot_to_time?: string;
+    time?: string;
   };
   time?: string;
   additionalNotes?: string;

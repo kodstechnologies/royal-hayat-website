@@ -1426,7 +1426,13 @@ Clinic Code:`;
           <div className="container mx-auto px-6 py-12 max-w-3xl">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
               className="bg-popover rounded-2xl border border-border p-8 mb-6 shadow-sm -mt-8">
-              <h3 className="font-serif text-lg text-foreground mb-5">{isAr ? "تفاصيل الموعد" : "Appointment Details"}</h3>
+              <h3 className="font-serif text-lg text-foreground mb-5">
+                {patientType === "new"
+                  ? t("appointmentDetails")
+                  : isAr
+                    ? "تفاصيل الموعد"
+                    : "Appointment Details"}
+              </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 font-body text-sm">
                 <div className="flex items-start gap-3">
                   <User className="w-5 h-5 text-accent mt-0.5" />

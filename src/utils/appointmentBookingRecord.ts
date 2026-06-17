@@ -33,7 +33,8 @@ export type CreateAppointmentBookingRecordPayload = {
   arabicName?: string;
   paciRequestId?: string;
   date?: string;
-  time?: string;
+  slot_from_time?: string;
+  slot_to_time?: string;
   nationality?: string;
   passportNumber?: string;
   symptoms?: string[];
@@ -53,7 +54,8 @@ type BuildRegisteredPatientBookingPayloadInput = {
   doctor?: string;
   department?: string;
   date?: string;
-  time?: string;
+  slot_from_time?: string;
+  slot_to_time?: string;
   symptoms?: string[];
   slotBookingId?: string | null;
   verifyOperationId?: string | null;
@@ -118,7 +120,8 @@ export const buildRegisteredPatientBookingPayload = (
     doctor: input.doctor,
     department: input.department,
     date: input.date,
-    time: input.time,
+    slot_from_time: input.slot_from_time,
+    slot_to_time: input.slot_to_time,
     symptoms: input.symptoms,
   };
 

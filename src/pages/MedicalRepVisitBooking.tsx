@@ -26,6 +26,7 @@ const MED_REP_ALLOWED_DOCTOR_IDS = new Set([
   "dr-abdullah-albader",
   "dr-salma-ibrahim",
   "dr-hafsah-hussain",
+  "dr-hamid-ghaderi",
 ]);
 
 const MED_REP_FULL_DEPARTMENTS = [

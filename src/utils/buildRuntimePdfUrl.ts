@@ -69,16 +69,15 @@ export function buildRuntimePdfOpenUrl(pathOrFilename: string): string {
 /**
  * Hard redirect before React mounts (full page load on a legacy PDF URL).
  * Returns true when a redirect was started.
+ * @deprecated Prefer clean legacy paths; React RuntimePdfViewer handles in-app navigation.
  */
-export function redirectRuntimePdfIfNeeded(pathname: string): boolean {
-  if (!isRuntimePdfPath(pathname)) return false;
-  window.location.replace(buildRuntimePdfStreamUrl(pathname));
-  return true;
+export function redirectRuntimePdfIfNeeded(_pathname: string): boolean {
+  return false;
 }
 
 /**
  * Opens a legacy PDF path on the current device.
  */
 export function openRuntimePdf(pathOrFilename: string): void {
-  window.location.assign(buildRuntimePdfStreamUrl(pathOrFilename));
+  window.location.assign(buildRuntimePdfUrl(pathOrFilename));
 }

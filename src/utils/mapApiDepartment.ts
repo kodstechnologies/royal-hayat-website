@@ -72,8 +72,10 @@ export function mapApiDepartmentRow(
   }
 
   const mainCategory = normalizeMainCategory(apiCategoryName);
-  const desc = String(row.description ?? "").trim();
-  const descAr = String(row.arabicDescription ?? "").trim();
+  const deptTagline = String(row.deptTagline ?? "").trim();
+  const deptTaglineArabic = String(row.deptTaglineArabic ?? "").trim();
+  const desc = deptTagline || String(row.description ?? "").trim();
+  const descAr = deptTaglineArabic || String(row.arabicDescription ?? "").trim();
   const nameAr = String(row.arabicName ?? name).trim();
   const medicalField = String(row.medicalField ?? "").trim();
   const medicalFieldAr = String(row.medicalFieldAr ?? "").trim();

@@ -10,6 +10,8 @@ import { fetchAllDoctorsByDepartment } from "@/api/doctors";
 import { fetchAllDepartmentsPages } from "@/api/department";
 import type { Doctor } from "@/types/doctor";
 import { MAIN_CATEGORIES, type MainCategory } from "@/types/department";
+import { deptDoctorAliases } from "@/data/departments";
+import { resolveDoctorTaglines } from "@/data/doctorTaglines";
 import { mapApiDepartmentsToDisplay } from "@/utils/mapApiDepartment";
 import { Input } from "@/components/ui/input";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
@@ -86,8 +88,8 @@ DoctorCard.displayName = "DoctorCard";
 
 type DeptMeta = {
   nameAr: string;
-  desc: string;
-  descAr: string;
+  doctorTagline: string;
+  doctorTaglineArabic: string;
   mainCategory?: MainCategory;
   order: number;
 };
@@ -167,19 +169,26 @@ const DepartmentRow = memo(({
     },
     [updateScrollState],
   );
-  const deptDesc = deptMeta && (deptMeta.desc || deptMeta.descAr)
-    ? { en: deptMeta.desc, ar: deptMeta.descAr }
-    : undefined;
+  const staticTaglines = resolveDoctorTaglines(department);
+  const doctorTaglineText = {
+    en: deptMeta?.doctorTagline || staticTaglines?.en || "",
+    ar: deptMeta?.doctorTaglineArabic || staticTaglines?.ar || "",
+  };
+  const doctorTagline =
+    doctorTaglineText.en || doctorTaglineText.ar ? doctorTaglineText : undefined;
   return (
     <div className="mb-14">
       <div className="max-w-[1192px] mx-auto mb-6">
         <h3 className="text-2xl font-serif font-bold text-foreground mb-3">
           {lang === "ar" ? (deptMeta?.nameAr || departmentAr) : department}
         </h3>
-        {deptDesc && (
+        {doctorTagline && (
           <div className="bg-popover border border-border/50 rounded-2xl p-4 md:p-5 shadow-sm">
-            <p className="text-muted-foreground font-body text-base leading-relaxed">
-              {lang === "ar" ? deptDesc.ar : deptDesc.en}
+            <p
+              dir={lang === "ar" ? "rtl" : "ltr"}
+              className={`text-muted-foreground font-body text-base leading-relaxed ${lang === "ar" ? "text-right" : ""}`}
+            >
+              {lang === "ar" ? doctorTagline.ar : doctorTagline.en}
             </p>
           </div>
         )}
@@ -247,20 +256,34 @@ const Doctors = () => {
         if (cancelled) return;
         setDoctorCatalog(apiList);
         const mapped = mapApiDepartmentsToDisplay(deptRows);
-        setDeptMetaByName(
-          Object.fromEntries(
-            mapped.map((dept, index) => [
-              dept.name,
-              {
-                nameAr: dept.nameAr,
-                desc: dept.desc,
-                descAr: dept.descAr,
-                mainCategory: dept.mainCategory,
-                order: dept.order ?? index,
-              },
-            ]),
-          ),
-        );
+        const metaByName: Record<string, DeptMeta> = {};
+        mapped.forEach((dept, index) => {
+          const row = deptRows.find(
+            (item) => String(item.name ?? "").trim() === dept.name,
+          );
+          const apiDoctorTagline = String(row?.doctorTagline ?? "").trim();
+          const apiDoctorTaglineArabic = String(row?.doctorTaglineArabic ?? "").trim();
+          const staticTaglines = resolveDoctorTaglines(dept.name);
+          const entry: DeptMeta = {
+            nameAr: dept.nameAr,
+            doctorTagline: apiDoctorTagline || staticTaglines?.en || "",
+            doctorTaglineArabic: apiDoctorTaglineArabic || staticTaglines?.ar || "",
+            mainCategory: dept.mainCategory,
+            order: dept.order ?? index,
+          };
+          metaByName[dept.name] = entry;
+          const aliases = deptDoctorAliases[dept.name] ?? [];
+          for (const alias of aliases) {
+            if (metaByName[alias]) continue;
+            const aliasTaglines = resolveDoctorTaglines(alias);
+            metaByName[alias] = {
+              ...entry,
+              doctorTagline: aliasTaglines?.en || entry.doctorTagline,
+              doctorTaglineArabic: aliasTaglines?.ar || entry.doctorTaglineArabic,
+            };
+          }
+        });
+        setDeptMetaByName(metaByName);
       } catch {
         if (!cancelled) {
           setDoctorCatalog([]);

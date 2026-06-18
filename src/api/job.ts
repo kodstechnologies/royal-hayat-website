@@ -12,6 +12,17 @@ export type JobPosting = {
   description?: string;
   responsibilities?: string[];
   requirements?: string[];
+  educationAndLicensure?: string[];
+  arabicEducationAndLicensure?: string[];
+  professionalExperience?: string[];
+  arabicProfessionalExperience?: string[];
+  specializedKnowledge?: string[];
+  arabicSpecializedKnowledge?: string[];
+  arabicResponsibilities?: string[];
+  arabicRequirements?: string[];
+  arabicDescription?: string;
+  arabicTitle?: string;
+  classification?: string;
   postedDate?: string;
   date?: string;
   isActive?: boolean;

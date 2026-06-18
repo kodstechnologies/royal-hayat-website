@@ -22,6 +22,8 @@ export type JobPosting = {
   arabicRequirements?: string[];
   arabicDescription?: string;
   arabicTitle?: string;
+  arabicClassification?: string;
+  arabicLocation?: string;
   classification?: string;
   postedDate?: string;
   date?: string;

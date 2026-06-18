@@ -11,6 +11,7 @@ import { Mail, Share2, ChevronRight } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
 import { applyForJob, getJobById, type JobPosting } from "@/api/job";
+import { mapJobPostingToDetail, type MappedJobDetail } from "@/utils/mapJobPosting";
 
 const formatJobPostedDate = (value: string): string => {
   if (!value) return "";
@@ -41,23 +42,67 @@ const openPositions = [
   { title: "Human Resources Coordinator", category: "Administrative", location: "Royale Hayat Hospital", type: "Full-time", date: "February 10, 2026", desc: "Support HR operations including recruitment, onboarding, employee relations, and benefits administration.", responsibilities: ["Coordinate recruitment and onboarding processes", "Manage employee records and documentation", "Assist with benefits administration", "Support employee relations activities"], requirements: ["Bachelor's degree in HR or related field", "2+ years HR experience", "Knowledge of labor laws", "Proficiency in HR information systems"] },
   { title: "Medical Records Specialist", category: "Administrative", location: "Royale Hayat Hospital", type: "Full-time", date: "February 8, 2026", desc: "Manage and maintain accurate medical records, ensuring compliance with healthcare regulations and standards.", responsibilities: ["Maintain and organize medical records", "Ensure compliance with privacy regulations", "Process record requests accurately", "Support audits and quality reviews"], requirements: ["Experience in medical records management", "Knowledge of healthcare regulations", "Attention to detail", "Proficiency in electronic health records"] },
 ];
-const mapApiJobToDisplay = (apiJob: JobPosting) => ({
-  title: apiJob.title,
-  category: String(apiJob.classification ?? apiJob.category ?? apiJob.department ?? ""),
-  location: apiJob.location ?? "",
-  type: apiJob.type ?? "",
-  date: apiJob.postedDate ?? apiJob.date ?? "",
-  desc: apiJob.description ?? apiJob.desc ?? "",
-  responsibilities: apiJob.responsibilities ?? [],
-  requirements: apiJob.requirements ?? [],
+type FallbackJob = MappedJobDetail;
+
+const emptyDetailFields = {
+  educationAndLicensure: [] as string[],
+  professionalExperience: [] as string[],
+  specializedKnowledge: [] as string[],
+};
+
+const JobDetailList = ({
+  title,
+  items,
+  isAr,
+}: {
+  title: string;
+  items: string[];
+  isAr: boolean;
+}) => {
+  if (!items.length) return null;
+
+  return (
+    <div className="mb-8" dir={isAr ? "rtl" : "ltr"}>
+      <h2 className="font-serif text-sm uppercase tracking-widest text-muted-foreground mb-4">
+        {title}
+      </h2>
+      <ul className="space-y-3">
+        {items.map((item, index) => (
+          <li
+            key={index}
+            dir={isAr ? "rtl" : "ltr"}
+            className="flex items-start gap-3 font-body text-sm text-muted-foreground"
+          >
+            <span className="text-foreground mt-0.5 shrink-0">•</span>
+            <span className={`flex-1 ${isAr ? "text-justify" : "text-justify"}`}>{item}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+const mapFallbackToDetail = (job: (typeof openPositions)[number]): FallbackJob => ({
+  id: "",
+  title: job.title,
+  category: job.category,
+  location: job.location,
+  type: job.type,
+  desc: job.desc,
+  date: job.date,
+  responsibilities: job.responsibilities,
+  requirements: job.requirements,
+  ...emptyDetailFields,
 });
+
 const JobApplication = () => {
   const { lang } = useLanguage();
   const [searchParams] = useSearchParams();
   const jobId = searchParams.get("jobId") ?? "";
   const jobIndex = parseInt(searchParams.get("job") || "0", 10);
-  const fallbackJob = openPositions[jobIndex] || openPositions[0];
-  const [job, setJob] = useState(fallbackJob);
+  const fallbackJob = mapFallbackToDetail(openPositions[jobIndex] || openPositions[0]);
+  const [apiJobData, setApiJobData] = useState<JobPosting | null>(null);
+  const [job, setJob] = useState<FallbackJob>(fallbackJob);
   const isAr = lang === "ar";
   const [showForm, setShowForm] = useState(false);
   const [cvFile, setCvFile] = useState<File | null>(null);
@@ -72,7 +117,7 @@ const JobApplication = () => {
     let cancelled = false;
     getJobById(jobId)
       .then((data) => {
-        if (!cancelled && data) setJob(mapApiJobToDisplay(data as JobPosting));
+        if (!cancelled && data) setApiJobData(data as JobPosting);
       })
       .catch(() => {
         if (!cancelled) {
@@ -87,6 +132,12 @@ const JobApplication = () => {
       cancelled = true;
     };
   }, [jobId, isAr]);
+
+  useEffect(() => {
+    if (apiJobData) {
+      setJob(mapJobPostingToDetail(apiJobData, isAr));
+    }
+  }, [apiJobData, isAr]);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!jobId) {
@@ -200,28 +251,31 @@ const JobApplication = () => {
               <Link to="/work-with-us?section=positions" className="text-primary hover:text-accent font-body text-sm underline underline-offset-4 inline-block mb-10">
                 {isAr ? "عرض جميع الوظائف المتاحة" : "View All open positions"}
               </Link>
-              <div className="mb-8">
-                <h2 className="font-serif text-sm uppercase tracking-widest text-muted-foreground mb-4">{isAr ? "المهام والمسؤوليات" : "Duties and Responsibilities"}</h2>
-                <ul className="space-y-3">
-                  {job.responsibilities.map((r, i) => (
-                    <li key={i} className="flex items-start gap-3 font-body text-sm text-muted-foreground">
-                      <span className="text-foreground mt-0.5">•</span>
-                      <span className="text-justify">{r}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="mb-8">
-                <h2 className="font-serif text-sm uppercase tracking-widest text-muted-foreground mb-4">{isAr ? "المتطلبات" : "Requirements"}</h2>
-                <ul className="space-y-3">
-                  {job.requirements.map((r, i) => (
-                    <li key={i} className="flex items-start gap-3 font-body text-sm text-muted-foreground">
-                      <span className="text-foreground mt-0.5">•</span>
-                      <span className="text-justify">{r}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <JobDetailList
+                title={isAr ? "المهام والمسؤوليات" : "Duties and Responsibilities"}
+                items={job.responsibilities}
+                isAr={isAr}
+              />
+              <JobDetailList
+                title={isAr ? "المتطلبات" : "Requirements"}
+                items={job.requirements}
+                isAr={isAr}
+              />
+              <JobDetailList
+                title={isAr ? "التعليم والترخيص" : "Education & Licensure"}
+                items={job.educationAndLicensure}
+                isAr={isAr}
+              />
+              <JobDetailList
+                title={isAr ? "الخبرة المهنية" : "Professional Experience"}
+                items={job.professionalExperience}
+                isAr={isAr}
+              />
+              <JobDetailList
+                title={isAr ? "المعرفة المتخصصة" : "Specialized Knowledge"}
+                items={job.specializedKnowledge}
+                isAr={isAr}
+              />
             </div>
             <div className="lg:col-span-1 space-y-6">
               <div className="space-y-3">

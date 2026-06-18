@@ -24,6 +24,10 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { getAllJobs, type JobPosting } from "@/api/job";
+import {
+  mapJobPostingToListItem,
+  type MappedJobListItem,
+} from "@/utils/mapJobPosting";
 const openPositions = [
   {
     title: "Registrar – Plastic Surgeon",
@@ -120,14 +124,7 @@ const openPositions = [
     desc: "Responsible for providing care to patients undergoing anesthesia in liaison with Medical Staff and Allied Health Professionals.",
   },
 ];
-type Position = {
-  id: string;
-  title: string;
-  category: string;
-  location: string;
-  type: string;
-  desc: string;
-};
+type Position = MappedJobListItem;
 type WorkWithUsProps = {
   staffActivitiesImages: string[];
   galaDinnerImages: string[];
@@ -203,6 +200,7 @@ const WorkWithUs = ({
       desc: p.desc,
     })),
   );
+  const [apiJobs, setApiJobs] = useState<JobPosting[]>([]);
   const [empIndex, setEmpIndex] = useState(0);
   const [isEmpPaused, setIsEmpPaused] = useState(false);
   useEffect(() => {
@@ -242,21 +240,15 @@ const WorkWithUs = ({
     getAllJobs({ isActive: true })
       .then((jobs) => {
         if (!jobs.length) return;
-        setPositions(
-          jobs.map((job: JobPosting) => ({
-            id: String(job._id ?? job.id ?? ""),
-            title: job.title,
-            category: String(
-              job.classification ?? job.category ?? job.department ?? "",
-            ),
-            location: job.location ?? "",
-            type: job.type ?? "",
-            desc: job.description ?? job.desc ?? "",
-          })),
-        );
+        setApiJobs(jobs);
       })
       .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    if (!apiJobs.length) return;
+    setPositions(apiJobs.map((job) => mapJobPostingToListItem(job, isAr)));
+  }, [apiJobs, isAr]);
   const scrollCategories = (direction: "left" | "right") => {
     if (!categoriesScrollRef.current) return;
     const amount = direction === "left" ? -280 : 280;

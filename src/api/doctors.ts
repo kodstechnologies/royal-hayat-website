@@ -1,21 +1,15 @@
 import api from "./axiosInstance";
-import type { Doctor, DoctorWithClinicCode } from "@/types/doctor";
+import type { Doctor } from "@/data/doctors";
+import type { DoctorWithClinicCode } from "@/data/doctorsWithClinicCodes";
+import { departments as staticDepts, deptDoctorAliases } from "@/data/departments";
 import { resolveDoctorArabicName } from "@/utils/doctorDisplayName";
-
-/** Departments that have at least one active doctor (with names). */
-export async function getDoctorDepartmentsList(): Promise<
-  { _id: string; name: string; arabicName?: string }[]
-> {
-  const res = await api.get("/api/v1/doctors/departments/list");
-  const raw = res?.data?.data;
-  if (!Array.isArray(raw)) return [];
-  return raw as { _id: string; name: string; arabicName?: string }[];
-}
 
 /** Distinct department ObjectIds that have at least one active doctor. */
 export async function getDoctorDepartmentIds(): Promise<string[]> {
-  const depts = await getDoctorDepartmentsList();
-  return depts.map((d) => d._id);
+  const res = await api.get("/api/v1/doctors/departments");
+  const raw = res?.data?.data;
+  if (!Array.isArray(raw)) return [];
+  return raw.map((x) => String(x));
 }
 
 /** Active doctors for a single department (Mongo department `_id`). */
@@ -47,56 +41,43 @@ export function isDoctorAvailableOnline(value: unknown): boolean {
   return parseAvailableOnline(value);
 }
 
-function flattenExpertiseFromApi(raw: unknown): { en: string[]; ar: string[] } {
-  if (!Array.isArray(raw) || raw.length === 0) {
-    return { en: [], ar: [] };
-  }
-
-  const en: string[] = [];
-  const ar: string[] = [];
-
-  for (const item of raw) {
-    if (typeof item === "string") {
-      const text = item.trim();
-      if (text) en.push(text);
-      continue;
-    }
-
-    if (!item || typeof item !== "object") continue;
-
-    const obj = item as {
-      subHeading?: string;
-      subHeadingAr?: string;
-      points?: unknown[];
-      pointsAr?: unknown[];
-    };
-
-    const heading = String(obj.subHeading ?? "").trim();
-    const headingAr = String(obj.subHeadingAr ?? "").trim();
-    if (heading) {
-      en.push(heading.endsWith(":") || heading.endsWith("：") ? heading : `${heading}:`);
-    }
-    if (headingAr) {
-      ar.push(headingAr.endsWith(":") || headingAr.endsWith("：") ? headingAr : `${headingAr}:`);
-    }
-
-    for (const point of Array.isArray(obj.points) ? obj.points : []) {
-      const text = String(point).trim();
-      if (text) en.push(text);
-    }
-    for (const point of Array.isArray(obj.pointsAr) ? obj.pointsAr : []) {
-      const text = String(point).trim();
-      if (text) ar.push(text);
+function resolveStaticDepartment(apiDeptName: string) {
+  const normalized = apiDeptName.trim().toLowerCase();
+  for (const dept of staticDepts) {
+    const aliases = deptDoctorAliases[dept.name] ?? [dept.name];
+    if (
+      dept.name.toLowerCase() === normalized ||
+      aliases.some((alias) => alias.toLowerCase() === normalized)
+    ) {
+      return dept;
     }
   }
-
-  return { en, ar };
+  return undefined;
 }
 
-const MONGO_OID = /^[0-9a-fA-F]{24}$/i;
+function flattenStructuredDoctorSections(
+  sections: unknown,
+  useArabic = false,
+): string[] {
+  if (!Array.isArray(sections)) return [];
 
-export function isMongoDoctorId(id: string): boolean {
-  return MONGO_OID.test(id.trim());
+  return sections.flatMap((item) => {
+    if (typeof item === "string") return item.trim() ? [item.trim()] : [];
+    if (item && typeof item === "object") {
+      const obj = item as Record<string, unknown>;
+      const points = Array.isArray(useArabic ? obj.pointsAr : obj.points)
+        ? ((useArabic ? obj.pointsAr : obj.points) as string[])
+        : [];
+      const heading = String(
+        useArabic ? obj.subHeadingAr ?? "" : obj.subHeading ?? "",
+      ).trim();
+      return [
+        ...(heading ? [heading.endsWith(":") ? heading : `${heading}:`] : []),
+        ...points.map((point) => String(point).trim()).filter(Boolean),
+      ];
+    }
+    return [];
+  });
 }
 
 export function mapApiDoctorRowToDoctor(
@@ -153,27 +134,10 @@ export function mapApiDoctorRowToDoctor(
   const titleAr = String(row.titleAr ?? title);
   const initialsRaw = String(row.initials ?? (name.replace(/^Dr\.?\s*/i, "").slice(0, 2) || "DR")).toUpperCase();
 
-  const quals = Array.isArray(row.qualifications) ? (row.qualifications as string[]) : [];
-  const qualsAr = Array.isArray(row.qualificationsAr) ? (row.qualificationsAr as string[]) : quals;
-
-  const expertiseRaw = row.expertise;
-  const flattenedExpertise = flattenExpertiseFromApi(expertiseRaw);
-  const exp =
-    flattenedExpertise.en.length > 0
-      ? flattenedExpertise.en
-      : Array.isArray(expertiseRaw)
-        ? (expertiseRaw as string[]).filter((item) => typeof item === "string")
-        : [];
-  const expertiseArRaw = row.expertiseAr;
-  const flattenedExpertiseAr = flattenExpertiseFromApi(expertiseArRaw);
-  const expAr =
-    flattenedExpertise.ar.length > 0
-      ? flattenedExpertise.ar
-      : flattenedExpertiseAr.en.length > 0
-        ? flattenedExpertiseAr.en
-        : Array.isArray(expertiseArRaw)
-          ? (expertiseArRaw as string[]).filter((item) => typeof item === "string")
-          : exp;
+  const quals = flattenStructuredDoctorSections(row.qualifications);
+  const qualsAr = flattenStructuredDoctorSections(row.qualifications, true);
+  const exp = flattenStructuredDoctorSections(row.expertise);
+  const expAr = flattenStructuredDoctorSections(row.expertise, true);
   const langs = Array.isArray(row.languages) ? (row.languages as string[]) : [];
   const langsAr = Array.isArray(row.languagesAr) ? (row.languagesAr as string[]) : langs;
   const symptoms = Array.isArray(row.symptoms) ? (row.symptoms as string[]) : [];
@@ -221,25 +185,22 @@ export function mapApiDoctorRowToBookingDoctor(
 
   const depRaw = row.department;
   let apiClinicalCode: string | undefined;
-  let apiDepartmentMongoId: string | undefined;
   if (depRaw && typeof depRaw === "object" && depRaw !== null) {
-    const d = depRaw as { departmentId?: string; _id?: unknown };
+    const d = depRaw as { departmentId?: string };
     if (typeof d.departmentId === "string" && d.departmentId.trim()) {
       apiClinicalCode = d.departmentId.trim();
     }
-    if (d._id != null) {
-      apiDepartmentMongoId = String(d._id);
-    }
   }
 
+  const staticDept = resolveStaticDepartment(base.department);
   const rowClinicCode =
     typeof row.clinicCode === "string" && row.clinicCode.trim() ? row.clinicCode.trim() : undefined;
-  const departmentClinicCode = apiClinicalCode;
+  const departmentClinicCode = staticDept?.clinicCode ?? apiClinicalCode;
   const clinicCode = rowClinicCode || departmentClinicCode;
 
   return {
     ...base,
-    departmentId: base.departmentId ?? apiDepartmentMongoId,
+    departmentId: staticDept ? String(staticDept.id) : base.departmentId,
     providerCode: base.providerCode,
     departmentClinicCode,
     clinicCode,
@@ -277,22 +238,6 @@ export async function fetchAllActiveDoctors(): Promise<Doctor[]> {
   return out;
 }
 
-/** Active doctors for every department returned by `/departments/list`. */
-export async function fetchAllDoctorsByDepartment(): Promise<Doctor[]> {
-  const departments = await getDoctorDepartmentsList();
-  if (departments.length === 0) return [];
-
-  const batches = await Promise.all(
-    departments.map(async (dept) => {
-      const rows = await getDoctorsByDepartment(dept._id);
-      const deptNameAr = dept.arabicName?.trim() || dept.name;
-      return rows.map((row) => mapApiDoctorRowToDoctor(row, dept.name, deptNameAr));
-    }),
-  );
-
-  return batches.flat();
-}
-
 /** Active doctors mapped for BookAppointment (static department ids + booking codes). */
 export async function fetchAllBookingDoctors(): Promise<DoctorWithClinicCode[]> {
   const out: DoctorWithClinicCode[] = [];
@@ -328,26 +273,16 @@ export const getDoctorById = async (id: string) => {
   return response.data;
 };
 
-type FeaturedDoctorApiRecord = {
-  _id: string;
-  doctor: Record<string, unknown> | string;
-  createdAt?: string;
-  updatedAt?: string;
-};
+export function isMongoDoctorId(id: string): boolean {
+  return /^[0-9a-fA-F]{24}$/.test(id);
+}
 
-/** Featured doctors for homepage / medical-services (populated doctor profiles). */
-export async function fetchFeaturedDoctors(): Promise<Doctor[]> {
-  const res = await api.get("/api/v1/featured-doctors");
-  const records = res?.data?.data as FeaturedDoctorApiRecord[] | undefined;
-  if (!Array.isArray(records)) return [];
-
-  const doctors: Doctor[] = [];
-  for (const record of records) {
-    const doc = record.doctor;
-    if (!doc || typeof doc !== "object") continue;
-
-    const row = doc as Record<string, unknown>;
-    if (row.isActive === false) continue;
+/** Single doctor profile from API (populated qualifications/expertise, flattened for UI). */
+export async function fetchDoctorProfileById(id: string): Promise<Doctor | null> {
+  try {
+    const res = await getDoctorById(id);
+    const row = res?.data as Record<string, unknown> | undefined;
+    if (!row || typeof row !== "object") return null;
 
     const dep = row.department;
     let deptName = "";
@@ -358,22 +293,13 @@ export async function fetchFeaturedDoctors(): Promise<Doctor[]> {
       deptNameAr = String(d.arabicName ?? d.nameAr ?? deptName);
     }
 
-    doctors.push(mapApiDoctorRowToDoctor(row, deptName, deptNameAr));
-  }
-
-  return doctors;
-}
-
-/** Loads a single doctor profile from GET /api/v1/doctors/:id. */
-export async function fetchDoctorProfileById(id: string): Promise<Doctor | null> {
-  if (!isMongoDoctorId(id)) return null;
-  try {
-    const res = await getDoctorById(id);
-    if (res?.success && res.data) {
-      return mapApiDoctorRowToDoctor(res.data as Record<string, unknown>, "", "");
-    }
+    return mapApiDoctorRowToDoctor(row, deptName, deptNameAr);
   } catch {
     return null;
   }
-  return null;
-};
+}
+
+/** All active doctors for the public /doctors listing. */
+export async function fetchAllDoctorsByDepartment(): Promise<Doctor[]> {
+  return fetchAllActiveDoctors();
+}

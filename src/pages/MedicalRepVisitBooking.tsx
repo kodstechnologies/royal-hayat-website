@@ -22,7 +22,7 @@ const MED_REP_ALLOWED_DOCTOR_IDS = new Set([
   "dr-hussein-faour",
   "heba-ben-salamah",
   "dr-wadha-abdulaziz-al-jaser",
-  "dr-adel-al-ali",
+  "dr-ali-ibrahim-aldei",
   "dr-abdullah-albader",
   "dr-salma-ibrahim",
   "dr-hafsah-hussain",

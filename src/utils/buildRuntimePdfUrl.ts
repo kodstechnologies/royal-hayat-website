@@ -50,6 +50,17 @@ export function buildRuntimePdfUrl(pathOrFilename: string): string {
 }
 
 /**
+ * Best href for opening a PDF on the current device.
+ * Mobile clients skip the React iframe viewer and load the PDF stream directly.
+ */
+export function getRuntimePdfHref(pathOrFilename: string): string {
+  if (isMobilePdfClient()) {
+    return buildRuntimePdfStreamUrl(pathOrFilename);
+  }
+  return buildRuntimePdfUrl(pathOrFilename);
+}
+
+/**
  * Internal stream URL for the PDF viewer iframe — proxied via /api on the site domain.
  */
 export function buildRuntimePdfStreamUrl(pathOrFilename: string): string {
@@ -71,7 +82,9 @@ export function buildRuntimePdfOpenUrl(pathOrFilename: string): string {
  * Returns true when a redirect was started.
  */
 export function redirectRuntimePdfIfNeeded(pathname: string): boolean {
-  if (!isRuntimePdfPath(pathname)) return false;
+  if (!isRuntimePdfPath(pathname) || !isMobilePdfClient()) {
+    return false;
+  }
   window.location.replace(buildRuntimePdfStreamUrl(pathname));
   return true;
 }
@@ -80,5 +93,5 @@ export function redirectRuntimePdfIfNeeded(pathname: string): boolean {
  * Opens a legacy PDF path on the current device.
  */
 export function openRuntimePdf(pathOrFilename: string): void {
-  window.location.assign(buildRuntimePdfStreamUrl(pathOrFilename));
+  window.location.assign(getRuntimePdfHref(pathOrFilename));
 }

@@ -104,7 +104,6 @@ const DepartmentRow = memo(({
   deptMeta?: DeptMeta;
 }) => {
   const { lang } = useLanguage();
-  const isAr = lang === "ar";
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -185,7 +184,7 @@ const DepartmentRow = memo(({
           </div>
         )}
       </div>
-      <div className="relative isolate" dir={isAr ? "rtl" : "ltr"}>
+      <div className="relative isolate" dir="ltr">
         <button
           type="button"
           aria-label={lang === "ar" ? "التمرير لليسار" : "Scroll left"}
@@ -217,7 +216,7 @@ const DepartmentRow = memo(({
         <div className="relative z-0 max-w-[1192px] mx-auto overflow-hidden">
           <div
             ref={scrollRef}
-            dir={isAr ? "rtl" : "ltr"}
+            dir="ltr"
             className="doctors-carousel-track flex w-full items-stretch gap-4 overflow-x-auto pb-8 snap-x snap-mandatory max-md:scroll-px-[calc(50%-140px)] max-md:px-[calc(50%-140px)] md:gap-6 md:px-0 md:scroll-px-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden [-webkit-overflow-scrolling:touch]"
           >
             {docs.map((doc) => (

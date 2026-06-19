@@ -5,6 +5,7 @@ import ScrollToTop from "@/components/ScrollToTop";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
 import type { DepartmentDetail as DepartmentDetailData, DepartmentDetailSection } from "@/types/departmentDetail";
 import { fetchAllDepartmentsPages, getDepartmentSubspecialitiesAndDoctors } from "@/api/department";
+import { fetchMappedDoctorsBySubspeciality } from "@/api/doctors";
 import { MAIN_CATEGORIES, type MainCategory } from "@/types/department";
 import type { Doctor } from "@/types/doctor";
 import {
@@ -338,6 +339,8 @@ const DepartmentDetail = () => {
   const [expandedSub, setExpandedSub] = useState<string | null>(subSlug || null);
   const [dept, setDept] = useState<DepartmentDetailData | null | undefined>(undefined);
   const [allDoctors, setAllDoctors] = useState<Doctor[]>([]);
+  const [subspecialityDoctors, setSubspecialityDoctors] = useState<Doctor[] | null>(null);
+  const [subspecialityDoctorsLoading, setSubspecialityDoctorsLoading] = useState(false);
   const [deptImage, setDeptImage] = useState("");
   const [deptMainCategory, setDeptMainCategory] = useState<MainCategory | undefined>();
 
@@ -384,6 +387,49 @@ const DepartmentDetail = () => {
       cancelled = true;
     };
   }, [slug, navState.departmentMongoId]);
+
+  useEffect(() => {
+    if (!dept) {
+      setSubspecialityDoctors(null);
+      setSubspecialityDoctorsLoading(false);
+      return;
+    }
+
+    const resolvedSubSlug = subSlug
+      ? normalizeSubSlug(dept.slug, subSlug, dept.subDepartments)
+      : undefined;
+    const active = resolvedSubSlug ? resolveSubDepartment(dept, resolvedSubSlug) : null;
+
+    if (!active?.subspecialityId) {
+      setSubspecialityDoctors(null);
+      setSubspecialityDoctorsLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+    setSubspecialityDoctorsLoading(true);
+    setSubspecialityDoctors(null);
+
+    void fetchMappedDoctorsBySubspeciality(
+      active.subspecialityId,
+      dept.name,
+      dept.nameAr ?? dept.name,
+    )
+      .then((doctors) => {
+        if (!cancelled) setSubspecialityDoctors(doctors);
+      })
+      .catch(() => {
+        if (!cancelled) setSubspecialityDoctors([]);
+      })
+      .finally(() => {
+        if (!cancelled) setSubspecialityDoctorsLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [dept, subSlug]);
+
   const goBackToSpecializedCare = () => {
     navigate(navState.returnPath || "/", {
       state: {
@@ -468,9 +514,7 @@ const DepartmentDetail = () => {
   const displayDept = activeSub || dept;
   const baseDeptDoctors = filterDepartmentDoctors(allDoctors, dept.name);
   const deptDoctors = sortDoctorsInDepartment(
-    activeSub
-      ? filterDepartmentDoctors(allDoctors, dept.name, activeSub.name)
-      : baseDeptDoctors,
+    activeSub?.subspecialityId ? (subspecialityDoctors ?? []) : baseDeptDoctors,
     dept.name,
     lang,
   );
@@ -793,7 +837,14 @@ const DepartmentDetail = () => {
           </div>
         </section>
       )}
-      {deptDoctors.length > 0 && (
+      {subspecialityDoctorsLoading && activeSub?.subspecialityId ? (
+        <section className="py-12">
+          <div className="container mx-auto px-6 flex justify-center text-muted-foreground">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" aria-hidden />
+            <span className="sr-only">Loading doctors...</span>
+          </div>
+        </section>
+      ) : deptDoctors.length > 0 ? (
         <DepartmentDoctors
           doctors={deptDoctors}
           lang={lang}
@@ -804,7 +855,7 @@ const DepartmentDetail = () => {
             activeSub?.name,
           )}
         />
-      )}
+      ) : null}
       {dept.slug === "home-health" && !activeSub && (
         <section className="pb-12">
           <div className="container mx-auto px-6">

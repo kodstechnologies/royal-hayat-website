@@ -29,5 +29,6 @@ export interface DepartmentDetail {
     intro: string;
     introAr?: string;
     sections: DepartmentDetailSection[];
+    subspecialityId?: string;
   }[];
 }

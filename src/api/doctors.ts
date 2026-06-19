@@ -202,6 +202,15 @@ export function mapApiDoctorRowToDoctor(
   };
 }
 
+export async function fetchMappedDoctorsBySubspeciality(
+  subspecialityId: string,
+  departmentNameEn: string,
+  departmentNameAr: string,
+): Promise<Doctor[]> {
+  const rows = await getDoctorsBySubspeciality(subspecialityId, { limit: 100 });
+  return rows.map((row) => mapApiDoctorRowToDoctor(row, departmentNameEn, departmentNameAr));
+}
+
 /** Maps API doctor rows for BookAppointment (static dept ids + HIS clinic/provider codes). */
 export function mapApiDoctorRowToBookingDoctor(
   row: Record<string, unknown>,

@@ -20,7 +20,7 @@ const translations: Translations = {
   doctors: { en: "Doctors", ar: "الأطباء" },
   bookAppointment: { en: "Book Appointment", ar: "طلب موعد" },
   login: { en: "My Medical Reports", ar: "تقاريري الطبية" },
-  searchPlaceholder: { en: "Search symptoms, doctors, departments, services...", ar: "ابحث عن الأعراض، الأطباء، الأقسام، الخدمات..." },
+  searchPlaceholder: { en: "Search doctors, departments, services...", ar: "ابحث عن الأعراض، الأطباء، الأقسام، الخدمات..." },
   getToKnowUs: { en: "Get To Know Us", ar: "تعرّف علينا" },
   ourStory: { en: "Our Story", ar: "قصتنا" },
   storyTitle: {

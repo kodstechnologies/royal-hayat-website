@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getDepartmentSubspecialitiesAndDoctors } from "@/api/department";
+import { fetchMappedDoctorsBySubspeciality } from "@/api/doctors";
 import { getCatagoriesWithDepartmentsAndDoctors } from "@/api/catagory";
 import type { Department } from "@/types/department";
 import type { Doctor } from "@/types/doctor";
@@ -13,7 +14,6 @@ import {
   type CategoryDisplaySection,
 } from "@/utils/mapApiDepartment";
 import {
-  filterDepartmentDoctors,
   getDepartmentCardCacheKey,
   getDepartmentLookupId,
   mapApiDepartmentDetailResponse,
@@ -79,6 +79,8 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
   const [searchQuery, setSearchQuery] = useState("");
   const [deptCardCache, setDeptCardCache] = useState<Record<string, DeptCardData>>({});
   const [loadingDeptKey, setLoadingDeptKey] = useState<string | null>(null);
+  const [subspecialityDoctorsCache, setSubspecialityDoctorsCache] = useState<Record<string, Doctor[]>>({});
+  const [loadingSubspecialityKey, setLoadingSubspecialityKey] = useState<string | null>(null);
   useEffect(() => {
     let cancelled = false;
     setDepartmentsLoading(true);
@@ -270,6 +272,54 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
   const selectedCardLoading = selectedDept
     ? loadingDeptKey === getDepartmentCardCacheKey(selectedDept)
     : false;
+
+  useEffect(() => {
+    if (openIndex === null) return;
+    const dept = departments[openIndex];
+    if (!dept) return;
+
+    const rawSubSlug = selectedSubByDept[openIndex];
+    if (!rawSubSlug) return;
+
+    const cardData = deptCardCache[getDepartmentCardCacheKey(dept)];
+    const cardSubs = cardData?.subs ?? dept.subs ?? [];
+    if (cardSubs.length === 0) return;
+
+    const selectedSubSlug = normalizeCardSubSlug(dept, rawSubSlug, cardData);
+    const selectedSub = cardSubs.find((sub) => getSubSlug(sub.name) === selectedSubSlug);
+    if (!selectedSub?.subspecialityId) return;
+
+    const cacheKey = `${getDepartmentCardCacheKey(dept)}:${selectedSub.subspecialityId}`;
+    if (subspecialityDoctorsCache[cacheKey]) return;
+
+    let cancelled = false;
+    setLoadingSubspecialityKey(cacheKey);
+
+    void fetchMappedDoctorsBySubspeciality(
+      selectedSub.subspecialityId,
+      dept.name,
+      dept.nameAr,
+    )
+      .then((doctors) => {
+        if (cancelled) return;
+        setSubspecialityDoctorsCache((prev) => ({ ...prev, [cacheKey]: doctors }));
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setSubspecialityDoctorsCache((prev) => ({ ...prev, [cacheKey]: [] }));
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setLoadingSubspecialityKey((current) => (current === cacheKey ? null : current));
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [openIndex, departments, selectedSubByDept, deptCardCache, subspecialityDoctorsCache]);
+
   const deptDoctors = useMemo(() => {
     if (!selectedDept) return [];
     if (selectedCardLoading) return [];
@@ -280,15 +330,46 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
       ? normalizeCardSubSlug(selectedDept, selectedSubByDept[origIdx], cardData)
       : undefined;
     const allDeptDoctors = cardData?.doctors ?? [];
+
     if (selectedSubSlug && cardSubs.length > 0) {
       const selectedSub = cardSubs.find((sub) => getSubSlug(sub.name) === selectedSubSlug);
-      if (selectedSub) {
-        const filtered = filterDepartmentDoctors(allDeptDoctors, selectedDept.name, selectedSub.name);
-        return sortDoctorsInDepartment(filtered, selectedDept.name, lang);
+      if (selectedSub?.subspecialityId) {
+        const cacheKey = `${getDepartmentCardCacheKey(selectedDept)}:${selectedSub.subspecialityId}`;
+        const subspecialityDoctors = subspecialityDoctorsCache[cacheKey];
+        if (!subspecialityDoctors) return [];
+        return sortDoctorsInDepartment(subspecialityDoctors, selectedDept.name, lang);
       }
     }
+
     return sortDoctorsInDepartment(allDeptDoctors, selectedDept.name, lang);
-  }, [selectedDept, selectedCardData, selectedCardLoading, openIndex, selectedSubByDept, lang]);
+  }, [
+    selectedDept,
+    selectedCardData,
+    selectedCardLoading,
+    openIndex,
+    selectedSubByDept,
+    subspecialityDoctorsCache,
+    lang,
+  ]);
+
+  const selectedSubspecialityLoading = useMemo(() => {
+    if (!selectedDept || openIndex === null) return false;
+    const cardData = selectedCardData;
+    const cardSubs = cardData?.subs ?? selectedDept.subs ?? [];
+    const rawSubSlug = selectedSubByDept[openIndex];
+    if (!rawSubSlug || cardSubs.length === 0) return false;
+    const selectedSubSlug = normalizeCardSubSlug(selectedDept, rawSubSlug, cardData);
+    const selectedSub = cardSubs.find((sub) => getSubSlug(sub.name) === selectedSubSlug);
+    if (!selectedSub?.subspecialityId) return false;
+    const cacheKey = `${getDepartmentCardCacheKey(selectedDept)}:${selectedSub.subspecialityId}`;
+    return loadingSubspecialityKey === cacheKey;
+  }, [
+    selectedDept,
+    selectedCardData,
+    openIndex,
+    selectedSubByDept,
+    loadingSubspecialityKey,
+  ]);
   useEffect(() => {
     if (doctorScrollRef.current) {
       doctorScrollRef.current.scrollTo({ left: 0, behavior: "auto" });
@@ -474,7 +555,15 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                   <X className="w-4 h-4 text-muted-foreground" />
                                 </button>
                               </div>
-                              {!isCardLoading && deptDoctors.length > 0 && (
+                              {!isCardLoading && selectedSubspecialityLoading && (
+                                <div className="mt-auto flex items-center justify-center gap-2 text-muted-foreground py-8">
+                                  <Loader2 className="h-5 w-5 animate-spin text-primary" aria-hidden />
+                                  <span className="font-body text-xs">
+                                    {lang === "ar" ? "جاري تحميل الأطباء..." : "Loading doctors..."}
+                                  </span>
+                                </div>
+                              )}
+                              {!isCardLoading && !selectedSubspecialityLoading && deptDoctors.length > 0 && (
                                 <div className="mt-auto">
                                   <p className="text-accent text-center text-xs tracking-[0.2em] uppercase font-body mb-4">
                                     {lang === "ar" ? "فريقنا الطبي" : "Our Medical Team"}

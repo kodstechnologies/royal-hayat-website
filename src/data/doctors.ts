@@ -2814,7 +2814,7 @@ export const doctors: Doctor[] = [
     initials: 'DV', color: 'bg-primary',
     symptoms: [],
   },
-  {
+  { 
     id: 'dr-eyhab-bader',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/eyhab-bader.png',
     name: 'Dr. Eyhab Bader', nameAr: 'د. إيهـاب بـدر',
@@ -3108,7 +3108,7 @@ export const doctors: Doctor[] = [
   {
     id: 'dr-nourah-adnan-saad-alrubaian',
     image: 'https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/noorah1.png',
-    name: 'Dr. Nourah Adnan Saad Alrubaian', nameAr: 'د. نوره عدنان سعد الربيعان',
+    name: ' ', nameAr: 'د. نوره عدنان سعد الربيعان',
     specialty: 'Dental', specialtyAr: 'طب الأسنان',
     department: 'Dental', departmentAr: 'طب الأسنان',
     providerCode: 'PT074',

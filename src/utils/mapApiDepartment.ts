@@ -19,6 +19,7 @@ import type { ApiCategoryWithNested } from "@/api/catagory";
 import type { Department, MainCategory } from "@/types/department";
 import { MAIN_CATEGORIES } from "@/types/department";
 import { departmentSlug } from "@/pages/book-appointment/utils";
+import { compareDoctorsPageDepartments } from "@/utils/doctorDepartmentOrder";
 
 const OID = /^[0-9a-fA-F]{24}$/i;
 
@@ -139,8 +140,8 @@ export function mapApiDepartmentRow(
 }
 
 export function mapApiDepartmentsToDisplay(rows: DepartmentListItem[]): Department[] {
-  const sortedRows = [...rows].sort(
-    (a, b) => (Number(a.order) || 0) - (Number(b.order) || 0),
+  const sortedRows = [...rows].sort((a, b) =>
+    compareDoctorsPageDepartments(String(a.name ?? ""), String(b.name ?? "")),
   );
 
   return sortedRows

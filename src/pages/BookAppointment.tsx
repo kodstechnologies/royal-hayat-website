@@ -20,6 +20,7 @@ import {
   mapApiDoctorRowToBookingDoctor,
 } from "@/api/doctors";
 import { mapApiDepartmentsToDisplay } from "@/utils/mapApiDepartment";
+import { sortDepartmentsByDisplayOrder } from "@/utils/doctorDepartmentOrder";
 import type { Department } from "@/types/department";
 import { MAIN_CATEGORIES } from "@/types/department";
 import { createAppointmentRequest } from "@/api/appointmentRequest";
@@ -439,9 +440,11 @@ const BookAppointment = () => {
         ]);
         if (cancelled) return;
 
-        const bookingDepartments = mapApiDepartmentsToDisplay(apiDeptRows)
-          .map(displayDeptToBookingRow)
-          .filter((dept): dept is BookingDeptRow => dept !== null);
+        const bookingDepartments = sortDepartmentsByDisplayOrder(
+          mapApiDepartmentsToDisplay(apiDeptRows)
+            .map(displayDeptToBookingRow)
+            .filter((dept): dept is BookingDeptRow => dept !== null),
+        );
 
         setDepartmentsList(bookingDepartments);
         setAllApiDoctors(apiDoctors);
@@ -558,15 +561,17 @@ const BookAppointment = () => {
   }, [locState?.resetBookingFlow]);
   const filteredDepts = useMemo(() => {
     const query = deptSearch.toLowerCase();
-    return departmentsList.filter(
-      (d) =>
-        d.name.toLowerCase().includes(query) ||
-        d.nameAr.toLowerCase().includes(query) ||
-        d.desc.toLowerCase().includes(query) ||
-        d.descAr.toLowerCase().includes(query) ||
-        d.category.toLowerCase().includes(query) ||
-        d.medicalField.toLowerCase().includes(query) ||
-        d.medicalFieldAr.toLowerCase().includes(query)
+    return sortDepartmentsByDisplayOrder(
+      departmentsList.filter(
+        (d) =>
+          d.name.toLowerCase().includes(query) ||
+          d.nameAr.toLowerCase().includes(query) ||
+          d.desc.toLowerCase().includes(query) ||
+          d.descAr.toLowerCase().includes(query) ||
+          d.category.toLowerCase().includes(query) ||
+          d.medicalField.toLowerCase().includes(query) ||
+          d.medicalFieldAr.toLowerCase().includes(query),
+      ),
     );
   }, [departmentsList, deptSearch]);
   const displayDepts = useMemo(() => {
@@ -582,11 +587,15 @@ const BookAppointment = () => {
         key: cat.key,
         label: cat.label,
         labelAr: cat.labelAr,
-        depts: displayDepts.filter((d) => d.mainCategory === cat.key),
+        depts: sortDepartmentsByDisplayOrder(
+          displayDepts.filter((d) => d.mainCategory === cat.key),
+        ),
       })).filter((group) => group.depts.length > 0);
 
     const categorizedIds = new Set(groups.flatMap((group) => group.depts.map((dept) => dept.id)));
-    const uncategorized = displayDepts.filter((dept) => !categorizedIds.has(dept.id));
+    const uncategorized = sortDepartmentsByDisplayOrder(
+      displayDepts.filter((dept) => !categorizedIds.has(dept.id)),
+    );
     if (uncategorized.length > 0) {
       groups.push({
         key: "Other",

@@ -16,6 +16,9 @@ import { mapApiDepartmentsToDisplay } from "@/utils/mapApiDepartment";
 import { Input } from "@/components/ui/input";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
 import { sortDoctorsAlphabetically, sortDoctorsInDepartment } from "@/utils/sortDoctorsInDepartment";
+import {
+  compareDoctorsPageDepartments,
+} from "@/utils/doctorDepartmentOrder";
 import { getDoctorCarouselScrollState, scrollDoctorCarousel, scrollDoctorCarouselToStart, syncDoctorCarouselIndex } from "@/utils/doctorCarousel";
 import { filterDoctorsBySearch } from "@/utils/doctorSearch";
 
@@ -305,14 +308,6 @@ const Doctors = () => {
     });
     return map;
   }, [deptMetaByName]);
-  const doctorDeptOrderIndex = useMemo(() => {
-    const m = new Map<string, number>();
-    Object.entries(deptMetaByName).forEach(([name, meta]) => {
-      m.set(name, meta.order);
-    });
-    return m;
-  }, [deptMetaByName]);
-  const DEPT_ORDER_FALLBACK = 100_000;
   const getDeptMainCategory = useCallback((dept: string): MainCategory => {
     if (deptToMainCategory[dept]) return deptToMainCategory[dept];
     return "Clinical Speciality";
@@ -336,17 +331,11 @@ const Doctors = () => {
   const sortedGroupedEntries = useMemo(() => {
     const sortDocsWithinDept = (dept: string, docs: Doctor[]) =>
       sortDoctorsInDepartment(docs, dept, lang);
-    const orderOf = (dept: string) => doctorDeptOrderIndex.get(dept) ?? DEPT_ORDER_FALLBACK;
     return Object.entries(grouped)
       .filter(([, docs]) => Array.isArray(docs) && docs.length > 0)
       .map(([dept, docs]) => [dept, sortDocsWithinDept(dept, docs)] as const)
-      .sort(([deptA], [deptB]) => {
-        const da = orderOf(deptA);
-        const db = orderOf(deptB);
-        if (da !== db) return da - db;
-        return deptA.localeCompare(deptB, locale);
-      });
-  }, [grouped, lang, locale, doctorDeptOrderIndex]);
+      .sort(([deptA], [deptB]) => compareDoctorsPageDepartments(deptA, deptB, locale));
+  }, [grouped, lang, locale]);
   const groupedByMainCategory = useMemo(() => {
     const result: Record<MainCategory, typeof sortedGroupedEntries> = {
       "Clinical Speciality": [],

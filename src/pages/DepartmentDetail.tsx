@@ -19,6 +19,9 @@ import { ChevronRight, ChevronLeft, ArrowLeft, ArrowRight, CheckCircle2, Chevron
 import { useState, useRef, useEffect, useMemo, memo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { normalizeSubSlug, resolveSubDepartment } from "@/utils/departmentSubSlug";
+import {
+  shouldShowDepartmentDoctorsHeading,
+} from "@/utils/clinicalNutritionSubspeciality";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
 import { sortDoctorsInDepartment } from "@/utils/sortDoctorsInDepartment";
 import { scrollDoctorCarousel } from "@/utils/doctorCarousel";
@@ -91,33 +94,6 @@ const renderDeptContent = (content: string) =>
   ));
 const isAlSafwaDepartment = (slug: string, name: string) =>
   slug.includes("al-safwa") || name.toLowerCase().includes("safwa");
-const CLINICAL_NUTRITION_SUB_SLUG = "clinical-nutrition-dietetics";
-const isClinicalNutritionSubSpecialty = (
-  deptName: string,
-  deptSlug: string,
-  subSlug?: string,
-  activeSubName?: string,
-) => {
-  if (activeSubName === "Clinical Nutrition & Dietetics") return true;
-  if (!subSlug) return false;
-  const normalized = normalizeSubSlug(deptSlug, subSlug);
-  return normalized === CLINICAL_NUTRITION_SUB_SLUG || normalized.includes("clinical-nutrition");
-};
-const shouldShowDepartmentDoctorsHeading = (
-  deptName: string,
-  deptSlug: string,
-  subSlug?: string,
-  activeSubName?: string,
-) => {
-  if (deptName === "Clinical Pharmacy") return false;
-  if (
-    (deptName === "General & Laparoscopic Surgery" || deptName === "Internal Medicine") &&
-    isClinicalNutritionSubSpecialty(deptName, deptSlug, subSlug, activeSubName)
-  ) {
-    return false;
-  }
-  return true;
-};
 const DETAIL_DOCTOR_CARD_WIDTH = 280;
 const DETAIL_DOCTOR_GAP = 16;
 const DETAIL_DOCTOR_VIEWPORT_WIDTH = DETAIL_DOCTOR_CARD_WIDTH * 4 + DETAIL_DOCTOR_GAP * 3;
@@ -518,6 +494,12 @@ const DepartmentDetail = () => {
     dept.name,
     lang,
   );
+  const doctorsHeadingOpts = {
+    subName: activeSub?.name,
+    subSlug: resolvedSubSlug,
+    deptSlug: dept.slug,
+    subs: dept.subDepartments?.map((sub) => ({ slug: sub.slug, name: sub.name })),
+  };
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
       <Header />
@@ -848,12 +830,7 @@ const DepartmentDetail = () => {
         <DepartmentDoctors
           doctors={deptDoctors}
           lang={lang}
-          showDepartmentDoctorsTitle={shouldShowDepartmentDoctorsHeading(
-            dept.name,
-            dept.slug,
-            resolvedSubSlug,
-            activeSub?.name,
-          )}
+          showDepartmentDoctorsTitle={shouldShowDepartmentDoctorsHeading(dept.name, doctorsHeadingOpts)}
         />
       ) : null}
       {dept.slug === "home-health" && !activeSub && (

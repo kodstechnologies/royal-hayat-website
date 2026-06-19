@@ -20,6 +20,9 @@ import {
   mapApiSubspecialitiesToDepartmentSubs,
 } from "@/utils/mapApiDepartmentDetail";
 import { normalizeSubSlug, slugifySubName } from "@/utils/departmentSubSlug";
+import {
+  shouldShowDepartmentDoctorsHeading,
+} from "@/utils/clinicalNutritionSubspeciality";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
 import { sortDoctorsInDepartment } from "@/utils/sortDoctorsInDepartment";
 import { scrollDoctorCarousel } from "@/utils/doctorCarousel";
@@ -27,30 +30,6 @@ type DepartmentsSectionProps = {
   showPageTitle?: boolean;
 };
 const isAlSafwaDeptSlug = (slug: string) => slug.includes("al-safwa");
-const CLINICAL_NUTRITION_SUB_SLUG = "clinical-nutrition-dietetics";
-const isClinicalNutritionSubSpecialty = (dept: Department, selectedSubSlug?: string) => {
-  if (!selectedSubSlug) return false;
-  const normalized = normalizeSubSlug(dept.slug, selectedSubSlug, dept.subs?.map((sub) => ({
-    slug: slugifySubName(sub.name),
-    name: sub.name,
-  })));
-  if (normalized === CLINICAL_NUTRITION_SUB_SLUG) return true;
-  return dept.subs?.some(
-    (sub) =>
-      sub.name === "Clinical Nutrition & Dietetics" &&
-      slugifySubName(sub.name) === normalized,
-  );
-};
-const shouldShowDepartmentDoctorsHeading = (dept: Department, selectedSubSlug?: string) => {
-  if (dept.name === "Clinical Pharmacy") return false;
-  if (
-    (dept.name === "General & Laparoscopic Surgery" || dept.name === "Internal Medicine") &&
-    isClinicalNutritionSubSpecialty(dept, selectedSubSlug)
-  ) {
-    return false;
-  }
-  return true;
-};
 type DeptRestoreState = {
   restoreDeptOpenIndex?: number;
   restoreSelectedSubByDept?: Record<number, string>;
@@ -454,6 +433,19 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                     const selectedSubSlug = selectedSubByDept[origIdx]
                       ? normalizeCardSubSlug(dept, selectedSubByDept[origIdx], cardData)
                       : undefined;
+                    const selectedSub = selectedSubSlug
+                      ? cardSubs.find((sub) => slugifySubName(sub.name) === selectedSubSlug)
+                      : undefined;
+                    const doctorsHeadingOpts = {
+                      subName: selectedSub?.name,
+                      subSlug: selectedSubSlug,
+                      deptSlug: dept.slug,
+                      subs: cardSubs.map((sub) => ({ name: sub.name })),
+                    };
+                    const showDeptDoctorsHeading = shouldShowDepartmentDoctorsHeading(
+                      dept.name,
+                      doctorsHeadingOpts,
+                    );
                     return (
                       <motion.div
                         key={dept.name}
@@ -568,7 +560,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                   <p className="text-accent text-center text-xs tracking-[0.2em] uppercase font-body mb-4">
                                     {lang === "ar" ? "فريقنا الطبي" : "Our Medical Team"}
                                   </p>
-                                  {shouldShowDepartmentDoctorsHeading(dept, selectedSubSlug) && (
+                                  {showDeptDoctorsHeading && (
                                     <h3 className="text-center text-lg md:text-xl font-serif text-foreground font-semibold mb-4">
                                       {t("departmentDoctors")}
                                     </h3>

@@ -129,7 +129,7 @@ const MyMedicalReports = () => {
 
         const payload: StartIdentityPayload = {
           civilId,
-          serviceName: { ar: "طلب موعد", en: "Appointment Request" },
+          serviceName: { ar: "طلب السجل الطبي", en: "Medical Record Request" },
           reason: { ar: "الوصول إلى التقارير الطبية", en: "Access medical reports" },
         };
         const startData = await startIdentityVerification(payload);

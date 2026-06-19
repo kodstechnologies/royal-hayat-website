@@ -11,6 +11,7 @@ import { Mail, Share2, ChevronRight, Loader2 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import { applyForJob, getJobById, type JobPosting } from "@/api/job";
+import { localizeJobPosting } from "@/lib/jobLocale";
 import { mapJobPostingToDetail, type MappedJobDetail } from "@/utils/mapJobPosting";
 
 const formatJobPostedDate = (value: string): string => {
@@ -95,18 +96,30 @@ const JobApplication = () => {
   const jobId = searchParams.get("jobId") ?? "";
   const jobIndex = parseInt(searchParams.get("job") || "0", 10);
   const fallbackJob = mapFallbackToDetail(openPositions[jobIndex] || openPositions[0]);
-  const [apiJobData, setApiJobData] = useState<JobPosting | null>(null);
   const [job, setJob] = useState<FallbackJob>(fallbackJob);
   const isAr = lang === "ar";
 
   const [jobRecord, setJobRecord] = useState<JobPosting | null>(null);
-  const [jobLoading, setJobLoading] = useState(true);
+  const [jobLoading, setJobLoading] = useState(Boolean(jobId));
   const [jobError, setJobError] = useState(false);
 
-  const displayJob = useMemo(
-    () => (jobRecord ? localizeJobPosting(jobRecord, isAr) : null),
-    [jobRecord, isAr],
-  );
+  const displayJob = useMemo(() => {
+    if (jobRecord) {
+      return localizeJobPosting(jobRecord, isAr);
+    }
+    if (!job.title) return null;
+    return {
+      _id: job.id,
+      title: job.title,
+      category: job.category,
+      location: job.location,
+      type: job.type,
+      desc: job.desc,
+      responsibilities: job.responsibilities,
+      requirements: job.requirements,
+      postedDate: job.date,
+    };
+  }, [jobRecord, job, isAr]);
 
   const [showForm, setShowForm] = useState(false);
   const [resumeFile, setResumeFile] = useState<File | null>(null);
@@ -117,36 +130,53 @@ const JobApplication = () => {
   const [coverLetter, setCoverLetter] = useState("");
   const formRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (!jobId) return;
     let cancelled = false;
-    getJobById(jobId)
-      .then((data) => {
-        if (!cancelled && data) setApiJobData(data as JobPosting);
-      })
-      .catch(() => {
-        if (!cancelled) {
-          toast({
-            title: isAr ? "خطأ" : "Error",
-            description: isAr ? "تعذر تحميل تفاصيل الوظيفة." : "Could not load job details.",
-            variant: "destructive",
-          });
+
+    const loadJob = async () => {
+      if (jobId && /^[0-9a-fA-F]{24}$/.test(jobId)) {
+        setJobLoading(true);
+        setJobError(false);
+        try {
+          const data = await getJobById(jobId);
+          if (cancelled) return;
+          if (data) {
+            const posting = data as JobPosting;
+            setJobRecord(posting);
+            setJob(mapJobPostingToDetail(posting, isAr));
+          } else {
+            setJobError(true);
+          }
+        } catch {
+          if (!cancelled) {
+            setJobError(true);
+            toast({
+              title: isAr ? "خطأ" : "Error",
+              description: isAr ? "تعذر تحميل تفاصيل الوظيفة." : "Could not load job details.",
+              variant: "destructive",
+            });
+          }
+        } finally {
+          if (!cancelled) setJobLoading(false);
         }
-      } catch {
-        // fall through
+        return;
       }
 
-      // Final fallback: static list by numeric index
-      const idx = isNaN(numericIndex) ? 0 : Math.min(numericIndex, staticFallbackJobs.length - 1);
-      setJobRecord(staticFallbackJobs[idx] ?? staticFallbackJobs[0]);
-      setJobLoading(false);
+      const idx = Number.isNaN(jobIndex)
+        ? 0
+        : Math.min(Math.max(jobIndex, 0), openPositions.length - 1);
+      if (!cancelled) {
+        setJobRecord(null);
+        setJob(mapFallbackToDetail(openPositions[idx] ?? openPositions[0]));
+        setJobError(false);
+        setJobLoading(false);
+      }
     };
-  }, [jobId, isAr]);
 
-  useEffect(() => {
-    if (apiJobData) {
-      setJob(mapJobPostingToDetail(apiJobData, isAr));
-    }
-  }, [apiJobData, isAr]);
+    void loadJob();
+    return () => {
+      cancelled = true;
+    };
+  }, [jobId, jobIndex, isAr]);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!jobRecord) return;

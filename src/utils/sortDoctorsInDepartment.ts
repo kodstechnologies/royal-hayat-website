@@ -1,17 +1,24 @@
 import type { Doctor } from "@/data/loadDoctors";
 
-const ANESTHESIA_DEPARTMENTS = new Set(["Anesthesia", "Anesthesia & Intensive Care"]);
+const TITLE_PREFIX = /^(?:dr|prof|professor)\.?\s+/i;
 
-const stripTitlePrefix = (name: string) =>
-  name.replace(/^(dr|prof|professor)\.?\s+/i, "").trim();
+export const stripDoctorTitlePrefix = (name: string): string => {
+  let result = String(name ?? "").trim();
+
+  while (TITLE_PREFIX.test(result)) {
+    result = result.replace(TITLE_PREFIX, "").trim();
+  }
+
+  return result;
+};
 
 export const getDoctorSortKey = (
   doc: Pick<Doctor, "name" | "nameAr">,
-  deptName: string,
+  _deptName: string,
   lang: "en" | "ar",
 ): string => {
   const name = lang === "ar" ? doc.nameAr : doc.name;
-  return ANESTHESIA_DEPARTMENTS.has(deptName) ? stripTitlePrefix(name) : name;
+  return stripDoctorTitlePrefix(name);
 };
 
 export const sortDoctorsInDepartment = (
@@ -21,9 +28,11 @@ export const sortDoctorsInDepartment = (
 ): Doctor[] => {
   const locale = lang === "ar" ? "ar" : "en";
   return [...docs].sort((a, b) =>
-    getDoctorSortKey(a, deptName, lang).localeCompare(
-      getDoctorSortKey(b, deptName, lang),
-      locale,
-    ),
+    getDoctorSortKey(a, deptName, lang).localeCompare(getDoctorSortKey(b, deptName, lang), locale, {
+      sensitivity: "base",
+    }),
   );
 };
+
+export const sortDoctorsAlphabetically = (docs: Doctor[], lang: "en" | "ar"): Doctor[] =>
+  sortDoctorsInDepartment(docs, "", lang);

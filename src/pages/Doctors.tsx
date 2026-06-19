@@ -15,7 +15,7 @@ import { resolveDoctorTaglines } from "@/data/doctorTaglines";
 import { mapApiDepartmentsToDisplay } from "@/utils/mapApiDepartment";
 import { Input } from "@/components/ui/input";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
-import { sortDoctorsInDepartment } from "@/utils/sortDoctorsInDepartment";
+import { sortDoctorsAlphabetically, sortDoctorsInDepartment } from "@/utils/sortDoctorsInDepartment";
 import { getDoctorCarouselScrollState, scrollDoctorCarousel, scrollDoctorCarouselToStart, syncDoctorCarouselIndex } from "@/utils/doctorCarousel";
 import { filterDoctorsBySearch } from "@/utils/doctorSearch";
 
@@ -329,8 +329,8 @@ const Doctors = () => {
   const searchResults = useMemo(() => {
     const query = searchQuery.trim();
     if (!query) return [];
-    return filterDoctorsBySearch(allDoctors, query);
-  }, [allDoctors, searchQuery]);
+    return sortDoctorsAlphabetically(filterDoctorsBySearch(allDoctors, query), lang);
+  }, [allDoctors, searchQuery, lang]);
   const isSearching = searchQuery.trim().length > 0;
   const locale = lang === "ar" ? "ar" : "en";
   const sortedGroupedEntries = useMemo(() => {

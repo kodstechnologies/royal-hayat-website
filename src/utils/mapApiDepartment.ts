@@ -93,7 +93,7 @@ export function mapApiDepartmentRow(
   if (!OID.test(mongoId)) return null;
 
   const name = String(row.name ?? "").trim();
-  if (!name || name === "Allergy & Immunology") return null;
+  if (!name || name === "Allergy & Immunology" || /^nutricare$/i.test(name)) return null;
 
   const departmentId =
     typeof row.departmentId === "string" ? row.departmentId.trim() : undefined;
@@ -166,11 +166,11 @@ export function mapCategoriesToDisplaySections(
   );
 
   const sections = categories
-    .map((category) => {
-      const activeRows = (category.departments ?? [])
+    .map((category): CategoryDisplaySection | null => {
+      const activeRows: DepartmentListItem[] = (category.departments ?? [])
         .filter((dep) => dep.isActive !== false)
-        .map((dep) => ({
-          ...(dep as Record<string, unknown>),
+        .map((dep): DepartmentListItem => ({
+          ...dep,
           catagory: {
             _id: category._id,
             name: category.name,
@@ -178,7 +178,7 @@ export function mapCategoriesToDisplaySections(
           },
         }));
 
-      const departments = mapApiDepartmentsToDisplay(activeRows as DepartmentListItem[]);
+      const departments = mapApiDepartmentsToDisplay(activeRows);
       if (departments.length === 0) return null;
 
       const knownMain = normalizeMainCategory(category.name, category.arabicName ?? "");
@@ -190,7 +190,7 @@ export function mapCategoriesToDisplaySections(
         sectionKey: category._id || category.name,
         label: staticMeta?.label ?? category.name,
         labelAr: staticMeta?.labelAr ?? category.arabicName ?? category.name,
-        mainCategory: knownMain,
+        ...(knownMain ? { mainCategory: knownMain } : {}),
         departments,
       };
     })

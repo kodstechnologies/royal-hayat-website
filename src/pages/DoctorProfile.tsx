@@ -6,7 +6,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { loadDoctorById, type Doctor } from "@/data/loadDoctors";
-import { departments, deptDoctorAliases } from "@/data/departments";
+import { departments, deptDoctorAliases, shouldShowDoctorBookingUI } from "@/data/departments";
 import { fetchDoctorProfileById, isMongoDoctorId } from "@/api/doctors";
 import {
   createDoctorFeedbackByName,
@@ -323,10 +323,7 @@ const DoctorProfile = () => {
   const isRequestOnlyDoctor = doctor.hideBooking === true || doctor.availableOnline === false;
   const isOnlineAvailable = !isRequestOnlyDoctor;
   const canBookSlot = bookingReturnState?.canBookSlot ?? isOnlineAvailable;
-  const hideRequestAppointmentButton = [
-    "dr-mirvat-sameer-ghanem",
-    "dr-mustafa-alfiki",
-  ].includes(doctor.id);
+  const showBookingUI = shouldShowDoctorBookingUI(doctor);
   const inferredDept = departments.find((d) => {
     const aliases = deptDoctorAliases[d.name] || [d.name];
     return aliases.some((a) => doctor.department.includes(a) || doctor.specialty.includes(a));
@@ -377,7 +374,7 @@ const DoctorProfile = () => {
                   </p>
                   <h1 className="text-2xl font-serif font-bold text-foreground mb-1">{getDoctorDisplayName(doctor, lang)}</h1>
                   <p className="text-muted-foreground font-body text-sm mb-5 whitespace-pre-line text-start">{lang === "ar" ? doctor.titleAr : doctor.title}</p>
-                  {doctor.hideBooking !== true && !hideRequestAppointmentButton && (
+                  {showBookingUI && (
                     <div
                       className={`flex items-center gap-1.5 mb-4 justify-center ${doctor.availableOnline !== false ? "text-green-600" : "text-destructive"}`}
                     >
@@ -389,7 +386,7 @@ const DoctorProfile = () => {
                       </span>
                     </div>
                   )}
-                  {fromBooking ? (
+                  {showBookingUI && (fromBooking ? (
                     canBookSlot ? (
                       <motion.button
                         whileHover={{ scale: 1.03 }}
@@ -399,7 +396,7 @@ const DoctorProfile = () => {
                       >
                         {lang === "ar" ? "احجز الموعد" : "Continue with the appointment"}
                       </motion.button>
-                    ) : hideRequestAppointmentButton ? null : (
+                    ) : (
                       <motion.button
                         whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.97 }}
@@ -418,7 +415,7 @@ const DoctorProfile = () => {
                     >
                       {t("bookAppointment")}
                     </motion.button>
-                  ) : hideRequestAppointmentButton ? null : (
+                  ) : (
                     <motion.button
                       whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.97 }}
@@ -427,7 +424,7 @@ const DoctorProfile = () => {
                     >
                       {lang === "ar" ? "طلب موعد" : "Request Appointment"}
                     </motion.button>
-                  )}
+                  ))}
                 </div>
               </motion.div>
             </div>

@@ -154,15 +154,8 @@ export function mapApiDoctorRowToDoctor(
     departmentId = depRaw;
   }
 
-  const subs = Array.isArray(row.subspecialities)
-    ? (row.subspecialities as string[]).filter(Boolean)
-    : [];
-  const subsAr = Array.isArray(row.subspecialitiesAr)
-    ? (row.subspecialitiesAr as string[]).filter(Boolean)
-    : subs;
-
-  const specialty = String(row.specialty ?? subs[0] ?? resolvedDeptEn ?? "");
-  const specialtyAr = String(row.specialtyAr ?? subsAr[0] ?? resolvedDeptAr ?? specialty);
+  const specialty = String(row.specialty ?? resolvedDeptEn ?? "");
+  const specialtyAr = String(row.specialtyAr ?? resolvedDeptAr ?? specialty);
 
   const title = String(row.title ?? "");
   const titleAr = String(row.titleAr ?? title);

@@ -10,7 +10,7 @@ import { fetchAllDoctorsByDepartment } from "@/api/doctors";
 import { fetchAllDepartmentsPages } from "@/api/department";
 import type { Doctor } from "@/types/doctor";
 import { MAIN_CATEGORIES, type MainCategory } from "@/types/department";
-import { deptDoctorAliases } from "@/data/departments";
+import { deptDoctorAliases, shouldShowDoctorBookingUI } from "@/data/departments";
 import { resolveDoctorTaglines } from "@/data/doctorTaglines";
 import { mapApiDepartmentsToDisplay } from "@/utils/mapApiDepartment";
 import { Input } from "@/components/ui/input";
@@ -60,13 +60,13 @@ const DoctorCard = memo(({ doc }: { doc: Doctor }) => {
               isAr ? "" : "uppercase"
             }`}
           >
-            {isAr ? doc.specialtyAr : doc.specialty}
+            {isAr ? doc.departmentAr || doc.specialtyAr : doc.department || doc.specialty}
           </p>
           <h3 className="text-[1.2rem] font-serif font-bold text-foreground mb-1 w-full">{displayName}</h3>
           <p className="text-muted-foreground font-body text-xs mb-3 w-full">
             {isAr ? doc.titleAr : doc.title}
           </p>
-          {doc.hideBooking !== true && (
+          {shouldShowDoctorBookingUI(doc) && (
             <div
               className={`flex items-center gap-1.5 mb-2 w-full ${
                 doc.availableOnline !== false ? "text-green-600" : "text-destructive"

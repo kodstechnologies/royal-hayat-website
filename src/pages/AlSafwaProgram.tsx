@@ -11,9 +11,9 @@ import MedicalRecordDatePicker from "@/components/MedicalRecordDatePicker";
 import { Crown, Star, Target, Stethoscope, ClipboardList, Briefcase, UserPlus, CheckCircle2, X, ChevronDown, ArrowLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { toast } from "@/hooks/use-toast";
+// import { toast } from "@/hooks/use-toast";
 import { createAlSafwaEnrollment } from "../api/alSafwa";
-import axios from "axios";
+// import axios from "axios";
 
 const CURRENT_YEAR = new Date().getFullYear();
 const DOB_FROM_YEAR = CURRENT_YEAR - 100;
@@ -51,12 +51,10 @@ const EnrollmentModal = ({ isOpen, onClose, t, isAr, onSuccess }: { isOpen: bool
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!dateOfBirth || !preferredAppointmentDate) {
-      toast({
-        title: isAr ? "خطأ" : "Error",
+      toast.error(isAr ? "خطأ" : "Error", {
         description: isAr
           ? "يرجى اختيار تاريخ الميلاد والتاريخ المفضل للموعد."
           : "Please select date of birth and preferred appointment date.",
-        variant: "destructive",
       });
       return;
     }
@@ -86,10 +84,8 @@ const EnrollmentModal = ({ isOpen, onClose, t, isAr, onSuccess }: { isOpen: bool
         firstName: "",
         familyName: "",
         gender: "",
-        dateOfBirth: "",
         mobile: "",
         email: "",
-        preferredAppointmentDate: "",
         previousMedicalCheckup: "",
         diabetes: "",
         highCholesterol: "",
@@ -100,6 +96,8 @@ const EnrollmentModal = ({ isOpen, onClose, t, isAr, onSuccess }: { isOpen: bool
         smoker: "",
         alcohol: "",
       });
+      setDateOfBirth(undefined);
+      setPreferredAppointmentDate(undefined);
       setTimeout(() => {
         setIsSuccess(false);
         onSuccess();

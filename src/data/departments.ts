@@ -251,6 +251,27 @@ export const ROYALE_HAYAT_PHARMACY_DOCTOR_IDS = [
 export const CLINICAL_PHARMACY_DOCTOR_IDS = [
   "dr-mustafa-alfiki",
 ] as const;
+export const PHARMACY_NON_BOOKABLE_DEPARTMENTS = [
+  "Clinical Pharmacy",
+  "Royale Hayat Pharmacy",
+] as const;
+export function isPharmacyNonBookableDoctor(
+  doc: { department?: string; specialty?: string },
+): boolean {
+  const department = String(doc.department ?? "").trim();
+  const specialty = String(doc.specialty ?? "").trim();
+  return PHARMACY_NON_BOOKABLE_DEPARTMENTS.some((deptName) => {
+    if (department === deptName) return true;
+    const aliases = deptDoctorAliases[deptName] ?? [];
+    return aliases.some((alias) => department === alias || specialty === alias);
+  });
+}
+export function shouldShowDoctorBookingUI(
+  doc: { department?: string; specialty?: string; hideBooking?: boolean },
+): boolean {
+  if (doc.hideBooking === true) return false;
+  return !isPharmacyNonBookableDoctor(doc);
+}
 export const PAIN_MANAGEMENT_DOCTOR_IDS = [
   "dr-hamid-ghaderi",
 ] as const;

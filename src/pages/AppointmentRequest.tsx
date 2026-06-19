@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-// import { createAppointmentRequest } from "@/api/appointmentRequest";
+import { createAppointmentRequest } from "@/api/appointmentRequest";
 import { toast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { ClipboardList, CheckCircle2, ArrowRight, ArrowLeft, User, Phone, Calendar } from "lucide-react";
@@ -126,7 +126,7 @@ const AppointmentRequest = () => {
       await createAppointmentRequest({
         fullname: form.fullName.trim(),
         phone: `${form.countryCode}${form.phone.trim()}`,
-        requestType: APPOINTMENT_REQUEST_TYPES.DOCTOR_UNAVAILABILITY,
+        requestType,
         dob: form.dateOfBirth,
         gender: form.gender,
         doctor: prefilledDoctor
@@ -147,7 +147,6 @@ const AppointmentRequest = () => {
           .filter(Boolean)
           .join(". ") || undefined,
         symptoms,
-        requestType,
       });
       setSubmitted(true);
     } catch (error) {

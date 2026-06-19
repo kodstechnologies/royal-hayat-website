@@ -276,6 +276,16 @@ const JobApplication = () => {
                 items={job.specializedKnowledge}
                 isAr={isAr}
               />
+              <p className="mt-2 pt-6 border-t border-border/50 text-sm font-body text-muted-foreground leading-relaxed">
+                Conditions: This job description is subject to periodic review and may be changed at
+                any time by authorized personnel. Please share your updated resume to{" "}
+                <a
+                  href="mailto:hr@royalehayat.com"
+                  className="text-primary hover:text-accent transition-colors"
+                >
+                  hr@royalehayat.com
+                </a>
+              </p>
             </div>
             <div className="lg:col-span-1 space-y-6">
               <div className="space-y-3">

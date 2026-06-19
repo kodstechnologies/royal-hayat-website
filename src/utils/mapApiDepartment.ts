@@ -15,7 +15,9 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { DepartmentListItem } from "@/api/department";
+import type { ApiCategoryWithNested } from "@/api/catagory";
 import type { Department, MainCategory } from "@/types/department";
+import { MAIN_CATEGORIES } from "@/types/department";
 import { departmentSlug } from "@/pages/book-appointment/utils";
 
 const OID = /^[0-9a-fA-F]{24}$/i;
@@ -26,8 +28,38 @@ const API_CATEGORY_TO_MAIN: Record<string, MainCategory> = {
   "HOME CARE SERVICE": "Home Care Service",
 };
 
-function normalizeMainCategory(categoryName: string): MainCategory | undefined {
-  return API_CATEGORY_TO_MAIN[categoryName.trim().toUpperCase()];
+const CATEGORY_ALIASES_TO_MAIN: Record<string, MainCategory> = {
+  "clinical speciality": "Clinical Speciality",
+  "clinical support service": "Clinical Support Service",
+  "home care service": "Home Care Service",
+};
+
+const ARABIC_CATEGORY_TO_MAIN: Record<string, MainCategory> = {
+  "التخصصات السريرية": "Clinical Speciality",
+  "التخصصات الطبية": "Clinical Speciality",
+  "خدمات الدعم السريري": "Clinical Support Service",
+  "الخدمات الطبية الداعمة": "Clinical Support Service",
+  "خدمات الرعاية المنزلية": "Home Care Service",
+};
+
+function normalizeMainCategory(
+  categoryName: string,
+  arabicCategoryName = "",
+): MainCategory | undefined {
+  const trimmed = categoryName.trim();
+  if (trimmed) {
+    const upper = trimmed.toUpperCase();
+    if (API_CATEGORY_TO_MAIN[upper]) return API_CATEGORY_TO_MAIN[upper];
+    const lower = trimmed.toLowerCase();
+    if (CATEGORY_ALIASES_TO_MAIN[lower]) return CATEGORY_ALIASES_TO_MAIN[lower];
+  }
+
+  const arabic = arabicCategoryName.trim();
+  if (arabic && ARABIC_CATEGORY_TO_MAIN[arabic]) {
+    return ARABIC_CATEGORY_TO_MAIN[arabic];
+  }
+
+  return undefined;
 }
 
 function inferDepartmentIcon(name: string): LucideIcon {
@@ -67,11 +99,17 @@ export function mapApiDepartmentRow(
 
   const cat = row.catagory;
   let apiCategoryName = "";
-  if (cat && typeof cat === "object" && cat !== null && "name" in cat) {
-    apiCategoryName = String((cat as { name?: string }).name ?? "").trim();
+  let apiCategoryArabicName = "";
+  if (cat && typeof cat === "object" && cat !== null) {
+    if ("name" in cat) {
+      apiCategoryName = String((cat as { name?: string }).name ?? "").trim();
+    }
+    if ("arabicName" in cat) {
+      apiCategoryArabicName = String((cat as { arabicName?: string }).arabicName ?? "").trim();
+    }
   }
 
-  const mainCategory = normalizeMainCategory(apiCategoryName);
+  const mainCategory = normalizeMainCategory(apiCategoryName, apiCategoryArabicName);
   const deptTagline = String(row.deptTagline ?? "").trim();
   const deptTaglineArabic = String(row.deptTaglineArabic ?? "").trim();
   const desc = deptTagline || String(row.description ?? "").trim();
@@ -108,4 +146,59 @@ export function mapApiDepartmentsToDisplay(rows: DepartmentListItem[]): Departme
   return sortedRows
     .map((row, index) => mapApiDepartmentRow(row as Record<string, unknown>, index))
     .filter((dept): dept is Department => dept !== null);
+}
+
+export type CategoryDisplaySection = {
+  sectionKey: string;
+  label: string;
+  labelAr: string;
+  mainCategory?: MainCategory;
+  departments: Department[];
+};
+
+/** Map API categories → UI sections (one block per category, departments nested inside). */
+export function mapCategoriesToDisplaySections(
+  categories: ApiCategoryWithNested[],
+): CategoryDisplaySection[] {
+  const mainCategoryOrder = new Map(
+    MAIN_CATEGORIES.map((category, index) => [category.key, index]),
+  );
+
+  const sections = categories
+    .map((category) => {
+      const activeRows = (category.departments ?? [])
+        .filter((dep) => dep.isActive !== false)
+        .map((dep) => ({
+          ...(dep as Record<string, unknown>),
+          catagory: {
+            _id: category._id,
+            name: category.name,
+            arabicName: category.arabicName ?? "",
+          },
+        }));
+
+      const departments = mapApiDepartmentsToDisplay(activeRows as DepartmentListItem[]);
+      if (departments.length === 0) return null;
+
+      const knownMain = normalizeMainCategory(category.name, category.arabicName ?? "");
+      const staticMeta = knownMain
+        ? MAIN_CATEGORIES.find((item) => item.key === knownMain)
+        : undefined;
+
+      return {
+        sectionKey: category._id || category.name,
+        label: staticMeta?.label ?? category.name,
+        labelAr: staticMeta?.labelAr ?? category.arabicName ?? category.name,
+        mainCategory: knownMain,
+        departments,
+      };
+    })
+    .filter((section): section is CategoryDisplaySection => section !== null);
+
+  return sections.sort((a, b) => {
+    const orderA = a.mainCategory ? (mainCategoryOrder.get(a.mainCategory) ?? 99) : 100;
+    const orderB = b.mainCategory ? (mainCategoryOrder.get(b.mainCategory) ?? 99) : 100;
+    if (orderA !== orderB) return orderA - orderB;
+    return a.label.localeCompare(b.label);
+  });
 }

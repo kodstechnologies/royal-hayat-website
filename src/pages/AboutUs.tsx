@@ -1,4 +1,4 @@
-import Header from "@/components/Header";
+﻿import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
@@ -6,10 +6,17 @@ import ChairmanMessage from "@/components/ChairmanMessage";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Heart, Star, Sparkles, Shield, Target, BookOpen, Users, ChevronDown, ChevronUp } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Link } from "react-router-dom";
-const leaders = [
+import {
+  getAllLeadership,
+  mapLeadershipToDisplay,
+  type LeaderDisplay,
+  type LeadershipItem,
+} from "@/api/leadership";
+
+const staticLeaders = [
   {
     initials: "SA",
     nameEn: "Dr. Sulaiman Al Mazeedi",
@@ -147,14 +154,30 @@ const leaders = [
     image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a22fff4c88e2e7932620105/1780678709265-marta.png",
   },
 ];
-const LeaderCard = ({ leader, lang }: { leader: typeof leaders[0] & { image?: string }; lang: string }) => {
+const mapStaticLeaderToDisplay = (leader: (typeof staticLeaders)[number]): LeaderDisplay => ({
+  key: leader.nameEn,
+  initials: leader.initials,
+  nameEn: leader.nameEn,
+  nameAr: leader.nameAr,
+  roleEn: leader.roleEn,
+  roleAr: leader.roleAr,
+  credentialsEn: leader.credentialsEn,
+  credentialsAr: leader.credentialsAr,
+  credentialsAfterRole: leader.credentialsAfterRole,
+  bioEn: leader.bioEn,
+  bioAr: leader.bioAr,
+  image: leader.image,
+});
+
+const LeaderCard = ({ leader, lang }: { leader: LeaderDisplay; lang: string }) => {
   const { t } = useLanguage();
   const [expanded, setExpanded] = useState(false);
   const name = lang === "ar" ? leader.nameAr : leader.nameEn;
   const role = lang === "ar" ? leader.roleAr : leader.roleEn;
+  const roles = role.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
   const credentials = lang === "ar" ? leader.credentialsAr : leader.credentialsEn;
   const bio = lang === "ar" ? leader.bioAr : leader.bioEn;
-  const roles = role.split("\n");
+  const displayInitials = leader.initials;
   const mobileImageOverride: Record<string, string> = {
     "Dr. Abubakr Elmardi": "",
     "Dr. Sulaiman Al Mazeedi": "",
@@ -175,27 +198,15 @@ const LeaderCard = ({ leader, lang }: { leader: typeof leaders[0] & { image?: st
     >
       <div className="flex flex-col md:flex-row">
         <div className="md:w-64 flex-shrink-0 bg-primary/5 flex items-center justify-center p-8 md:p-10">
-          <div className={`w-44 h-44 md:w-60 md:h-60 rounded-2xl flex items-center justify-center border-4 border-primary/20 overflow-hidden ${leader.nameEn === "Shibu Thomas Mathew" ? "bg-white" : "bg-primary/10"}`}>
+          <div className={`w-44 h-44 md:w-60 md:h-60 rounded-2xl flex items-center justify-center border-4 border-primary/20 overflow-hidden ${leader.image ? "bg-white" : "bg-primary/10"}`}>
             {leader.image ? (
-              mobileOverrideSrc || desktopOverrideSrc ? (
-                <picture>
-                  {mobileOverrideSrc ? <source media="(max-width: 767px)" srcSet={mobileOverrideSrc} /> : null}
-                  {desktopOverrideSrc ? <source media="(min-width: 768px)" srcSet={desktopOverrideSrc} /> : null}
-                  <img
-                    src={leader.image}
-                    alt={name}
-                    className="w-full h-full object-contain md:object-cover md:object-top bg-white"
-                  />
-                </picture>
-              ) : (
-                <img
-                  src={leader.image}
-                  alt={name}
-                  className="w-full h-full object-contain md:object-cover md:object-top bg-white"
-                />
-              )
+              <img
+                src={leader.image}
+                alt={name}
+                className="w-full h-full object-contain md:object-cover md:object-top bg-white"
+              />
             ) : (
-              <span className="text-4xl md:text-5xl font-serif text-primary">{leader.initials}</span>
+              <span className="text-4xl md:text-5xl font-serif text-primary">{displayInitials}</span>
             )}
           </div>
         </div>
@@ -264,9 +275,40 @@ const AboutUs = () => {
   const section = searchParams.get("section");
   const showAll = !section;
   const show = (s: string) => showAll || section === s;
+  const [apiLeaders, setApiLeaders] = useState<LeadershipItem[] | null>(null);
+  const [apiLoaded, setApiLoaded] = useState(false);
+
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, [section]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    getAllLeadership()
+      .then((items) => {
+        if (!cancelled) setApiLeaders(items);
+      })
+      .catch((error) => {
+        console.error("Failed to load leadership team:", error);
+        if (!cancelled) setApiLeaders([]);
+      })
+      .finally(() => {
+        if (!cancelled) setApiLoaded(true);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const displayLeaders = useMemo(() => {
+    if (apiLoaded && apiLeaders && apiLeaders.length > 0) {
+      return apiLeaders.map(mapLeadershipToDisplay);
+    }
+    return staticLeaders.map(mapStaticLeaderToDisplay);
+  }, [apiLoaded, apiLeaders]);
+
   const values = [
     { icon: Heart, titleKey: "patientCenteredCare", descKey: "patientCenteredCareDesc" },
     { icon: Heart, titleKey: "compassion", descKey: "compassionDesc" },
@@ -480,8 +522,8 @@ const AboutUs = () => {
             </div>
           </ScrollAnimationWrapper>
           <div className="max-w-5xl mx-auto space-y-6">
-            {leaders.map((leader) => (
-              <LeaderCard key={leader.nameEn} leader={leader} lang={lang} />
+            {displayLeaders.map((leader) => (
+              <LeaderCard key={leader.key} leader={leader} lang={lang} />
             ))}
           </div>
         </div>

@@ -4,11 +4,14 @@ import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { fetchAllDepartmentsPages, getDepartmentSubspecialitiesAndDoctors } from "@/api/department";
+import { getDepartmentSubspecialitiesAndDoctors } from "@/api/department";
+import { getCatagoriesWithDepartmentsAndDoctors } from "@/api/catagory";
 import type { Department } from "@/types/department";
-import { MAIN_CATEGORIES } from "@/types/department";
 import type { Doctor } from "@/types/doctor";
-import { mapApiDepartmentsToDisplay } from "@/utils/mapApiDepartment";
+import {
+  mapCategoriesToDisplaySections,
+  type CategoryDisplaySection,
+} from "@/utils/mapApiDepartment";
 import {
   filterDepartmentDoctors,
   getDepartmentCardCacheKey,
@@ -66,6 +69,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [selectedSubByDept, setSelectedSubByDept] = useState<Record<number, string>>({});
   const [departments, setDepartments] = useState<Department[]>([]);
+  const [categorySections, setCategorySections] = useState<CategoryDisplaySection[]>([]);
   const [departmentsLoading, setDepartmentsLoading] = useState(true);
   const [departmentsError, setDepartmentsError] = useState("");
   const doctorScrollRef = useRef<HTMLDivElement>(null);
@@ -79,13 +83,16 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
     let cancelled = false;
     setDepartmentsLoading(true);
     setDepartmentsError("");
-    void fetchAllDepartmentsPages({ isActive: true })
-      .then((rows) => {
+    void getCatagoriesWithDepartmentsAndDoctors()
+      .then((categories) => {
         if (cancelled) return;
-        setDepartments(mapApiDepartmentsToDisplay(rows));
+        const sections = mapCategoriesToDisplaySections(categories);
+        setCategorySections(sections);
+        setDepartments(sections.flatMap((section) => section.departments));
       })
       .catch(() => {
         if (!cancelled) {
+          setCategorySections([]);
           setDepartments([]);
           setDepartmentsError("Failed to load departments.");
         }
@@ -223,15 +230,23 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
       },
     });
   };
-  const filteredDepts = departments.filter(dept => {
-    const query = searchQuery.toLowerCase();
-    return (
-      dept.name.toLowerCase().includes(query) ||
-      dept.nameAr.toLowerCase().includes(query) ||
-      dept.desc.toLowerCase().includes(query) ||
-      dept.descAr.toLowerCase().includes(query)
-    );
-  });
+  const filteredSections = useMemo(() => {
+    const query = searchQuery.toLowerCase().trim();
+    if (!query) return categorySections;
+
+    return categorySections
+      .map((section) => ({
+        ...section,
+        departments: section.departments.filter(
+          (dept) =>
+            dept.name.toLowerCase().includes(query) ||
+            dept.nameAr.toLowerCase().includes(query) ||
+            dept.desc.toLowerCase().includes(query) ||
+            dept.descAr.toLowerCase().includes(query),
+        ),
+      }))
+      .filter((section) => section.departments.length > 0);
+  }, [categorySections, searchQuery]);
   const scrollDoctors = (direction: "left" | "right") => {
     if (doctorScrollRef.current) {
       scrollDoctorCarousel(doctorScrollRef.current, direction);
@@ -336,20 +351,17 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
           <p className="text-center text-muted-foreground font-body">{departmentsError}</p>
         )}
         <div className="space-y-14">
-          {MAIN_CATEGORIES.map((cat) => {
-            const catDepts = filteredDepts.filter(d => d.mainCategory === cat.key);
-            if (catDepts.length === 0) return null;
-            return (
-              <div key={cat.key}>
+          {filteredSections.map((section) => (
+              <div key={section.sectionKey}>
                 <div className="flex items-center gap-4 mb-6">
                   <div className="h-px flex-1 bg-border/50" />
                   <h3 className="text-base md:text-lg font-body font-bold tracking-[0.2em] md:tracking-[0.25em] uppercase text-accent whitespace-nowrap px-1">
-                    {lang === "ar" ? cat.labelAr : cat.label}
+                    {lang === "ar" ? section.labelAr : section.label}
                   </h3>
                   <div className="h-px flex-1 bg-border/50" />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
-                  {catDepts.map((dept) => {
+                  {section.departments.map((dept) => {
                     const origIdx = getOriginalIndex(dept);
                     const isExpanded = openIndex === origIdx;
                     const cardData = deptCardCache[getDepartmentCardCacheKey(dept)];
@@ -583,9 +595,8 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                   })}
                 </div>
               </div>
-            );
-          })}
-          {filteredDepts.length === 0 && (
+            ))}
+          {filteredSections.length === 0 && !departmentsLoading && !departmentsError && (
             <div className="text-center py-20">
               <p className="text-muted-foreground font-body">{lang === "ar" ? "لم يتم العثور على أقسام تطابق بحثك." : "No departments found matching your search."}</p>
             </div>

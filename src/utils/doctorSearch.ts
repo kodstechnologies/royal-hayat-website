@@ -5,6 +5,9 @@ export type DoctorSearchFields = {
   specialtyAr: string;
   department: string;
   departmentAr: string;
+  title?: string;
+  titleAr?: string;
+  symptoms?: string[];
 };
 
 const TATWEEL = /\u0640/g;
@@ -40,8 +43,34 @@ const buildDoctorSearchHaystack = (doctor: DoctorSearchFields): string =>
       doctor.specialtyAr,
       doctor.department,
       doctor.departmentAr,
+      doctor.title,
+      doctor.titleAr,
+      ...(doctor.symptoms ?? []),
     ].join(" "),
   );
+
+const extractCombinedInitials = (text: string): string =>
+  text
+    .split(/[\s.]+/)
+    .filter(Boolean)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase();
+
+const matchesCombinedInitials = (doctor: DoctorSearchFields, query: string): boolean => {
+  const compact = query.trim().replace(/[\s.]/g, "").toUpperCase();
+  if (compact.length < 2 || !/^[\p{L}]+$/u.test(compact)) return false;
+
+  const englishInitials = extractCombinedInitials(doctor.name);
+  if (englishInitials.startsWith(compact)) return true;
+
+  if (doctor.nameAr) {
+    const arabicInitials = extractCombinedInitials(doctor.nameAr);
+    if (arabicInitials.startsWith(compact)) return true;
+  }
+
+  return false;
+};
 
 export const doctorMatchesSearch = (
   doctor: DoctorSearchFields,
@@ -49,8 +78,13 @@ export const doctorMatchesSearch = (
 ): boolean => {
   const tokens = tokenizeSearchQuery(query);
   if (tokens.length === 0) return true;
+
   const haystack = buildDoctorSearchHaystack(doctor);
-  return tokens.every((token) => haystack.includes(token));
+  if (tokens.every((token) => haystack.includes(token))) {
+    return true;
+  }
+
+  return matchesCombinedInitials(doctor, query);
 };
 
 export const filterDoctorsBySearch = <T extends DoctorSearchFields>(

@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useState } from "react";
 import axios from "axios";
+// import axios from "axios";
 import { toast } from "sonner";
 import PhoneInput from "react-phone-input-2";
 import type { CountryData } from "react-phone-input-2";
@@ -83,7 +84,7 @@ const InternationalPatient = () => {
           ? "يرجى إدخال رقم جوال صحيح."
           : "Please enter a valid mobile number.",
       );
-      return false;
+      return;
     }
 
     return true;
@@ -97,7 +98,7 @@ const InternationalPatient = () => {
         firstName: form.firstName,
         lastName: form.lastName,
         email: form.email,
-        mobile: form.mobile.replace(/\D/g, ""),
+        mobile: mobileDigits,
         address: form.address,
         country: form.country,
         comments: form.comments,
@@ -109,13 +110,13 @@ const InternationalPatient = () => {
       setMobileCountry({ countryCode: "kw", dialCode: "965" });
     } catch (error) {
       const backendMessage = axios.isAxiosError(error)
-        ? error.response?.data?.message || error.message
+        ? error.response?.data?.message || error.response?.data?.error || error.message
         : null;
       toast.error(
         backendMessage ||
           (isAr
             ? "تعذر إرسال الطلب. يرجى المحاولة مرة أخرى."
-            : "Failed to send request. Please try again."),
+            : "Failed to submit enquiry. Please try again.")
       );
     } finally {
       setIsSubmitting(false);
@@ -353,6 +354,7 @@ const InternationalPatient = () => {
                 className="w-full inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg font-body text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 <Send className="w-4 h-4" />
+                {isSubmitting ? (isAr ? "جاري الإرسال..." : "Sending...") : isAr ? "إرسال" : "Send"}
                 {isSubmitting ? (isAr ? "جاري الإرسال..." : "Sending...") : isAr ? "إرسال" : "Send"}
               </button>
             </motion.form>

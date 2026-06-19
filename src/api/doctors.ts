@@ -4,6 +4,40 @@ import type { DoctorWithClinicCode } from "@/data/doctorsWithClinicCodes";
 import { departments as staticDepts, deptDoctorAliases } from "@/data/departments";
 import { resolveDoctorArabicName } from "@/utils/doctorDisplayName";
 
+export const isMongoObjectId = (value?: string | null): value is string =>
+  Boolean(value && /^[0-9a-fA-F]{24}$/.test(value));
+
+const normalizeDoctorName = (name: string) =>
+  name.toLowerCase().replace(/^dr\.?\s*/i, "").trim();
+
+/** Resolve a doctor's MongoDB `_id` from provider code or display name. */
+export async function resolveDoctorMongoId(opts: {
+  mongoId?: string | null;
+  providerCode?: string | null;
+  name?: string | null;
+}): Promise<string | null> {
+  if (isMongoObjectId(opts.mongoId)) return opts.mongoId;
+
+  const code = opts.providerCode?.trim();
+  const targetName = opts.name ? normalizeDoctorName(opts.name) : "";
+
+  if (!code && !targetName) return null;
+
+  const doctors = await fetchAllActiveDoctors();
+
+  if (code) {
+    const byCode = doctors.find((d) => d.providerCode === code);
+    if (byCode && isMongoObjectId(byCode.id)) return byCode.id;
+  }
+
+  if (targetName) {
+    const byName = doctors.find((d) => normalizeDoctorName(d.name) === targetName);
+    if (byName && isMongoObjectId(byName.id)) return byName.id;
+  }
+
+  return null;
+}
+
 /** Distinct department ObjectIds that have at least one active doctor. */
 export async function getDoctorDepartmentIds(): Promise<string[]> {
   const res = await api.get("/api/v1/doctors/departments");
@@ -264,6 +298,34 @@ export async function fetchAllBookingDoctors(): Promise<DoctorWithClinicCode[]> 
     const totalPages = meta?.totalPages ?? page;
     if (page >= totalPages) break;
     page += 1;
+  }
+  return out;
+}
+
+/** Featured doctors for the home / medical services carousel. */
+export async function fetchFeaturedDoctors(): Promise<Doctor[]> {
+  const res = await api.get("/api/v1/featured-doctors");
+  const records = res?.data?.data;
+  if (!Array.isArray(records)) return [];
+
+  const out: Doctor[] = [];
+  for (const record of records) {
+    const doc = (record as { doctor?: unknown })?.doctor;
+    if (!doc || typeof doc !== "object") continue;
+
+    const row = doc as Record<string, unknown>;
+    if (row.isActive === false) continue;
+
+    const dep = row.department;
+    let deptName = "";
+    let deptNameAr = "";
+    if (dep && typeof dep === "object" && dep !== null && "name" in dep) {
+      const d = dep as { name?: string; arabicName?: string; nameAr?: string };
+      deptName = String(d.name ?? "");
+      deptNameAr = String(d.arabicName ?? d.nameAr ?? deptName);
+    }
+
+    out.push(mapApiDoctorRowToDoctor(row, deptName, deptNameAr));
   }
   return out;
 }

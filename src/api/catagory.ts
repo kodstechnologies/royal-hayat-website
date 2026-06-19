@@ -54,6 +54,7 @@ export type ApiDepartmentNested = {
 export type ApiCategoryWithNested = {
   _id: string;
   name: string;
+  arabicName?: string;
   departments?: ApiDepartmentNested[];
 };
 function normalizeCategoriesPayload(body: unknown): ApiCategoryWithNested[] {
@@ -76,9 +77,33 @@ function normalizeCategoriesPayload(body: unknown): ApiCategoryWithNested[] {
     return {
       _id: String(row._id ?? ""),
       name: String(row.name ?? ""),
+      arabicName: String(row.arabicName ?? ""),
       departments: Array.isArray(deps) ? (deps as ApiDepartmentNested[]) : [],
     };
   });
+}
+
+/** Flatten categories → active department rows with populated `catagory` for display mapping. */
+export function flattenCategoriesToDepartmentRows(
+  categories: ApiCategoryWithNested[],
+): Array<Record<string, unknown>> {
+  const rows: Array<Record<string, unknown>> = [];
+
+  for (const category of categories) {
+    for (const department of category.departments ?? []) {
+      if (department.isActive === false) continue;
+      rows.push({
+        ...department,
+        catagory: {
+          _id: category._id,
+          name: category.name,
+          arabicName: category.arabicName ?? "",
+        },
+      });
+    }
+  }
+
+  return rows;
 }
 export const getCatagoriesWithDepartmentsAndDoctors = async (): Promise<ApiCategoryWithNested[]> => {
   const res = await api.get("/api/v1/catagories/with-departments-doctors");

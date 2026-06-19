@@ -745,7 +745,7 @@ const BookAppointment = () => {
           fullname: patientName.trim(),
           phone: `${patientCountryCode}${patientPhone.trim()}`,
           dob: patientDob,
-          gender: patientGender,
+          gender: patientGender as "male" | "female" | "other",
           doctor: (isAr ? selectedDoctorObj?.nameAr : selectedDoctorObj?.name) || undefined,
           department:
             (isAr

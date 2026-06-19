@@ -1,20 +1,44 @@
+import { useEffect, useMemo, useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
 import LazyViewportVideo from "@/components/LazyViewportVideo";
+import ImageCarousel from "@/components/ImageCarousel";
+import { preloadCarouselImages } from "@/hooks/useCarouselPreload";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { motion } from "framer-motion";
+import { getAllCSR, type CSRItem } from "@/api/csr";
 
 const CSR_CELEBRATING_LIFE_VIDEO_URL =
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a27add7dc7a58140d561ca5/1780985629227-Celebrating_Life(CSR).mp4";
-const initiatives = [
+
+type StaticInitiative = {
+  titleKey: string;
+  dateKey: string;
+  p1Key: string;
+  p2Key: string;
+  image: string;
+  alt: string;
+};
+
+type CSRInitiativeDisplay = {
+  key: string;
+  title: string;
+  date: string;
+  paragraphs: string[];
+  images: string[];
+  alt: string;
+};
+
+const staticInitiatives: StaticInitiative[] = [
   {
     titleKey: "csrInit1Title",
     dateKey: "csrInit1Date",
     p1Key: "csrInit1P1",
     p2Key: "csrInit1P2",
-    image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a231c90f16f8c373c02c85e/1780686016335-image4.png.png",
+    image:
+      "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a231c90f16f8c373c02c85e/1780686016335-image4.png.png",
     alt: "Breast Cancer Awareness Hospital Session",
   },
   {
@@ -22,7 +46,8 @@ const initiatives = [
     dateKey: "csrInit2Date",
     p1Key: "csrInit2P1",
     p2Key: "csrInit2P2",
-    image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a231c90f16f8c373c02c85e/1780686014084-image.png.png",
+    image:
+      "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a231c90f16f8c373c02c85e/1780686014084-image.png.png",
     alt: "Breast Cancer Awareness Session at Burgan Bank",
   },
   {
@@ -30,7 +55,8 @@ const initiatives = [
     dateKey: "csrInit3Date",
     p1Key: "csrInit3P1",
     p2Key: "csrInit3P2",
-    image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a231c90f16f8c373c02c85e/1780686015581-image2.png.png",
+    image:
+      "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a231c90f16f8c373c02c85e/1780686015581-image2.png.png",
     alt: "Special Olympics Health Screening",
   },
   {
@@ -38,13 +64,109 @@ const initiatives = [
     dateKey: "csrInit4Date",
     p1Key: "csrInit4P1",
     p2Key: "csrInit4P2",
-    image: "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a231c90f16f8c373c02c85e/1780686015994-image3.png.png",
+    image:
+      "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a231c90f16f8c373c02c85e/1780686015994-image3.png.png",
     alt: "Women's Health International Conference",
   },
-] as const;
+];
+
+const mapApiCSRToDisplay = (item: CSRItem, isAr: boolean): CSRInitiativeDisplay => ({
+  key: item._id ?? item.heading,
+  title: isAr ? item.headingArabic : item.heading,
+  date: isAr ? item.subheadingArabic ?? item.subheading ?? "" : item.subheading ?? "",
+  paragraphs: isAr ? item.descriptionArabic : item.description,
+  images: (item.images ?? []).filter(Boolean),
+  alt: isAr ? item.headingArabic : item.heading,
+});
+
+const mapStaticCSRToDisplay = (
+  item: StaticInitiative,
+  t: (key: string) => string,
+): CSRInitiativeDisplay => ({
+  key: item.titleKey,
+  title: t(item.titleKey),
+  date: t(item.dateKey),
+  paragraphs: [t(item.p1Key), t(item.p2Key)],
+  images: item.image ? [item.image] : [],
+  alt: item.alt,
+});
+
+type CSRInitiativeMediaProps = {
+  images: string[];
+  alt: string;
+  isAr: boolean;
+};
+
+const CSRInitiativeMedia = ({ images, alt, isAr }: CSRInitiativeMediaProps) => {
+  const [slide, setSlide] = useState(0);
+
+  useEffect(() => {
+    setSlide(0);
+    if (images.length > 0) {
+      preloadCarouselImages(images, 0);
+    }
+  }, [images]);
+
+  if (images.length === 0) return null;
+
+  if (images.length === 1) {
+    return (
+      <div className="max-w-3xl mx-auto rounded-3xl overflow-hidden shadow-xl aspect-video bg-muted">
+        <img src={images[0]} alt={alt} className="w-full h-full object-cover" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-3xl mx-auto">
+      <ImageCarousel
+        images={images}
+        slide={slide}
+        setSlide={setSlide}
+        altForIndex={(index) => `${alt} — ${index + 1}`}
+        autoPlay
+        aspectClass="aspect-video"
+        frameClass="relative overflow-hidden rounded-3xl bg-muted shadow-xl"
+        imageClass="h-full w-full object-cover"
+        isAr={isAr}
+      />
+    </div>
+  );
+};
+
 const CSR = () => {
   const { lang, t } = useLanguage();
   const isAr = lang === "ar";
+  const [apiInitiatives, setApiInitiatives] = useState<CSRItem[] | null>(null);
+  const [apiLoaded, setApiLoaded] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    getAllCSR()
+      .then((items) => {
+        if (!cancelled) setApiInitiatives(items);
+      })
+      .catch((error) => {
+        console.error("Failed to load CSR initiatives:", error);
+        if (!cancelled) setApiInitiatives([]);
+      })
+      .finally(() => {
+        if (!cancelled) setApiLoaded(true);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const displayInitiatives = useMemo(() => {
+    if (apiLoaded && apiInitiatives && apiInitiatives.length > 0) {
+      return apiInitiatives.map((item) => mapApiCSRToDisplay(item, isAr));
+    }
+    return staticInitiatives.map((item) => mapStaticCSRToDisplay(item, t));
+  }, [apiLoaded, apiInitiatives, isAr, t]);
+
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
       <Header />
@@ -77,10 +199,14 @@ const CSR = () => {
               loadingLabel={isAr ? "جاري تحميل الفيديو…" : "Loading video…"}
             />
           </motion.div>
-          <div className={`max-w-3xl mx-auto mt-8 space-y-4 ${isAr ? "rtl-text" : ""}`}>
-            <p className="font-body text-base text-muted-foreground leading-relaxed text-justify">{t("csrAboutP2")}</p>
-            <p className="font-body text-base text-muted-foreground leading-relaxed text-justify">{t("csrAboutP3")}</p>
-            <p className={`font-serif text-xl text-primary text-center italic mt-6 ${isAr ? "rtl-text-center" : ""}`}>
+          <div className="max-w-3xl mx-auto mt-8 space-y-4">
+            <p className="font-body text-base text-muted-foreground leading-relaxed text-justify">
+              {t("csrAboutP2")}
+            </p>
+            <p className="font-body text-base text-muted-foreground leading-relaxed text-justify">
+              {t("csrAboutP3")}
+            </p>
+            <p className="font-serif text-xl text-primary text-center italic mt-6">
               {t("csrAboutTagline")}
             </p>
           </div>
@@ -89,23 +215,29 @@ const CSR = () => {
       <section className="py-16 bg-background">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto space-y-10">
-            {initiatives.map((item) => (
-              <ScrollAnimationWrapper key={item.titleKey}>
+            {displayInitiatives.map((item) => (
+              <ScrollAnimationWrapper key={item.key}>
                 <div className="relative left-1/2 right-1/2 -mx-[50vw] w-screen border-y border-border/40 bg-primary/5 px-6 py-10 md:px-8 space-y-6">
                   <div className="text-center max-w-4xl mx-auto">
                     <h3 className={`font-serif text-2xl font-bold text-foreground ${isAr ? "rtl-text-center" : ""}`}>
-                      {t(item.titleKey)}
+                      {item.title}
                     </h3>
-                    <p className={`font-body text-sm font-bold text-muted-foreground mt-2 ${isAr ? "rtl-text-center" : ""}`}>
-                      {t(item.dateKey)}
-                    </p>
+                    {item.date ? (
+                      <p className={`font-body text-sm font-bold text-muted-foreground mt-2 ${isAr ? "rtl-text-center" : ""}`}>
+                        {item.date}
+                      </p>
+                    ) : null}
                   </div>
-                  <div className="max-w-3xl mx-auto rounded-3xl overflow-hidden shadow-xl aspect-video bg-muted">
-                    <img src={item.image} alt={item.alt} className="w-full h-full object-cover" />
-                  </div>
+                  <CSRInitiativeMedia images={item.images} alt={item.alt} isAr={isAr} />
                   <div className={`max-w-3xl mx-auto space-y-4 ${isAr ? "rtl-text" : ""}`}>
-                    <p className="font-body text-base text-muted-foreground leading-relaxed text-justify">{t(item.p1Key)}</p>
-                    <p className="font-body text-base text-muted-foreground leading-relaxed text-justify">{t(item.p2Key)}</p>
+                    {item.paragraphs.map((paragraph, index) => (
+                      <p
+                        key={`${item.key}-p-${index}`}
+                        className="font-body text-base text-muted-foreground leading-relaxed text-justify"
+                      >
+                        {paragraph}
+                      </p>
+                    ))}
                   </div>
                 </div>
               </ScrollAnimationWrapper>
@@ -128,4 +260,5 @@ const CSR = () => {
     </div>
   );
 };
+
 export default CSR;

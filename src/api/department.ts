@@ -42,16 +42,26 @@ export async function fetchAllDepartmentsPages(params?: { isActive?: boolean }):
   const out: DepartmentListItem[] = [];
   let page = 1;
   const limit = 100;
+
   for (;;) {
-    const batch = await getAllDepartments({
-      page,
-      limit,
-      ...(params?.isActive !== undefined ? { isActive: params.isActive } : {}),
+    const response = await api.get("/api/v1/departments", {
+      params: {
+        page,
+        limit,
+        ...(params?.isActive !== undefined ? { isActive: params.isActive } : {}),
+      },
     });
+    const batch = Array.isArray(response?.data?.data)
+      ? (response.data.data as DepartmentListItem[])
+      : [];
+    const meta = response?.data?.meta as { pages?: number } | undefined;
+    const totalPages = meta?.pages ?? page;
+
     if (!batch.length) break;
     out.push(...batch);
-    if (batch.length < limit) break;
+    if (page >= totalPages || batch.length < limit) break;
     page += 1;
   }
+
   return out;
 }

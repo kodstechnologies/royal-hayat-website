@@ -39,7 +39,7 @@ const MedicalServices = () => {
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107]">
       <Header />
       <DepartmentsSection />
-      <DoctorsSection />
+      <DoctorsSection featuredDoctors={featuredDoctors} />
       <HomeHealthPreview />
       <Footer />
       <ScrollToTop />

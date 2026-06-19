@@ -366,6 +366,7 @@ const DoctorProfile = () => {
       },
     });
   };
+  const shouldAnimateMarquee = testimonials.length > 0;
   return (
     <div id="doctor-profile-page" className="min-h-screen bg-background pt-[var(--header-height,56px)]">
       <Header />
@@ -586,7 +587,7 @@ const DoctorProfile = () => {
           <div className={`flex gap-5 w-max hover:[animation-play-state:paused] ${lang === "ar" ? "animate-[feedbackMarqueeRtl_30s_linear_infinite]" : "animate-[feedbackMarquee_30s_linear_infinite]"}`}>
             {[...testimonials, ...testimonials].map((fb, i) => (
               <div
-                key={shouldAnimateMarquee ? `${fb.id}-${i}` : fb.id}
+                key={shouldAnimateMarquee ? `${fb.name}-${fb.date}-${i}` : `${fb.name}-${fb.date}`}
                 className="w-[220px] min-h-[200px] sm:w-[280px] sm:h-[280px] sm:min-h-0 flex-shrink-0 bg-popover rounded-xl sm:rounded-2xl border border-border/40 p-3.5 sm:p-5 flex flex-col justify-between hover:shadow-lg transition-shadow"
               >
                 <div>

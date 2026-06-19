@@ -57,7 +57,7 @@ const DoctorCard = ({ doc }: { doc: Doctor }) => {
     </Link>
   );
 };
-const DoctorsSection = ({ featuredDoctors }: { featuredDoctors: Doctor[] }) => {
+const DoctorsSection = ({ featuredDoctors = [] }: { featuredDoctors?: Doctor[] }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
   const [canScrollLeft, setCanScrollLeft] = useState(false);

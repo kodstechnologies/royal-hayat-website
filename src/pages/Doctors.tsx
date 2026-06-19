@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
 import { sortDoctorsInDepartment } from "@/utils/sortDoctorsInDepartment";
 import { getDoctorCarouselScrollState, scrollDoctorCarousel, scrollDoctorCarouselToStart, syncDoctorCarouselIndex } from "@/utils/doctorCarousel";
+import { filterDoctorsBySearch } from "@/utils/doctorSearch";
 
 
 const DoctorCard = memo(({ doc }: { doc: Doctor }) => {
@@ -327,14 +328,7 @@ const Doctors = () => {
   const searchResults = useMemo(() => {
     const query = searchQuery.trim();
     if (!query) return [];
-    return allDoctors.filter((doc) => {
-      const searchableFields = [
-        doc.name, doc.nameAr, doc.specialty, doc.specialtyAr,
-        doc.department, doc.departmentAr, doc.title, doc.titleAr,
-        ...(doc.symptoms || []),
-      ];
-      return searchableFields.some((field) => (field || "").toLowerCase().includes(query));
-    });
+    return filterDoctorsBySearch(allDoctors, query);
   }, [allDoctors, searchQuery]);
   const isSearching = searchQuery.trim().length > 0;
   const locale = lang === "ar" ? "ar" : "en";

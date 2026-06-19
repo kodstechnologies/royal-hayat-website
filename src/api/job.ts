@@ -6,15 +6,11 @@ export type JobPosting = {
   title: string;
   department?: string;
   category?: string;
-  classification?: string;
   location?: string;
-  arabicLocation?: string;
   type?: string;
   desc?: string;
   description?: string;
-  arabicDescription?: string;
   responsibilities?: string[];
-  arabicResponsibilities?: string[];
   requirements?: string[];
   educationAndLicensure?: string[];
   arabicEducationAndLicensure?: string[];
@@ -40,7 +36,7 @@ export type JobApplicationPayload = {
   email: string;
   phone: string;
   coverLetter?: string;
-  resume: File;
+  cv?: File;
 };
 export type GetJobsParams = {
   page?: number;
@@ -68,7 +64,6 @@ export const applyForJob = async (data: JobApplicationPayload) => {
   formData.append("fullName", data.fullName);
   formData.append("email", data.email);
   formData.append("phone", data.phone);
-  formData.append("resume", data.resume);
   if (data.coverLetter) formData.append("coverLetter", data.coverLetter);
   if (data.cv) formData.append("resume", data.cv);
   const response = await api.post("/api/v1/jobs/apply", formData, {

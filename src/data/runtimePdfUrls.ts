@@ -98,6 +98,7 @@ export const RUNTIME_PDF_GROUPS: RuntimePdfGroup[] = [
       { id: "night-menu-ar", label: "Night Menu QR (AR)", path: "/wp-content/uploads/2026/01/NIGHT_MENU_QR_AR.pdf" },
       { id: "night-menu-en", label: "Night Menu QR (EN)", path: "/wp-content/uploads/2026/01/NIGHT_MENU_QR_EN.pdf" },
       { id: "night-menu-ar1", label: "Night Menu QR (AR1)", path: "/wp-content/uploads/2026/01/NIGHT_MENU_QR_AR1.pdf" },
+      { id: "rhh-night-menu", label: "RHH Night Menu", path: "/wp-content/uploads/2025/11/RHH_NIGHT_Menu.pdf" },
       { id: "alliwan-qr-food", label: "Al Liwan QR Food Menu", path: "/wp-content/uploads/2026/04/Al_Liwan_QR_Food_Menu.pdf" },
       { id: "5th-floor-food", label: "RHH 5th Floor Food Menu", path: "/wp-content/uploads/2026/04/RHH_5th_Floor_Food_Menu.pdf" },
       { id: "qr-food-menu", label: "RHH QR Food Menu", path: "/wp-content/uploads/2026/04/RHH_QR_Food_Menu.pdf" },
@@ -131,6 +132,7 @@ export const RUNTIME_PDF_PATHS = {
     "/wp-content/uploads/2026/06/Clinical_Awareness_Flyers_June_2026.pdf",
   alLiwanQrFoodMenu: "/wp-content/uploads/2026/04/Al_Liwan_QR_Food_Menu.pdf",
   fifthFloorFoodMenu: "/wp-content/uploads/2026/04/RHH_5th_Floor_Food_Menu.pdf",
+  rhhNightMenu: "/wp-content/uploads/2025/11/RHH_NIGHT_Menu.pdf",
 } as const;
 
 /** @deprecated Use RUNTIME_PDF_PATHS with buildRuntimePdfUrl() */

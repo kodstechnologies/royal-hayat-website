@@ -1,4 +1,6 @@
 import { useState } from "react";
+import axios from "axios";
+import { toast } from "sonner";
 import { useNavigate, useLocation } from "react-router-dom";
 import { format } from "date-fns";
 import Header from "@/components/Header";
@@ -80,6 +82,24 @@ const EnrollmentModal = ({ isOpen, onClose, t, isAr, onSuccess }: { isOpen: bool
       });
       setIsSubmitting(false);
       setIsSuccess(true);
+      setFormData({
+        firstName: "",
+        familyName: "",
+        gender: "",
+        dateOfBirth: "",
+        mobile: "",
+        email: "",
+        preferredAppointmentDate: "",
+        previousMedicalCheckup: "",
+        diabetes: "",
+        highCholesterol: "",
+        bronchialAsthma: "",
+        hypertension: "",
+        heartDisease: "",
+        overweightObesity: "",
+        smoker: "",
+        alcohol: "",
+      });
       setTimeout(() => {
         setIsSuccess(false);
         onSuccess();
@@ -90,14 +110,12 @@ const EnrollmentModal = ({ isOpen, onClose, t, isAr, onSuccess }: { isOpen: bool
       const backendMessage = axios.isAxiosError(error)
         ? error.response?.data?.message || error.message
         : null;
-      toast({
-        title: isAr ? "خطأ" : "Error",
+      toast.error(isAr ? "خطأ" : "Error", {
         description:
           backendMessage ||
           (isAr
             ? "تعذر إرسال نموذج التسجيل. يرجى المحاولة مرة أخرى."
             : "Failed to submit enrollment form. Please try again."),
-        variant: "destructive",
       });
     }
   };

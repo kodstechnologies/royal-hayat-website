@@ -53,6 +53,7 @@ const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) =>
   const [proposedDate, setProposedDate] = useState<Date | undefined>();
   const [errors, setErrors] = useState<EventBookingErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [mobileCountry, setMobileCountry] = useState<{ countryCode: string; dialCode: string }>({
     countryCode: "kw",
     dialCode: "965",
@@ -97,6 +98,7 @@ const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) =>
   const updateField = (field: keyof EventBookingForm, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
     setErrors((prev) => ({ ...prev, [field]: undefined }));
+    setSubmitError(null);
   };
   const handleMobileChange = (value: string, country: CountryData | {}) => {
     const data = country as CountryData;
@@ -138,27 +140,22 @@ const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) =>
       const response = await createEventBooking(payload);
       toast({
         title: isAr ? "تم إرسال الطلب" : "Request Submitted",
-        description:
-          response?.message ||
-          (isAr
-            ? "تم إرسال نموذج حجز الفعالية بنجاح. سيتواصل معك فريقنا قريباً."
-            : "Your event booking form was submitted successfully. Our team will contact you soon."),
+        description: isAr
+          ? "تم إرسال نموذج حجز الفعالية بنجاح. سيتواصل معك فريقنا قريباً."
+          : "Your event booking form was submitted successfully. Our team will contact you soon.",
       });
       setForm(initialForm);
       setDueDate(undefined);
       setProposedDate(undefined);
       setErrors({});
       onClose();
-    } catch (error: unknown) {
-      const err = error as { response?: { data?: { message?: string } } };
+    } catch (error) {
+      const message = resolveSubmitErrorMessage(error);
+      setSubmitError(message);
       toast({
+        title: isAr ? "خطأ" : "Error",
+        description: message,
         variant: "destructive",
-        title: isAr ? "تعذر إرسال الطلب" : "Submission Failed",
-        description:
-          err?.response?.data?.message ||
-          (isAr
-            ? "حدث خطأ أثناء إرسال الطلب. يرجى المحاولة مرة أخرى."
-            : "Something went wrong while submitting your request. Please try again."),
       });
     } finally {
       setIsSubmitting(false);
@@ -271,6 +268,14 @@ const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) =>
               </button>
             </div>
             <form className="grid grid-cols-1 md:grid-cols-2 gap-4" onSubmit={handleSubmit}>
+              {submitError && (
+                <div
+                  role="alert"
+                  className="md:col-span-2 rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+                >
+                  {submitError}
+                </div>
+              )}
               <div>
                 <label className="block text-sm font-body text-foreground mb-1">{isAr ? "اختيار القاعة *" : "Choose your Hall *"}</label>
                 <select
@@ -415,10 +420,9 @@ const EventBookingModal = ({ isOpen, isAr, onClose }: EventBookingModalProps) =>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="h-11 px-10 rounded-full bg-primary text-primary-foreground font-body text-sm tracking-[0.18em] uppercase hover:bg-primary/90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center gap-2"
+                  className="h-11 px-10 rounded-full bg-primary text-primary-foreground font-body text-sm tracking-[0.18em] uppercase hover:bg-primary/90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
-                  {isSubmitting ? (isAr ? "جاري الإرسال..." : "Sending...") : isAr ? "إرسال" : "Send"}
+                  {isSubmitting ? (isAr ? "جاري الإرسال..." : "Sending...") : "Send"}
                 </button>
               </div>
             </form>

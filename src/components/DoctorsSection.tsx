@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { ChevronLeft, ChevronRight, Stethoscope } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -57,7 +57,7 @@ const DoctorCard = ({ doc }: { doc: Doctor }) => {
     </Link>
   );
 };
-const DoctorsSection = ({ featuredDoctors }: { featuredDoctors: Doctor[] }) => {
+const DoctorsSection = ({ featuredDoctors = [] }: { featuredDoctors?: Doctor[] }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
   const [canScrollLeft, setCanScrollLeft] = useState(false);

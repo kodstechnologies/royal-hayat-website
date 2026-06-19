@@ -241,6 +241,7 @@ const BookAppointment = () => {
   const [showAllDoctors, setShowAllDoctors] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+  const [selectedSlotTo, setSelectedSlotTo] = useState<string | null>(null);
   const [specialityCode, setSpecialityCode] = useState<string | null>(null);
   const [providerCode, setProviderCode] = useState<string | null>(null);
   const [serviceCode, setServiceCode] = useState<string>("R01-FMC001-F010");
@@ -412,6 +413,7 @@ const BookAppointment = () => {
     const d = String(date.getDate()).padStart(2, "0");
     setSelectedDate(`${y}-${m}-${d}`);
     setSelectedSlot(null);
+    setSelectedSlotTo(null);
     setSelectedSlotId(null);
     setFetchedSlots([]);
     setIsLoadingSlots(true);
@@ -745,7 +747,8 @@ const BookAppointment = () => {
               ? selectedDeptObj?.nameAr ?? selectedDoctorObj?.specialtyAr
               : selectedDeptObj?.name ?? selectedDoctorObj?.specialty) || undefined,
           date: formattedSelectedDate || selectedDate,
-          time: formatTimeString(selectedSlot) || selectedSlot || undefined,
+          slot_from_time: selectedSlot || undefined,
+          slot_to_time: selectedSlotTo || undefined,
           symptoms: collectedSymptoms.length > 0 ? collectedSymptoms : undefined,
           slotBookingId: selectedSlotId,
           verifyOperationId: paciOperationIdRef.current,
@@ -759,16 +762,19 @@ const BookAppointment = () => {
           fullname: patientName.trim(),
           phone: `${patientCountryCode}${patientPhone.trim()}`,
           dob: patientDob,
-          gender: patientGender,
+          gender: patientGender as "male" | "female" | "other",
           doctor: (isAr ? selectedDoctorObj?.nameAr : selectedDoctorObj?.name) || undefined,
           department:
             (isAr
               ? selectedDeptObj?.nameAr ?? selectedDoctorObj?.specialtyAr
               : selectedDeptObj?.name ?? selectedDoctorObj?.specialty) || undefined,
           date: formattedSelectedDate || selectedDate,
+          slot_from_time: selectedSlot || undefined,
+          slot_to_time: selectedSlotTo || undefined,
           timeSlot: {
             period: getSelectedSlotPeriod(),
-            time: formatTimeString(selectedSlot) || selectedSlot || "",
+            slot_from_time: selectedSlot || "",
+            slot_to_time: selectedSlotTo || "",
           },
           symptoms: collectedSymptoms.length > 0 ? collectedSymptoms : undefined,
           requestType:
@@ -1426,7 +1432,13 @@ Clinic Code:`;
           <div className="container mx-auto px-6 py-12 max-w-3xl">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
               className="bg-popover rounded-2xl border border-border p-8 mb-6 shadow-sm -mt-8">
-              <h3 className="font-serif text-lg text-foreground mb-5">{t("appointmentDetails")}</h3>
+              <h3 className="font-serif text-lg text-foreground mb-5">
+                {patientType === "new"
+                  ? t("appointmentDetails")
+                  : isAr
+                    ? "تفاصيل الموعد"
+                    : "Appointment Details"}
+              </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 font-body text-sm">
                 <div className="flex items-start gap-3">
                   <User className="w-5 h-5 text-accent mt-0.5" />
@@ -2030,6 +2042,7 @@ Clinic Code:`;
                                 type="button"
                                 onClick={() => {
                                   setSelectedSlot(slot.slot_from_time);
+                                  setSelectedSlotTo(slot.slot_to_time || null);
                                   setSelectedSlotId(slot.slot_booking_id);
                                   setStep(4);
                                 }}

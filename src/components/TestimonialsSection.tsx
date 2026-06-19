@@ -30,6 +30,7 @@ const TestimonialsSection = () => {
   const { lang, t } = useLanguage();
   const [hospitalFeedbacks, setHospitalFeedbacks] = useState(patientTestimonials);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -55,7 +56,7 @@ const TestimonialsSection = () => {
   }, []);
 
   return (
-    <section className="py-24 bg-popover overflow-hidden">
+    <section id="testimonials" className="py-24 bg-popover overflow-hidden">
       <div className="container mx-auto px-6">
         <ScrollAnimationWrapper>
           <div className="text-center mb-16">

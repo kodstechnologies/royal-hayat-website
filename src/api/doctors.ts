@@ -4,6 +4,40 @@ import type { DoctorWithClinicCode } from "@/data/doctorsWithClinicCodes";
 import { departments as staticDepts, deptDoctorAliases } from "@/data/departments";
 import { resolveDoctorArabicName } from "@/utils/doctorDisplayName";
 
+export const isMongoObjectId = (value?: string | null): value is string =>
+  Boolean(value && /^[0-9a-fA-F]{24}$/.test(value));
+
+const normalizeDoctorName = (name: string) =>
+  name.toLowerCase().replace(/^dr\.?\s*/i, "").trim();
+
+/** Resolve a doctor's MongoDB `_id` from provider code or display name. */
+export async function resolveDoctorMongoId(opts: {
+  mongoId?: string | null;
+  providerCode?: string | null;
+  name?: string | null;
+}): Promise<string | null> {
+  if (isMongoObjectId(opts.mongoId)) return opts.mongoId;
+
+  const code = opts.providerCode?.trim();
+  const targetName = opts.name ? normalizeDoctorName(opts.name) : "";
+
+  if (!code && !targetName) return null;
+
+  const doctors = await fetchAllActiveDoctors();
+
+  if (code) {
+    const byCode = doctors.find((d) => d.providerCode === code);
+    if (byCode && isMongoObjectId(byCode.id)) return byCode.id;
+  }
+
+  if (targetName) {
+    const byName = doctors.find((d) => normalizeDoctorName(d.name) === targetName);
+    if (byName && isMongoObjectId(byName.id)) return byName.id;
+  }
+
+  return null;
+}
+
 /** Distinct department ObjectIds that have at least one active doctor. */
 export async function getDoctorDepartmentIds(): Promise<string[]> {
   const res = await api.get("/api/v1/doctors/departments");

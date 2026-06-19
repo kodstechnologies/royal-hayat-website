@@ -1,19 +1,32 @@
-/** iOS/Android Safari and Chrome mishandle PDFs embedded in iframes — open the file directly. */
-export function isMobilePdfClient(): boolean {
+/** iOS Safari mishandles PDFs in iframes — open the stream URL directly instead. */
+export function isIOSPdfClient(): boolean {
   if (typeof navigator === "undefined") return false;
   const ua = navigator.userAgent || "";
   const platform = navigator.platform || "";
   const maxTouchPoints = navigator.maxTouchPoints || 0;
-  const isIOS =
+  return (
     /iPad|iPhone|iPod/i.test(ua) ||
-    (platform === "MacIntel" && maxTouchPoints > 1);
-  const isAndroid = /Android/i.test(ua);
-  return isIOS || isAndroid;
+    (platform === "MacIntel" && maxTouchPoints > 1)
+  );
 }
 
 export function isAndroidPdfClient(): boolean {
   if (typeof navigator === "undefined") return false;
   return /Android/i.test(navigator.userAgent || "");
+}
+
+/** iOS/Android — use platform-specific open/embed behaviour. */
+export function isMobilePdfClient(): boolean {
+  return isIOSPdfClient() || isAndroidPdfClient();
+}
+
+const RUNTIME_PDF_PATH_RE =
+  /^\/(?:Runtime\/uploads|wp-content\/uploads)\/.+\.pdf$/i;
+
+export function isRuntimePdfPath(pathOrFilename: string): boolean {
+  const trimmed = pathOrFilename.trim();
+  if (!trimmed.startsWith("/")) return false;
+  return RUNTIME_PDF_PATH_RE.test(trimmed.split("?")[0].split("#")[0]);
 }
 
 /** Relative legacy path with encoded segments, e.g. /Runtime/uploads/foo%20bar.pdf */
@@ -37,6 +50,17 @@ export function buildRuntimePdfUrl(pathOrFilename: string): string {
 }
 
 /**
+ * Best href for opening a PDF on the current device.
+ * Mobile clients skip the React iframe viewer and load the PDF stream directly.
+ */
+export function getRuntimePdfHref(pathOrFilename: string): string {
+  if (isMobilePdfClient()) {
+    return buildRuntimePdfStreamUrl(pathOrFilename);
+  }
+  return buildRuntimePdfUrl(pathOrFilename);
+}
+
+/**
  * Internal stream URL for the PDF viewer iframe — proxied via /api on the site domain.
  */
 export function buildRuntimePdfStreamUrl(pathOrFilename: string): string {
@@ -48,67 +72,26 @@ export function buildRuntimePdfStreamUrl(pathOrFilename: string): string {
   return `/api/v1/runtime-pdf-viewer/file/${encoded}`;
 }
 
-/** Best URL for the current device — direct stream on mobile, in-app viewer route on desktop. */
+/** Direct PDF stream — skips the React app so the browser shows the file immediately. */
 export function buildRuntimePdfOpenUrl(pathOrFilename: string): string {
-  if (isMobilePdfClient()) {
-    return buildRuntimePdfStreamUrl(pathOrFilename);
-  }
-  return buildRuntimePdfUrl(pathOrFilename);
+  return buildRuntimePdfStreamUrl(pathOrFilename);
 }
 
-export function buildRuntimePdfAbsoluteStreamUrl(pathOrFilename: string): string {
-  const streamPath = buildRuntimePdfStreamUrl(pathOrFilename);
-  if (typeof window !== "undefined" && window.location?.origin) {
-    return `${window.location.origin}${streamPath}`;
+/**
+ * Hard redirect before React mounts (full page load on a legacy PDF URL).
+ * Returns true when a redirect was started.
+ */
+export function redirectRuntimePdfIfNeeded(pathname: string): boolean {
+  if (!isRuntimePdfPath(pathname) || !isMobilePdfClient()) {
+    return false;
   }
-  return streamPath;
-}
-
-function openGooglePdfViewer(pathOrFilename: string) {
-  const absoluteStream = buildRuntimePdfAbsoluteStreamUrl(pathOrFilename);
-  window.location.assign(
-    `https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(absoluteStream)}`,
-  );
+  window.location.replace(buildRuntimePdfStreamUrl(pathname));
+  return true;
 }
 
 /**
  * Opens a legacy PDF path on the current device.
- * Android Chrome (incl. 12) often fails when the SPA navigates to a PDF URL — fetch + blob is more reliable.
  */
-export async function openRuntimePdf(pathOrFilename: string): Promise<boolean> {
-  const streamUrl = buildRuntimePdfStreamUrl(pathOrFilename);
-  const viewerUrl = buildRuntimePdfUrl(pathOrFilename);
-
-  if (!isMobilePdfClient()) {
-    window.open(viewerUrl, "_blank", "noopener,noreferrer");
-    return true;
-  }
-
-  try {
-    const response = await fetch(streamUrl, { credentials: "same-origin" });
-    if (!response.ok) {
-      if (isAndroidPdfClient()) {
-        openGooglePdfViewer(pathOrFilename);
-      } else {
-        window.location.assign(streamUrl);
-      }
-      return true;
-    }
-
-    const buffer = await response.arrayBuffer();
-    const blobUrl = URL.createObjectURL(new Blob([buffer], { type: "application/pdf" }));
-    window.location.assign(blobUrl);
-    return true;
-  } catch {
-    try {
-      window.location.assign(streamUrl);
-      return true;
-    } catch {
-      if (isAndroidPdfClient()) {
-        openGooglePdfViewer(pathOrFilename);
-        return true;
-      }
-      return false;
-    }
-  }
+export function openRuntimePdf(pathOrFilename: string): void {
+  window.location.assign(getRuntimePdfHref(pathOrFilename));
 }

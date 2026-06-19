@@ -9,6 +9,36 @@ import { Button } from "@/components/ui/button";
 import { CalendarCheck, ListChecks, Stethoscope } from "lucide-react";
 import { loadDoctors, type Doctor } from "@/data/loadDoctors";
 import { departments, doctorMatchesDepartment } from "@/data/departments";
+
+const MED_REP_ALLOWED_DOCTOR_IDS = new Set([
+  "dr-abubakr-elmardi",
+  "dr-essam-sakr",
+  "dr-mona-abou-taam",
+  "dr-lobna-ibrahim-bassiouni",
+  "dr-zeinab-sholkany-m-saad",
+  "dr-eman-alsayegh",
+  "dr-hanafi-abdelsalam",
+  "dr-hamoud-abdullah-alarouj",
+  "dr-hussein-faour",
+  "heba-ben-salamah",
+  "dr-wadha-abdulaziz-al-jaser",
+  "dr-ali-ibrahim-aldei",
+  "dr-abdullah-albader",
+  "dr-salma-ibrahim",
+  "dr-hafsah-hussain",
+  "dr-hamid-ghaderi",
+]);
+
+const MED_REP_FULL_DEPARTMENTS = [
+  "Family Medicine",
+  "Internal Medicine",
+  "Pediatrics",
+] as const;
+
+const isMedRepEligibleDoctor = (doc: Doctor) =>
+  (doc.id != null && MED_REP_ALLOWED_DOCTOR_IDS.has(doc.id)) ||
+  MED_REP_FULL_DEPARTMENTS.some((dept) => doctorMatchesDepartment(dept, doc));
+
 const getCleanCalendlySlug = (name: string) => {
   let clean = name.replace(/^Dr\.?\s+/i, '').trim();
   clean = clean.replace(/[^\w\s-]/g, '');
@@ -95,10 +125,14 @@ const MedicalRepVisitBooking = () => {
     'Enter your full name, email address, and mobile number. Click on "Scheduled Event" to proceed.',
     "A confirmation page will appear, and a confirmation email will be sent to your registered email address.",
   ];
+  const eligibleDoctors = useMemo(
+    () => doctorCatalog.filter(isMedRepEligibleDoctor),
+    [doctorCatalog],
+  );
   const doctorsByDepartment = useMemo(() => {
     return departments
       .map((dept) => {
-        const deptDoctors = doctorCatalog
+        const deptDoctors = eligibleDoctors
           .filter((doc) => doctorMatchesDepartment(dept.name, doc))
           .sort((a, b) =>
             (isAr ? a.nameAr : a.name).localeCompare(isAr ? b.nameAr : b.name, locale)
@@ -109,7 +143,7 @@ const MedicalRepVisitBooking = () => {
       .sort((a, b) =>
         (isAr ? a.dept.nameAr : a.dept.name).localeCompare(isAr ? b.dept.nameAr : b.dept.name, locale)
       );
-  }, [isAr, locale, doctorCatalog]);
+  }, [isAr, locale, eligibleDoctors]);
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -221,13 +255,6 @@ const MedicalRepVisitBooking = () => {
                                 </p>
                                 <h4 className="text-base font-serif text-foreground mb-1">{isAr ? doc.nameAr : doc.name}</h4>
                                 <p className="text-muted-foreground font-body text-xs mb-3">{isAr ? doc.titleAr : doc.title}</p>
-                                <div className="flex flex-wrap gap-1.5 mb-4">
-                                  {(isAr ? doc.languagesAr : doc.languages).map((l) => (
-                                    <span key={l} className="px-2.5 py-0.5 rounded-full bg-secondary/40 text-[10px] font-body text-foreground">
-                                      {l}
-                                    </span>
-                                  ))}
-                                </div>
                                 {doc.hideBooking !== true && (
                                   <div className={`flex items-center gap-1.5 mb-4 ${doc.availableOnline !== false ? "text-green-600" : "text-destructive"}`}>
                                     <div className={`w-1.5 h-1.5 rounded-full ${doc.availableOnline !== false ? "bg-green-500" : "bg-destructive"}`} />
@@ -262,13 +289,6 @@ const MedicalRepVisitBooking = () => {
                                 </p>
                                 <h4 className="text-base font-serif text-foreground mb-1">{isAr ? doc.nameAr : doc.name}</h4>
                                 <p className="text-muted-foreground font-body text-xs mb-3">{isAr ? doc.titleAr : doc.title}</p>
-                                <div className="flex flex-wrap gap-1.5 mb-4">
-                                  {(isAr ? doc.languagesAr : doc.languages).map((l) => (
-                                    <span key={l} className="px-2.5 py-0.5 rounded-full bg-secondary/40 text-[10px] font-body text-foreground">
-                                      {l}
-                                    </span>
-                                  ))}
-                                </div>
                                 {doc.hideBooking !== true && (
                                   <div className={`flex items-center gap-1.5 mb-4 ${doc.availableOnline !== false ? "text-green-600" : "text-destructive"}`}>
                                     <div className={`w-1.5 h-1.5 rounded-full ${doc.availableOnline !== false ? "bg-green-500" : "bg-destructive"}`} />

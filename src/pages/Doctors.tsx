@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
 import { sortDoctorsInDepartment } from "@/utils/sortDoctorsInDepartment";
 import { getDoctorCarouselScrollState, scrollDoctorCarousel, scrollDoctorCarouselToStart, syncDoctorCarouselIndex } from "@/utils/doctorCarousel";
+import { filterDoctorsBySearch } from "@/utils/doctorSearch";
 
 
 const DoctorCard = memo(({ doc }: { doc: Doctor }) => {
@@ -130,7 +131,6 @@ const departmentArLabels: Record<string, string> = {
 };
 const DepartmentRow = memo(({ department, departmentAr, docs }: { department: string; departmentAr: string; docs: Doctor[] }) => {
   const { lang } = useLanguage();
-  const isAr = lang === "ar";
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -209,7 +209,7 @@ const DepartmentRow = memo(({ department, departmentAr, docs }: { department: st
           </div>
         )}
       </div>
-      <div className="relative isolate" dir={isAr ? "rtl" : "ltr"}>
+      <div className="relative isolate" dir="ltr">
         <button
           type="button"
           aria-label={lang === "ar" ? "التمرير لليسار" : "Scroll left"}
@@ -241,7 +241,7 @@ const DepartmentRow = memo(({ department, departmentAr, docs }: { department: st
         <div className="relative z-0 max-w-[1192px] mx-auto overflow-hidden">
           <div
             ref={scrollRef}
-            dir={isAr ? "rtl" : "ltr"}
+            dir="ltr"
             className="doctors-carousel-track flex w-full items-stretch gap-4 overflow-x-auto pb-8 snap-x snap-mandatory max-md:scroll-px-[calc(50%-140px)] max-md:px-[calc(50%-140px)] md:gap-6 md:px-0 md:scroll-px-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden [-webkit-overflow-scrolling:touch]"
           >
             {docs.map((doc) => (
@@ -326,16 +326,9 @@ const Doctors = () => {
   }, [doctorCatalog]);
   const allDoctors = useMemo(() => Object.values(grouped).flat(), [grouped]);
   const searchResults = useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
+    const query = searchQuery.trim();
     if (!query) return [];
-    return allDoctors.filter((doc) => {
-      const searchableFields = [
-        doc.name, doc.nameAr, doc.specialty, doc.specialtyAr,
-        doc.department, doc.departmentAr, doc.title, doc.titleAr,
-        ...(doc.symptoms || []),
-      ];
-      return searchableFields.some((field) => (field || "").toLowerCase().includes(query));
-    });
+    return filterDoctorsBySearch(allDoctors, query);
   }, [allDoctors, searchQuery]);
   const isSearching = searchQuery.trim().length > 0;
   const locale = lang === "ar" ? "ar" : "en";

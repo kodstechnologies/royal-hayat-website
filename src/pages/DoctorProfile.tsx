@@ -1,7 +1,7 @@
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft, Stethoscope, Star, Quote, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -358,7 +358,7 @@ const DoctorProfile = () => {
         ...bookingReturnState,
         fromBookAppointment: true,
         bookingPath: bookingReturnState?.bookingPath ?? "primary",
-        selectedDept: bookingReturnState?.selectedDept ?? inferredDept?.id ?? null,
+        selectedDept: bookingReturnState?.selectedDept ?? doctor.departmentId ?? null,
         selectedDoctor: doctor.id,
         isRequestMode: isRequestOnlyDoctor,
         canBookSlot: !isRequestOnlyDoctor,
@@ -366,6 +366,7 @@ const DoctorProfile = () => {
       },
     });
   };
+  const shouldAnimateMarquee = testimonials.length > 0;
   return (
     <div id="doctor-profile-page" className="min-h-screen bg-background pt-[var(--header-height,56px)]">
       <Header />
@@ -586,13 +587,13 @@ const DoctorProfile = () => {
           <div className={`flex gap-5 w-max hover:[animation-play-state:paused] ${lang === "ar" ? "animate-[feedbackMarqueeRtl_30s_linear_infinite]" : "animate-[feedbackMarquee_30s_linear_infinite]"}`}>
             {[...testimonials, ...testimonials].map((fb, i) => (
               <div
-                key={i}
-                className="w-[280px] h-[280px] flex-shrink-0 bg-popover rounded-2xl border border-border/40 p-5 flex flex-col justify-between hover:shadow-lg transition-shadow"
+                key={shouldAnimateMarquee ? `${fb.name}-${fb.date}-${i}` : `${fb.name}-${fb.date}`}
+                className="w-[220px] min-h-[200px] sm:w-[280px] sm:h-[280px] sm:min-h-0 flex-shrink-0 bg-popover rounded-xl sm:rounded-2xl border border-border/40 p-3.5 sm:p-5 flex flex-col justify-between hover:shadow-lg transition-shadow"
               >
                 <div>
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                      <span className="text-sm font-serif text-primary">{(lang === "ar" ? fb.nameAr : fb.name).charAt(0)}</span>
+                  <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                      <span className="text-xs sm:text-sm font-serif text-primary">{(lang === "ar" ? fb.nameAr : fb.name).charAt(0)}</span>
                     </div>
                     <div>
                       <p className="font-body text-sm font-medium text-foreground">{lang === "ar" ? fb.nameAr : fb.name}</p>
@@ -601,13 +602,13 @@ const DoctorProfile = () => {
                       ) : null}
                     </div>
                   </div>
-                  <p className="text-muted-foreground font-body text-xs leading-relaxed italic line-clamp-5">
+                  <p className="text-muted-foreground font-body text-[11px] sm:text-xs leading-relaxed italic line-clamp-4 sm:line-clamp-5">
                     "{lang === "ar" ? fb.commentAr : fb.comment}"
                   </p>
                 </div>
-                <div className="flex items-center gap-0.5 mt-3">
+                <div className="flex items-center gap-0.5 mt-2 sm:mt-3">
                   {Array.from({ length: 5 }).map((_, s) => (
-                    <Star key={s} className={`w-3.5 h-3.5 ${s < fb.rating ? "text-accent fill-accent" : "text-border"}`} />
+                    <Star key={s} className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${s < fb.rating ? "text-accent fill-accent" : "text-border"}`} />
                   ))}
                 </div>
               </div>

@@ -180,11 +180,12 @@ const DepartmentRow = memo(({
   };
   const doctorTagline =
     doctorTaglineText.en || doctorTaglineText.ar ? doctorTaglineText : undefined;
+  const isAr = lang === "ar";
   return (
     <div className="mb-14">
       <div className="max-w-[1192px] mx-auto mb-6">
-        <h3 className="text-2xl font-serif font-bold text-foreground mb-3">
-          {lang === "ar" ? (deptMeta?.nameAr || departmentAr) : department}
+        <h3 className={`text-2xl font-serif font-bold text-foreground mb-3 ${isAr ? "text-right" : ""}`}>
+          {isAr ? (deptMeta?.nameAr || departmentAr) : department}
         </h3>
         {doctorTagline && (
           <div className="bg-popover border border-border/50 rounded-2xl p-4 md:p-5 shadow-sm">
@@ -229,7 +230,7 @@ const DepartmentRow = memo(({
         <div className="relative z-0 max-w-[1192px] mx-auto overflow-hidden">
           <div
             ref={scrollRef}
-            dir="ltr"
+            dir={isAr ? "rtl" : "ltr"}
             className="doctors-carousel-track flex w-full items-stretch gap-4 overflow-x-auto pb-8 snap-x snap-mandatory max-md:scroll-px-[calc(50%-140px)] max-md:px-[calc(50%-140px)] md:gap-6 md:px-0 md:scroll-px-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden [-webkit-overflow-scrolling:touch]"
           >
             {docs.map((doc) => (
@@ -392,7 +393,10 @@ const Doctors = () => {
                 {lang === "ar" ? `نتائج البحث (${searchResults.length})` : `Search Results (${searchResults.length})`}
               </h3>
               {searchResults.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                <div
+                  dir={lang === "ar" ? "rtl" : "ltr"}
+                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"
+                >
                   {searchResults.map((doc) => (
                     <div key={doc.id} className="min-w-0 max-w-none">
                       <DoctorCard doc={doc} />

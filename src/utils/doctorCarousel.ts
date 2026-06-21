@@ -41,8 +41,11 @@ function isRtlCarousel(container: HTMLElement) {
   return getComputedStyle(container).direction === "rtl";
 }
 
+function usesIndexBasedNavigation(container: HTMLElement) {
+  return isMobileCarousel() || isRtlCarousel(container);
+}
+
 function getNormalizedScrollLeft(container: HTMLElement) {
-  const maxScroll = getMaxScroll(container);
   if (!isRtlCarousel(container)) {
     return container.scrollLeft;
   }
@@ -76,19 +79,19 @@ function setNormalizedScrollLeft(
 }
 
 export function scrollDoctorCarouselToStart(container: HTMLElement) {
-  const maxScroll = getMaxScroll(container);
+  const cards = getCards(container);
+
   if (!isRtlCarousel(container)) {
     container.scrollTo({ left: 0, behavior: "auto" });
     return;
   }
 
+  if (cards.length > 0) {
+    cards[0].scrollIntoView({ behavior: "auto", block: "nearest", inline: "start" });
+    return;
+  }
+
   container.scrollTo({ left: 0, behavior: "auto" });
-  requestAnimationFrame(() => {
-    if (maxScroll <= 0) return;
-    if (Math.abs(getNormalizedScrollLeft(container)) > 8) {
-      setNormalizedScrollLeft(container, 0, "auto");
-    }
-  });
 }
 
 function getTargetScrollLeft(container: HTMLElement, card: HTMLElement) {
@@ -107,8 +110,8 @@ export function getActiveDoctorCarouselIndex(container: HTMLElement) {
   const cards = getCards(container);
   if (!cards.length) return 0;
 
-  if (!isMobileCarousel()) {
-    const scrollLeft = getNormalizedScrollLeft(container);
+  if (!usesIndexBasedNavigation(container)) {
+    const scrollLeft = container.scrollLeft;
     let leadingIndex = 0;
     for (let i = 0; i < cards.length; i++) {
       if (cards[i].offsetLeft <= scrollLeft + 8) {
@@ -120,13 +123,32 @@ export function getActiveDoctorCarouselIndex(container: HTMLElement) {
     return leadingIndex;
   }
 
-  const scrollCenter = getNormalizedScrollLeft(container) + container.clientWidth / 2;
+  const containerRect = container.getBoundingClientRect();
+
+  if (isMobileCarousel()) {
+    const referenceX = containerRect.left + containerRect.width / 2;
+    let activeIndex = 0;
+    let minDistance = Number.POSITIVE_INFINITY;
+
+    cards.forEach((card, index) => {
+      const rect = card.getBoundingClientRect();
+      const cardCenter = rect.left + rect.width / 2;
+      const distance = Math.abs(cardCenter - referenceX);
+      if (distance < minDistance) {
+        minDistance = distance;
+        activeIndex = index;
+      }
+    });
+
+    return activeIndex;
+  }
+
   let activeIndex = 0;
   let minDistance = Number.POSITIVE_INFINITY;
 
   cards.forEach((card, index) => {
-    const cardCenter = card.offsetLeft + card.offsetWidth / 2;
-    const distance = Math.abs(cardCenter - scrollCenter);
+    const rect = card.getBoundingClientRect();
+    const distance = Math.abs(rect.right - containerRect.right);
     if (distance < minDistance) {
       minDistance = distance;
       activeIndex = index;
@@ -143,9 +165,17 @@ function getStepTargetIndex(
   const cards = getCards(container);
   if (!cards.length) return null;
 
-  if (isMobileCarousel()) {
+  if (usesIndexBasedNavigation(container)) {
     const current = getActiveDoctorCarouselIndex(container);
-    const next = direction === "right" ? current + 1 : current - 1;
+    const rtl = isRtlCarousel(container);
+    const next = rtl
+      ? direction === "left"
+        ? current + 1
+        : current - 1
+      : direction === "right"
+        ? current + 1
+        : current - 1;
+
     if (next < 0 || next >= cards.length) return null;
     return next;
   }
@@ -175,6 +205,11 @@ function snapToIndex(container: HTMLElement, index: number, behavior: ScrollBeha
   const cards = getCards(container);
   const card = cards[index];
   if (!card) return;
+
+  if (isRtlCarousel(container)) {
+    card.scrollIntoView({ behavior, block: "nearest", inline: "start" });
+    return;
+  }
 
   setNormalizedScrollLeft(container, getTargetScrollLeft(container, card), behavior);
 }
@@ -228,7 +263,7 @@ async function executeStep(
   const targetIndex = getStepTargetIndex(container, direction);
   if (targetIndex === null) return false;
 
-  const behavior: ScrollBehavior = isMobileCarousel() ? "auto" : "smooth";
+  const behavior: ScrollBehavior = "smooth";
   snapToIndex(container, targetIndex, behavior);
   await waitForScrollSettle(container, behavior);
   snapToIndex(container, targetIndex, "auto");
@@ -302,8 +337,16 @@ export function getDoctorCarouselScrollState(container: HTMLElement) {
     return { canScrollLeft: false, canScrollRight: false };
   }
 
-  if (isMobileCarousel()) {
+  if (usesIndexBasedNavigation(container)) {
     const activeIndex = getActiveDoctorCarouselIndex(container);
+
+    if (isRtlCarousel(container)) {
+      return {
+        canScrollLeft: activeIndex < cards.length - 1,
+        canScrollRight: activeIndex > 0,
+      };
+    }
+
     return {
       canScrollLeft: activeIndex > 0,
       canScrollRight: activeIndex < cards.length - 1,

@@ -9,6 +9,10 @@ const CMS_SLUG_ALIASES: Record<string, string> = {
   "royal-hayat-pharmacy": "royale-hayat-pharmacy",
 };
 
+function stripMongoSuffix(slug: string): string {
+  return slug.replace(/-[a-f0-9]{6}$/i, "");
+}
+
 export function findDepartmentBySlug(
   slug: string | undefined,
   departments: Department[],
@@ -18,15 +22,17 @@ export function findDepartmentBySlug(
   const exact = departments.find((dept) => dept.slug === slug);
   if (exact) return exact;
 
-  const withoutMongoSuffix = slug.replace(/-[a-f0-9]{6}$/i, "");
-  const aliased = CMS_SLUG_ALIASES[withoutMongoSuffix];
-  if (aliased) {
-    const match = departments.find((dept) => dept.slug === aliased);
-    if (match) return match;
-  }
+  const normalizedUrlSlug = stripMongoSuffix(slug);
+  const aliasedUrlSlug = CMS_SLUG_ALIASES[normalizedUrlSlug] ?? normalizedUrlSlug;
 
-  return departments.find(
-    (dept) =>
-      dept.slug === withoutMongoSuffix || withoutMongoSuffix.startsWith(`${dept.slug}-`),
-  );
+  return departments.find((dept) => {
+    const normalizedDeptSlug = stripMongoSuffix(dept.slug);
+    const aliasedDeptSlug = CMS_SLUG_ALIASES[normalizedDeptSlug] ?? normalizedDeptSlug;
+    return (
+      normalizedDeptSlug === normalizedUrlSlug ||
+      aliasedDeptSlug === aliasedUrlSlug ||
+      normalizedUrlSlug.startsWith(`${normalizedDeptSlug}-`) ||
+      normalizedDeptSlug.startsWith(`${normalizedUrlSlug}-`)
+    );
+  });
 }

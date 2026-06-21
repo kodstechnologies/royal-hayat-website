@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Phone, Mail, MapPin, Clock, Send, Facebook, Instagram, Youtube } from "lucide-react";
 import logo from "@/assets/rhh-logo-full.png";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { departments as staticDepartments } from "@/data/departments";
 const Footer = () => {
   const { lang, t } = useLanguage();
   const quickLinks = [
@@ -19,7 +20,13 @@ const Footer = () => {
     { en: "General & Laparoscopic Surgery", ar: "الجراحة العامة والمنظار", slug: "general-laparoscopic-surgery" },
     { en: "Royale Hayat Dental", ar: "عيادة رويال حياة للأسنان", slug: "dental-clinic" },
     { en: "Dermatology", ar: "الأمراض الجلدية", slug: "dermatology" },
-  ];
+  ].map((dept) => {
+    const staticDept = staticDepartments.find((d) => d.slug === dept.slug);
+    return {
+      ...dept,
+      lookupId: staticDept?.mongoId ?? staticDept?.clinicCode,
+    };
+  });
   return (
     <footer className="bg-primary pt-14 pb-8">
       <div className="container mx-auto px-6">
@@ -79,7 +86,12 @@ const Footer = () => {
             <h4 className="text-primary-foreground font-body text-xs tracking-[0.3em] uppercase mb-6">{t("departments")}</h4>
             <nav className="flex flex-col gap-3">
               {deptNames.map((d) => (
-                <Link key={d.en} to={`/medical-services/${d.slug}`} className="text-primary-foreground/70 font-body text-sm hover:text-accent transition-colors">
+                <Link
+                  key={d.en}
+                  to={`/medical-services/${d.slug}`}
+                  state={d.lookupId ? { departmentMongoId: d.lookupId } : undefined}
+                  className="text-primary-foreground/70 font-body text-sm hover:text-accent transition-colors"
+                >
                   {lang === "ar" ? d.ar : d.en}
                 </Link>
               ))}

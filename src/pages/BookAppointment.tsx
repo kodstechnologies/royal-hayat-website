@@ -28,6 +28,7 @@ import { createAppointmentBookingRecord } from "../api/appointmentBookingRecord"
 import {
   getAvailability,
   getPatient,
+  bookAppointment,
 } from "@/api/royalhayat";
 import {
   getIdentityData,
@@ -42,6 +43,12 @@ import {
   type RegisteredPatientHmsDetails,
 } from "../utils/appointmentBookingRecord";
 import type { AppointmentRequestPrefillState, PaciIdentityDetails } from "@/types/appointmentRequestPrefill";
+import type { AppointmentBookingFallbackState } from "@/types/appointmentBookingFallback";
+import {
+  formatBookingConflictAlert,
+  resolveBookingConflict,
+  type BookingConflictDetails,
+} from "@/utils/bookingErrors";
 import { Calendar as DatePickerCalendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import type { Slot } from "@/api/royalhayat";
@@ -722,6 +729,16 @@ const BookAppointment = () => {
     };
     try {
       if (patientType === "returning" && patientId) {
+        if (!selectedSlotId) {
+          const slotMessage = isAr
+            ? "تعذر تأكيد الموعد. يرجى إعادة اختيار وقت الموعد."
+            : "Could not confirm the appointment. Please select a time slot again.";
+          setBookingError(slotMessage);
+          setBookingPopupGoHome(false);
+          setBookingPopupMessage(slotMessage);
+          return;
+        }
+
         const payload = buildRegisteredPatientBookingPayload({
           patientName,
           patientId,
@@ -745,7 +762,86 @@ const BookAppointment = () => {
           slotBookingId: selectedSlotId,
           verifyOperationId: paciOperationIdRef.current,
         });
-        await createAppointmentBookingRecord(payload);
+
+        try {
+          await bookAppointment({
+            patientId,
+            slotBookingId: selectedSlotId,
+            doctorId: selectedDoctor ?? undefined,
+            date: selectedDate || undefined,
+            slotTime: selectedSlot ?? undefined,
+          });
+        } catch (hisErr: unknown) {
+          const hisAxiosErr = hisErr as {
+            response?: {
+              data?: {
+                message?: string;
+                status?: string;
+                meta?: {
+                  code?: string;
+                  conflict?: BookingConflictDetails;
+                  status?: string;
+                };
+              };
+            };
+            message?: string;
+          };
+          const apiMeta = (hisAxiosErr?.response?.data?.meta ?? null) as Parameters<
+            typeof resolveBookingConflict
+          >[1];
+          const apiMessage =
+            hisAxiosErr?.response?.data?.message ||
+            hisAxiosErr?.response?.data?.status ||
+            hisAxiosErr?.message;
+
+          if (apiMeta?.code === "REGISTERED_PATIENT_BOOKING_FALLBACK") {
+            const fallbackState: AppointmentBookingFallbackState = {
+              fullname: patientName,
+              gender: verifiedIdentityDetails
+                ? mapPaciSexToGender(verifiedIdentityDetails.gender)
+                : "",
+              genderDisplay: verifiedIdentityDetails?.gender,
+              civilId: nationalId || verifiedIdentityDetails?.civilIdNumber,
+              patientId,
+              doctorName: selectedDoctorObj?.name ?? "",
+              doctorNameAr: selectedDoctorObj?.nameAr,
+              departmentName: selectedDeptObj?.name ?? selectedDoctorObj?.specialty ?? "",
+              departmentNameAr: selectedDeptObj?.nameAr ?? selectedDoctorObj?.specialtyAr,
+              formattedDate: formattedSelectedDate || selectedDate,
+              selectedDate,
+              selectedSlot: selectedSlot ?? "",
+              selectedSlotTo: selectedSlotTo ?? undefined,
+              formattedTime: formatTimeString(selectedSlot),
+              slotPeriod: getSelectedSlotPeriod(),
+              symptoms: collectedSymptoms.length > 0 ? collectedSymptoms : undefined,
+              bookingError: formatBookingErrorMessage(apiMessage),
+              suggestedDob: patientDobIso || undefined,
+            };
+            navigate("/appointment-request/fallback", { state: fallbackState });
+            return;
+          }
+
+          const conflict = resolveBookingConflict(apiMessage, apiMeta);
+          if (conflict) {
+            const conflictMessage = formatBookingConflictAlert(conflict, isAr, {
+              doctorName: selectedDoctorObj?.name,
+              date: formattedSelectedDate || selectedDate,
+              time: formatTimeString(selectedSlot),
+            });
+            setBookingError(conflictMessage);
+            setBookingPopupGoHome(false);
+            setBookingPopupMessage(conflictMessage);
+            return;
+          }
+
+          throw hisErr;
+        }
+
+        try {
+          await createAppointmentBookingRecord(payload);
+        } catch (recordErr) {
+          console.error("HIS booking succeeded but internal record save failed:", recordErr);
+        }
         setBooked(true);
         return;
       }

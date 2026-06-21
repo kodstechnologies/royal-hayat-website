@@ -132,16 +132,15 @@ const DepartmentRow = memo(({
     };
 
     scheduleUpdate();
-    scrollDoctorCarouselToStart(el);
+    requestAnimationFrame(() => {
+      scrollDoctorCarouselToStart(el);
+      scheduleUpdate();
+    });
     const delayedChecks = [
       window.setTimeout(() => {
         scrollDoctorCarouselToStart(el);
         scheduleUpdate();
       }, 150),
-      window.setTimeout(() => {
-        scrollDoctorCarouselToStart(el);
-        scheduleUpdate();
-      }, 600),
     ];
 
     const observer = new ResizeObserver(scheduleUpdate);
@@ -229,6 +228,7 @@ const DepartmentRow = memo(({
         </button>
         <div className="relative z-0 max-w-[1192px] mx-auto overflow-hidden">
           <div
+            key={lang}
             ref={scrollRef}
             dir={isAr ? "rtl" : "ltr"}
             className="doctors-carousel-track flex w-full items-stretch gap-4 overflow-x-auto pb-8 snap-x snap-mandatory max-md:scroll-px-[calc(50%-140px)] max-md:px-[calc(50%-140px)] md:gap-6 md:px-0 md:scroll-px-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden [-webkit-overflow-scrolling:touch]"
@@ -325,18 +325,17 @@ const Doctors = () => {
   const searchResults = useMemo(() => {
     const query = searchQuery.trim();
     if (!query) return [];
-    return sortDoctorsAlphabetically(filterDoctorsBySearch(allDoctors, query), lang);
-  }, [allDoctors, searchQuery, lang]);
+    return sortDoctorsAlphabetically(filterDoctorsBySearch(allDoctors, query), "en");
+  }, [allDoctors, searchQuery]);
   const isSearching = searchQuery.trim().length > 0;
-  const locale = lang === "ar" ? "ar" : "en";
   const sortedGroupedEntries = useMemo(() => {
     const sortDocsWithinDept = (dept: string, docs: Doctor[]) =>
-      sortDoctorsInDepartment(docs, dept, lang);
+      sortDoctorsInDepartment(docs, dept, "en");
     return Object.entries(grouped)
       .filter(([, docs]) => Array.isArray(docs) && docs.length > 0)
       .map(([dept, docs]) => [dept, sortDocsWithinDept(dept, docs)] as const)
-      .sort(([deptA], [deptB]) => compareDoctorsPageDepartments(deptA, deptB, locale));
-  }, [grouped, lang, locale]);
+      .sort(([deptA], [deptB]) => compareDoctorsPageDepartments(deptA, deptB, "en"));
+  }, [grouped]);
   const groupedByMainCategory = useMemo(() => {
     const result: Record<MainCategory, typeof sortedGroupedEntries> = {
       "Clinical Speciality": [],

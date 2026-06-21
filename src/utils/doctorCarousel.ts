@@ -79,19 +79,22 @@ function setNormalizedScrollLeft(
 }
 
 export function scrollDoctorCarouselToStart(container: HTMLElement) {
-  const cards = getCards(container);
-
   if (!isRtlCarousel(container)) {
     container.scrollTo({ left: 0, behavior: "auto" });
     return;
   }
 
-  if (cards.length > 0) {
-    cards[0].scrollIntoView({ behavior: "auto", block: "nearest", inline: "start" });
-    return;
-  }
-
   container.scrollTo({ left: 0, behavior: "auto" });
+  requestAnimationFrame(() => {
+    const maxScroll = getMaxScroll(container);
+    if (maxScroll <= 0) return;
+
+    // Only normalize when the browser kept an old LTR offset after dir flipped to rtl.
+    if (Math.abs(getNormalizedScrollLeft(container)) > 8) {
+      container.scrollLeft = maxScroll;
+      container.scrollTo({ left: 0, behavior: "auto" });
+    }
+  });
 }
 
 function getTargetScrollLeft(container: HTMLElement, card: HTMLElement) {

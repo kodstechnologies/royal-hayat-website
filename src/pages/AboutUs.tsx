@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import {
   getAllLeadership,
   mapLeadershipToDisplay,
+  titleToLines,
   type LeaderDisplay,
   type LeadershipItem,
 } from "@/api/leadership";
@@ -174,7 +175,7 @@ const LeaderCard = ({ leader, lang }: { leader: LeaderDisplay; lang: string }) =
   const [expanded, setExpanded] = useState(false);
   const name = lang === "ar" ? leader.nameAr : leader.nameEn;
   const role = lang === "ar" ? leader.roleAr : leader.roleEn;
-  const roles = role.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+  const roles = titleToLines(role);
   const credentials = lang === "ar" ? leader.credentialsAr : leader.credentialsEn;
   const bio = lang === "ar" ? leader.bioAr : leader.bioEn;
   const displayInitials = leader.initials;

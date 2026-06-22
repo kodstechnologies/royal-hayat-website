@@ -50,6 +50,7 @@ export const RUNTIME_PDF_GROUPS: RuntimePdfGroup[] = [
       { id: "dental-pricelist-oct-2022", label: "Royale Hayat Dental Pricelist (Oct 2022)", path: "/Runtime/uploads/Royale%20Hayat%20Dental_Pricelist_3%20Oct%202022.pdf" },
       { id: "dental-pricelist", label: "Royale Hayat Dental Pricelist", path: "/Runtime/uploads/RoyaleHayatDentalPricelist.pdf" },
       { id: "spa-menu-ar", label: "SPA Menu (AR)", path: "/Runtime/uploads/SPA_MENU_AR.pdf" },
+      { id: "spa-menu-en", label: "SPA Menu (EN)", path: "/Runtime/uploads/SPA_MENU_EN.pdf" },
       { id: "cafe-menu-2022", label: "The Café Menu 2022", path: "/Runtime/uploads/The-Cafe-Menu-2022.pdf" },
       { id: "patient-safety-day", label: "World Patient Safety Day Invitation", path: "/Runtime/uploads/world_patient_safety_day_invitation.pdf" },
     ],
@@ -133,6 +134,8 @@ export const RUNTIME_PDF_PATHS = {
   alLiwanQrFoodMenu: "/wp-content/uploads/2026/04/Al_Liwan_QR_Food_Menu.pdf",
   fifthFloorFoodMenu: "/wp-content/uploads/2026/04/RHH_5th_Floor_Food_Menu.pdf",
   rhhNightMenu: "/wp-content/uploads/2025/11/RHH_NIGHT_Menu.pdf",
+  spaMenuEn: "/Runtime/uploads/SPA_MENU_EN.pdf",
+  spaMenuAr: "/Runtime/uploads/SPA_MENU_AR.pdf",
 } as const;
 
 /** @deprecated Use RUNTIME_PDF_PATHS with buildRuntimePdfUrl() */

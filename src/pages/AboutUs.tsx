@@ -158,6 +158,7 @@ const staticLeaders = [
 const mapStaticLeaderToDisplay = (leader: (typeof staticLeaders)[number]): LeaderDisplay => ({
   key: leader.nameEn,
   initials: leader.initials,
+  initialsAr: leader.initials,
   nameEn: leader.nameEn,
   nameAr: leader.nameAr,
   roleEn: leader.roleEn,
@@ -170,26 +171,37 @@ const mapStaticLeaderToDisplay = (leader: (typeof staticLeaders)[number]): Leade
   image: leader.image,
 });
 
+const isAvatarStyleInitials = (value: string) => /^[A-Za-z]{2}$/.test(value.trim());
+
+const formatLeaderDisplayName = (
+  name: string,
+  initials: string,
+  initialsAr: string,
+  lang: string,
+) => {
+  const prefix = (lang === "ar" ? initialsAr : initials)?.trim();
+  const normalizedName = name.trim();
+  if (!prefix || isAvatarStyleInitials(prefix)) return normalizedName;
+  if (normalizedName.toLowerCase().startsWith(prefix.toLowerCase())) {
+    return normalizedName;
+  }
+  return `${prefix} ${normalizedName}`;
+};
+
 const LeaderCard = ({ leader, lang }: { leader: LeaderDisplay; lang: string }) => {
   const { t } = useLanguage();
   const [expanded, setExpanded] = useState(false);
   const name = lang === "ar" ? leader.nameAr : leader.nameEn;
+  const displayName = formatLeaderDisplayName(
+    name,
+    leader.initials,
+    leader.initialsAr,
+    lang,
+  );
   const role = lang === "ar" ? leader.roleAr : leader.roleEn;
   const roles = titleToLines(role);
   const credentials = lang === "ar" ? leader.credentialsAr : leader.credentialsEn;
   const bio = lang === "ar" ? leader.bioAr : leader.bioEn;
-  const displayInitials = leader.initials;
-  const mobileImageOverride: Record<string, string> = {
-    "Dr. Abubakr Elmardi": "",
-    "Dr. Sulaiman Al Mazeedi": "",
-  };
-  const desktopImageOverride: Record<string, string> = {
-    "Prof. Dr. Omar El Khateeb": "",
-    "Dr. Hamid Ghaderi": "",
-    "Shibu Thomas Mathew": "",
-  };
-  const mobileOverrideSrc = mobileImageOverride[leader.nameEn];
-  const desktopOverrideSrc = desktopImageOverride[leader.nameEn];
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -199,20 +211,24 @@ const LeaderCard = ({ leader, lang }: { leader: LeaderDisplay; lang: string }) =
     >
       <div className="flex flex-col md:flex-row">
         <div className="md:w-64 flex-shrink-0 bg-primary/5 flex items-center justify-center p-8 md:p-10">
-          <div className={`w-44 h-44 md:w-60 md:h-60 rounded-2xl flex items-center justify-center border-4 border-primary/20 overflow-hidden ${leader.image ? "bg-white" : "bg-primary/10"}`}>
+          <div
+            className={`w-44 h-44 md:w-60 md:h-60 rounded-2xl flex items-center justify-center border-4 border-primary/20 overflow-hidden ${
+              leader.image ? "bg-white" : "bg-primary/10"
+            }`}
+          >
             {leader.image ? (
               <img
                 src={leader.image}
-                alt={name}
+                alt={displayName}
                 className="w-full h-full object-contain md:object-cover md:object-top bg-white"
               />
-            ) : (
-              <span className="text-4xl md:text-5xl font-serif text-primary">{displayInitials}</span>
-            )}
+            ) : null}
           </div>
         </div>
         <div className="flex-1 p-6 md:p-8">
-          <h3 className={`font-serif text-xl font-bold text-foreground mb-1 ${lang === "ar" ? "rtl-text" : ""}`}>{name}</h3>
+          <h3 className={`font-serif text-xl font-bold text-foreground mb-1 ${lang === "ar" ? "rtl-text" : ""}`}>
+            {displayName}
+          </h3>
           {(() => {
             const showRoleFirst = lang === "ar" && leader.credentialsAfterRole;
             const roleBlock = (

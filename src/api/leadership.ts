@@ -18,6 +18,7 @@ export type LeadershipItem = {
 export type LeaderDisplay = {
   key: string;
   initials: string;
+  initialsAr: string;
   nameEn: string;
   nameAr: string;
   roleEn: string;
@@ -35,7 +36,8 @@ const normalizeLineBreaks = (text: string) =>
 
 export const mapLeadershipToDisplay = (item: LeadershipItem): LeaderDisplay => ({
   key: item._id ?? item.name,
-  initials: item.initials?.trim() || item.initialsArabic?.trim() || "",
+  initials: item.initials?.trim() ?? "",
+  initialsAr: item.initialsArabic?.trim() ?? "",
   nameEn: item.name,
   nameAr: item.nameArabic,
   roleEn: normalizeLineBreaks(item.title ?? ""),

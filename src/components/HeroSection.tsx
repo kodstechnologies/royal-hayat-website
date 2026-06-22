@@ -93,12 +93,7 @@ const HeroSection = () => {
             <br />
           </>
         )}
-        {paragraph.split("\n").map((line, lineIndex) => (
-          <span key={lineIndex}>
-            {lineIndex > 0 && <br />}
-            {renderText(line)}
-          </span>
-        ))}
+        {renderText(paragraph.replace(/\n/g, " ").replace(/\s+/g, " ").trim())}
       </span>
     ));
   };
@@ -106,7 +101,7 @@ const HeroSection = () => {
   return (
     <section
       ref={sectionRef}
-      className="relative h-[85vh] sm:h-[80vh] md:h-[90vh] min-h-[520px] max-lg:min-h-[calc(100dvh-var(--header-height,7.5rem)-2rem)] md:min-h-[600px] overflow-hidden cursor-default"
+      className="hero-section relative h-[85vh] sm:h-[80vh] md:h-[90vh] min-h-[520px] max-lg:min-h-[calc(100dvh-var(--header-height,7.5rem)-2rem)] md:min-h-[600px] overflow-hidden cursor-default"
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
@@ -133,8 +128,6 @@ const HeroSection = () => {
           transition={{ duration: 0.6 }}
         />
       </div>
-      {
-}
       <AnimatePresence>
         {isVisible && (
           <motion.div
@@ -159,7 +152,7 @@ const HeroSection = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
-                className={`font-serif leading-[1.2] tracking-tight mb-3 max-lg:mb-4 md:mb-6 ${
+                className={`hero-section-copy font-serif leading-[1.2] max-lg:tracking-normal tracking-tight mb-3 max-lg:mb-4 md:mb-6 ${
                   isAr
                     ? "text-start text-xl sm:text-2xl md:text-3xl lg:text-4xl"
                     : "text-2xl sm:text-3xl md:text-5xl lg:text-6xl xl:text-7xl"
@@ -176,7 +169,7 @@ const HeroSection = () => {
                   initial={{ opacity: 0, y: 14 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.2 }}
-                  className={`font-body leading-relaxed mb-3 max-lg:mb-4 md:mb-5 max-w-xl ${
+                  className={`hero-section-copy font-body leading-relaxed mb-3 max-lg:mb-4 md:mb-5 max-w-xl ${
                     isAr
                       ? "text-start text-sm sm:text-base md:text-lg text-[#6B5200]"
                       : "text-left text-sm md:text-base text-[#A67C00]"
@@ -189,7 +182,7 @@ const HeroSection = () => {
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.3 }}
-                className={`font-body leading-relaxed mb-3 max-lg:mb-4 md:mb-5 max-w-xl ${
+                className={`hero-section-copy font-body leading-relaxed mb-3 max-lg:mb-4 md:mb-5 max-w-xl ${
                   isAr
                     ? "text-start text-sm sm:text-base md:text-lg text-muted-foreground"
                     : "text-left text-sm md:text-base text-muted-foreground"
@@ -202,7 +195,7 @@ const HeroSection = () => {
                   initial={{ opacity: 0, y: 14 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.38 }}
-                  className={`font-serif mb-5 max-lg:mb-6 md:mb-8 max-w-xl text-burgundy ${
+                  className={`hero-section-copy font-serif mb-5 max-lg:mb-6 md:mb-8 max-w-xl text-burgundy ${
                     isAr
                       ? "text-start text-base md:text-lg lg:text-xl"
                       : "text-base md:text-xl"
@@ -249,6 +242,33 @@ const HeroSection = () => {
           </motion.div>
         </div>
       </motion.button>
+      <style>{`
+        .hero-section .hero-section-copy {
+          text-align: start;
+          text-align-last: auto;
+          text-justify: auto;
+          word-spacing: normal;
+          letter-spacing: normal;
+          word-break: normal;
+          overflow-wrap: normal;
+          hyphens: none;
+          -webkit-hyphens: none;
+        }
+
+        @supports (-webkit-touch-callout: none) {
+          .hero-section .hero-section-copy {
+            text-align: start !important;
+            text-align-last: auto !important;
+            text-justify: auto !important;
+            word-spacing: normal !important;
+            letter-spacing: normal !important;
+            word-break: normal !important;
+            overflow-wrap: normal !important;
+            hyphens: none !important;
+            -webkit-hyphens: none !important;
+          }
+        }
+      `}</style>
     </section>
   );
 };

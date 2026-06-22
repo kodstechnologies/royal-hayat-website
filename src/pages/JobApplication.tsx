@@ -224,7 +224,7 @@ const JobApplication = () => {
         email: email.trim(),
         phone: phone.trim(),
         coverLetter: coverLetter.trim(),
-        resume: resumeFile,
+        cv: resumeFile,
       });
 
       toast({

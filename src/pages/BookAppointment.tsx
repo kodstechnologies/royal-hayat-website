@@ -53,6 +53,7 @@ import { Calendar as DatePickerCalendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import type { Slot } from "@/api/royalhayat";
 import { filterDoctorsBySearch } from "@/utils/doctorSearch";
+import { isPharmacyNonBookableDoctor, shouldShowDoctorBookingUI } from "@/data/departments";
 import {
   SYMPTOM_CHIP_OPTIONS,
   formatSymptomsForDisplay,
@@ -269,6 +270,26 @@ const BookAppointment = () => {
     }
   }, [selectedDoctor, allApiDoctors, deptDoctorList, departmentsList, selectedDept]);
   useEffect(() => {
+    if (!selectedDoctor || catalogLoading) return;
+    const inCatalog =
+      allApiDoctors.some((d) => d.id === selectedDoctor) ||
+      deptDoctorList.some((d) => d.id === selectedDoctor);
+    if (
+      !inCatalog &&
+      (bookingPath === "doctor" || (bookingPath === "primary" && selectedDept && !deptDoctorLoading))
+    ) {
+      setSelectedDoctor(null);
+    }
+  }, [
+    selectedDoctor,
+    allApiDoctors,
+    deptDoctorList,
+    catalogLoading,
+    bookingPath,
+    selectedDept,
+    deptDoctorLoading,
+  ]);
+  useEffect(() => {
     if (selectedDept) {
       const dept = departmentsList.find((d) => d.id === selectedDept);
       if (dept?.specialityCode) {
@@ -454,7 +475,7 @@ const BookAppointment = () => {
         );
 
         setDepartmentsList(bookingDepartments);
-        setAllApiDoctors(apiDoctors);
+        setAllApiDoctors(apiDoctors.filter((d) => !isPharmacyNonBookableDoctor(d)));
       } catch (err) {
         console.error("Error loading booking catalog:", err);
         if (!cancelled) {
@@ -488,9 +509,9 @@ const BookAppointment = () => {
         const rows = await getDoctorsByDepartment(selectedDept);
         if (cancelled) return;
 
-        const mapped = rows.map((row) =>
-          mapApiDoctorRowToBookingDoctor(row, dept.name, dept.nameAr),
-        );
+        const mapped = rows
+          .map((row) => mapApiDoctorRowToBookingDoctor(row, dept.name, dept.nameAr))
+          .filter((d) => !isPharmacyNonBookableDoctor(d));
         setDeptDoctorList(mapped);
       } catch (err) {
         console.error("Error loading department doctors:", err);
@@ -621,15 +642,17 @@ const BookAppointment = () => {
   };
   const doctors = useMemo(
     () =>
-      [...filterDoctorsBySearch(deptDoctorList, doctorSearch)].sort((a, b) =>
-        (isAr ? a.nameAr : a.name).localeCompare(isAr ? b.nameAr : b.name, isAr ? "ar" : "en"),
-      ),
+      [...filterDoctorsBySearch(deptDoctorList, doctorSearch)]
+        .filter((d) => !isPharmacyNonBookableDoctor(d))
+        .sort((a, b) =>
+          (isAr ? a.nameAr : a.name).localeCompare(isAr ? b.nameAr : b.name, isAr ? "ar" : "en"),
+        ),
     [deptDoctorList, doctorSearch, isAr],
   );
   const filteredAllDoctors = useMemo(
     () =>
       [...filterDoctorsBySearch(
-        allApiDoctors.filter((d) => !DOCTOR_PATH_EXCLUDED_IDS.has(d.id)),
+        allApiDoctors.filter((d) => !DOCTOR_PATH_EXCLUDED_IDS.has(d.id) && !isPharmacyNonBookableDoctor(d)),
         doctorSearch,
       )].sort((a, b) =>
         (isAr ? a.nameAr : a.name).localeCompare(isAr ? b.nameAr : b.name, isAr ? "ar" : "en"),
@@ -1951,7 +1974,7 @@ Clinic Code:`;
                               </p>
                               <h4 className="font-serif font-bold text-[1.2rem] text-foreground mb-0.5 leading-snug">{getDoctorDisplayName(doc, isAr ? "ar" : "en")}</h4>
                               <p className="text-muted-foreground font-body text-[11px] mb-2 line-clamp-1">{isAr ? doc.specialtyAr : doc.specialty}</p>
-                              {doc.hideBooking !== true && (
+                              {shouldShowDoctorBookingUI(doc) && (
                                 <div className={`flex items-center gap-1.5 mb-3 ${doc.availableOnline !== false ? "text-green-600" : "text-destructive"}`}>
                                   <div className={`w-1.5 h-1.5 rounded-full ${doc.availableOnline !== false ? "bg-green-500" : "bg-destructive"}`} />
                                   <span className="font-body text-[10px]">

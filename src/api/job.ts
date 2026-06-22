@@ -37,6 +37,7 @@ export type JobApplicationPayload = {
   phone: string;
   coverLetter?: string;
   cv?: File;
+  resume?: File;
 };
 export type GetJobsParams = {
   page?: number;
@@ -65,7 +66,8 @@ export const applyForJob = async (data: JobApplicationPayload) => {
   formData.append("email", data.email);
   formData.append("phone", data.phone);
   if (data.coverLetter) formData.append("coverLetter", data.coverLetter);
-  if (data.cv) formData.append("resume", data.cv);
+  const resumeFile = data.cv ?? data.resume;
+  if (resumeFile) formData.append("resume", resumeFile);
   const response = await api.post("/api/v1/jobs/apply", formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });

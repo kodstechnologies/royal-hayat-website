@@ -63,6 +63,12 @@ import {
   formatSymptomsForDisplay,
   syncSymptomChipsFromText,
 } from "@/data/symptomChipOptions";
+import FirstTimeVisitorTimePicker from "@/pages/book-appointment/components/FirstTimeVisitorTimePicker";
+import {
+  buildFirstTimeVisitorSlotTimes,
+  getFirstTimeVisitorHours,
+  type AmPm,
+} from "@/pages/book-appointment/firstTimeVisitorTimeSlots";
 const DOCTOR_PATH_EXCLUDED_IDS = new Set<string>(["dr-madiha-khisaf", "dr-wael-ibrahim", "dr-fatima-alazemi"]);
 const SKIP_CIVIL_ID_VERIFICATION = false;
 const isDoctorRequestOnly = (doc: Pick<Doctor, "hideBooking" | "availableOnline">) =>
@@ -234,6 +240,10 @@ const BookAppointment = () => {
   const [isRequestMode, setIsRequestMode] = useState(locState.isRequestMode ?? false);
   const [showAllDoctors, setShowAllDoctors] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string>("");
+  const [patientType, setPatientType] = useState<"returning" | "new" | null>(null);
+  const [manualSlotHour, setManualSlotHour] = useState("");
+  const [manualSlotMinute, setManualSlotMinute] = useState("");
+  const [manualSlotAmPm, setManualSlotAmPm] = useState("");
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [selectedSlotTo, setSelectedSlotTo] = useState<string | null>(null);
   const [specialityCode, setSpecialityCode] = useState<string | null>(null);
@@ -313,6 +323,11 @@ const BookAppointment = () => {
       setIsLoadingSlots(false);
       return;
     }
+    if (patientType === "new") {
+      setFetchedSlots([]);
+      setIsLoadingSlots(false);
+      return;
+    }
     if (!slotsFetchReady) {
       setIsLoadingSlots(true);
       return;
@@ -345,7 +360,28 @@ const BookAppointment = () => {
     return () => {
       cancelled = true;
     };
-  }, [specialityCode, providerCode, serviceCode, selectedDate, slotsFetchReady]);
+  }, [specialityCode, providerCode, serviceCode, selectedDate, slotsFetchReady, patientType]);
+  useEffect(() => {
+    if (patientType !== "new") return;
+    if (!manualSlotHour || !manualSlotMinute || !manualSlotAmPm) {
+      setSelectedSlot(null);
+      setSelectedSlotTo(null);
+      return;
+    }
+    const times = buildFirstTimeVisitorSlotTimes(
+      parseInt(manualSlotHour, 10),
+      parseInt(manualSlotMinute, 10),
+      manualSlotAmPm as AmPm,
+    );
+    if (times) {
+      setSelectedSlot(times.from);
+      setSelectedSlotTo(times.to);
+    } else {
+      setSelectedSlot(null);
+      setSelectedSlotTo(null);
+    }
+    setSelectedSlotId(null);
+  }, [patientType, manualSlotHour, manualSlotMinute, manualSlotAmPm]);
   const formatSlotRange = (slot: Slot) => {
     if (!slot.slot_from_time || !slot.slot_from_time.includes(":")) return "";
     const parseTime = (t: string) => {
@@ -424,10 +460,23 @@ const BookAppointment = () => {
     setSelectedSlot(null);
     setSelectedSlotTo(null);
     setSelectedSlotId(null);
+    setManualSlotHour("");
+    setManualSlotMinute("");
+    setManualSlotAmPm("");
     setFetchedSlots([]);
-    setIsLoadingSlots(true);
+    setIsLoadingSlots(patientType !== "new");
   };
-  const [patientType, setPatientType] = useState<"returning" | "new" | null>(null);
+  const handleManualAmPmChange = (value: string) => {
+    setManualSlotAmPm(value);
+    if (value === "AM" || value === "PM") {
+      const hourNum = parseInt(manualSlotHour, 10);
+      if (manualSlotHour && !getFirstTimeVisitorHours(value as AmPm).includes(hourNum)) {
+        setManualSlotHour("");
+      }
+    } else {
+      setManualSlotHour("");
+    }
+  };
   const [patientName, setPatientName] = useState("");
   const [patientPhone, setPatientPhone] = useState("");
   const [patientCountryCode, setPatientCountryCode] = useState("+965");
@@ -2115,7 +2164,7 @@ Clinic Code:`;
                 <div className="bg-popover rounded-2xl p-6 md:p-8 border border-border shadow-sm">
                   <div className="flex items-center gap-3 mb-6">
                     <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center"><Calendar className="w-5 h-5 text-accent" /></div>
-                    <div><h2 className="text-xl font-serif text-foreground">{isAr ? "اختيار التاريخ والوقت" : "Select Date & Time"}</h2><p className="text-muted-foreground font-body text-xs">{isAr ? "يرجى اختيار التاريخ والوقت المناسبين للموعد." : "Pick a date and available time slot"}</p></div>
+                    <div><h2 className="text-xl font-serif text-foreground">{isAr ? "اختيار التاريخ والوقت" : "Select Date & Time"}</h2><p className="text-muted-foreground font-body text-xs">{patientType === "new" ? (isAr ? "يرجى اختيار التاريخ والوقت المفضل للموعد." : "Pick a date and your preferred appointment time") : (isAr ? "يرجى اختيار التاريخ والوقت المناسبين للموعد." : "Pick a date and available time slot")}</p></div>
                   </div>
                   {specialityCode && providerCode && (
                     <div className="flex flex-wrap gap-x-6 gap-y-2 mb-6 font-body text-xs uppercase tracking-wider">
@@ -2152,13 +2201,26 @@ Clinic Code:`;
                       </span>
                     </p>
                   )}
-                  {selectedDate && isLoadingSlots && (
+                  {selectedDate && patientType === "new" && (
+                    <FirstTimeVisitorTimePicker
+                      isAr={isAr}
+                      hour={manualSlotHour}
+                      minute={manualSlotMinute}
+                      ampm={manualSlotAmPm}
+                      onHourChange={setManualSlotHour}
+                      onMinuteChange={setManualSlotMinute}
+                      onAmPmChange={handleManualAmPmChange}
+                      canContinue={selectedSlot !== null}
+                      onContinue={() => setStep(4)}
+                    />
+                  )}
+                  {selectedDate && patientType !== "new" && isLoadingSlots && (
                     <div className="flex flex-col items-center justify-center py-12">
                       <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }} className="w-10 h-10 rounded-full border-2 border-accent/20 border-t-accent mb-4" />
                       <p className="font-body text-sm text-muted-foreground">{isAr ? "جارِ جلب المواعيد المتاحة..." : "Fetching available time slots..."}</p>
                     </div>
                   )}
-                  {selectedDate && !isLoadingSlots && slotsForSelectedDate.length > 0 && (
+                  {selectedDate && patientType !== "new" && !isLoadingSlots && slotsForSelectedDate.length > 0 && (
                     <div className="space-y-6">
                       <p className="font-body text-xs text-muted-foreground uppercase tracking-wider">{isAr ? "الفترة المتاحة" : "Available times"}</p>
                       {Object.entries(slotsByPeriod).map(([period, slots]) => slots.length > 0 && (
@@ -2187,7 +2249,7 @@ Clinic Code:`;
                       ))}
                     </div>
                   )}
-                  {selectedDate && !isLoadingSlots && slotsForSelectedDate.length === 0 && slotsFetchReady && (
+                  {selectedDate && patientType !== "new" && !isLoadingSlots && slotsForSelectedDate.length === 0 && slotsFetchReady && (
                     <div className="text-center py-12 text-muted-foreground font-body text-sm bg-muted/20 rounded-2xl border border-dashed border-border">
                       <AlertCircle className="w-8 h-8 mx-auto mb-2 opacity-30" />
                       {isAr ? "لا توجد مواعيد متاحة لهذا اليوم" : "No available appointments for this date"}

@@ -245,6 +245,11 @@ export const deptDoctorAliases: Record<string, string[]> = {
   "Royale Hayat Pharmacy": ["Pharmacy"],
   "Physiotherapy": ["Physiotherapy"],
 };
+/** Arabic headings for /doctors groups that are separate from their parent department alias. */
+export const deptDoctorAliasNameAr: Record<string, string> = {
+  Nutricare: "التغذية السريرية",
+  "La Cosmetique": "لا كوزمتيك",
+};
 export const ROYALE_HAYAT_PHARMACY_DOCTOR_IDS = [
   "dr-mirvat-sameer-ghanem",
 ] as const;

@@ -10,7 +10,7 @@ import { fetchAllDoctorsByDepartment } from "@/api/doctors";
 import { fetchAllDepartmentsPages } from "@/api/department";
 import type { Doctor } from "@/types/doctor";
 import { MAIN_CATEGORIES, type MainCategory } from "@/types/department";
-import { deptDoctorAliases, shouldShowDoctorBookingUI } from "@/data/departments";
+import { deptDoctorAliases, deptDoctorAliasNameAr, shouldShowDoctorBookingUI } from "@/data/departments";
 import { resolveDoctorTaglines } from "@/data/doctorTaglines";
 import { mapApiDepartmentsToDisplay } from "@/utils/mapApiDepartment";
 import { Input } from "@/components/ui/input";
@@ -184,7 +184,7 @@ const DepartmentRow = memo(({
     <div className="mb-14">
       <div className="max-w-[1192px] mx-auto mb-6">
         <h3 className={`text-2xl font-serif font-bold text-foreground mb-3 ${isAr ? "text-right" : ""}`}>
-          {isAr ? (deptMeta?.nameAr || departmentAr) : department}
+          {isAr ? (departmentAr || deptMeta?.nameAr || department) : department}
         </h3>
         {doctorTagline && (
           <div className="bg-popover border border-border/50 rounded-2xl p-4 md:p-5 shadow-sm">
@@ -283,6 +283,10 @@ const Doctors = () => {
             const aliasTaglines = resolveDoctorTaglines(alias);
             metaByName[alias] = {
               ...entry,
+              nameAr:
+                alias === dept.name
+                  ? entry.nameAr
+                  : deptDoctorAliasNameAr[alias] ?? "",
               doctorTagline: aliasTaglines?.en || entry.doctorTagline,
               doctorTaglineArabic: aliasTaglines?.ar || entry.doctorTaglineArabic,
             };

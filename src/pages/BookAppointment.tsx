@@ -24,6 +24,10 @@ import { sortDepartmentsByDisplayOrder } from "@/utils/doctorDepartmentOrder";
 import type { Department } from "@/types/department";
 import { MAIN_CATEGORIES } from "@/types/department";
 import { createAppointmentRequest } from "@/api/appointmentRequest";
+import {
+  resolveAppointmentDepartmentName,
+  resolveAppointmentDoctorName,
+} from "@/utils/appointmentRequestFields";
 import { createAppointmentBookingRecord } from "../api/appointmentBookingRecord";
 import {
   getAvailability,
@@ -773,11 +777,12 @@ const BookAppointment = () => {
           verifiedIdentityDetails,
           verifiedPersonName,
           hmsDetails: registeredPatientHmsDetails,
-          doctor: (isAr ? selectedDoctorObj?.nameAr : selectedDoctorObj?.name) || undefined,
-          department:
-            (isAr
-              ? selectedDeptObj?.nameAr ?? selectedDoctorObj?.specialtyAr
-              : selectedDeptObj?.name ?? selectedDoctorObj?.specialty) || undefined,
+          doctor: resolveAppointmentDoctorName(selectedDoctorObj, isAr ? "ar" : "en"),
+          department: resolveAppointmentDepartmentName(
+            selectedDeptObj,
+            selectedDoctorObj,
+            isAr ? "ar" : "en",
+          ),
           date: formattedSelectedDate || selectedDate,
           slot_from_time: selectedSlot || undefined,
           slot_to_time: selectedSlotTo || undefined,
@@ -874,11 +879,12 @@ const BookAppointment = () => {
           phone: `${patientCountryCode}${patientPhone.trim()}`,
           dob: patientDob,
           gender: patientGender as "male" | "female" | "other",
-          doctor: (isAr ? selectedDoctorObj?.nameAr : selectedDoctorObj?.name) || undefined,
-          department:
-            (isAr
-              ? selectedDeptObj?.nameAr ?? selectedDoctorObj?.specialtyAr
-              : selectedDeptObj?.name ?? selectedDoctorObj?.specialty) || undefined,
+          doctor: resolveAppointmentDoctorName(selectedDoctorObj, isAr ? "ar" : "en"),
+          department: resolveAppointmentDepartmentName(
+            selectedDeptObj,
+            selectedDoctorObj,
+            isAr ? "ar" : "en",
+          ),
           date: formattedSelectedDate || selectedDate,
           slot_from_time: selectedSlot || undefined,
           slot_to_time: selectedSlotTo || undefined,
@@ -1163,6 +1169,14 @@ const BookAppointment = () => {
         appointmentRequestPrefill: {
           ...(prefill ?? {}),
           requestType: prefill?.requestType ?? "appointment request",
+          doctorName: selectedDoctorObj?.name,
+          doctorNameAr: selectedDoctorObj?.nameAr,
+          departmentName:
+            selectedDeptObj?.name ?? selectedDoctorObj?.department ?? selectedDoctorObj?.specialty,
+          departmentNameAr:
+            selectedDeptObj?.nameAr ??
+            selectedDoctorObj?.departmentAr ??
+            selectedDoctorObj?.specialtyAr,
           ...(symptoms.length > 0 ? { symptoms } : {}),
         },
         fromBookAppointment: true,
@@ -1175,6 +1189,8 @@ const BookAppointment = () => {
     navigate,
     resetPatientLookupFailure,
     selectedDoctor,
+    selectedDoctorObj,
+    selectedDeptObj,
     symptomChips,
     symptomText,
   ]);

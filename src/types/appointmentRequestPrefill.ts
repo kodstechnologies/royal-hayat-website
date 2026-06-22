@@ -28,4 +28,8 @@ export type AppointmentRequestPrefillState = {
   readOnlyIdentity?: boolean;
   /** Symptoms captured earlier in the book-appointment flow (e.g. symptom checker). */
   symptoms?: string[];
+  doctorName?: string;
+  doctorNameAr?: string;
+  departmentName?: string;
+  departmentNameAr?: string;
 };

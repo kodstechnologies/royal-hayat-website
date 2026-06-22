@@ -11,8 +11,15 @@ import ScrollToTop from "@/components/ScrollToTop";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { loadDoctorById, type Doctor } from "@/data/loadDoctors";
+import { fetchDoctorProfileById, isMongoDoctorId } from "@/api/doctors";
 import type { AppointmentRequestPrefillState } from "@/types/appointmentRequestPrefill";
 import type { AppointmentRequestType } from "@/api/appointmentRequest";
+import {
+  resolveAppointmentDepartmentName,
+  resolveAppointmentDoctorName,
+  resolvePrefilledAppointmentDepartmentName,
+  resolvePrefilledAppointmentDoctorName,
+} from "@/utils/appointmentRequestFields";
 
 const isDoctorRequestOnly = (doc: Pick<Doctor, "hideBooking" | "availableOnline">) =>
   doc.hideBooking === true || doc.availableOnline === false;
@@ -84,9 +91,13 @@ const AppointmentRequest = () => {
       return;
     }
     let cancelled = false;
-    void loadDoctorById(doctorId).then((doc) => {
+    const loadDoctor = async () => {
+      const doc = isMongoDoctorId(doctorId)
+        ? await fetchDoctorProfileById(doctorId)
+        : await loadDoctorById(doctorId);
       if (!cancelled) setPrefilledDoctor(doc ?? null);
-    });
+    };
+    void loadDoctor();
     return () => {
       cancelled = true;
     };
@@ -122,6 +133,13 @@ const AppointmentRequest = () => {
       Boolean(locState.fromBookAppointment),
     );
     const symptoms = resolveAppointmentSymptoms(prefill, returnState);
+    const requestLang = lang === "ar" ? "ar" : "en";
+    const doctorName =
+      resolveAppointmentDoctorName(prefilledDoctor, requestLang) ??
+      resolvePrefilledAppointmentDoctorName(prefill, requestLang);
+    const departmentName =
+      resolveAppointmentDepartmentName(null, prefilledDoctor, requestLang) ??
+      resolvePrefilledAppointmentDepartmentName(prefill, requestLang);
     try {
       await createAppointmentRequest({
         fullname: form.fullName.trim(),
@@ -129,16 +147,8 @@ const AppointmentRequest = () => {
         requestType,
         dob: form.dateOfBirth,
         gender: form.gender,
-        doctor: prefilledDoctor
-          ? lang === "ar"
-            ? prefilledDoctor.nameAr
-            : prefilledDoctor.name
-          : undefined,
-        department: prefilledDoctor
-          ? lang === "ar"
-            ? prefilledDoctor.departmentAr
-            : prefilledDoctor.department
-          : undefined,
+        doctor: doctorName,
+        department: departmentName,
         preferredDate: form.preferredDate || undefined,
         additionalNotes: [
           prefill.civilId ? `Civil ID: ${prefill.civilId}` : "",

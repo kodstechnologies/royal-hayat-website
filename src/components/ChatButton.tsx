@@ -207,7 +207,7 @@ const ChatButton = () => {
     }
     const whatsappUrl = buildWhatsAppUrl(referenceId, isAr);
 
-    if (selectedTopicId && !guidedLogSentRef.current) {
+    if (!guidedLogSentRef.current) {
       const historyForApi = messages
         .filter((m) => m.content.trim())
         .map((m) => ({ role: m.role, content: m.content }));
@@ -221,7 +221,7 @@ const ChatButton = () => {
           historyForApi,
           isAr ? "ar" : "en",
           lastAssistant.content,
-          selectedTopicId,
+          selectedTopicId ?? undefined,
         ).catch((err) => console.error("Failed to log guided chat:", err));
       }
     }

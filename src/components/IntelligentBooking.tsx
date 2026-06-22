@@ -164,7 +164,7 @@ const IntelligentBooking = () => {
         department: selectedDept ?? undefined,
         symptoms: allSymptoms.length ? allSymptoms : undefined,
         requestType: isRequestMode
-          ? "doctor unavailability request"
+          ? "appointment request"
           : "first time visitor request",
       });
       setBookingStep("success");

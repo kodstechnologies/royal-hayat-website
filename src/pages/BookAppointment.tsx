@@ -890,7 +890,7 @@ const BookAppointment = () => {
           symptoms: collectedSymptoms.length > 0 ? collectedSymptoms : undefined,
           requestType:
             isRequestMode || (selectedDoctorObj && isDoctorRequestOnly(selectedDoctorObj))
-              ? "doctor unavailability request"
+              ? "appointment request"
               : "first time visitor request",
         });
         setBooked(true);

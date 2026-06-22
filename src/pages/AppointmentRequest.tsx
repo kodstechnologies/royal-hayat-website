@@ -39,9 +39,9 @@ const resolveAppointmentRequestType = (
   if (prefill.requestType) return prefill.requestType;
   if (fromBookAppointment) return "appointment request";
   if (prefilledDoctor && isDoctorRequestOnly(prefilledDoctor)) {
-    return "doctor unavailability request";
+    return "appointment request";
   }
-  if (doctorId) return "doctor unavailability request";
+  if (doctorId) return "appointment request";
   return "appointment request";
 };
 

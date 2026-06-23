@@ -14,8 +14,10 @@ type FirstTimeVisitorTimePickerProps = {
   onHourChange: (value: string) => void;
   onMinuteChange: (value: string) => void;
   onAmPmChange: (value: string) => void;
-  canContinue: boolean;
-  onContinue: () => void;
+  canContinue?: boolean;
+  onContinue?: () => void;
+  showContinueButton?: boolean;
+  label?: string;
 };
 
 const selectClassName =
@@ -29,15 +31,17 @@ const FirstTimeVisitorTimePicker = ({
   onHourChange,
   onMinuteChange,
   onAmPmChange,
-  canContinue,
+  canContinue = false,
   onContinue,
+  showContinueButton = true,
+  label,
 }: FirstTimeVisitorTimePickerProps) => {
   const hourOptions = ampm === "AM" || ampm === "PM" ? getFirstTimeVisitorHours(ampm as AmPm) : [];
 
   return (
     <div className="space-y-4">
       <p className="font-body text-xs text-muted-foreground uppercase tracking-wider">
-        {isAr ? "اختر الوقت" : "Select a time"}
+        {label ?? (isAr ? "اختر الوقت" : "Select a time")}
       </p>
       {!ampm && (
         <p className="font-body text-sm text-muted-foreground -mt-2">
@@ -91,7 +95,7 @@ const FirstTimeVisitorTimePicker = ({
           </select>
         </div>
       </div>
-      {canContinue && (
+      {showContinueButton && canContinue && onContinue && (
         <div className="flex justify-center pt-2">
           <motion.button
             type="button"

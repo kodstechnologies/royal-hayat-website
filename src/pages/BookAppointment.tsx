@@ -451,6 +451,16 @@ const BookAppointment = () => {
     d.setHours(0, 0, 0, 0);
     return d < todayStart;
   };
+  const handlePreferredDateInputChange = (value: string) => {
+    setSelectedDate(value);
+    setSelectedSlot(null);
+    setSelectedSlotTo(null);
+    setSelectedSlotId(null);
+    setManualSlotHour("");
+    setManualSlotMinute("");
+    setManualSlotAmPm("");
+    setPatientErrors((prev) => ({ ...prev, preferredDate: "" }));
+  };
   const handleAppointmentDateSelect = (date: Date | undefined) => {
     if (!date) return;
     const y = date.getFullYear();
@@ -483,6 +493,7 @@ const BookAppointment = () => {
   const [patientDob, setPatientDob] = useState("");
   const [patientDobIso, setPatientDobIso] = useState("");
   const [patientGender, setPatientGender] = useState("");
+  const [patientAdditionalNotes, setPatientAdditionalNotes] = useState("");
   const [patientErrors, setPatientErrors] = useState<Record<string, string>>({});
   const [showReturningPatientModal, setShowReturningPatientModal] = useState(false);
   const [nationalId, setNationalId] = useState("");
@@ -690,6 +701,10 @@ const BookAppointment = () => {
   }, [displayDepts]);
   const goToStep = (i: number) => {
     if (i > step) return;
+    if (patientType === "new" && i === 3) {
+      setStep(2);
+      return;
+    }
     if (i === 1 && step > 1) setShowAllDoctors(true);
     setStep(i);
   };
@@ -780,6 +795,13 @@ const BookAppointment = () => {
     if (!patientDob) errors.dob = isAr ? "تاريخ الميلاد مطلوب" : "Date of birth is required";
     else if (new Date(patientDob) > new Date()) errors.dob = isAr ? "أدخل تاريخ ميلاد صحيحاً" : "Enter a valid date of birth";
     if (!patientGender) errors.gender = isAr ? "الجنس مطلوب" : "Gender is required";
+    if (!selectedDate) errors.preferredDate = isAr ? "التاريخ المفضل مطلوب" : "Preferred date is required";
+    else if (selectedDate < new Date().toISOString().split("T")[0]) {
+      errors.preferredDate = isAr ? "اختر تاريخاً من اليوم فصاعداً" : "Select a date from today onwards";
+    }
+    if (!manualSlotHour || !manualSlotMinute || !manualSlotAmPm) {
+      errors.preferredTime = isAr ? "الوقت المفضل مطلوب" : "Preferred time is required";
+    }
     setPatientErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -790,7 +812,15 @@ const BookAppointment = () => {
       case 1: return selectedDoctor !== null;
       case 2:
         if (patientType === "returning") return Boolean(patientId);
-        return patientType === "new" && patientName.trim() !== "" && /^\d{8}$/.test(patientPhone.trim()) && patientDob !== "" && patientGender !== "";
+        return (
+          patientType === "new" &&
+          patientName.trim() !== "" &&
+          /^\d{8}$/.test(patientPhone.trim()) &&
+          patientDob !== "" &&
+          patientGender !== "" &&
+          selectedDate !== "" &&
+          selectedSlot !== null
+        );
       case 3: return selectedDate !== "" && selectedSlot !== null;
       default: return true;
     }
@@ -943,6 +973,7 @@ const BookAppointment = () => {
             slot_to_time: selectedSlotTo || "",
           },
           symptoms: collectedSymptoms.length > 0 ? collectedSymptoms : undefined,
+          additionalNotes: patientAdditionalNotes.trim() || undefined,
           requestType:
             isRequestMode || (selectedDoctorObj && isDoctorRequestOnly(selectedDoctorObj))
               ? "appointment request"
@@ -979,6 +1010,10 @@ const BookAppointment = () => {
     if (step === 2) {
       if (patientType === "new" && !validatePatientDetails()) return;
       if (!patientType) return;
+      if (patientType === "new") {
+        setStep(4);
+        return;
+      }
     }
     if (step === 4) {
       handleConfirm();
@@ -1509,10 +1544,19 @@ const BookAppointment = () => {
     setPatientPhone("");
     setPatientDob("");
     setPatientGender("");
+    setPatientAdditionalNotes("");
+    setSelectedDate("");
+    setManualSlotHour("");
+    setManualSlotMinute("");
+    setManualSlotAmPm("");
   };
   const handleBack = () => {
     if (step === 0 && bookingPath) {
       setBookingPath(null);
+      return;
+    }
+    if (step === 4 && patientType === "new") {
+      setStep(2);
       return;
     }
     if (step === 3 && patientType === "returning") {
@@ -2085,7 +2129,7 @@ Clinic Code:`;
                     <motion.button whileHover={{ y: -4 }} whileTap={{ scale: 0.98 }} onClick={() => setPatientType("new")} className="bg-popover rounded-2xl p-8 border border-border text-center transition-all hover:border-primary/40">
                       <div className="w-14 h-14 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-4"><UserPlus className="w-7 h-7 text-accent" /></div>
                       <h3 className="font-serif text-lg text-foreground mb-2">{t("firstTimeVisitor")}</h3>
-                      <p className="font-body text-xs text-muted-foreground">{isAr ? "سيتم نقلك إلى نموذج طلب موعد" : "You will be taken to the Appointment Request Form"}</p>
+                      <p className="font-body text-xs text-muted-foreground">{isAr ? "أدخل بياناتك واختر الموعد المفضل" : "Enter your details and preferred appointment time"}</p>
                     </motion.button>
                   </div>
                 )}
@@ -2109,6 +2153,63 @@ Clinic Code:`;
                           <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{isAr ? "تاريخ الميلاد" : "Date of Birth"} <span className="text-destructive">*</span></label>
                           <div className="date-input-wrap"><input type="date" value={patientDob} max={new Date().toISOString().split("T")[0]} onChange={(e) => { setPatientDob(e.target.value); setPatientErrors(prev => ({ ...prev, dob: "" })); }} className={`form-date-input w-full min-w-0 max-w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all ${patientErrors.dob ? "border-destructive" : "border-border"}`} /></div>{patientErrors.dob && <p className="font-body text-xs text-destructive mt-1">{patientErrors.dob}</p>}</div>
                         <div className="min-w-0"><label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">{t("gender")} <span className="text-destructive">*</span></label><select value={patientGender} onChange={(e) => { setPatientGender(e.target.value); setPatientErrors(prev => ({ ...prev, gender: "" })); }} className={`w-full min-w-0 max-w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all ${patientErrors.gender ? "border-destructive" : "border-border"}`}><option value="">{t("selectGender")}</option><option value="male">{t("male")}</option><option value="female">{t("female")}</option></select>{patientErrors.gender && <p className="font-body text-xs text-destructive mt-1">{patientErrors.gender}</p>}</div>
+                      </div>
+                      <div className="min-w-0">
+                        <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
+                          {isAr ? "التاريخ المفضل" : "Preferred Date"} <span className="text-destructive">*</span>
+                        </label>
+                        <div className="date-input-wrap">
+                          <input
+                            type="date"
+                            value={selectedDate}
+                            min={new Date().toISOString().split("T")[0]}
+                            onChange={(e) => handlePreferredDateInputChange(e.target.value)}
+                            className={`form-date-input w-full min-w-0 max-w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all ${patientErrors.preferredDate ? "border-destructive" : "border-border"}`}
+                          />
+                        </div>
+                        {patientErrors.preferredDate && (
+                          <p className="font-body text-xs text-destructive mt-1">{patientErrors.preferredDate}</p>
+                        )}
+                      </div>
+                      <div>
+                        <FirstTimeVisitorTimePicker
+                          isAr={isAr}
+                          hour={manualSlotHour}
+                          minute={manualSlotMinute}
+                          ampm={manualSlotAmPm}
+                          onHourChange={(value) => {
+                            setManualSlotHour(value);
+                            setPatientErrors((prev) => ({ ...prev, preferredTime: "" }));
+                          }}
+                          onMinuteChange={(value) => {
+                            setManualSlotMinute(value);
+                            setPatientErrors((prev) => ({ ...prev, preferredTime: "" }));
+                          }}
+                          onAmPmChange={(value) => {
+                            handleManualAmPmChange(value);
+                            setPatientErrors((prev) => ({ ...prev, preferredTime: "" }));
+                          }}
+                          showContinueButton={false}
+                          label={isAr ? "الوقت المفضل" : "Preferred Time"}
+                        />
+                        {patientErrors.preferredTime && (
+                          <p className="font-body text-xs text-destructive mt-1">{patientErrors.preferredTime}</p>
+                        )}
+                      </div>
+                      <div>
+                        <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
+                          {isAr ? "ملاحظات إضافية" : "Additional Notes"} ({isAr ? "اختياري" : "Optional"})
+                        </label>
+                        <textarea
+                          value={patientAdditionalNotes}
+                          onChange={(e) => setPatientAdditionalNotes(e.target.value)}
+                          placeholder={
+                            isAr
+                              ? "أي معلومات إضافية تود مشاركتها..."
+                              : "Any additional information you'd like to share..."
+                          }
+                          className="w-full h-24 px-4 py-3 rounded-xl border border-border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-2 focus:ring-accent/30"
+                        />
                       </div>
                     </div>
                   </div>
@@ -2154,17 +2255,17 @@ Clinic Code:`;
                     </div>
                   </div>
                 )}
-                {patientType && <button onClick={() => { setPatientType(null); setNationalId(""); setNationalIdError(""); setVerifiedPersonName(null); setVerifyOperationId(null); setIsWaitingForApproval(false); setVerifiedIdentityDetails(null); setPatientPhone(""); }} className="mt-4 font-body text-xs text-muted-foreground hover:text-foreground transition-colors">← {t("changeSelection")}</button>}
+                {patientType && <button onClick={() => { setPatientType(null); setNationalId(""); setNationalIdError(""); setVerifiedPersonName(null); setVerifyOperationId(null); setIsWaitingForApproval(false); setVerifiedIdentityDetails(null); setPatientPhone(""); setPatientAdditionalNotes(""); setSelectedDate(""); setManualSlotHour(""); setManualSlotMinute(""); setManualSlotAmPm(""); }} className="mt-4 font-body text-xs text-muted-foreground hover:text-foreground transition-colors">← {t("changeSelection")}</button>}
               </div>
             </motion.div>
           )}
-          {step === 3 && (
+          {step === 3 && patientType !== "new" && (
             <motion.div key="s3" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.35 }}>
               <div className="max-w-3xl mx-auto">
                 <div className="bg-popover rounded-2xl p-6 md:p-8 border border-border shadow-sm">
                   <div className="flex items-center gap-3 mb-6">
                     <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center"><Calendar className="w-5 h-5 text-accent" /></div>
-                    <div><h2 className="text-xl font-serif text-foreground">{isAr ? "اختيار التاريخ والوقت" : "Select Date & Time"}</h2><p className="text-muted-foreground font-body text-xs">{patientType === "new" ? (isAr ? "يرجى اختيار التاريخ والوقت المفضل للموعد." : "Pick a date and your preferred appointment time") : (isAr ? "يرجى اختيار التاريخ والوقت المناسبين للموعد." : "Pick a date and available time slot")}</p></div>
+                    <div><h2 className="text-xl font-serif text-foreground">{isAr ? "اختيار التاريخ والوقت" : "Select Date & Time"}</h2><p className="text-muted-foreground font-body text-xs">{isAr ? "يرجى اختيار التاريخ والوقت المناسبين للموعد." : "Pick a date and available time slot"}</p></div>
                   </div>
                   {specialityCode && providerCode && (
                     <div className="flex flex-wrap gap-x-6 gap-y-2 mb-6 font-body text-xs uppercase tracking-wider">
@@ -2200,19 +2301,6 @@ Clinic Code:`;
                         })}
                       </span>
                     </p>
-                  )}
-                  {selectedDate && patientType === "new" && (
-                    <FirstTimeVisitorTimePicker
-                      isAr={isAr}
-                      hour={manualSlotHour}
-                      minute={manualSlotMinute}
-                      ampm={manualSlotAmPm}
-                      onHourChange={setManualSlotHour}
-                      onMinuteChange={setManualSlotMinute}
-                      onAmPmChange={handleManualAmPmChange}
-                      canContinue={selectedSlot !== null}
-                      onContinue={() => setStep(4)}
-                    />
                   )}
                   {selectedDate && patientType !== "new" && isLoadingSlots && (
                     <div className="flex flex-col items-center justify-center py-12">
@@ -2294,6 +2382,15 @@ Clinic Code:`;
                               value: patientGender === "male" ? t("male") : patientGender === "female" ? t("female") : "—",
                               icon: User,
                             },
+                            ...(patientAdditionalNotes.trim()
+                              ? [
+                                  {
+                                    label: isAr ? "ملاحظات إضافية" : "Additional Notes",
+                                    value: patientAdditionalNotes.trim(),
+                                    icon: FileText,
+                                  },
+                                ]
+                              : []),
                           ]
                         : [])
                     ].map((row) => (

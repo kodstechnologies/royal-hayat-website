@@ -12,6 +12,7 @@ import ChatButton from "@/components/ChatButton";
 import ScrollToTopOnNav from "@/components/ScrollToTopOnNav";
 import Index from "./pages/Index.tsx";
 import RuntimePdfViewer from "./pages/RuntimePdfViewer.tsx";
+import PublicDocumentRoute from "./pages/PublicDocumentRoute.tsx";
 import {
   inRoomEventsTopCarouselImages,
   inRoomEventGalleryImages,
@@ -54,7 +55,6 @@ const JobApplication = lazyWithRetry(() => import("./pages/JobApplication.tsx"))
 const CSR = lazyWithRetry(() => import("./pages/CSR.tsx"));
 const FifthFloorCafe = lazyWithRetry(() => import("./pages/FifthFloorCafe.tsx"));
 const NewbornPhotography = lazyWithRetry(() => import("./pages/NewbornPhotography.tsx"));
-const NotFound = lazyWithRetry(() => import("./pages/NotFound.tsx"));
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -146,7 +146,7 @@ const App = () => (
             <Route path="/my-medical-reports" element={<MyMedicalReports />} />
             <Route path="/Runtime/uploads/*" element={<RuntimePdfViewer />} />
             <Route path="/wp-content/uploads/*" element={<RuntimePdfViewer />} />
-            <Route path="*" element={<NotFound />} />
+            <Route path="*" element={<PublicDocumentRoute />} />
             </Routes>
             </Suspense>
             <ChatButton />

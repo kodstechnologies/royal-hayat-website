@@ -19,7 +19,7 @@ export const RUNTIME_PDF_GROUPS: RuntimePdfGroup[] = [
     title: "Runtime /uploads",
     items: [
       { id: "alliwan-menu-2021", label: "Al Liwan Menu 2021", path: "/Runtime/uploads/AlLiwan_%20menu_2021.pdf" },
-      { id: "birth-plan-booklet", label: "Birth Plan Booklet", path: "/Runtime/uploads/Birth_plan_booklet_27May2021_final.pdf" },
+      { id: "birth-plan-booklet", label: "Birth Plan Booklet", path: "/Runtime/uploads/Birth plan booklet_27May2021_final.pdf" },
       { id: "birthing-orchid", label: "Birthing Packages — Royale Orchid & Orchid Patients", path: "/Runtime/uploads/Birthing-Packages-for-Royale-Orchid-and-Orchid-Patients.pdf" },
       { id: "birthing-insurance", label: "Birthing Packages — Visiting Physicians (Insurance)", path: "/Runtime/uploads/Birthing-Packages-for-Visiting-Inhouse-Physicians-for-insurance-patients.pdf" },
       { id: "birthing-noninsurance", label: "Birthing Packages — Visiting Physicians (Non-Insurance)", path: "/Runtime/uploads/Birthing-Packages-for-Visiting-Inhouse-Physicians-for-noninsurance-patients.pdf" },
@@ -125,7 +125,7 @@ export const ALL_RUNTIME_PDFS: RuntimePdfItem[] = RUNTIME_PDF_GROUPS.flatMap((g)
 /** Relative legacy paths — use buildRuntimePdfUrl() for same-origin links */
 export const RUNTIME_PDF_PATHS = {
   alLiwanMenu: "/Runtime/uploads/AlLiwan_%20menu_2021.pdf",
-  birthPlanBooklet: "/Runtime/uploads/Birth_plan_booklet_27May2021_final.pdf",
+  birthPlanBooklet: "/Runtime/uploads/Birth plan booklet_27May2021_final.pdf",
   fifthFloorCafeMenuJune2026: "/wp-content/uploads/2026/06/5th_Floor_Cafe_Menu.pdf",
   alaCarteMenuJune2026: "/wp-content/uploads/2026/06/ALa_Carte_Menu.pdf",
   askMeFlyersJune2026: "/wp-content/uploads/2026/06/Ask_Me_Flyers_June_2026.pdf",

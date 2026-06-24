@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useMemo, useCallback, memo } from "react";
 import { Search, ChevronLeft, ChevronRight, Stethoscope, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -19,11 +19,17 @@ import { sortDoctorsAlphabetically, sortDoctorsInDepartment } from "@/utils/sort
 import {
   compareDoctorsPageDepartments,
 } from "@/utils/doctorDepartmentOrder";
-import { getDoctorCarouselScrollState, scrollDoctorCarousel, scrollDoctorCarouselToStart, syncDoctorCarouselIndex } from "@/utils/doctorCarousel";
+import { getDoctorCarouselScrollState, scrollDoctorCarousel, scrollDoctorCarouselToDoctor, scrollDoctorCarouselToStart, syncDoctorCarouselIndex } from "@/utils/doctorCarousel";
 import { filterDoctorsBySearch } from "@/utils/doctorSearch";
+import {
+  buildDoctorsProfileNavState,
+  clearDoctorsPageRestore,
+  resolveDoctorsPageRestore,
+  saveDoctorsPageRestore,
+} from "@/utils/doctorsPageRestore";
 
 
-const DoctorCard = memo(({ doc }: { doc: Doctor }) => {
+const DoctorCard = memo(({ doc, onDoctorClick }: { doc: Doctor; onDoctorClick: (doc: Doctor) => void }) => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
   const displayName = getDoctorDisplayName(doc, lang);
@@ -31,8 +37,13 @@ const DoctorCard = memo(({ doc }: { doc: Doctor }) => {
     <Link
       to={`/doctors/${doc.id}`}
       data-doctor-carousel-card
+      data-doctor-id={doc.id}
       dir={isAr ? "rtl" : "ltr"}
       className="relative z-0 block w-[280px] min-h-[430px] flex-shrink-0 snap-center hover:z-10 md:snap-start"
+      onClick={(e) => {
+        e.preventDefault();
+        onDoctorClick(doc);
+      }}
     >
       <motion.div
         whileHover={{ y: -6, boxShadow: "0 20px 40px -12px hsl(var(--primary) / 0.12)" }}
@@ -98,19 +109,43 @@ type DeptMeta = {
   order: number;
 };
 
+type DoctorsRestoreState = {
+  fromDoctors?: boolean;
+  restoreScrollY?: number;
+  restoreDoctorId?: string;
+  restoreSearchQuery?: string;
+};
+
 const DepartmentRow = memo(({
   department,
   departmentAr,
   docs,
   deptMeta,
+  restoreDoctorId,
+  onDoctorClick,
 }: {
   department: string;
   departmentAr: string;
   docs: Doctor[];
   deptMeta?: DeptMeta;
+  restoreDoctorId?: string | null;
+  onDoctorClick: (doc: Doctor) => void;
 }) => {
   const { lang } = useLanguage();
   const scrollRef = useRef<HTMLDivElement>(null);
+  const hasInitializedCarouselRef = useRef(false);
+  const highlightDoctorIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (restoreDoctorId && docs.some((doc) => doc.id === restoreDoctorId)) {
+      highlightDoctorIdRef.current = restoreDoctorId;
+      hasInitializedCarouselRef.current = false;
+      return;
+    }
+    if (!restoreDoctorId) {
+      highlightDoctorIdRef.current = null;
+    }
+  }, [restoreDoctorId, docs]);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
 
@@ -131,16 +166,37 @@ const DepartmentRow = memo(({
       window.requestAnimationFrame(updateScrollState);
     };
 
+    const scrollToInitialPosition = () => {
+      const doctorId = highlightDoctorIdRef.current;
+      if (doctorId && docs.some((doc) => doc.id === doctorId)) {
+        scrollDoctorCarouselToDoctor(el, doctorId);
+        hasInitializedCarouselRef.current = true;
+        return;
+      }
+      if (!hasInitializedCarouselRef.current) {
+        scrollDoctorCarouselToStart(el);
+        hasInitializedCarouselRef.current = true;
+      }
+    };
+
     scheduleUpdate();
     requestAnimationFrame(() => {
-      scrollDoctorCarouselToStart(el);
+      scrollToInitialPosition();
       scheduleUpdate();
     });
     const delayedChecks = [
       window.setTimeout(() => {
-        scrollDoctorCarouselToStart(el);
+        scrollToInitialPosition();
         scheduleUpdate();
       }, 150),
+      window.setTimeout(() => {
+        scrollToInitialPosition();
+        scheduleUpdate();
+      }, 500),
+      window.setTimeout(() => {
+        scrollToInitialPosition();
+        scheduleUpdate();
+      }, 900),
     ];
 
     const observer = new ResizeObserver(scheduleUpdate);
@@ -158,7 +214,7 @@ const DepartmentRow = memo(({
       el.removeEventListener("load", scheduleUpdate, true);
       window.removeEventListener("resize", scheduleUpdate);
     };
-  }, [docs, lang, updateScrollState]);
+  }, [docs, lang, updateScrollState, restoreDoctorId]);
 
   const scroll = useCallback(
     (dir: "left" | "right") => {
@@ -234,7 +290,7 @@ const DepartmentRow = memo(({
             className="doctors-carousel-track flex w-full items-stretch gap-4 overflow-x-auto pb-8 snap-x snap-mandatory max-md:scroll-px-[calc(50%-140px)] max-md:px-[calc(50%-140px)] md:gap-6 md:px-0 md:scroll-px-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden [-webkit-overflow-scrolling:touch]"
           >
             {docs.map((doc) => (
-              <DoctorCard key={doc.id} doc={doc} />
+              <DoctorCard key={doc.id} doc={doc} onDoctorClick={onDoctorClick} />
             ))}
           </div>
         </div>
@@ -244,12 +300,72 @@ const DepartmentRow = memo(({
 });
 DepartmentRow.displayName = "DepartmentRow";
 const Doctors = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
   const [doctorCatalog, setDoctorCatalog] = useState<Doctor[]>([]);
   const [catalogLoading, setCatalogLoading] = useState(true);
   const [catalogError, setCatalogError] = useState("");
   const [deptMetaByName, setDeptMetaByName] = useState<Record<string, DeptMeta>>({});
+  const [restoreDoctorId, setRestoreDoctorId] = useState<string | null>(null);
+  const restoreScrollYRef = useRef<number | null>(null);
+  const restoreHandledRef = useRef(false);
   const { lang, t } = useLanguage();
+
+  useEffect(() => {
+    const restored = resolveDoctorsPageRestore(location.state as DoctorsRestoreState | null);
+    if (!restored?.doctorId) return;
+
+    restoreScrollYRef.current = restored.scrollY;
+    setRestoreDoctorId(restored.doctorId);
+    restoreHandledRef.current = false;
+    if (restored.searchQuery) {
+      setSearchQuery(restored.searchQuery);
+    }
+    clearDoctorsPageRestore();
+  }, [location.key, location.state]);
+
+  const openDoctorProfile = useCallback(
+    (doc: Doctor) => {
+      const navState = buildDoctorsProfileNavState(doc, searchQuery);
+      saveDoctorsPageRestore(navState);
+      navigate(`/doctors/${doc.id}`, { state: navState });
+    },
+    [navigate, searchQuery],
+  );
+
+  useEffect(() => {
+    if (!restoreDoctorId || catalogLoading || restoreHandledRef.current) return;
+
+    const doctorId = restoreDoctorId;
+    const scrollY = restoreScrollYRef.current ?? 0;
+
+    const scrollToSavedDoctor = () => {
+      const card = document.querySelector<HTMLElement>(`[data-doctor-id="${doctorId}"]`);
+      if (card) {
+        card.scrollIntoView({ block: "center", behavior: "auto" });
+        return;
+      }
+      if (scrollY > 0) {
+        window.scrollTo({ top: scrollY, left: 0, behavior: "auto" });
+      }
+    };
+
+    scrollToSavedDoctor();
+    const raf = window.requestAnimationFrame(scrollToSavedDoctor);
+    const timers = [150, 500, 900].map((delay) =>
+      window.setTimeout(scrollToSavedDoctor, delay),
+    );
+    const finalizeTimer = window.setTimeout(() => {
+      restoreHandledRef.current = true;
+    }, 950);
+
+    return () => {
+      window.cancelAnimationFrame(raf);
+      timers.forEach((timer) => window.clearTimeout(timer));
+      window.clearTimeout(finalizeTimer);
+    };
+  }, [restoreDoctorId, catalogLoading]);
   useEffect(() => {
     let cancelled = false;
     void (async () => {
@@ -402,7 +518,7 @@ const Doctors = () => {
                 >
                   {searchResults.map((doc) => (
                     <div key={doc.id} className="min-w-0 max-w-none">
-                      <DoctorCard doc={doc} />
+                      <DoctorCard doc={doc} onDoctorClick={openDoctorProfile} />
                     </div>
                   ))}
                 </div>
@@ -433,6 +549,12 @@ const Doctors = () => {
                         departmentAr={docs[0]?.departmentAr || dept}
                         docs={docs}
                         deptMeta={deptMetaByName[dept]}
+                        restoreDoctorId={
+                          restoreDoctorId && docs.some((doc) => doc.id === restoreDoctorId)
+                            ? restoreDoctorId
+                            : null
+                        }
+                        onDoctorClick={openDoctorProfile}
                       />
                     ))}
                   </div>

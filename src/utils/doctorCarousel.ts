@@ -332,6 +332,19 @@ export function syncDoctorCarouselIndex(_container: HTMLElement) {
   // Index is derived from scroll position when needed; no cached state to sync.
 }
 
+export function scrollDoctorCarouselToDoctor(
+  container: HTMLElement,
+  doctorId: string,
+): boolean {
+  const cards = getCards(container);
+  const index = cards.findIndex(
+    (card) => card.getAttribute("data-doctor-id") === doctorId,
+  );
+  if (index === -1) return false;
+  snapToIndex(container, index, "auto");
+  return true;
+}
+
 export function getDoctorCarouselScrollState(container: HTMLElement) {
   const cards = getCards(container);
   const maxScroll = getMaxScroll(container);

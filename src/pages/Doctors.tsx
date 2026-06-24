@@ -197,6 +197,7 @@ const DepartmentRow = memo(({
         scrollToInitialPosition();
         scheduleUpdate();
       }, 900),
+      window.setTimeout(scheduleUpdate, 1200),
     ];
 
     const observer = new ResizeObserver(scheduleUpdate);

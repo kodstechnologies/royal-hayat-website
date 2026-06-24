@@ -78,16 +78,12 @@ const DoctorCard = memo(({ doc, onDoctorClick }: { doc: Doctor; onDoctorClick: (
             {isAr ? doc.titleAr : doc.title}
           </p>
           {shouldShowDoctorBookingUI(doc) && (
-            <div
-              className={`flex items-center gap-1.5 mb-2 w-full ${
-                doc.availableOnline !== false ? "text-green-600" : "text-destructive"
-              }`}
-            >
-              <div className={`w-1.5 h-1.5 rounded-full ${doc.availableOnline !== false ? "bg-green-500" : "bg-destructive"}`} />
+            <div className="flex items-center gap-1.5 mb-2 w-full text-green-600">
+              <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
               <span className="font-body text-[10px]">
                 {doc.availableOnline !== false
                   ? (isAr ? "متاح للحجز اونلاين" : "Book Online")
-                  : (isAr ? "غير متاح للحجز اونلاين" : "Not Available for Online Booking")}
+                  : (isAr ? "طلب موعد" : "Appointment Request")}
               </span>
             </div>
           )}

@@ -2084,12 +2084,12 @@ Clinic Code:`;
                               <h4 className="font-serif font-bold text-[1.2rem] text-foreground mb-0.5 leading-snug">{getDoctorDisplayName(doc, isAr ? "ar" : "en")}</h4>
                               <p className="text-muted-foreground font-body text-[11px] mb-2 line-clamp-1">{isAr ? doc.specialtyAr : doc.specialty}</p>
                               {shouldShowDoctorBookingUI(doc) && (
-                                <div className={`flex items-center gap-1.5 mb-3 ${doc.availableOnline !== false ? "text-green-600" : "text-destructive"}`}>
-                                  <div className={`w-1.5 h-1.5 rounded-full ${doc.availableOnline !== false ? "bg-green-500" : "bg-destructive"}`} />
+                                <div className="flex items-center gap-1.5 mb-3 text-green-600">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
                                   <span className="font-body text-[10px]">
                                     {doc.availableOnline !== false
                                       ? (isAr ? "متاح للحجز اونلاين" : "Book Online")
-                                      : (isAr ? "غير متاح للحجز اونلاين" : "Not Available for Online Booking")}
+                                      : (isAr ? "طلب موعد" : "Appointment Request")}
                                   </span>
                                 </div>
                               )}

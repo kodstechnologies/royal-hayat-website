@@ -162,42 +162,42 @@ const buildStaticWorkCultureSections = (
   hospitalityWeekImages: string[],
   rhhQuizImages: string[],
 ): WorkCultureSectionDisplay[] => [
-  {
-    key: "staff-activities",
-    titleEn: "Staff Activities — Volley Ball Tournament",
-    titleAr: "أنشطة الموظفين | بطولة الكرة الطائرة",
-    subtitleEn:
-      "Achievements are acknowledged—because effort, excellence, and ethical conduct matter.",
-    subtitleAr:
-      "يتم تقدير الإنجازات والاعتراف بها، لأن الجهد والتميّز والسلوك المهني القائم على القيم يشكّلون أساس نجاحنا.",
-    images: staffActivitiesImages,
-  },
-  {
-    key: "gala-dinner",
-    titleEn: "Gala Dinner",
-    titleAr: "حفل العشاء السنوي",
-    subtitleEn: "A night of elegance, gratitude and celebration.",
-    subtitleAr: "أمسية استثنائية تجمع بين الأناقة، والامتنان، والاحتفال بإنجازات فريقنا.",
-    images: galaDinnerImages,
-  },
-  {
-    key: "hospitality-week",
-    titleEn: "Hospitality Week",
-    titleAr: "أسبوع الضيافة",
-    subtitleEn: "A week devoted to the hospitality spirit that defines Royale Hayat.",
-    subtitleAr:
-      "أسبوع مخصص للاحتفاء بروح الضيافة التي تميّز مستشفى رويال حياة وتعكس هويتنا الإنسانية.",
-    images: hospitalityWeekImages,
-  },
-  {
-    key: "rhh-quiz",
-    titleEn: "Royale Hayat Hospital Quiz",
-    titleAr: "مسابقة رويال حياة",
-    subtitleEn: "Fun, friendly competition across teams.",
-    subtitleAr: "أجواء من التفاعل، والمتعة، والمنافسة الودية التي تجمع فرق العمل بروح واحدة.",
-    images: rhhQuizImages,
-  },
-];
+    {
+      key: "staff-activities",
+      titleEn: "Staff Activities — Volley Ball Tournament",
+      titleAr: "أنشطة الموظفين | بطولة الكرة الطائرة",
+      subtitleEn:
+        "Achievements are acknowledged—because effort, excellence, and ethical conduct matter.",
+      subtitleAr:
+        "يتم تقدير الإنجازات والاعتراف بها، لأن الجهد والتميّز والسلوك المهني القائم على القيم يشكّلون أساس نجاحنا.",
+      images: staffActivitiesImages,
+    },
+    {
+      key: "gala-dinner",
+      titleEn: "Gala Dinner",
+      titleAr: "حفل العشاء السنوي",
+      subtitleEn: "A night of elegance, gratitude and celebration.",
+      subtitleAr: "أمسية استثنائية تجمع بين الأناقة، والامتنان، والاحتفال بإنجازات فريقنا.",
+      images: galaDinnerImages,
+    },
+    {
+      key: "hospitality-week",
+      titleEn: "Hospitality Week",
+      titleAr: "أسبوع الضيافة",
+      subtitleEn: "A week devoted to the hospitality spirit that defines Royale Hayat.",
+      subtitleAr:
+        "أسبوع مخصص للاحتفاء بروح الضيافة التي تميّز مستشفى رويال حياة وتعكس هويتنا الإنسانية.",
+      images: hospitalityWeekImages,
+    },
+    {
+      key: "rhh-quiz",
+      titleEn: "Royale Hayat Hospital Quiz",
+      titleAr: "مسابقة رويال حياة",
+      subtitleEn: "Fun, friendly competition across teams.",
+      subtitleAr: "أجواء من التفاعل، والمتعة، والمنافسة الودية التي تجمع فرق العمل بروح واحدة.",
+      images: rhhQuizImages,
+    },
+  ];
 
 const staticEmployees = [
   {
@@ -442,7 +442,7 @@ const WorkWithUs = ({
         if (!jobs.length) return;
         setApiJobs(jobs);
       })
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   useEffect(() => {
@@ -543,28 +543,28 @@ const WorkWithUs = ({
                 lang={isAr ? "ar" : "en"}
                 className={isAr ? "text-right" : "text-left"}
               >
-              <h1 className={`text-4xl md:text-5xl font-serif text-primary mb-6 leading-tight ${isAr ? "!font-bold" : "font-bold"}`}>
-                {isAr
-                  ? "الحياة في مستشفى رويال حياة"
-                  : "Life at Royale Hayat Hospital"}
-              </h1>
-              <div className="work-body-copy space-y-4 font-body tracking-normal text-[13px] sm:text-sm text-foreground leading-relaxed text-start">
-                <p>
+                <h1 className={`text-4xl md:text-5xl font-serif text-primary mb-6 leading-tight ${isAr ? "!font-bold" : "font-bold"}`}>
                   {isAr
-                    ? "في مستشفى رويال حياة، نؤمن بأن الناس قد ينسون ما قلناه، لكنهم لن ينسوا أبدًا كيف جعلناهم يشعرون كمرضى، أو أفراد عائلة، أو زملاء عمل."
-                    : "At Royale Hayat Hospital, we hold a simple belief: people may forget what we said, but they will never forget how we made them feel as patients, family members, or colleagues."}
-                </p>
-                <p>
-                  {isAr
-                    ? "هذا الإيمان هو ما يوجّه طريقتنا في الرعاية والعمل والتعامل مع الآخرين. ففي كل يوم، يحرص فريقنا على تقديم رعاية آمنة ومتطورة وعالية الجودة، ممزوجة بالرحمة والراحة، لأن الشفاء لا يقتصر على العلاج فقط، بل يشمل التجربة الإنسانية الكاملة."
-                    : "That belief guides how we care, how we work, and how we treat one another. Every day, our teams deliver safe, modern, quality care with compassion and comfort—because healing is not only about medicine, but about experience."}
-                </p>
-                <p>
-                  {isAr
-                    ? "هنا، تلتقي المهنية باللطف، والمعايير العالية بالتعاطف، والعمل بالرسالة الهادفة. وإذا كانت هذه القيم تشبهك، فأنت بالفعل تنتمي إلى هنا."
-                    : "Here, professionalism meets kindness. Standards meet empathy. And work carries purpose. If this belief resonates with you, you already belong here."}
-                </p>
-              </div>
+                    ? "الحياة في مستشفى رويال حياة"
+                    : "Life at Royale Hayat Hospital"}
+                </h1>
+                <div className="work-body-copy space-y-4 font-body tracking-normal text-[13px] sm:text-sm text-foreground leading-relaxed text-start">
+                  <p>
+                    {isAr
+                      ? "في مستشفى رويال حياة، نؤمن بأن الناس قد ينسون ما قلناه، لكنهم لن ينسوا أبدًا كيف جعلناهم يشعرون كمرضى، أو أفراد عائلة، أو زملاء عمل."
+                      : "At Royale Hayat Hospital, we hold a simple belief: people may forget what we said, but they will never forget how we made them feel as patients, family members, or colleagues."}
+                  </p>
+                  <p>
+                    {isAr
+                      ? "هذا الإيمان هو ما يوجّه طريقتنا في الرعاية والعمل والتعامل مع الآخرين. ففي كل يوم، يحرص فريقنا على تقديم رعاية آمنة ومتطورة وعالية الجودة، ممزوجة بالرحمة والراحة، لأن الشفاء لا يقتصر على العلاج فقط، بل يشمل التجربة الإنسانية الكاملة."
+                      : "That belief guides how we care, how we work, and how we treat one another. Every day, our teams deliver safe, modern, quality care with compassion and comfort—because healing is not only about medicine, but about experience."}
+                  </p>
+                  <p>
+                    {isAr
+                      ? "هنا، تلتقي المهنية باللطف، والمعايير العالية بالتعاطف، والعمل بالرسالة الهادفة. وإذا كانت هذه القيم تشبهك، فأنت بالفعل تنتمي إلى هنا."
+                      : "Here, professionalism meets kindness. Standards meet empathy. And work carries purpose. If this belief resonates with you, you already belong here."}
+                  </p>
+                </div>
               </div>
             </ScrollAnimationWrapper>
           </div>
@@ -656,112 +656,115 @@ const WorkWithUs = ({
               </div>
             </div>
             {currentEmployee && (
-            <div
-              className="relative max-w-5xl mx-auto"
-              onMouseEnter={() => setIsEmpPaused(true)}
-              onMouseLeave={() => setIsEmpPaused(false)}
-            >
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={currentEmployee.key}
-                  initial={isIOSWebKit ? false : { opacity: 0, x: isAr ? -30 : 30 }}
-                  animate={isIOSWebKit ? { opacity: 1 } : { opacity: 1, x: 0 }}
-                  exit={isIOSWebKit ? { opacity: 0 } : { opacity: 0, x: isAr ? 30 : -30 }}
-                  transition={{ duration: 0.4 }}
-                  className="ios-flicker-fix bg-popover border border-border/50 rounded-2xl overflow-hidden shadow-lg"
-                >
-                  <div className="flex flex-col md:flex-row">
-                    <div className="md:w-96 flex-shrink-0 bg-primary/5 p-6 flex items-center justify-center">
-                      <img
-                        src={getEmployeeImageSrc(currentEmployee.image)}
-                        alt={isAr ? currentEmployee.nameAr : currentEmployee.name}
-                        className="w-full max-h-[420px] object-contain rounded-2xl"
-                        loading="eager"
-                        decoding="sync"
-                        onError={(event) => {
-                          const img = event.currentTarget;
-                          if (img.dataset.fallbackApplied === "true") return;
-                          img.dataset.fallbackApplied = "true";
-                          img.src = DEFAULT_EMPLOYEE_IMAGE;
-                        }}
-                      />
-                    </div>
-                    <div className="flex-1 p-6 md:p-8">
-                      {isAr && currentEmployee.sectorAr && (
-                        <p className="font-body text-xs text-muted-foreground uppercase tracking-wide mb-2">
-                          {currentEmployee.sectorAr}
-                        </p>
-                      )}
-                      {employeeMonthYear && (
-                        <p className="font-body text-sm text-accent uppercase tracking-wide mb-2">
-                          {employeeMonthYear}
-                        </p>
-                      )}
-                      <h3 className={`font-serif text-2xl text-foreground mb-1 ${isAr ? "!font-bold" : "font-bold"}`}>
-                        {isAr ? currentEmployee.nameAr : currentEmployee.name}
-                      </h3>
-                      <p className="font-body text-xs text-accent uppercase tracking-wide mb-2">
-                        {isAr ? currentEmployee.deptAr : currentEmployee.dept}
-                      </p>
-                      <p
-                        className={`font-body text-sm text-accent mb-5 ${isAr ? "" : "justified-body-en"}`}
-                        lang={isAr ? "ar" : "en"}
-                      >
-                        {isAr ? currentEmployee.roleAr : currentEmployee.role}
-                      </p>
-                      <div>
-                        <h4 className="font-serif text-base text-foreground mb-3">
-                          {isAr ? "الإنجازات" : "Achievements"}
-                        </h4>
-                        <div className="space-y-4 text-sm text-muted-foreground leading-relaxed font-body">
-                          {(isAr
-                            ? currentEmployee.achievementsAr
-                            : currentEmployee.achievements
-                          ).map((ach, idx) => (
-                            <p key={idx} className={isAr ? "" : "justified-body-en"} lang={isAr ? "ar" : "en"}>
-                              {ach}
+              <div
+                className="relative max-w-5xl mx-auto"
+                onMouseEnter={() => setIsEmpPaused(true)}
+                onMouseLeave={() => setIsEmpPaused(false)}
+              >
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={currentEmployee.key}
+                    initial={isIOSWebKit ? false : { opacity: 0, x: isAr ? -30 : 30 }}
+                    animate={isIOSWebKit ? { opacity: 1 } : { opacity: 1, x: 0 }}
+                    exit={isIOSWebKit ? { opacity: 0 } : { opacity: 0, x: isAr ? 30 : -30 }}
+                    transition={{ duration: 0.4 }}
+                    className="ios-flicker-fix bg-popover border border-border/50 rounded-2xl overflow-hidden shadow-lg"
+                  >
+                    <div className="flex flex-col md:flex-row">
+                      <div className="md:w-96 flex-shrink-0 bg-primary/5 p-6 flex items-center justify-center">
+                        <img
+                          src={getEmployeeImageSrc(currentEmployee.image)}
+                          alt={isAr ? currentEmployee.nameAr : currentEmployee.name}
+                          className="w-full max-h-[420px] object-contain rounded-2xl"
+                          loading="eager"
+                          decoding="sync"
+                          onError={(event) => {
+                            const img = event.currentTarget;
+                            if (img.dataset.fallbackApplied === "true") return;
+                            img.dataset.fallbackApplied = "true";
+                            img.src = DEFAULT_EMPLOYEE_IMAGE;
+                          }}
+                        />
+                      </div>
+                      <div className="flex-1 p-6 md:p-8">
+                        <div className="space-y-3 mb-6">
+                          {isAr && currentEmployee.sectorAr && (
+                            <p className="font-body text-xs text-muted-foreground uppercase tracking-wide">
+                              {currentEmployee.sectorAr}
                             </p>
-                          ))}
+                          )}
+                          {employeeMonthYear && (
+                            <p className="font-body text-sm text-accent uppercase tracking-wide">
+                              {employeeMonthYear}
+                            </p>
+                          )}
+                          <h3 className={`font-serif text-2xl text-foreground ${isAr ? "!font-bold" : "font-bold"}`}>
+                            {isAr ? currentEmployee.nameAr : currentEmployee.name}
+                          </h3>
+                          <p
+                            className={`font-body text-xs text-accent ${isAr ? "" : "justified-body-en"}`}
+                            lang={isAr ? "ar" : "en"}
+                          >
+                            {isAr ? currentEmployee.roleAr : currentEmployee.role}
+                          </p>
+                          <p className="font-body text-xs text-accent uppercase tracking-wide">
+                            {isAr ? currentEmployee.deptAr : currentEmployee.dept}
+                          </p>
+                        </div>
+
+                        <div>
+                          <h4 className="font-serif text-base text-foreground mb-3">
+                            {isAr ? "الإنجازات" : "Achievements"}
+                          </h4>
+                          <div className="space-y-4 text-sm text-muted-foreground leading-relaxed font-body">
+                            {(isAr
+                              ? currentEmployee.achievementsAr
+                              : currentEmployee.achievements
+                            ).map((ach, idx) => (
+                              <p key={idx} className={isAr ? "" : "justified-body-en"} lang={isAr ? "ar" : "en"}>
+                                {ach}
+                              </p>
+                            ))}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </motion.div>
-              </AnimatePresence>
-              {displayEmployees.length > 1 && (
-                <>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setEmpIndex(
-                        (prev) =>
-                          (prev - 1 + displayEmployees.length) % displayEmployees.length,
-                      )
-                    }
-                    aria-label={isAr ? "السابق" : "Previous"}
-                    className="absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 active:scale-95 [webkit-tap-highlight-color:transparent]"
-                  >
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setEmpIndex((prev) => (prev + 1) % displayEmployees.length)
-                    }
-                    aria-label={isAr ? "التالي" : "Next"}
-                    className="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 active:scale-95 [webkit-tap-highlight-color:transparent]"
-                  >
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
-                </>
-              )}
-              <div className="flex items-center justify-center gap-3 mt-5">
-                <span className="font-body text-xs text-muted-foreground tracking-widest">
-                  {String(empIndex + 1).padStart(2, "0")} /{" "}
-                  {String(displayEmployees.length).padStart(2, "0")}
-                </span>
+                  </motion.div>
+                </AnimatePresence>
+                {displayEmployees.length > 1 && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setEmpIndex(
+                          (prev) =>
+                            (prev - 1 + displayEmployees.length) % displayEmployees.length,
+                        )
+                      }
+                      aria-label={isAr ? "السابق" : "Previous"}
+                      className="absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 active:scale-95 [webkit-tap-highlight-color:transparent]"
+                    >
+                      <ChevronLeft className="w-5 h-5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setEmpIndex((prev) => (prev + 1) % displayEmployees.length)
+                      }
+                      aria-label={isAr ? "التالي" : "Next"}
+                      className="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-border bg-background/95 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 active:scale-95 [webkit-tap-highlight-color:transparent]"
+                    >
+                      <ChevronRight className="w-5 h-5" />
+                    </button>
+                  </>
+                )}
+                <div className="flex items-center justify-center gap-3 mt-5">
+                  <span className="font-body text-xs text-muted-foreground tracking-widest">
+                    {String(empIndex + 1).padStart(2, "0")} /{" "}
+                    {String(displayEmployees.length).padStart(2, "0")}
+                  </span>
+                </div>
               </div>
-            </div>
             )}
           </div>
         </section>
@@ -830,11 +833,10 @@ const WorkWithUs = ({
                   <button
                     key={cat}
                     onClick={() => setActiveCategory(cat)}
-                    className={`whitespace-nowrap px-5 py-2 rounded-full text-xs font-body tracking-wide border transition-all ${
-                      activeCategory === cat
+                    className={`whitespace-nowrap px-5 py-2 rounded-full text-xs font-body tracking-wide border transition-all ${activeCategory === cat
                         ? "bg-primary text-primary-foreground border-primary"
                         : "bg-popover text-foreground border-border hover:border-primary/40"
-                    }`}
+                      }`}
                   >
                     {isAr ? (categoryLabelAr[cat] ?? cat) : cat.toUpperCase()}
                   </button>

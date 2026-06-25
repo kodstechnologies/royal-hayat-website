@@ -21,6 +21,7 @@ import {
 } from "@/api/doctors";
 import { mapApiDepartmentsToDisplay } from "@/utils/mapApiDepartment";
 import { sortDepartmentsByDisplayOrder } from "@/utils/doctorDepartmentOrder";
+import { sortDoctorsInDepartment } from "@/utils/sortDoctorsInDepartment";
 import type { Department } from "@/types/department";
 import { MAIN_CATEGORIES } from "@/types/department";
 import { createAppointmentRequest } from "@/api/appointmentRequest";
@@ -708,15 +709,13 @@ const BookAppointment = () => {
     if (i === 1 && step > 1) setShowAllDoctors(true);
     setStep(i);
   };
-  const doctors = useMemo(
-    () =>
-      [...filterDoctorsBySearch(deptDoctorList, doctorSearch)]
-        .filter((d) => !isPharmacyNonBookableDoctor(d))
-        .sort((a, b) =>
-          (isAr ? a.nameAr : a.name).localeCompare(isAr ? b.nameAr : b.name, isAr ? "ar" : "en"),
-        ),
-    [deptDoctorList, doctorSearch, isAr],
-  );
+  const doctors = useMemo(() => {
+    const filtered = [...filterDoctorsBySearch(deptDoctorList, doctorSearch)].filter(
+      (d) => !isPharmacyNonBookableDoctor(d),
+    );
+    const deptName = departmentsList.find((d) => d.id === selectedDept)?.name ?? "";
+    return sortDoctorsInDepartment(filtered, deptName, isAr ? "ar" : "en");
+  }, [deptDoctorList, doctorSearch, isAr, selectedDept, departmentsList]);
   const filteredAllDoctors = useMemo(
     () =>
       [...filterDoctorsBySearch(

@@ -16,7 +16,6 @@ interface ServiceItem {
   desc: string;
   descAr: string;
   img: string;
-  slug: string;
   department: string;
   subspecialties: { name: string; nameAr: string }[];
 }
@@ -707,16 +706,16 @@ const SpecializedCare = () => {
                                 ))}
                               </div>
                             </div>
-                            <div className="mt-6 pt-4 border-t border-border/30 flex justify-center">
-                              {s.subspecialties.length > 0 && selectedSubSlug && departmentSlug && (
-                                <button
-                                  onClick={() => openMedicalService(`/medical-services/${departmentSlug}/${selectedSubSlug}`)}
-                                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground font-body text-xs tracking-[0.15em] uppercase rounded-full hover:bg-primary/90 transition-colors"
-                                >
-                                  {t("learnMore")} <ArrowRight className={`w-3.5 h-3.5 shrink-0 ${lang === "ar" ? "rotate-180" : ""}`} />
-                                </button>
-                              )}
-                            </div>
+                          </div>
+                        )}
+                        {s.subspecialties.length > 0 && selectedSubSlug && departmentSlug && (
+                          <div className={`pt-4 flex justify-center ${deptDoctors.length > 0 ? "mt-6 border-t border-border/30" : "mt-auto"}`}>
+                            <button
+                              onClick={() => openMedicalService(`/medical-services/${departmentSlug}/${selectedSubSlug}`)}
+                              className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground font-body text-xs tracking-[0.15em] uppercase rounded-full hover:bg-primary/90 transition-colors"
+                            >
+                              {t("learnMore")} <ArrowRight className={`w-3.5 h-3.5 shrink-0 ${lang === "ar" ? "rotate-180" : ""}`} />
+                            </button>
                           </div>
                         )}
                       </div>

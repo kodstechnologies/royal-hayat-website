@@ -2302,13 +2302,13 @@ Clinic Code:`;
                       </span>
                     </p>
                   )}
-                  {selectedDate && patientType !== "new" && isLoadingSlots && (
+                  {selectedDate && isLoadingSlots && (
                     <div className="flex flex-col items-center justify-center py-12">
                       <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }} className="w-10 h-10 rounded-full border-2 border-accent/20 border-t-accent mb-4" />
                       <p className="font-body text-sm text-muted-foreground">{isAr ? "جارِ جلب المواعيد المتاحة..." : "Fetching available time slots..."}</p>
                     </div>
                   )}
-                  {selectedDate && patientType !== "new" && !isLoadingSlots && slotsForSelectedDate.length > 0 && (
+                  {selectedDate && !isLoadingSlots && slotsForSelectedDate.length > 0 && (
                     <div className="space-y-6">
                       <p className="font-body text-xs text-muted-foreground uppercase tracking-wider">{isAr ? "الفترة المتاحة" : "Available times"}</p>
                       {Object.entries(slotsByPeriod).map(([period, slots]) => slots.length > 0 && (
@@ -2337,7 +2337,7 @@ Clinic Code:`;
                       ))}
                     </div>
                   )}
-                  {selectedDate && patientType !== "new" && !isLoadingSlots && slotsForSelectedDate.length === 0 && slotsFetchReady && (
+                  {selectedDate && !isLoadingSlots && slotsForSelectedDate.length === 0 && slotsFetchReady && (
                     <div className="text-center py-12 text-muted-foreground font-body text-sm bg-muted/20 rounded-2xl border border-dashed border-border">
                       <AlertCircle className="w-8 h-8 mx-auto mb-2 opacity-30" />
                       {isAr ? "لا توجد مواعيد متاحة لهذا اليوم" : "No available appointments for this date"}

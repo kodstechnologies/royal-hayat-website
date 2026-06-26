@@ -644,7 +644,7 @@ const WorkWithUs = ({
               </p>
               <div className="mt-4 space-y-2">
                 <h3 className={`text-xl md:text-4xl font-serif text-foreground ${isAr ? "!font-bold" : "font-bold"}`}>
-                  {isAr ? "أفضل موظفي شهر أبريل" : "Employees of the Month"}{" "}
+                  {isAr ? "موظفو الشهر" : "Employees of the Month"}{" "}
                 </h3>
               </div>
             </div>

@@ -4,7 +4,6 @@ import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { CalendarCheck, ListChecks, Stethoscope } from "lucide-react";
 import { loadDoctors, type Doctor } from "@/data/loadDoctors";
@@ -35,6 +34,42 @@ const MED_REP_FULL_DEPARTMENTS = [
   "Pediatrics",
 ] as const;
 
+/** Calendly event slugs on https://calendly.com/rhhmedrep — keyed by site doctor id. */
+const MED_REP_CALENDLY_SLUG_BY_ID: Record<string, string> = {
+  "dr-abubakr-elmardi": "dr-abubakr-elmardi",
+  "dr-essam-sakr": "dr-essam-sakr",
+  "dr-mona-abou-taam": "dr-mona-aboutaam",
+  "dr-lobna-ibrahim-bassiouni": "dr-lobna-bassiouni",
+  "dr-zeinab-sholkany-m-saad": "dr-zeinab-sholkany",
+  "dr-eman-alsayegh": "dr-eman-alsayegh",
+  "dr-hanafi-abdelsalam": "dr-hanafi-abdulsalam",
+  "dr-hamoud-abdullah-alarouj": "dr-hamoud-alarouj",
+  "dr-hussein-faour": "dr-hussein-faour",
+  "heba-ben-salamah": "hebah-bensalama",
+  "dr-wadha-abdulaziz-al-jaser": "dr-wadha-aljasser",
+  "dr-ali-ibrahim-aldei": "dr-alialdei",
+  "dr-abdullah-albader": "drabdullah-albader",
+  "dr-salma-ibrahim": "dr-salma-ibrahim",
+  "dr-hafsah-hussain": "dr-hafsah-hussain",
+  "dr-hamid-ghaderi": "dr-hamid-ghaderi",
+};
+
+const CALENDLY_MED_REP_BASE = "https://calendly.com/rhhmedrep";
+
+/** Extra individual Calendly bookings shown below a department section. */
+const MED_REP_EXTRA_BOOKINGS_AFTER_DEPT: Partial<
+  Record<string, { doctorId: string; slug: string; bookLabelEn: string; bookLabelAr: string }[]>
+> = {
+  "Internal Medicine": [
+    {
+      doctorId: "dr-ali-ibrahim-aldei",
+      slug: "dr-alialdei",
+      bookLabelEn: "Dr. Ali Aldei (Internal Medicine & Rheumatologist)",
+      bookLabelAr: "د. علي الدعي (الطب الباطني والروماتيزم)",
+    },
+  ],
+};
+
 const isMedRepEligibleDoctor = (doc: Doctor) =>
   (doc.id != null && MED_REP_ALLOWED_DOCTOR_IDS.has(doc.id)) ||
   MED_REP_FULL_DEPARTMENTS.some((dept) => doctorMatchesDepartment(dept, doc));
@@ -52,7 +87,9 @@ const getCleanCalendlySlug = (name: string) => {
     'Lobna Ibrahim Bassiouni': 'dr-lobna-bassiouni',
     'Zeinab Sholkany': 'dr-zeinab-sholkany',
     'Zeinab Sholkany M.saad': 'dr-zeinab-sholkany',
-    'Zeinab Sholkany Msaad': 'dr-zeinab-sholkany',
+    'Zeinab Sholkany M Saad': 'dr-zeinab-sholkany',
+    'Hanafi Abdelsalam': 'dr-hanafi-abdulsalam',
+    'Hanafi Mahmoud Abdul Salam': 'dr-hanafi-abdulsalam',
     'Eman Alsayegh': 'dr-eman-alsayegh',
     'Eman Al Sayegh': 'dr-eman-alsayegh',
     'Mayada Al Qadi': 'dr-mayada-al-qadi-ob-gyn-clone',
@@ -98,6 +135,109 @@ const getCleanCalendlySlug = (name: string) => {
   }
   return `dr-${first.toLowerCase()}-${last.toLowerCase()}`;
 };
+
+const getMedRepCalendlyUrl = (doc: Doctor): string => {
+  if (doc.id && MED_REP_CALENDLY_SLUG_BY_ID[doc.id]) {
+    return `${CALENDLY_MED_REP_BASE}/${MED_REP_CALENDLY_SLUG_BY_ID[doc.id]}`;
+  }
+  return `${CALENDLY_MED_REP_BASE}/${getCleanCalendlySlug(doc.name)}`;
+};
+
+type MedRepDoctorCardProps = {
+  doc: Doctor;
+  isAr: boolean;
+  bookLabel: string;
+  calendlyUrl: string;
+};
+
+const MedRepBookableDoctorCard = ({
+  doc,
+  isAr,
+  bookLabel,
+  calendlyUrl,
+}: MedRepDoctorCardProps) => (
+  <a
+    href={calendlyUrl}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="block"
+  >
+    <div className="bg-popover rounded-2xl border border-border/50 group cursor-pointer h-full flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+      <div className="bg-white h-64 flex items-center justify-center relative overflow-hidden rounded-t-2xl shrink-0">
+        {doc.image ? (
+          <img src={doc.image} alt={isAr ? doc.nameAr : doc.name} className="w-full h-full object-cover object-top" />
+        ) : (
+          <div className="w-20 h-20 rounded-full bg-popover/20 backdrop-blur-sm flex items-center justify-center border-2 border-popover/30">
+            <span className="text-2xl font-serif text-primary-foreground">{doc.initials}</span>
+          </div>
+        )}
+        <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-popover/20 backdrop-blur-sm flex items-center justify-center">
+          <Stethoscope className="w-3.5 h-3.5 text-primary-foreground" />
+        </div>
+      </div>
+      <div className="p-5 flex flex-col flex-grow">
+        <p className="text-accent text-[10px] tracking-[0.2em] uppercase font-body mb-1.5">
+          {isAr ? doc.specialtyAr : doc.specialty}
+        </p>
+        <h4 className="text-base font-serif text-foreground mb-1">{isAr ? doc.nameAr : doc.name}</h4>
+        <p className="text-muted-foreground font-body text-xs mb-3">{isAr ? doc.titleAr : doc.title}</p>
+        {doc.hideBooking !== true && (
+          <div className="flex items-center gap-1.5 mb-4 text-green-600">
+            <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+            <span className="font-body text-[10px]">
+              {doc.availableOnline !== false
+                ? (isAr ? "متاح للحجز اونلاين" : "Book Online")
+                : (isAr ? "طلب موعد" : "Appointment Request")}
+            </span>
+          </div>
+        )}
+        <div className="mt-auto pt-2">
+          <Button className="w-full gap-2 transition-transform group-hover:scale-[1.02]">
+            <CalendarCheck className="w-4 h-4" />
+            {bookLabel}
+          </Button>
+        </div>
+      </div>
+    </div>
+  </a>
+);
+
+const MedRepDepartmentDoctorCard = ({ doc, isAr }: { doc: Doctor; isAr: boolean }) => (
+  <div className="block">
+    <div className="bg-popover rounded-2xl border border-border/50 h-full flex flex-col">
+      <div className="bg-white h-64 flex items-center justify-center relative overflow-hidden rounded-t-2xl shrink-0">
+        {doc.image ? (
+          <img src={doc.image} alt={isAr ? doc.nameAr : doc.name} className="w-full h-full object-cover object-top" />
+        ) : (
+          <div className="w-20 h-20 rounded-full bg-popover/20 backdrop-blur-sm flex items-center justify-center border-2 border-popover/30">
+            <span className="text-2xl font-serif text-primary-foreground">{doc.initials}</span>
+          </div>
+        )}
+        <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-popover/20 backdrop-blur-sm flex items-center justify-center">
+          <Stethoscope className="w-3.5 h-3.5 text-primary-foreground" />
+        </div>
+      </div>
+      <div className="p-5 flex flex-col flex-grow">
+        <p className="text-accent text-[10px] tracking-[0.2em] uppercase font-body mb-1.5">
+          {isAr ? doc.specialtyAr : doc.specialty}
+        </p>
+        <h4 className="text-base font-serif text-foreground mb-1">{isAr ? doc.nameAr : doc.name}</h4>
+        <p className="text-muted-foreground font-body text-xs mb-3">{isAr ? doc.titleAr : doc.title}</p>
+        {doc.hideBooking !== true && (
+          <div className="flex items-center gap-1.5 mb-4 text-green-600">
+            <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+            <span className="font-body text-[10px]">
+              {doc.availableOnline !== false
+                ? (isAr ? "متاح للحجز اونلاين" : "Book Online")
+                : (isAr ? "طلب موعد" : "Appointment Request")}
+            </span>
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+);
+
 const MedicalRepVisitBooking = () => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
@@ -188,12 +328,12 @@ const MedicalRepVisitBooking = () => {
           <ScrollAnimationWrapper>
             <div className="flex flex-row items-center gap-4 mb-6">
               <h2 className="text-2xl font-serif text-foreground m-0">{isAr ? "روابط عامة" : "General Link"}</h2>
-              <Link to="https://calendly.com/rhhmedrep" target="_blank">
+              <a href={CALENDLY_MED_REP_BASE} target="_blank" rel="noopener noreferrer">
                 <Button size="lg" className="gap-2">
                   <CalendarCheck className="w-5 h-5" />
                   {isAr ? "احجز الآن" : "Book Now"}
                 </Button>
-              </Link>
+              </a>
             </div>
             <h2 className="text-2xl font-serif text-foreground mb-6">
               {isAr ? "الأطباء حسب القسم" : "Doctors by Department"}
@@ -221,96 +361,55 @@ const MedicalRepVisitBooking = () => {
                         {isAr ? dept.nameAr : dept.name}
                       </h3>
                       {isDepartmentBooking && (
-                        <Link to={getDepartmentBookingUrl()} target="_blank">
+                        <a href={getDepartmentBookingUrl()} target="_blank" rel="noopener noreferrer">
                           <Button size="lg" className="gap-2">
                             <CalendarCheck className="w-5 h-5" />
                             {isAr ? "احجز الآن" : "Book Now"}
                           </Button>
-                        </Link>
+                        </a>
                       )}
                     </div>
                     <p className="text-muted-foreground font-body text-sm text-justify mt-1 mb-5">
                       {isAr ? dept.descAr : dept.desc}
                     </p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                      {deptDoctors.map((doc: Doctor) => (
+                      {deptDoctors.map((doc: Doctor) =>
                         isDepartmentBooking ? (
-                          <div key={doc.id} className="block">
-                            <div className="bg-popover rounded-2xl border border-border/50 h-full flex flex-col">
-                              <div className="bg-white h-64 flex items-center justify-center relative overflow-hidden rounded-t-2xl shrink-0">
-                                {doc.image ? (
-                                  <img src={doc.image} alt={isAr ? doc.nameAr : doc.name} className="w-full h-full object-cover object-top" />
-                                ) : (
-                                  <div className="w-20 h-20 rounded-full bg-popover/20 backdrop-blur-sm flex items-center justify-center border-2 border-popover/30">
-                                    <span className="text-2xl font-serif text-primary-foreground">{doc.initials}</span>
-                                  </div>
-                                )}
-                                <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-popover/20 backdrop-blur-sm flex items-center justify-center">
-                                  <Stethoscope className="w-3.5 h-3.5 text-primary-foreground" />
-                                </div>
-                              </div>
-                              <div className="p-5 flex flex-col flex-grow">
-                                <p className="text-accent text-[10px] tracking-[0.2em] uppercase font-body mb-1.5">
-                                  {isAr ? doc.specialtyAr : doc.specialty}
-                                </p>
-                                <h4 className="text-base font-serif text-foreground mb-1">{isAr ? doc.nameAr : doc.name}</h4>
-                                <p className="text-muted-foreground font-body text-xs mb-3">{isAr ? doc.titleAr : doc.title}</p>
-                                {doc.hideBooking !== true && (
-                                  <div className={`flex items-center gap-1.5 mb-4 ${doc.availableOnline !== false ? "text-green-600" : "text-destructive"}`}>
-                                    <div className={`w-1.5 h-1.5 rounded-full ${doc.availableOnline !== false ? "bg-green-500" : "bg-destructive"}`} />
-                                    <span className="font-body text-[10px]">
-                                      {doc.availableOnline !== false
-                                        ? (isAr ? "متاح للحجز اونلاين" : "Book Online")
-                                        : (isAr ? "غير متاح للحجز اونلاين" : "Not Available for Online Booking")}
-                                    </span>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </div>
+                          <MedRepDepartmentDoctorCard key={doc.id} doc={doc} isAr={isAr} />
                         ) : (
-                          <Link key={doc.id} to={`https://calendly.com/rhhmedrep/${getCleanCalendlySlug(doc.name)}`} target="_blank" className="block">
-                            <div className="bg-popover rounded-2xl border border-border/50 group cursor-pointer h-full flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-                              <div className="bg-white h-64 flex items-center justify-center relative overflow-hidden rounded-t-2xl shrink-0">
-                                {doc.image ? (
-                                  <img src={doc.image} alt={isAr ? doc.nameAr : doc.name} className="w-full h-full object-cover object-top" />
-                                ) : (
-                                  <div className="w-20 h-20 rounded-full bg-popover/20 backdrop-blur-sm flex items-center justify-center border-2 border-popover/30">
-                                    <span className="text-2xl font-serif text-primary-foreground">{doc.initials}</span>
-                                  </div>
-                                )}
-                                <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-popover/20 backdrop-blur-sm flex items-center justify-center">
-                                  <Stethoscope className="w-3.5 h-3.5 text-primary-foreground" />
-                                </div>
-                              </div>
-                              <div className="p-5 flex flex-col flex-grow">
-                                <p className="text-accent text-[10px] tracking-[0.2em] uppercase font-body mb-1.5">
-                                  {isAr ? doc.specialtyAr : doc.specialty}
-                                </p>
-                                <h4 className="text-base font-serif text-foreground mb-1">{isAr ? doc.nameAr : doc.name}</h4>
-                                <p className="text-muted-foreground font-body text-xs mb-3">{isAr ? doc.titleAr : doc.title}</p>
-                                {doc.hideBooking !== true && (
-                                  <div className={`flex items-center gap-1.5 mb-4 ${doc.availableOnline !== false ? "text-green-600" : "text-destructive"}`}>
-                                    <div className={`w-1.5 h-1.5 rounded-full ${doc.availableOnline !== false ? "bg-green-500" : "bg-destructive"}`} />
-                                    <span className="font-body text-[10px]">
-                                      {doc.availableOnline !== false
-                                        ? (isAr ? "متاح للحجز اونلاين" : "Book Online")
-                                        : (isAr ? "غير متاح للحجز اونلاين" : "Not Available for Online Booking")}
-                                    </span>
-                                  </div>
-                                )}
-                                <div className="mt-auto pt-2">
-                                  <Button className="w-full gap-2 transition-transform group-hover:scale-[1.02]">
-                                    <CalendarCheck className="w-4 h-4" />
-                                    {isAr ? "احجز الآن" : "Book Now"}
-                                  </Button>
-                                </div>
-                              </div>
-                            </div>
-                          </Link>
-                        )
-                      ))}
+                          <MedRepBookableDoctorCard
+                            key={doc.id}
+                            doc={doc}
+                            isAr={isAr}
+                            bookLabel={isAr ? "احجز الآن" : "Book Now"}
+                            calendlyUrl={getMedRepCalendlyUrl(doc)}
+                          />
+                        ),
+                      )}
                     </div>
+                    {MED_REP_EXTRA_BOOKINGS_AFTER_DEPT[dept.name]?.map((extra) => {
+                      const doc = deptDoctors.find((d) => d.id === extra.doctorId);
+                      if (!doc) return null;
+                      return (
+                        <div
+                          key={`${extra.doctorId}-extra`}
+                          className="mt-8 pt-8 border-t border-border/50"
+                        >
+                          <h4 className="text-lg font-serif text-foreground mb-4">
+                            {isAr ? extra.bookLabelAr : extra.bookLabelEn}
+                          </h4>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                            <MedRepBookableDoctorCard
+                              key={`${extra.doctorId}-extra-card`}
+                              doc={doc}
+                              isAr={isAr}
+                              bookLabel={isAr ? "احجز الآن" : "Book Now"}
+                              calendlyUrl={`${CALENDLY_MED_REP_BASE}/${extra.slug}`}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </ScrollAnimationWrapper>
               );

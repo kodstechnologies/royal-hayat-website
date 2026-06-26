@@ -332,23 +332,103 @@ export function syncDoctorCarouselIndex(_container: HTMLElement) {
   // Index is derived from scroll position when needed; no cached state to sync.
 }
 
+export function scrollDoctorCarouselToDoctor(
+  container: HTMLElement,
+  doctorId: string,
+): boolean {
+  const cards = getCards(container);
+  const index = cards.findIndex(
+    (card) => card.getAttribute("data-doctor-id") === doctorId,
+  );
+  if (index === -1) return false;
+  snapToIndex(container, index, "auto");
+  return true;
+}
+
+/** Google Nest Hub (1024×600) and Nest Hub Max (1280×800) smart displays. */
+export function isNestHubViewport() {
+  if (typeof window === "undefined") return false;
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  const isTouchDisplay = window.matchMedia("(pointer: coarse) and (hover: none)").matches;
+  const isNestHub = w >= 1018 && w <= 1030 && h >= 580 && h <= 620;
+  const isNestHubMax = w >= 1270 && w <= 1290 && h >= 780 && h <= 820;
+  return isTouchDisplay && (isNestHub || isNestHubMax);
+}
+
+function carouselHasOverflow(container: HTMLElement) {
+  const cards = getCards(container);
+  if (cards.length <= 1) return false;
+
+  const maxScroll = getMaxScroll(container);
+  if (maxScroll > 8) return true;
+
+  if (container.clientWidth > 0) {
+    const first = cards[0];
+    const last = cards[cards.length - 1];
+    const layoutSpan = last.offsetLeft + last.offsetWidth - first.offsetLeft;
+    if (layoutSpan > container.clientWidth + 8) return true;
+  }
+
+  const containerRect = container.getBoundingClientRect();
+  if (containerRect.width <= 0) return false;
+
+  const firstRect = cards[0].getBoundingClientRect();
+  const lastRect = cards[cards.length - 1].getBoundingClientRect();
+  const contentSpan = firstRect.right - lastRect.left;
+
+  return contentSpan > containerRect.width + 8;
+}
+
+function getRtlCarouselScrollState(container: HTMLElement, maxScroll: number) {
+  const tolerance = Math.max(12, Math.round(maxScroll * 0.02));
+  const scrollLeft = getNormalizedScrollLeft(container);
+  const cards = getCards(container);
+  const containerRect = container.getBoundingClientRect();
+  const lastRect = cards[cards.length - 1].getBoundingClientRect();
+
+  const atStart = scrollLeft <= tolerance;
+
+  const atEnd =
+    maxScroll > tolerance &&
+    scrollLeft >= maxScroll - tolerance &&
+    lastRect.right > containerRect.left + tolerance &&
+    lastRect.left <= containerRect.left + tolerance;
+
+  if (maxScroll <= tolerance) {
+    return {
+      canScrollLeft: true,
+      canScrollRight: false,
+    };
+  }
+
+  return {
+    canScrollLeft: !atEnd,
+    canScrollRight: !atStart,
+  };
+}
+
 export function getDoctorCarouselScrollState(container: HTMLElement) {
   const cards = getCards(container);
   const maxScroll = getMaxScroll(container);
 
-  if (cards.length <= 1 || maxScroll <= 1) {
+  if (cards.length <= 1) {
     return { canScrollLeft: false, canScrollRight: false };
   }
 
-  if (usesIndexBasedNavigation(container)) {
-    const activeIndex = getActiveDoctorCarouselIndex(container);
-
-    if (isRtlCarousel(container)) {
-      return {
-        canScrollLeft: activeIndex < cards.length - 1,
-        canScrollRight: activeIndex > 0,
-      };
+  if (isRtlCarousel(container)) {
+    if (!carouselHasOverflow(container)) {
+      return { canScrollLeft: false, canScrollRight: false };
     }
+    return getRtlCarouselScrollState(container, maxScroll);
+  }
+
+  if (usesIndexBasedNavigation(container)) {
+    if (maxScroll <= 1) {
+      return { canScrollLeft: false, canScrollRight: false };
+    }
+
+    const activeIndex = getActiveDoctorCarouselIndex(container);
 
     return {
       canScrollLeft: activeIndex > 0,

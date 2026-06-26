@@ -648,24 +648,24 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                       </div>
                                     )}
                                   </div>
-                                  {cardSubs.length > 0 && selectedSubSlug && (
-                                    <div className="mt-4 text-center">
-                                      <button
-                                        type="button"
-                                        onClick={() =>
-                                          openDepartmentDetail(
-                                            dept.slug,
-                                            origIdx,
-                                            selectedSubSlug,
-                                            dept.mongoId
-                                          )
-                                        }
-                                        className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-full font-body text-xs tracking-[0.15em] uppercase hover:bg-primary/90 transition-colors"
-                                      >
-                                        {t("learnMore")} <ArrowRight className={`w-3.5 h-3.5 shrink-0 ${lang === "ar" ? "rotate-180" : ""}`} />
-                                      </button>
-                                    </div>
-                                  )}
+                                </div>
+                              )}
+                              {!isCardLoading && !selectedSubspecialityLoading && cardSubs.length > 0 && selectedSubSlug && (
+                                <div className={`text-center ${deptDoctors.length > 0 ? "mt-4" : "mt-auto"}`}>
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      openDepartmentDetail(
+                                        dept.slug,
+                                        origIdx,
+                                        selectedSubSlug,
+                                        dept.mongoId
+                                      )
+                                    }
+                                    className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-full font-body text-xs tracking-[0.15em] uppercase hover:bg-primary/90 transition-colors"
+                                  >
+                                    {t("learnMore")} <ArrowRight className={`w-3.5 h-3.5 shrink-0 ${lang === "ar" ? "rotate-180" : ""}`} />
+                                  </button>
                                 </div>
                               )}
                             </div>

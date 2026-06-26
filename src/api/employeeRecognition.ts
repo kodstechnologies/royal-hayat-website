@@ -13,6 +13,7 @@ export type EmployeeRecognition = {
   achievements: string;
   arabicAchievements?: string;
   image?: string;
+  date?: string;
   visibilityStatus: "show" | "hide";
   createdAt?: string;
   updatedAt?: string;
@@ -52,6 +53,19 @@ export const DEFAULT_EMPLOYEE_IMAGE = "/images/default-employee-avatar.svg";
 export const getEmployeeImageSrc = (image?: string) =>
   image?.trim() || DEFAULT_EMPLOYEE_IMAGE;
 
+export const formatEmployeeMonthYear = (
+  dateStr: string | undefined,
+  isAr: boolean,
+): string => {
+  if (!dateStr) return "";
+  const date = new Date(dateStr);
+  if (Number.isNaN(date.getTime())) return "";
+  return date.toLocaleDateString(isAr ? "ar-KW" : "en-US", {
+    month: "long",
+    year: "numeric",
+  });
+};
+
 export type EmployeeOfMonthDisplay = {
   key: string;
   name: string;
@@ -62,6 +76,7 @@ export type EmployeeOfMonthDisplay = {
   role: string;
   roleAr: string;
   image: string;
+  date?: string;
   achievements: string[];
   achievementsAr: string[];
 };
@@ -78,6 +93,7 @@ export const mapEmployeeRecognitionToDisplay = (
   role: item.title,
   roleAr: item.arabicTitle ?? item.title,
   image: getEmployeeImageSrc(item.image),
+  date: item.date ?? item.createdAt,
   achievements: achievementsTextToLines(item.achievements),
   achievementsAr: achievementsTextToLines(
     item.arabicAchievements ?? item.achievements,

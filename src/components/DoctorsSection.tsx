@@ -7,6 +7,7 @@ import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { useLanguage } from "@/contexts/LanguageContext";
 import type { Doctor } from "@/types/doctor";
 import { fetchFeaturedDoctors } from "@/api/doctors";
+import { shouldShowDoctorBookingUI } from "@/data/departments";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
 import { scrollDoctorCarousel, syncDoctorCarouselIndex } from "@/utils/doctorCarousel";
 const DoctorCard = ({ doc }: { doc: Doctor }) => {
@@ -41,13 +42,13 @@ const DoctorCard = ({ doc }: { doc: Doctor }) => {
           </p>
           <h3 className="text-[1.2rem] font-serif font-bold text-foreground mb-1">{displayName}</h3>
           <p className="text-muted-foreground font-body text-xs mb-3">{lang === "ar" ? doc.titleAr : doc.title}</p>
-          {doc.hideBooking !== true && (
-            <div className={`flex items-center gap-1.5 mb-2 ${doc.availableOnline !== false ? "text-green-600" : "text-destructive"}`}>
-              <div className={`w-1.5 h-1.5 rounded-full ${doc.availableOnline !== false ? "bg-green-500" : "bg-destructive"}`} />
+          {shouldShowDoctorBookingUI(doc) && (
+            <div className="flex items-center gap-1.5 mb-2 text-green-600">
+              <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
               <span className="font-body text-[10px]">
                 {doc.availableOnline !== false
                   ? (lang === "ar" ? "متاح للحجز اونلاين" : "Book Online")
-                  : (lang === "ar" ? "غير متاح للحجز اونلاين" : "Not Available")}
+                  : (lang === "ar" ? "طلب موعد" : "Appointment Request")}
               </span>
             </div>
           )}

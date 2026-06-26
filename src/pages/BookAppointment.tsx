@@ -21,6 +21,7 @@ import {
 } from "@/api/doctors";
 import { mapApiDepartmentsToDisplay } from "@/utils/mapApiDepartment";
 import { sortDepartmentsByDisplayOrder } from "@/utils/doctorDepartmentOrder";
+import { sortDoctorsInDepartment } from "@/utils/sortDoctorsInDepartment";
 import type { Department } from "@/types/department";
 import { MAIN_CATEGORIES } from "@/types/department";
 import { createAppointmentRequest } from "@/api/appointmentRequest";
@@ -708,15 +709,13 @@ const BookAppointment = () => {
     if (i === 1 && step > 1) setShowAllDoctors(true);
     setStep(i);
   };
-  const doctors = useMemo(
-    () =>
-      [...filterDoctorsBySearch(deptDoctorList, doctorSearch)]
-        .filter((d) => !isPharmacyNonBookableDoctor(d))
-        .sort((a, b) =>
-          (isAr ? a.nameAr : a.name).localeCompare(isAr ? b.nameAr : b.name, isAr ? "ar" : "en"),
-        ),
-    [deptDoctorList, doctorSearch, isAr],
-  );
+  const doctors = useMemo(() => {
+    const filtered = [...filterDoctorsBySearch(deptDoctorList, doctorSearch)].filter(
+      (d) => !isPharmacyNonBookableDoctor(d),
+    );
+    const deptName = departmentsList.find((d) => d.id === selectedDept)?.name ?? "";
+    return sortDoctorsInDepartment(filtered, deptName, isAr ? "ar" : "en");
+  }, [deptDoctorList, doctorSearch, isAr, selectedDept, departmentsList]);
   const filteredAllDoctors = useMemo(
     () =>
       [...filterDoctorsBySearch(
@@ -2084,12 +2083,12 @@ Clinic Code:`;
                               <h4 className="font-serif font-bold text-[1.2rem] text-foreground mb-0.5 leading-snug">{getDoctorDisplayName(doc, isAr ? "ar" : "en")}</h4>
                               <p className="text-muted-foreground font-body text-[11px] mb-2 line-clamp-1">{isAr ? doc.specialtyAr : doc.specialty}</p>
                               {shouldShowDoctorBookingUI(doc) && (
-                                <div className={`flex items-center gap-1.5 mb-3 ${doc.availableOnline !== false ? "text-green-600" : "text-destructive"}`}>
-                                  <div className={`w-1.5 h-1.5 rounded-full ${doc.availableOnline !== false ? "bg-green-500" : "bg-destructive"}`} />
+                                <div className="flex items-center gap-1.5 mb-3 text-green-600">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
                                   <span className="font-body text-[10px]">
                                     {doc.availableOnline !== false
                                       ? (isAr ? "متاح للحجز اونلاين" : "Book Online")
-                                      : (isAr ? "غير متاح للحجز اونلاين" : "Not Available for Online Booking")}
+                                      : (isAr ? "طلب موعد" : "Appointment Request")}
                                   </span>
                                 </div>
                               )}
@@ -2302,13 +2301,13 @@ Clinic Code:`;
                       </span>
                     </p>
                   )}
-                  {selectedDate && patientType !== "new" && isLoadingSlots && (
+                  {selectedDate && isLoadingSlots && (
                     <div className="flex flex-col items-center justify-center py-12">
                       <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }} className="w-10 h-10 rounded-full border-2 border-accent/20 border-t-accent mb-4" />
                       <p className="font-body text-sm text-muted-foreground">{isAr ? "جارِ جلب المواعيد المتاحة..." : "Fetching available time slots..."}</p>
                     </div>
                   )}
-                  {selectedDate && patientType !== "new" && !isLoadingSlots && slotsForSelectedDate.length > 0 && (
+                  {selectedDate && !isLoadingSlots && slotsForSelectedDate.length > 0 && (
                     <div className="space-y-6">
                       <p className="font-body text-xs text-muted-foreground uppercase tracking-wider">{isAr ? "الفترة المتاحة" : "Available times"}</p>
                       {Object.entries(slotsByPeriod).map(([period, slots]) => slots.length > 0 && (
@@ -2337,7 +2336,7 @@ Clinic Code:`;
                       ))}
                     </div>
                   )}
-                  {selectedDate && patientType !== "new" && !isLoadingSlots && slotsForSelectedDate.length === 0 && slotsFetchReady && (
+                  {selectedDate && !isLoadingSlots && slotsForSelectedDate.length === 0 && slotsFetchReady && (
                     <div className="text-center py-12 text-muted-foreground font-body text-sm bg-muted/20 rounded-2xl border border-dashed border-border">
                       <AlertCircle className="w-8 h-8 mx-auto mb-2 opacity-30" />
                       {isAr ? "لا توجد مواعيد متاحة لهذا اليوم" : "No available appointments for this date"}

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Phone, Mail, MapPin, Clock, Send, Facebook, Instagram, Youtube } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, Send, Facebook, Instagram, Youtube, Linkedin } from "lucide-react";
 import logo from "@/assets/rhh-logo-full.png";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { departments as staticDepartments } from "@/data/departments";
@@ -43,6 +43,7 @@ const Footer = () => {
                 { key: "facebook", icon: Facebook, href: "https://www.facebook.com/RoyaleHayat", type: "filled" },
                 { key: "x", href: "https://x.com/royale_hayat", type: "x" },
                 { key: "youtube", href: "https://www.youtube.com/user/RoyaleHayatHospital", type: "youtube" },
+                { key: "linkedin", icon: Linkedin, href: "https://www.linkedin.com/company/royalehayat", type: "filled" },
               ].map((social) => (
                 <a
                   key={social.key}

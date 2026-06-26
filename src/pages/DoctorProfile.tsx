@@ -5,7 +5,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { loadDoctorById, type Doctor } from "@/data/loadDoctors";
 import { departments, deptDoctorAliases, shouldShowDoctorBookingUI } from "@/data/departments";
 import { fetchDoctorProfileById, isMongoDoctorId } from "@/api/doctors";
 import {
@@ -241,6 +240,15 @@ const DoctorProfile = () => {
           restoreScrollY: bookingReturnState.restoreScrollY,
         },
       });
+    } else if (bookingReturnState?.fromDoctors) {
+      navigate("/doctors", {
+        state: {
+          fromDoctors: true,
+          restoreScrollY: bookingReturnState.restoreScrollY,
+          restoreDoctorId: bookingReturnState.restoreDoctorId,
+          restoreSearchQuery: bookingReturnState.restoreSearchQuery,
+        },
+      });
     } else {
       navigate(-1);
     }
@@ -248,14 +256,8 @@ const DoctorProfile = () => {
   const { data: doctor, isLoading } = useQuery({
     queryKey: ["doctor-profile", id],
     queryFn: async () => {
-      if (!id) return null;
-
-      if (isMongoDoctorId(id)) {
-        const apiDoctor = await fetchDoctorProfileById(id);
-        if (apiDoctor) return apiDoctor;
-      }
-
-      return (await loadDoctorById(id)) ?? null;
+      if (!id || !isMongoDoctorId(id)) return null;
+      return (await fetchDoctorProfileById(id)) ?? null;
     },
     enabled: !!id,
   });

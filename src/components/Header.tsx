@@ -3,9 +3,10 @@ import { Menu, X, Search, ChevronDown, Building2, Stethoscope, Users, Home, Hear
 import type { LucideIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { useLanguage } from "@/contexts/LanguageContext";
 import logoFull from "@/assets/rhh-logo-full-color.png";
-import { doctorSearchIndex } from "@/data/doctorsSearchIndex";
+import { fetchAllActiveDoctors, isMongoDoctorId } from "@/api/doctors";
 type SearchIndexItem = {
   label: string;
   labelAr: string;
@@ -21,16 +22,23 @@ const Header = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showLogo] = useState(true);
   const [headerVisible, setHeaderVisible] = useState(true);
+  const { data: activeDoctors = [] } = useQuery({
+    queryKey: ["header-doctor-search"],
+    queryFn: fetchAllActiveDoctors,
+    staleTime: 5 * 60 * 1000,
+  });
   const doctorSearchItems = useMemo<SearchIndexItem[]>(
     () =>
-      doctorSearchIndex.map((doc) => ({
-        label: doc.name,
-        labelAr: doc.nameAr,
-        type: `Doctor · ${doc.specialty}`,
-        typeAr: `طبيب · ${doc.specialtyAr}`,
-        href: `/doctors/${doc.id}`,
-      })),
-    [],
+      activeDoctors
+        .filter((doc) => isMongoDoctorId(doc.id))
+        .map((doc) => ({
+          label: doc.name,
+          labelAr: doc.nameAr,
+          type: `Doctor · ${doc.specialty}`,
+          typeAr: `طبيب · ${doc.specialtyAr}`,
+          href: `/doctors/${doc.id}`,
+        })),
+    [activeDoctors],
   );
   const { lang, setLang, t } = useLanguage();
   const phoneDisplay = "+965 2536 0000";

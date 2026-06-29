@@ -47,6 +47,35 @@ export const getDoctorSortKey = (
   return stripDoctorTitlePrefix(doc.name);
 };
 
+/** First given name after title stripping — used for book-appointment doctor lists. */
+export const getDoctorFirstNameSortKey = (
+  doc: Pick<Doctor, "name" | "nameAr">,
+  lang: "en" | "ar",
+): string => {
+  const fullName = getDoctorSortKey(doc, "", lang);
+  return fullName.split(/\s+/).filter(Boolean)[0] ?? fullName;
+};
+
+const sortDoctorsByFirstName = (
+  docs: Doctor[],
+  lang: "en" | "ar",
+): Doctor[] => {
+  const locale = lang === "ar" ? "ar" : "en";
+  return [...docs].sort((a, b) =>
+    getDoctorFirstNameSortKey(a, lang).localeCompare(getDoctorFirstNameSortKey(b, lang), locale, {
+      sensitivity: "base",
+    }),
+  );
+};
+
+const pinDermatologyHeadDoctor = (docs: Doctor[]): Doctor[] => {
+  const headDoctor = docs.find(isDermatologyHeadDoctor);
+  if (!headDoctor) {
+    return docs;
+  }
+  return [headDoctor, ...docs.filter((doc) => doc !== headDoctor)];
+};
+
 export const sortDoctorsInDepartment = (
   docs: Doctor[],
   deptName: string,
@@ -63,13 +92,25 @@ export const sortDoctorsInDepartment = (
     return sorted;
   }
 
-  const headDoctor = sorted.find(isDermatologyHeadDoctor);
-  if (!headDoctor) {
-    return sorted;
-  }
-
-  return [headDoctor, ...sorted.filter((doc) => doc !== headDoctor)];
+  return pinDermatologyHeadDoctor(sorted);
 };
 
 export const sortDoctorsAlphabetically = (docs: Doctor[], lang: "en" | "ar"): Doctor[] =>
   sortDoctorsInDepartment(docs, "", lang);
+
+/** Book appointment: first-name alphabetical order; Dermatology keeps Dr. Suraj V. Davis first. */
+export const sortDoctorsForBooking = (
+  docs: Doctor[],
+  deptName: string,
+  lang: "en" | "ar",
+): Doctor[] => {
+  const sorted = sortDoctorsByFirstName(docs, lang);
+  if (deptName !== DERMATOLOGY_DEPT) {
+    return sorted;
+  }
+  return pinDermatologyHeadDoctor(sorted);
+};
+
+/** I Know My Doctor — all departments, first-name order (no dept-specific pin). */
+export const sortAllDoctorsForBooking = (docs: Doctor[], lang: "en" | "ar"): Doctor[] =>
+  sortDoctorsByFirstName(docs, lang);

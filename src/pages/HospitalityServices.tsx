@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
+import { renderColonHeading } from "@/utils/renderColonHeading";
 const PANOEE_IFRAME_ALLOW = "fullscreen; xr-spatial-tracking; xr; accelerometer; gyroscope; autoplay;";
 const PHONE_LINK_CLASS =
   "text-accent hover:underline font-semibold inline-block [direction:ltr] [unicode-bidi:isolate]";
@@ -37,26 +38,6 @@ const renderSetupStyleLabel = (item: string, isAr: boolean) => {
     );
   }
   return item;
-};
-
-const getColonIndex = (text: string) => {
-  const candidates = [text.indexOf(":"), text.indexOf("؛")].filter((index) => index !== -1);
-  return candidates.length ? Math.min(...candidates) : -1;
-};
-
-const renderColonHeading = (text: string) => {
-  const colonIndex = getColonIndex(text);
-  if (colonIndex === -1) {
-    return <span className="font-bold">{text}</span>;
-  }
-  const label = text.slice(0, colonIndex + 1);
-  const rest = text.slice(colonIndex + 1);
-  return (
-    <>
-      <span className="font-bold">{label}</span>
-      {rest}
-    </>
-  );
 };
 
 const SPA_AR_DESC =
@@ -1402,18 +1383,21 @@ const HospitalityServices = ({
                 <h3 className={`font-serif text-base text-foreground mb-3 ${isAr ? "text-right" : "text-left"}`}>
                   {renderColonHeading(isAr ? "كافيه" : "What We Offer:")}
                 </h3>
-                <div className="space-y-2 mb-6 w-full text-justify">
+                <div className={`space-y-2 mb-6 w-full ${isAr ? "text-right" : "text-left"}`}>
                   {(isAr
                     ? FIFTH_FLOOR_AR_OFFERINGS
                     : ["Freshly brewed specialty coffee", "A selection of sandwiches", "Fresh salads", "Indulgent desserts"]
                   ).map((item, i) => (
-                    <div key={i} className="flex items-center gap-3">
+                    <div
+                      key={i}
+                      className={`flex items-center gap-3 ${isAr ? "flex-row-reverse justify-end" : ""}`}
+                    >
                       <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
                       <span className="font-body text-sm text-foreground">{item}</span>
                     </div>
                   ))}
                 </div>
-                <p className="font-body text-sm text-muted-foreground text-justify">
+                <p className={`font-body text-sm text-muted-foreground ${isAr ? "text-right" : "text-left"}`}>
                   {isAr ? FIFTH_FLOOR_AR_LOCATION : "5th Floor — Royale Hayat Hospital"}
                 </p>
               </div>

@@ -16,12 +16,22 @@ const PHONE_LINK_CLASS =
 const LTR_ISOLATE_CLASS = "inline-block [direction:ltr] [unicode-bidi:isolate]";
 
 const renderSetupStyleLabel = (item: string, isAr: boolean) => {
-  if (isAr && item === "- حرف U") {
+  if (isAr && item === "حرف U") {
     return (
       <span dir="rtl">
-        {"- حرف "}
+        {"حرف "}
         <span dir="ltr" className={LTR_ISOLATE_CLASS}>
           U
+        </span>
+      </span>
+    );
+  }
+  if (isAr && item === "تنسيق") {
+    return (
+      <span dir="rtl">
+        {"تنسيق "}
+        <span dir="ltr" className={LTR_ISOLATE_CLASS}>
+          Cabaret
         </span>
       </span>
     );
@@ -73,10 +83,10 @@ const CAFE_AR_DESSERT =
   "واختتموا تجربتكم بقطعة من الكيك أو المخبوزات الطازجة، إلى جانب تشكيلة من القهوة المختصة وأنواع الشاي الفاخرة.";
 const CAFE_AR_HOURS =
   "يفتتح الليوان بيسترو أبوابه يوميًا من الساعة 8 صباحًا وحتى 11 مساءً، ليكون وجهتكم المثالية للإفطار، والغداء، والعشاء، أو للاستمتاع بوجبة خفيفة في أي وقت من اليوم.";
-const FIFTH_FLOOR_AR_TITLE = "مقهى الدور الخامس";
+const FIFTH_FLOOR_AR_TITLE = "كافيه الدور الخامس";
 const FIFTH_FLOOR_AR_SUBTITLE = "مساحة دافئة للوجبات الخفيفة والمشروبات المنعشة";
 const FIFTH_FLOOR_AR_INTRO =
-  "يوفر مقهى الدور الخامس أجواءً مريحة وهادئة تتيح للضيوف الاسترخاء أثناء انتظار المواعيد الطبية أو زيارة أحبائهم. وقد صُمم المقهى بعناية ليكون مساحة ترحيبية مناسبة للعائلات المنتظرة لاستقبال مولود جديد أو انتهاء أحد الإجراءات الطبية، ضمن بيئة تبعث على الطمأنينة والراحة.";
+  "يوفر كافيه الدور الخامس أجواءً مريحة وهادئة تتيح للضيوف الاسترخاء أثناء انتظار المواعيد الطبية أو زيارة أحبائهم. وقد صُمم الكافيه بعناية ليكون مساحة ترحيبية مناسبة للعائلات المنتظرة لاستقبال مولود جديد أو انتهاء أحد الإجراءات الطبية، ضمن بيئة تبعث على الطمأنينة والراحة.";
 const FIFTH_FLOOR_AR_MENU =
   "استمتعوا بتشكيلة مختارة من القهوة الطازجة، والسندويشات المتنوعة، والسلطات الطازجة، والحلويات الفاخرة، جميعها مقدمة ضمن أجواء تجمع بين الراحة والرُقي.";
 const FIFTH_FLOOR_AR_OFFERINGS = [
@@ -447,7 +457,7 @@ const HospitalityServices = ({
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107]">
       <Header />
       <section className="py-8 md:py-10 bg-primary/5">
-        <div className="container mx-auto px-6 text-center">
+        <div className={`container mx-auto px-6 ${isAr ? "text-right" : "text-center"}`}>
           <ScrollAnimationWrapper>
             <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">{t("premiumExperience")}</p>
             <h1 className="text-4xl md:text-5xl font-serif text-foreground mb-4">
@@ -557,7 +567,7 @@ const HospitalityServices = ({
                     <h4 className="font-serif text-base text-foreground mb-3">{renderColonHeading(isAr ? "أنماط الترتيب المتوفرة:" : "Available Setup Styles:")}</h4>
                     <div className="space-y-2 mb-5">
                       {(isAr
-                        ? ["الديوانية", "المسرح", " - U حرف", "الصفوف الدراسية", "تنسيق الكاباريه", "الطاولات المستديرة"]
+                        ? ["الديوانية", "المسرح", "حرف U", "الصفوف الدراسية", "تنسيق", "الطاولات المستديرة"]
                         : ["Diwaniya", "Theatre", "U-Shape", "Classroom", "Cabaret", "Round Tables"]
                       ).map((item, i) => (
                         <div key={i} className="flex items-center gap-3">
@@ -771,8 +781,8 @@ const HospitalityServices = ({
           <ScrollAnimationWrapper>
             {showAll && (
               <>
-                {isAr && <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-2 text-center">تجربة استثنائية</p>}
-                <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-2 text-center">{isAr ? "الأجنحة الفاخرة" : "Exclusive Suites"}</h2>
+                {isAr && <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-2 text-right">تجربة استثنائية</p>}
+                <h2 className={`text-2xl md:text-3xl font-serif text-foreground mb-2 ${isAr ? "text-right" : "text-center"}`}>{isAr ? "الأجنحة الفاخرة" : "Exclusive Suites"}</h2>
               </>
             )}
             <p className="text-muted-foreground font-body text-sm text-justify mb-8 max-w-2xl mx-auto text-center">
@@ -1146,7 +1156,7 @@ const HospitalityServices = ({
                         },
                         {
                           icon: UserCheck,
-                          title: "خدمة كبير الخدم",
+                          title: "خدمة المضيفات",
                           desc: "يتواجد فريقنا المتخصص لخدمتكم والاهتمام بجميع التفاصيل طوال المناسبة، من استقبال الضيوف وحتى ترتيب وتنظيم الأجواء، لنضمن لكم تجربة سلسة ومريحة بكل احترافية وخصوصية.",
                         },
                       ].map((item, i) => (
@@ -1341,7 +1351,7 @@ const HospitalityServices = ({
       </section>}
       {showAll && <section className="py-6 bg-muted/10">
         <div className="container mx-auto px-6 max-w-6xl">
-          <div className="lg:hidden text-center mb-4">
+          <div className={`lg:hidden mb-4 ${isAr ? "text-right" : "text-center"}`}>
             <h2 className="text-2xl font-serif text-foreground mb-2">
               {isAr ? FIFTH_FLOOR_AR_TITLE : "The 5th Floor Café"}
             </h2>
@@ -1365,7 +1375,7 @@ const HospitalityServices = ({
             </div>
             <ScrollAnimationWrapper className="order-3 lg:order-2 min-w-0">
               <div className="text-justify min-w-0">
-                <div className="hidden lg:block text-center mb-4">
+                <div className={`hidden lg:block mb-4 ${isAr ? "text-right" : "text-center"}`}>
                   <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-2">
                     {isAr ? FIFTH_FLOOR_AR_TITLE : "The 5th Floor Café"}
                   </h2>
@@ -1389,8 +1399,8 @@ const HospitalityServices = ({
                     {FIFTH_FLOOR_AR_MENU}
                   </p>
                 )}
-                <h3 className="font-serif text-base text-foreground mb-3 text-left">
-                  {renderColonHeading(isAr ? "ما نقدمه" : "What We Offer:")}
+                <h3 className={`font-serif text-base text-foreground mb-3 ${isAr ? "text-right" : "text-left"}`}>
+                  {renderColonHeading(isAr ? "كافيه" : "What We Offer:")}
                 </h3>
                 <div className="space-y-2 mb-6 w-full text-justify">
                   {(isAr

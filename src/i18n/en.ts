@@ -175,6 +175,7 @@ export const en = {
   "specializedCare": "Specialized Care",
   "specializedDesc": "Tailored, premium medical services designed around your individual needs, delivered with compassion and clinical excellence.",
   "learnMore": "Read More",
+  "moreDoctors": "More Doctors",
   "ourSpecialties": "Our Specialties",
   "medicalDepartments": "Medical Departments",
   "deptCount": "Comprehensive medical departments led by internationally renowned physicians.",

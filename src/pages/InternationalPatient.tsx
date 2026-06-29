@@ -355,7 +355,6 @@ const InternationalPatient = () => {
               >
                 <Send className="w-4 h-4" />
                 {isSubmitting ? (isAr ? "جاري الإرسال..." : "Sending...") : isAr ? "إرسال" : "Send"}
-                {isSubmitting ? (isAr ? "جاري الإرسال..." : "Sending...") : isAr ? "إرسال" : "Send"}
               </button>
             </motion.form>
           </div>

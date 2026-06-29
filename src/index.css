@@ -477,6 +477,10 @@ html[lang="ar"] [lang="en"],
   direction: ltr;
 }
 
+[dir="rtl"] .back-arrow {
+  transform: scaleX(-1);
+}
+
 
 @keyframes feedbackMarquee {
   0% { transform: translateX(0); }

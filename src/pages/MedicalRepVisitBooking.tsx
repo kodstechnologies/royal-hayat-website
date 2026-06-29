@@ -186,7 +186,7 @@ const MedRepBookableDoctorCard = ({
             <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
             <span className="font-body text-[10px]">
               {doc.availableOnline !== false
-                ? (isAr ? "متاح للحجز اونلاين" : "Book Online")
+                ? (isAr ? "للحجز أونلاين" : "Book Online")
                 : (isAr ? "طلب موعد" : "Appointment Request")}
             </span>
           </div>
@@ -228,7 +228,7 @@ const MedRepDepartmentDoctorCard = ({ doc, isAr }: { doc: Doctor; isAr: boolean 
             <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
             <span className="font-body text-[10px]">
               {doc.availableOnline !== false
-                ? (isAr ? "متاح للحجز اونلاين" : "Book Online")
+                ? (isAr ? "للحجز أونلاين" : "Book Online")
                 : (isAr ? "طلب موعد" : "Appointment Request")}
             </span>
           </div>

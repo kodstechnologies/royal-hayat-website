@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { ClipboardList, LogIn, UserPlus } from "lucide-react";
+import { BackArrow } from "@/components/BackArrow";
 import { pageVariants, type VerifiedIdentityDetails } from "../types";
 type PatientDetailsStepProps = {
   isAr: boolean;
@@ -292,9 +293,10 @@ const PatientDetailsStep = ({
         <button
           type="button"
           onClick={onChangePatientType}
-          className="mt-4 font-body text-xs text-muted-foreground hover:text-foreground transition-colors"
+          className="mt-4 inline-flex items-center gap-1 font-body text-xs text-muted-foreground hover:text-foreground transition-colors"
         >
-          ← {t("changeSelection")}
+          <BackArrow className="w-3 h-3" />
+          {t("changeSelection")}
         </button>
       )}
     </div>

@@ -47,7 +47,7 @@ const DoctorCard = ({ doc }: { doc: Doctor }) => {
               <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
               <span className="font-body text-[10px]">
                 {doc.availableOnline !== false
-                  ? (lang === "ar" ? "متاح للحجز اونلاين" : "Book Online")
+                  ? (lang === "ar" ? "للحجز أونلاين" : "Book Online")
                   : (lang === "ar" ? "طلب موعد" : "Appointment Request")}
               </span>
             </div>

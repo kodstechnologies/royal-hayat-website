@@ -1,6 +1,8 @@
 import type { Doctor } from "@/data/loadDoctors";
+import { resolveDoctorArabicName } from "@/utils/doctorDisplayName";
 
 const TITLE_PREFIX = /^(?:dr|prof|professor)\.?\s+/i;
+const ARABIC_TITLE_PREFIX = /^(?:د\.?\s*|الدكتور\s*|الدكتورة\s*|البروفيسور\s+د\.?\s*)/u;
 const DERMATOLOGY_DEPT = "Dermatology";
 const DERMATOLOGY_HEAD_DOCTOR_KEY = "suraj v davis";
 
@@ -9,6 +11,16 @@ export const stripDoctorTitlePrefix = (name: string): string => {
 
   while (TITLE_PREFIX.test(result)) {
     result = result.replace(TITLE_PREFIX, "").trim();
+  }
+
+  return result;
+};
+
+const stripArabicTitlePrefix = (name: string): string => {
+  let result = String(name ?? "").trim();
+
+  while (ARABIC_TITLE_PREFIX.test(result)) {
+    result = result.replace(ARABIC_TITLE_PREFIX, "").trim();
   }
 
   return result;
@@ -29,8 +41,10 @@ export const getDoctorSortKey = (
   _deptName: string,
   lang: "en" | "ar",
 ): string => {
-  const name = lang === "ar" ? doc.nameAr : doc.name;
-  return stripDoctorTitlePrefix(name);
+  if (lang === "ar") {
+    return stripArabicTitlePrefix(resolveDoctorArabicName(doc));
+  }
+  return stripDoctorTitlePrefix(doc.name);
 };
 
 export const sortDoctorsInDepartment = (

@@ -15,7 +15,8 @@ import {
 import { mapApiDepartmentsToDisplay } from "@/utils/mapApiDepartment";
 import { findDepartmentBySlug } from "@/utils/findDepartmentBySlug";
 import { motion } from "framer-motion";
-import { ChevronRight, ChevronLeft, ArrowLeft, ArrowRight, CheckCircle2, ChevronDown, Stethoscope, MessageCircle, Phone, Loader2 } from "lucide-react";
+import { ChevronRight, ChevronLeft, ArrowRight, CheckCircle2, ChevronDown, Stethoscope, MessageCircle, Phone, Loader2 } from "lucide-react";
+import { BackArrow } from "@/components/BackArrow";
 import { useState, useRef, useEffect, useMemo, memo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { normalizeSubSlug, resolveSubDepartment } from "@/utils/departmentSubSlug";
@@ -276,7 +277,7 @@ const DepartmentDoctors = memo(({
             to="/doctors"
             className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-body text-xs tracking-[0.15em] uppercase rounded-full hover:bg-primary/90 transition-colors"
           >
-            {t("learnMore")} <span className="ltr-icon">→</span>
+            {t("moreDoctors")} <span className="ltr-icon">→</span>
           </Link>
         </div>
       </div>
@@ -544,7 +545,7 @@ const DepartmentDetail = () => {
               onClick={goBackToDepartmentsList}
               className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary font-body text-sm mb-8 transition-colors"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <BackArrow className="w-4 h-4" />
               {isAr ? "العودة" : "Go Back"}
             </button>
           )}
@@ -555,7 +556,7 @@ const DepartmentDetail = () => {
                   onClick={goBackToSpecializedCare}
                   className="inline-flex items-center gap-2 text-accent font-body text-xs tracking-wide mb-4 hover:underline"
                 >
-                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <BackArrow className="w-3.5 h-3.5" />
                   {isAr ? "العودة" : "Go Back"}
                 </button>
               )}
@@ -564,7 +565,7 @@ const DepartmentDetail = () => {
                   onClick={() => navigate("/book-appointment")}
                   className="inline-flex items-center gap-2 text-accent font-body text-xs tracking-wide mb-4 hover:underline"
                 >
-                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <BackArrow className="w-3.5 h-3.5" />
                   {lang === "ar" ? "العودة إلى حجز الموعد" : "Back to Book Appointment"}
                 </button>
               )}
@@ -573,7 +574,7 @@ const DepartmentDetail = () => {
                   onClick={goBackToDepartment}
                   className="inline-flex items-center gap-2 text-accent font-body text-xs tracking-wide mb-4 hover:underline"
                 >
-                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <BackArrow className="w-3.5 h-3.5" />
                   {isAr ? `العودة إلى ${dept.nameAr}` : `Back to ${dept.name}`}
                 </button>
               )}

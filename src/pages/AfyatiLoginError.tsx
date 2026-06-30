@@ -16,12 +16,17 @@ const AfyatiLoginError = () => {
   const isAr = lang === "ar";
   const [searchParams] = useSearchParams();
 
-  const { reason, message } = useMemo(
+  const { message } = useMemo(
     () => parseAfyatiLoginErrorPayload(searchParams),
     [searchParams],
   );
 
-  const hasDetails = Boolean(reason || message);
+  const displayMessage = useMemo(() => {
+    if (message) return message;
+    return isAr
+      ? "تعذر تسجيل الدخول. يرجى المحاولة مرة أخرى أو التواصل مع المستشفى."
+      : "Sign-in could not be completed. Please try again or contact the hospital.";
+  }, [message, isAr]);
 
   return (
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)] overflow-x-hidden">
@@ -41,42 +46,11 @@ const AfyatiLoginError = () => {
         </motion.div>
 
         <div className="bg-popover rounded-2xl border border-border p-6 md:p-8 max-w-3xl mx-auto shadow-sm">
-          <div className="rounded-xl p-5 md:p-6 border border-destructive/30 bg-destructive/10 text-center">
-            <AlertCircle className="w-10 h-10 text-destructive mx-auto mb-3" />
-            <p className="font-body text-sm font-medium text-foreground mb-4">
-              {isAr
-                ? "لم نتمكن من إكمال تسجيل الدخول. يرجى مراجعة التفاصيل أدناه."
-                : "We could not complete your sign-in. Please review the details below."}
+          <div className="rounded-xl p-6 md:p-8 border border-destructive/30 bg-destructive/10 text-center">
+            <AlertCircle className="w-10 h-10 text-destructive mx-auto mb-4" />
+            <p className="font-body text-base md:text-lg text-foreground leading-relaxed max-w-xl mx-auto whitespace-pre-wrap break-words">
+              {displayMessage}
             </p>
-
-            {hasDetails ? (
-              <div className="text-start space-y-3 rounded-xl border border-border bg-background/80 p-4">
-                {reason ? (
-                  <div>
-                    <p className="font-body text-[11px] uppercase tracking-wider text-muted-foreground mb-1">
-                      {isAr ? "سبب الخطأ" : "Error reason"}
-                    </p>
-                    <p className="font-body text-sm text-foreground break-words">{reason}</p>
-                  </div>
-                ) : null}
-                {message ? (
-                  <div>
-                    <p className="font-body text-[11px] uppercase tracking-wider text-muted-foreground mb-1">
-                      {isAr ? "الرسالة" : "Message"}
-                    </p>
-                    <p className="font-body text-sm text-foreground break-words whitespace-pre-wrap">
-                      {message}
-                    </p>
-                  </div>
-                ) : null}
-              </div>
-            ) : (
-              <p className="font-body text-sm text-muted-foreground">
-                {isAr
-                  ? "لم يتم تقديم تفاصيل إضافية عن الخطأ."
-                  : "No additional error details were provided."}
-              </p>
-            )}
           </div>
 
           <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">

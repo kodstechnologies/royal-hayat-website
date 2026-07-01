@@ -272,9 +272,12 @@ const Header = () => {
       default: return [];
     }
   };
-  const isScrollableDropdown = (key: string) => key === "hospitality" || key === "patients";
+  const isScrollableDropdown = (key: string) =>
+    key === "about" || key === "hospitality" || key === "patients";
   const dropdownScrollListClass =
     "min-h-0 flex-1 overflow-y-auto overscroll-y-contain pe-1 pb-3 scroll-pb-3";
+  const dropdownPanelMaxHeightClass =
+    "max-h-[min(calc(100dvh-var(--header-height,8rem)-0.75rem),32rem)]";
   const BritainFlag = () => (
     <svg viewBox="0 0 60 30" className="w-5 h-3 rounded-sm overflow-hidden" aria-hidden="true">
       <clipPath id="s"><path d="M0,0 v30 h60 v-30 z" /></clipPath>
@@ -454,7 +457,7 @@ const Header = () => {
                       dir={isAr ? "rtl" : "ltr"}
                       className={`absolute top-full mt-2 bg-popover border border-border rounded-2xl shadow-2xl z-[100] p-6 ${
                         item.hasDropdown && isScrollableDropdown(item.hasDropdown)
-                          ? "flex max-h-[min(78vh,32rem)] flex-col"
+                          ? `flex flex-col ${dropdownPanelMaxHeightClass}`
                           : ""
                       } ${
                         isAr
@@ -652,7 +655,7 @@ const Header = () => {
                             dir={isAr ? "rtl" : "ltr"}
                             className={`flex flex-col gap-1 px-4 py-2 ${
                               item.hasDropdown && isScrollableDropdown(item.hasDropdown)
-                                ? "max-h-[min(58vh,20rem)] overflow-y-auto overscroll-y-contain pb-4 scroll-pb-4"
+                                ? "max-h-[min(calc(100dvh-var(--header-height,8rem)-1rem),20rem)] overflow-y-auto overscroll-y-contain pb-4 scroll-pb-4"
                                 : ""
                             }`}
                           >

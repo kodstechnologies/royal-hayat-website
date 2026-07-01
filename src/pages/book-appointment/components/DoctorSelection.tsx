@@ -3,6 +3,7 @@ import { CheckCircle2, Search, Stethoscope } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import type { DoctorWithClinicCode as Doctor } from "@/types/doctor";
 import { filterDoctorsBySearch } from "@/utils/doctorSearch";
+import { resolveDoctorDepartmentLabel } from "@/utils/doctorDepartmentContext";
 import { pageVariants } from "../types";
 
 const isDoctorRequestOnly = (doc: Pick<Doctor, "hideBooking" | "availableOnline">) =>
@@ -26,6 +27,7 @@ type DoctorSelectionProps = {
   selectedDept: string | null;
   step: number;
   resolveDeptIdForDoctor: (doc: Doctor) => string | null;
+  departmentsList: Array<{ id: string; name: string; nameAr: string }>;
 };
 const DoctorSelection = ({
   isAr,
@@ -46,6 +48,7 @@ const DoctorSelection = ({
   selectedDept,
   step,
   resolveDeptIdForDoctor,
+  departmentsList,
 }: DoctorSelectionProps) => {
   const navigate = useNavigate();
   const docList = bookingPathDoctor
@@ -131,7 +134,12 @@ const DoctorSelection = ({
                   </div>
                   <div className="p-4 flex flex-col flex-grow bg-popover">
                     <p className="text-accent text-[10px] tracking-[0.15em] uppercase font-body mb-1">
-                      {isAr ? doc.departmentAr || doc.specialtyAr : doc.department || doc.specialty}
+                      {resolveDoctorDepartmentLabel(
+                        doc,
+                        selectedDept,
+                        departmentsList,
+                        isAr ? "ar" : "en",
+                      )}
                     </p>
                     <h4 className="font-serif text-sm text-foreground mb-0.5 leading-snug">
                       {isAr ? doc.nameAr : doc.name}

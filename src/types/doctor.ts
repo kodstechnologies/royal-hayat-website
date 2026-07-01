@@ -23,6 +23,7 @@ export interface Doctor {
   image?: string;
   hideBooking?: boolean;
   departmentId?: string;
+  departmentIds?: string[];
   providerCode?: string;
   clinicCode?: string;
 }

@@ -59,6 +59,10 @@ import { Calendar as DatePickerCalendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import type { Slot } from "@/api/royalhayat";
 import { filterDoctorsBySearch } from "@/utils/doctorSearch";
+import {
+  resolveDoctorDepartmentId,
+  resolveDoctorDepartmentLabel,
+} from "@/utils/doctorDepartmentContext";
 import { isPharmacyNonBookableDoctor, shouldShowDoctorBookingUI } from "@/data/departments";
 import {
   SYMPTOM_CHIP_OPTIONS,
@@ -276,7 +280,9 @@ const BookAppointment = () => {
         if (clinicOverride) {
           setSpecialityCode(clinicOverride);
         }
-        if (!selectedDept && doc.departmentId) {
+        if (!selectedDept && doc.departmentIds?.length === 1) {
+          setSelectedDept(doc.departmentIds[0]);
+        } else if (!selectedDept && doc.departmentId) {
           setSelectedDept(doc.departmentId);
         } else if (!selectedDept && doc.department) {
           const dept = departmentsList.find((d) => d.name.toLowerCase() === doc.department?.toLowerCase());
@@ -576,7 +582,7 @@ const BookAppointment = () => {
         if (cancelled) return;
 
         const mapped = rows
-          .map((row) => mapApiDoctorRowToBookingDoctor(row, dept.name, dept.nameAr))
+          .map((row) => mapApiDoctorRowToBookingDoctor(row, dept.name, dept.nameAr, selectedDept))
           .filter((d) => !isPharmacyNonBookableDoctor(d));
         setDeptDoctorList(mapped);
       } catch (err) {
@@ -733,8 +739,10 @@ const BookAppointment = () => {
     bookingPath === "doctor"
       ? allApiDoctors.find((d) => d.id === selectedDoctor)
       : doctors.find((d) => d.id === selectedDoctor);
-  const resolveDeptIdForDoctor = (doc: Doctor): string | null =>
-    doc.departmentId ?? departmentsList.find((d) => d.name === doc.department)?.id ?? null;
+  const resolveDeptIdForDoctor = (doc: Doctor) =>
+    resolveDoctorDepartmentId(doc, selectedDept, departmentsList);
+  const getDoctorDepartmentLabel = (doc: Doctor) =>
+    resolveDoctorDepartmentLabel(doc, selectedDept, departmentsList, isAr ? "ar" : "en");
   const formattedDob = patientDob
     ? patientDob.split("-").reverse().join("/")
     : "";
@@ -2078,9 +2086,7 @@ Clinic Code:`;
                             </div>
                             <div className="p-4 flex flex-col flex-grow bg-popover">
                               <p className="text-accent text-[10px] tracking-[0.15em] uppercase font-body mb-1">
-                                {isAr
-                                  ? (doc.departmentAr || doc.specialtyAr)
-                                  : (doc.department || doc.specialty)}
+                                {getDoctorDepartmentLabel(doc)}
                               </p>
                               <h4 className="font-serif font-bold text-[1.2rem] text-foreground mb-0.5 leading-snug">{getDoctorDisplayName(doc, isAr ? "ar" : "en")}</h4>
                               <p className="text-muted-foreground font-body text-[11px] mb-2 line-clamp-1">{isAr ? doc.specialtyAr : doc.specialty}</p>

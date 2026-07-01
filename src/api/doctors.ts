@@ -3,6 +3,10 @@ import type { Doctor } from "@/data/doctors";
 import type { DoctorWithClinicCode } from "@/data/doctorsWithClinicCodes";
 import { departments as staticDepts, deptDoctorAliases } from "@/data/departments";
 import { resolveDoctorArabicName } from "@/utils/doctorDisplayName";
+import {
+  parseDoctorDepartmentsFromApi,
+  resolveDoctorDepartmentContext,
+} from "@/utils/doctorDepartmentContext";
 
 export const isMongoObjectId = (value?: string | null): value is string =>
   Boolean(value && /^[0-9a-fA-F]{24}$/.test(value));
@@ -118,6 +122,7 @@ export function mapApiDoctorRowToDoctor(
   row: Record<string, unknown>,
   departmentNameEn: string,
   departmentNameAr: string,
+  contextDepartmentId?: string,
 ): Doctor {
   const id = String(row._id ?? row.doctorId ?? "");
   const name = String(row.name ?? "");
@@ -129,30 +134,16 @@ export function mapApiDoctorRowToDoctor(
     nameAr: String(row.nameAr ?? name),
   });
 
-  const depRaw = row.department;
-  let resolvedDeptEn = departmentNameEn;
-  let resolvedDeptAr = departmentNameAr;
-  let departmentId: string | undefined;
+  const parsedDepartments = parseDoctorDepartmentsFromApi(row.department);
+  const departmentContext = resolveDoctorDepartmentContext(parsedDepartments, contextDepartmentId, {
+    nameEn: departmentNameEn,
+    nameAr: departmentNameAr,
+  });
 
-  if (depRaw && typeof depRaw === "object" && depRaw !== null) {
-    const d = depRaw as {
-      _id?: unknown;
-      name?: string;
-      nameAr?: string;
-      arabicName?: string;
-    };
-    if (d._id != null) departmentId = String(d._id);
-    if (typeof d.name === "string" && d.name.trim()) {
-      resolvedDeptEn = d.name.trim();
-    }
-    if (typeof d.arabicName === "string" && d.arabicName.trim()) {
-      resolvedDeptAr = d.arabicName.trim();
-    } else if (typeof d.nameAr === "string" && d.nameAr.trim()) {
-      resolvedDeptAr = d.nameAr.trim();
-    }
-  } else if (typeof depRaw === "string" && /^[0-9a-fA-F]{24}$/i.test(depRaw)) {
-    departmentId = depRaw;
-  }
+  const resolvedDeptEn = departmentContext.department;
+  const resolvedDeptAr = departmentContext.departmentAr;
+  const departmentId = departmentContext.departmentId;
+  const departmentIds = departmentContext.departmentIds;
 
   const specialty = String(row.specialty ?? resolvedDeptEn ?? "");
   const specialtyAr = String(row.specialtyAr ?? resolvedDeptAr ?? specialty);
@@ -198,6 +189,7 @@ export function mapApiDoctorRowToDoctor(
     availableOnline: parseAvailableOnline(row.availableOnline),
     hideBooking: !isActive,
     ...(departmentId ? { departmentId } : {}),
+    ...(departmentIds.length > 0 ? { departmentIds } : {}),
     providerCode,
   };
 }
@@ -206,9 +198,12 @@ export async function fetchMappedDoctorsBySubspeciality(
   subspecialityId: string,
   departmentNameEn: string,
   departmentNameAr: string,
+  contextDepartmentId?: string,
 ): Promise<Doctor[]> {
   const rows = await getDoctorsBySubspeciality(subspecialityId, { limit: 100 });
-  return rows.map((row) => mapApiDoctorRowToDoctor(row, departmentNameEn, departmentNameAr));
+  return rows.map((row) =>
+    mapApiDoctorRowToDoctor(row, departmentNameEn, departmentNameAr, contextDepartmentId),
+  );
 }
 
 /** Maps API doctor rows for BookAppointment (static dept ids + HIS clinic/provider codes). */
@@ -216,12 +211,18 @@ export function mapApiDoctorRowToBookingDoctor(
   row: Record<string, unknown>,
   departmentNameEn: string,
   departmentNameAr: string,
+  contextDepartmentId?: string,
 ): DoctorWithClinicCode {
-  const base = mapApiDoctorRowToDoctor(row, departmentNameEn, departmentNameAr);
+  const base = mapApiDoctorRowToDoctor(
+    row,
+    departmentNameEn,
+    departmentNameAr,
+    contextDepartmentId,
+  );
 
   const depRaw = row.department;
   let apiClinicalCode: string | undefined;
-  if (depRaw && typeof depRaw === "object" && depRaw !== null) {
+  if (depRaw && typeof depRaw === "object" && depRaw !== null && !Array.isArray(depRaw)) {
     const d = depRaw as { departmentId?: string };
     if (typeof d.departmentId === "string" && d.departmentId.trim()) {
       apiClinicalCode = d.departmentId.trim();
@@ -234,14 +235,30 @@ export function mapApiDoctorRowToBookingDoctor(
   const departmentClinicCode = staticDept?.clinicCode ?? apiClinicalCode;
   const clinicCode = rowClinicCode || departmentClinicCode;
 
+  const bookingDepartmentId =
+    contextDepartmentId ??
+    (isMongoObjectId(base.departmentId) ? base.departmentId : undefined) ??
+    (staticDept ? String(staticDept.id) : undefined);
+
   return {
     ...base,
-    departmentId: staticDept ? String(staticDept.id) : base.departmentId,
+    departmentId: bookingDepartmentId,
     providerCode: base.providerCode,
     departmentClinicCode,
     clinicCode,
     hideBooking: base.hideBooking,
   };
+}
+
+function mapDoctorRowWithDepartments(
+  row: Record<string, unknown>,
+  mapper: (row: Record<string, unknown>, nameEn: string, nameAr: string) => Doctor,
+): Doctor {
+  const parsed = parseDoctorDepartmentsFromApi(row.department);
+  const first = parsed[0];
+  const deptName = first?.name ?? "";
+  const deptNameAr = first?.nameAr || first?.name || deptName;
+  return mapper(row, deptName, deptNameAr);
 }
 
 /** All active doctors (paginates until complete). List endpoint populates `department`. */
@@ -257,15 +274,7 @@ export async function fetchAllActiveDoctors(): Promise<Doctor[]> {
     const meta = res?.data?.meta as { totalPages?: number } | undefined;
     if (!Array.isArray(rows) || rows.length === 0) break;
     for (const row of rows) {
-      const dep = row.department;
-      let deptName = "";
-      let deptNameAr = "";
-      if (dep && typeof dep === "object" && dep !== null && "name" in dep) {
-        const d = dep as { name?: string; arabicName?: string; nameAr?: string };
-        deptName = String(d.name ?? "");
-        deptNameAr = String(d.arabicName ?? d.nameAr ?? deptName);
-      }
-      out.push(mapApiDoctorRowToDoctor(row, deptName, deptNameAr));
+      out.push(mapDoctorRowWithDepartments(row, mapApiDoctorRowToDoctor));
     }
     const totalPages = meta?.totalPages ?? page;
     if (page >= totalPages) break;
@@ -287,15 +296,7 @@ export async function fetchAllBookingDoctors(): Promise<DoctorWithClinicCode[]> 
     const meta = res?.data?.meta as { totalPages?: number } | undefined;
     if (!Array.isArray(rows) || rows.length === 0) break;
     for (const row of rows) {
-      const dep = row.department;
-      let deptName = "";
-      let deptNameAr = "";
-      if (dep && typeof dep === "object" && dep !== null && "name" in dep) {
-        const d = dep as { name?: string; arabicName?: string; nameAr?: string };
-        deptName = String(d.name ?? "");
-        deptNameAr = String(d.arabicName ?? d.nameAr ?? deptName);
-      }
-      out.push(mapApiDoctorRowToBookingDoctor(row, deptName, deptNameAr));
+      out.push(mapDoctorRowWithDepartments(row, mapApiDoctorRowToBookingDoctor));
     }
     const totalPages = meta?.totalPages ?? page;
     if (page >= totalPages) break;
@@ -318,16 +319,7 @@ export async function fetchFeaturedDoctors(): Promise<Doctor[]> {
     const row = doc as Record<string, unknown>;
     if (row.isActive === false) continue;
 
-    const dep = row.department;
-    let deptName = "";
-    let deptNameAr = "";
-    if (dep && typeof dep === "object" && dep !== null && "name" in dep) {
-      const d = dep as { name?: string; arabicName?: string; nameAr?: string };
-      deptName = String(d.name ?? "");
-      deptNameAr = String(d.arabicName ?? d.nameAr ?? deptName);
-    }
-
-    out.push(mapApiDoctorRowToDoctor(row, deptName, deptNameAr));
+    out.push(mapDoctorRowWithDepartments(row, mapApiDoctorRowToDoctor));
   }
   return out;
 }
@@ -348,16 +340,7 @@ export async function fetchDoctorProfileById(id: string): Promise<Doctor | null>
     const row = res?.data as Record<string, unknown> | undefined;
     if (!row || typeof row !== "object") return null;
 
-    const dep = row.department;
-    let deptName = "";
-    let deptNameAr = "";
-    if (dep && typeof dep === "object" && dep !== null && "name" in dep) {
-      const d = dep as { name?: string; arabicName?: string; nameAr?: string };
-      deptName = String(d.name ?? "");
-      deptNameAr = String(d.arabicName ?? d.nameAr ?? deptName);
-    }
-
-    return mapApiDoctorRowToDoctor(row, deptName, deptNameAr);
+    return mapDoctorRowWithDepartments(row, mapApiDoctorRowToDoctor);
   } catch {
     return null;
   }

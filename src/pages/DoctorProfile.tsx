@@ -1,5 +1,6 @@
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeft, Stethoscope, Star, Quote, Loader2 } from "lucide-react";
+import { Stethoscope, Star, Quote, Loader2 } from "lucide-react";
+import { BackArrow } from "@/components/BackArrow";
 import { motion } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Header from "@/components/Header";
@@ -314,8 +315,9 @@ const DoctorProfile = () => {
           <h1 className="text-3xl font-serif text-foreground mb-4">
             {lang === "ar" ? "الطبيب غير موجود" : "Doctor Not Found"}
           </h1>
-          <button onClick={handleGoBack} className="text-primary hover:text-accent font-body transition-colors">
-            {lang === "ar" ? "العودة" : "← Go Back"}
+          <button onClick={handleGoBack} className="inline-flex items-center gap-2 text-primary hover:text-accent font-body transition-colors">
+            <BackArrow className="w-4 h-4" />
+            {lang === "ar" ? "العودة" : "Go Back"}
           </button>
         </div>
         <Footer />
@@ -351,7 +353,7 @@ const DoctorProfile = () => {
       <section className="py-12 md:py-20">
         <div className="container mx-auto px-4 md:px-6">
           <button onClick={handleGoBack} className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary font-body text-sm mb-8 transition-colors">
-            <ArrowLeft className="w-4 h-4" />
+            <BackArrow className="w-4 h-4" />
             {lang === "ar" ? "العودة" : "Go Back"}
           </button>
           <div className="grid md:grid-cols-3 gap-10">
@@ -383,8 +385,8 @@ const DoctorProfile = () => {
                       <div className={`w-2 h-2 rounded-full ${doctor.availableOnline !== false ? "bg-green-500" : "bg-destructive"}`} />
                       <span className="font-body text-xs">
                         {doctor.availableOnline !== false
-                          ? (lang === "ar" ? "متاح للحجز اونلاين" : "Book Online")
-                          : (lang === "ar" ? "غير متاح للحجز اونلاين" : "Not Available for Online Booking")}
+                          ? (lang === "ar" ? "للحجز أونلاين" : "Book Online")
+                          : (lang === "ar" ? "غير متاح للحجز أونلاين" : "Not Available for Online Booking")}
                       </span>
                     </div>
                   )}

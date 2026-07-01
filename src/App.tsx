@@ -46,6 +46,7 @@ const AppointmentBookingFallback = lazyWithRetry(() => import("./pages/Appointme
 const ContactUs = lazyWithRetry(() => import("./pages/ContactUs.tsx"));
 const VerifyNationalId = lazyWithRetry(() => import("./pages/VerifyNationalId.tsx"));
 const MyMedicalReports = lazyWithRetry(() => import("./pages/MyMedicalReports.tsx"));
+const AfyatiLoginError = lazyWithRetry(() => import("./pages/AfyatiLoginError.tsx"));
 const FAQ = lazyWithRetry(() => import("./pages/FAQ.tsx"));
 const MedicalRepVisitBooking = lazyWithRetry(() => import("./pages/MedicalRepVisitBooking.tsx"));
 const MedicalRecordsRequest = lazyWithRetry(() => import("./pages/MedicalRecordsRequest.tsx"));
@@ -144,6 +145,7 @@ const App = () => (
             <Route path="/newborn-photography" element={<NewbornPhotography />} />
             <Route path="/verify-national-id" element={<VerifyNationalId />} />
             <Route path="/my-medical-reports" element={<MyMedicalReports />} />
+            <Route path="/my-medical-reports/login-error" element={<AfyatiLoginError />} />
             <Route path="/Runtime/uploads/*" element={<RuntimePdfViewer />} />
             <Route path="/wp-content/uploads/*" element={<RuntimePdfViewer />} />
             <Route path="*" element={<PublicDocumentRoute />} />

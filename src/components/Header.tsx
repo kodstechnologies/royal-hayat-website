@@ -554,15 +554,13 @@ const Header = () => {
             <Link
               to="/book-appointment"
               onClick={handleBookAppointmentClick}
-              className={`hidden lg:inline-flex items-center justify-center h-8 md:h-9 bg-primary text-primary-foreground rounded-full font-body tracking-wide hover:bg-primary/90 transition-colors duration-300 ${lang === "ar" ? "px-2.5 text-[9px]" : "px-3.5 text-[11px]"
-                }`}
+              className="hidden lg:inline-flex items-center justify-center h-9 px-4 bg-primary text-primary-foreground rounded-full font-body text-sm tracking-wide hover:bg-primary/90 transition-colors duration-300"
             >
               {t("bookAppointment")}
             </Link>
             <Link
               to="/my-medical-reports"
-              className={`hidden lg:inline-flex items-center justify-center h-8 md:h-9 rounded-full font-body tracking-wide border border-border text-foreground hover:bg-background transition-colors duration-300 ${lang === "ar" ? "px-2.5 text-[9px]" : "px-3.5 text-[11px]"
-                }`}
+              className="hidden lg:inline-flex items-center justify-center h-9 px-4 rounded-full font-body text-sm tracking-wide border border-border text-foreground hover:bg-background transition-colors duration-300"
             >
               {t("login")}
             </Link>
@@ -714,14 +712,14 @@ const Header = () => {
             <Link
               to="/book-appointment"
               onClick={handleBookAppointmentClick}
-              className="flex-1 py-3 flex items-center justify-center gap-2 font-body text-xs font-bold text-[#816107] hover:bg-muted/20 transition-colors tracking-wide"
+              className="flex-1 py-3.5 flex items-center justify-center gap-2 font-body text-sm font-bold text-[#816107] hover:bg-muted/20 transition-colors tracking-wide"
             >
               <Stethoscope className="w-4 h-4 text-[#816107]" />
               <span>{t("bookAppointment")}</span>
             </Link>
             <Link
               to="/my-medical-reports"
-              className="flex-1 py-3 flex items-center justify-center gap-2 font-body text-xs font-bold text-foreground hover:bg-muted/20 transition-colors tracking-wide"
+              className="flex-1 py-3.5 flex items-center justify-center gap-2 font-body text-sm font-bold text-foreground hover:bg-muted/20 transition-colors tracking-wide"
             >
               <ClipboardList className="w-4 h-4 text-primary" />
               <span>{t("login")}</span>

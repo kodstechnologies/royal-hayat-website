@@ -82,7 +82,7 @@ const DoctorCard = memo(({ doc, onDoctorClick }: { doc: Doctor; onDoctorClick: (
               <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
               <span className="font-body text-[10px]">
                 {doc.availableOnline !== false
-                  ? (isAr ? "متاح للحجز اونلاين" : "Book Online")
+                  ? (isAr ? "للحجز أونلاين" : "Book Online")
                   : (isAr ? "طلب موعد" : "Appointment Request")}
               </span>
             </div>
@@ -442,17 +442,17 @@ const Doctors = () => {
   const searchResults = useMemo(() => {
     const query = searchQuery.trim();
     if (!query) return [];
-    return sortDoctorsAlphabetically(filterDoctorsBySearch(allDoctors, query), "en");
-  }, [allDoctors, searchQuery]);
+    return sortDoctorsAlphabetically(filterDoctorsBySearch(allDoctors, query), lang);
+  }, [allDoctors, searchQuery, lang]);
   const isSearching = searchQuery.trim().length > 0;
   const sortedGroupedEntries = useMemo(() => {
     const sortDocsWithinDept = (dept: string, docs: Doctor[]) =>
-      sortDoctorsInDepartment(docs, dept, "en");
+      sortDoctorsInDepartment(docs, dept, lang);
     return Object.entries(grouped)
       .filter(([, docs]) => Array.isArray(docs) && docs.length > 0)
       .map(([dept, docs]) => [dept, sortDocsWithinDept(dept, docs)] as const)
-      .sort(([deptA], [deptB]) => compareDoctorsPageDepartments(deptA, deptB, "en"));
-  }, [grouped]);
+      .sort(([deptA], [deptB]) => compareDoctorsPageDepartments(deptA, deptB, lang));
+  }, [grouped, lang]);
   const groupedByMainCategory = useMemo(() => {
     const result: Record<MainCategory, typeof sortedGroupedEntries> = {
       "Clinical Speciality": [],

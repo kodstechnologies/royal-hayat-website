@@ -165,7 +165,7 @@ const DoctorSelection = ({
                             ? "غير متاح حالياً"
                             : "Request Appointment"
                           : isAr
-                            ? "متاح للحجز اونلاين"
+                            ? "للحجز أونلاين"
                             : "Book Online"}
                       </span>
                     </div>

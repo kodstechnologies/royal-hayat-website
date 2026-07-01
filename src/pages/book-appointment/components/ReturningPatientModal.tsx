@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { AlertCircle, ArrowLeft, Loader2 } from "lucide-react";
+import { AlertCircle, Loader2 } from "lucide-react";
+import { BackArrow } from "@/components/BackArrow";
 import type { VerifiedIdentityDetails } from "../types";
 type ReturningPatientModalProps = {
   isAr: boolean;
@@ -114,7 +115,7 @@ const ReturningPatientModal = ({
               onClick={onGoBackFromModal}
               className="mt-3 w-full bg-secondary/40 text-foreground px-4 py-3 rounded-xl font-body text-xs tracking-widest uppercase hover:bg-secondary/60 transition-colors inline-flex items-center justify-center gap-2"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <BackArrow className="w-4 h-4" />
               {t("patientLookupGoBack")}
             </button>
           )}

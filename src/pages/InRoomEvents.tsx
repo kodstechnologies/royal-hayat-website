@@ -122,7 +122,7 @@ const InRoomEvents = ({ topCarouselImages, galleryImages }: InRoomEventsProps) =
                 },
                 {
                   icon: UserCheck,
-                  title: isAr ? "خدمة كبير الخدم" : "Butler Service",
+                  title: isAr ? "خدمة المضيفات" : "Butler Service",
                   desc: isAr
                     ? "يتواجد فريقنا المتخصص لخدمتكم والاهتمام بجميع التفاصيل طوال المناسبة، من استقبال الضيوف وحتى ترتيب وتنظيم الأجواء، نضمن لكم تجربة سلسة ومريحة بكل احترافية وخصوصية."
                     : "Our professional butlers will be on hand to assist with every need. From reception to cleanup, we ensure a seamless and comfortable experience.",

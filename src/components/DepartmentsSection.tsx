@@ -24,6 +24,7 @@ import {
   shouldShowDepartmentDoctorsHeading,
 } from "@/utils/clinicalNutritionSubspeciality";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
+import { resolveDoctorDepartmentLabel } from "@/utils/doctorDepartmentContext";
 import { sortDoctorsInDepartment } from "@/utils/sortDoctorsInDepartment";
 import { scrollDoctorCarousel } from "@/utils/doctorCarousel";
 type DepartmentsSectionProps = {
@@ -211,6 +212,14 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
       },
     });
   };
+  const departmentLabelRows = useMemo(
+    () =>
+      departments
+        .filter((dept) => dept.mongoId)
+        .map((dept) => ({ id: dept.mongoId!, name: dept.name, nameAr: dept.nameAr })),
+    [departments],
+  );
+
   const filteredSections = useMemo(() => {
     const query = searchQuery.toLowerCase().trim();
     if (!query) return categorySections;
@@ -278,6 +287,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
       selectedSub.subspecialityId,
       dept.name,
       dept.nameAr,
+      dept.mongoId,
     )
       .then((doctors) => {
         if (cancelled) return;
@@ -606,7 +616,14 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                                 <div className={`absolute top-2 w-6 h-6 rounded-full bg-popover/20 backdrop-blur-sm flex items-center justify-center ${lang === "ar" ? "left-2" : "right-2"}`}><Stethoscope className="w-3 h-3 text-primary-foreground" /></div>
                                               </div>
                                               <div className="p-3 flex flex-col text-start items-start">
-                                                <p className={`text-accent text-[9px] tracking-[0.2em] font-body mb-1 w-full ${lang === "ar" ? "" : "uppercase"}`}>{lang === "ar" ? doc.specialtyAr : doc.specialty}</p>
+                                                <p className={`text-accent text-[9px] tracking-[0.2em] font-body mb-1 w-full ${lang === "ar" ? "" : "uppercase"}`}>
+                                                  {resolveDoctorDepartmentLabel(
+                                                    doc,
+                                                    dept.mongoId,
+                                                    departmentLabelRows,
+                                                    lang === "ar" ? "ar" : "en",
+                                                  )}
+                                                </p>
                                                 <h4 className="text-[1.2rem] font-serif font-bold text-foreground group-hover/doc:text-primary transition-colors w-full">{getDoctorDisplayName(doc, lang)}</h4>
                                                 <p className="text-xs text-muted-foreground font-body mt-0.5 line-clamp-1 w-full">{lang === "ar" ? doc.titleAr : doc.title}</p>
                                                 <p className="text-xs text-primary font-body mt-2 inline-flex items-center gap-1">{t("viewProfile")} <ArrowRight className={`w-3 h-3 shrink-0 ${lang === "ar" ? "rotate-180" : ""}`} /></p>

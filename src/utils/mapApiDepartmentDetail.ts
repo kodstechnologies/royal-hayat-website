@@ -106,7 +106,9 @@ export function mapApiDepartmentDetailResponse(
     })
     .filter((sub): sub is NonNullable<typeof sub> => sub !== null);
 
-  const doctors = data.doctors.map((row) => mapApiDoctorRowToDoctor(row, name, nameAr));
+  const doctors = data.doctors.map((row) =>
+    mapApiDoctorRowToDoctor(row, name, nameAr, mongoId || undefined),
+  );
 
   return {
     mongoId,

@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { ArrowLeft, Sparkles, Stethoscope } from "lucide-react";
+import { Sparkles, Stethoscope } from "lucide-react";
+import { BackArrow } from "@/components/BackArrow";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -71,7 +72,7 @@ const RecommendedDepartments = ({
           onClick={onBack}
           className="flex items-center gap-2 text-muted-foreground font-body text-sm hover:text-foreground transition-colors"
         >
-          <ArrowLeft className="w-4 h-4" /> {t("previous")}
+          <BackArrow className="w-4 h-4" /> {t("previous")}
         </button>
       </div>
     </div>

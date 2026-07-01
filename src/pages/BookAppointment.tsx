@@ -3,13 +3,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import {
   Brain, Sparkles, Stethoscope, Building2, User, CheckCircle2,
-  Search, ArrowRight, ArrowLeft, Clock,
+  Search, ArrowRight, Clock,
   Activity, Heart, Baby, Eye, Bone, Pill, Microscope, Scissors, Smile,
   AlertCircle, FileText, ClipboardList, UserPlus, LogIn, Calendar, Shield, Loader2
 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { BackArrow } from "@/components/BackArrow";
 import ScrollToTop from "@/components/ScrollToTop";
 import type { DoctorWithClinicCode as Doctor } from "@/types/doctor";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
@@ -21,7 +22,7 @@ import {
 } from "@/api/doctors";
 import { mapApiDepartmentsToDisplay } from "@/utils/mapApiDepartment";
 import { sortDepartmentsByDisplayOrder } from "@/utils/doctorDepartmentOrder";
-import { sortDoctorsInDepartment } from "@/utils/sortDoctorsInDepartment";
+import { sortAllDoctorsForBooking, sortDoctorsForBooking } from "@/utils/sortDoctorsInDepartment";
 import type { Department } from "@/types/department";
 import { MAIN_CATEGORIES } from "@/types/department";
 import { createAppointmentRequest } from "@/api/appointmentRequest";
@@ -714,15 +715,16 @@ const BookAppointment = () => {
       (d) => !isPharmacyNonBookableDoctor(d),
     );
     const deptName = departmentsList.find((d) => d.id === selectedDept)?.name ?? "";
-    return sortDoctorsInDepartment(filtered, deptName, isAr ? "ar" : "en");
+    return sortDoctorsForBooking(filtered, deptName, isAr ? "ar" : "en");
   }, [deptDoctorList, doctorSearch, isAr, selectedDept, departmentsList]);
   const filteredAllDoctors = useMemo(
     () =>
-      [...filterDoctorsBySearch(
-        allApiDoctors.filter((d) => !DOCTOR_PATH_EXCLUDED_IDS.has(d.id) && !isPharmacyNonBookableDoctor(d)),
-        doctorSearch,
-      )].sort((a, b) =>
-        (isAr ? a.nameAr : a.name).localeCompare(isAr ? b.nameAr : b.name, isAr ? "ar" : "en"),
+      sortAllDoctorsForBooking(
+        filterDoctorsBySearch(
+          allApiDoctors.filter((d) => !DOCTOR_PATH_EXCLUDED_IDS.has(d.id) && !isPharmacyNonBookableDoctor(d)),
+          doctorSearch,
+        ),
+        isAr ? "ar" : "en",
       ),
     [allApiDoctors, doctorSearch, isAr],
   );
@@ -1870,7 +1872,7 @@ Clinic Code:`;
                 onClick={() => { setBookingPath(null); setSymptomChips([]); setSymptomText(""); }}
                 className="flex shrink-0 items-center gap-1.5 text-muted-foreground font-body text-xs sm:text-sm hover:text-foreground transition-colors"
               >
-                <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                <BackArrow className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 <span className="whitespace-nowrap">{t("previous")}</span>
               </button>
               <motion.button
@@ -1931,7 +1933,7 @@ Clinic Code:`;
           </div>
           <div className="flex items-center justify-start mt-8">
             <button onClick={() => { setSymptomResults(null); }} className="flex items-center gap-2 text-muted-foreground font-body text-sm hover:text-foreground transition-colors">
-              <ArrowLeft className="w-4 h-4" /> {t("previous")}
+              <BackArrow className="w-4 h-4" /> {t("previous")}
             </button>
           </div>
         </div>
@@ -2087,7 +2089,7 @@ Clinic Code:`;
                                   <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
                                   <span className="font-body text-[10px]">
                                     {doc.availableOnline !== false
-                                      ? (isAr ? "متاح للحجز اونلاين" : "Book Online")
+                                      ? (isAr ? "للحجز أونلاين" : "Book Online")
                                       : (isAr ? "طلب موعد" : "Appointment Request")}
                                   </span>
                                 </div>
@@ -2254,7 +2256,7 @@ Clinic Code:`;
                     </div>
                   </div>
                 )}
-                {patientType && <button onClick={() => { setPatientType(null); setNationalId(""); setNationalIdError(""); setVerifiedPersonName(null); setVerifyOperationId(null); setIsWaitingForApproval(false); setVerifiedIdentityDetails(null); setPatientPhone(""); setPatientAdditionalNotes(""); setSelectedDate(""); setManualSlotHour(""); setManualSlotMinute(""); setManualSlotAmPm(""); }} className="mt-4 font-body text-xs text-muted-foreground hover:text-foreground transition-colors">← {t("changeSelection")}</button>}
+                {patientType && <button onClick={() => { setPatientType(null); setNationalId(""); setNationalIdError(""); setVerifiedPersonName(null); setVerifyOperationId(null); setIsWaitingForApproval(false); setVerifiedIdentityDetails(null); setPatientPhone(""); setPatientAdditionalNotes(""); setSelectedDate(""); setManualSlotHour(""); setManualSlotMinute(""); setManualSlotAmPm(""); }} className="mt-4 inline-flex items-center gap-1 font-body text-xs text-muted-foreground hover:text-foreground transition-colors"><BackArrow className="w-3 h-3" />{t("changeSelection")}</button>}
               </div>
             </motion.div>
           )}
@@ -2408,7 +2410,7 @@ Clinic Code:`;
           )}
         </AnimatePresence>
         <div className="max-w-3xl mx-auto flex items-center justify-between mt-6 md:mt-8 gap-3">
-          <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={handleBack} className="flex items-center gap-1.5 text-muted-foreground font-body text-xs sm:text-sm hover:text-foreground transition-colors"><ArrowLeft className="w-4 h-4" />{step === 0 ? t("backToHome") : t("previous")}</motion.button>
+          <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={handleBack} className="flex items-center gap-1.5 text-muted-foreground font-body text-xs sm:text-sm hover:text-foreground transition-colors"><BackArrow className="w-4 h-4" />{step === 0 ? t("backToHome") : t("previous")}</motion.button>
           {step >= 2 && !(step === 2 && !patientType) && !(step === 2 && patientType === "returning") && step !== 3 && step !== 4 && (
             <motion.button whileHover={canProceed() ? { scale: 1.03 } : {}} whileTap={canProceed() ? { scale: 0.97 } : {}} onClick={handleNext} disabled={!canProceed()} className={`flex items-center gap-1.5 px-5 sm:px-8 py-2.5 sm:py-3 rounded-lg font-body text-xs sm:text-sm tracking-widest uppercase transition-all duration-300 ${canProceed() ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md" : "bg-muted text-muted-foreground cursor-not-allowed"}`}>
               {isAr ? "المواصلة لحجز موعد" : t("continue")} <ArrowRight className="w-4 h-4" />
@@ -2460,7 +2462,7 @@ Clinic Code:`;
                     onClick={goBackFromPatientLookupModal}
                     className="mt-3 w-full bg-secondary/40 text-foreground px-4 py-3 rounded-xl font-body text-xs tracking-widest uppercase hover:bg-secondary/60 transition-colors inline-flex items-center justify-center gap-2"
                   >
-                    <ArrowLeft className="w-4 h-4" />
+                    <BackArrow className="w-4 h-4" />
                     {t("patientLookupGoBack")}
                   </button>
                 )}

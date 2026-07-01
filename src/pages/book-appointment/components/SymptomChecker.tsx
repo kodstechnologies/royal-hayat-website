@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { AlertCircle, ArrowLeft, Brain, Sparkles } from "lucide-react";
+import { AlertCircle, Brain, Sparkles } from "lucide-react";
+import { BackArrow } from "@/components/BackArrow";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -125,7 +126,7 @@ const SymptomChecker = ({
             onClick={onBack}
             className="flex shrink-0 items-center gap-1.5 text-muted-foreground font-body text-xs sm:text-sm hover:text-foreground transition-colors"
           >
-            <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+            <BackArrow className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             <span className="whitespace-nowrap">{t("previous")}</span>
           </button>
           <motion.button

@@ -10,7 +10,6 @@ import {
   CheckCircle2,
   AlertCircle,
   Activity,
-  ArrowLeft,
   ArrowRight,
   Loader2,
   Phone,
@@ -18,6 +17,7 @@ import {
 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { BackArrow } from "@/components/BackArrow";
 import ScrollToTop from "@/components/ScrollToTop";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { createAppointmentRequest } from "@/api/appointmentRequest";
@@ -250,7 +250,7 @@ const AppointmentBookingFallback = () => {
           onClick={() => navigate("/book-appointment", { replace: true })}
           className="inline-flex items-center gap-2 text-accent hover:text-accent/80 transition-colors font-body text-sm mb-6"
         >
-          <ArrowLeft className={`w-4 h-4 ${isAr ? "rotate-180" : ""}`} />
+          <BackArrow className="w-4 h-4" />
           {t("previous")}
         </button>
 

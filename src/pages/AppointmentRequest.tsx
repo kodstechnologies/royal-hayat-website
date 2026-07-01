@@ -5,7 +5,6 @@ import {
   ClipboardList,
   CheckCircle2,
   ArrowRight,
-  ArrowLeft,
   User,
   Phone,
   Calendar,
@@ -13,6 +12,7 @@ import {
 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { BackArrow } from "@/components/BackArrow";
 import ScrollToTop from "@/components/ScrollToTop";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
@@ -400,7 +400,7 @@ const AppointmentRequest = () => {
           onClick={handleGoBack}
           className="inline-flex items-center gap-2 text-accent hover:text-accent/80 transition-colors font-body text-sm mb-6 px-0"
         >
-          <ArrowLeft className={`w-4 h-4 ${isAr ? "rotate-180" : ""}`} />
+          <BackArrow className="w-4 h-4" />
           {isAr ? "العودة" : "Back"}
         </button>
         {(resolvedDoctorLabel || resolvedDepartmentLabel) && !prefilledDoctor && (

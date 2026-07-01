@@ -209,7 +209,7 @@ const translations: Translations = {
   },
   elementsSpa: { en: "Elements Spa", ar: "إليمنتس سبا" },
   elementsSpaByBanyanTree: { en: "Elements Spa (by Banyan Tree)", ar: "إليمنتس سبا (بانيان تري)" },
-  fifthFloorCafe: { en: "The 5th Floor Café", ar: "مقهى الطابق الخامس" },
+  fifthFloorCafe: { en: "The 5th Floor Café", ar: "كافيه الطابق الخامس" },
   elementsSpaDesc: { en: "Relaxation and wellness services to support recovery and well-being.", ar: "خدمات استرخاء وعافية لدعم التعافي والرفاهية." },
   alLiwanCafe: { en: "Al Liwan Bistro", ar: "الليوان بيسترو" },
   alLiwanCafeDesc: { en: "Fine dining and refreshments in an elegant setting.", ar: "مأكولات راقية ومرطبات في أجواء أنيقة." },

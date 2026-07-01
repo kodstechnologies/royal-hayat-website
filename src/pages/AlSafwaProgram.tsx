@@ -8,7 +8,8 @@ import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
 import MedicalRecordDatePicker from "@/components/MedicalRecordDatePicker";
-import { Crown, Star, Target, Stethoscope, ClipboardList, Briefcase, UserPlus, CheckCircle2, X, ChevronDown, ArrowLeft } from "lucide-react";
+import { Crown, Star, Target, Stethoscope, ClipboardList, Briefcase, UserPlus, CheckCircle2, X, ChevronDown } from "lucide-react";
+import { BackArrow } from "@/components/BackArrow";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 // import { toast } from "@/hooks/use-toast";
@@ -446,7 +447,7 @@ const AlSafwaProgram = () => {
       onClick={handleNavigationBack}
       className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary font-body text-sm mb-8 transition-colors"
     >
-      <ArrowLeft className="w-4 h-4" />
+      <BackArrow className="w-4 h-4" />
       {isAr ? "العودة" : "Go Back"}
     </button>
   ) : null;
@@ -498,7 +499,7 @@ const AlSafwaProgram = () => {
               onClick={() => navigate("/book-appointment")}
               className="inline-flex items-center gap-2 text-muted-foreground font-body text-sm hover:text-foreground transition-colors"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <BackArrow className="w-4 h-4" />
               {isAr ? "العودة لحجز الموعد" : "Back to book appointment"}
             </button>
           </div>
@@ -571,7 +572,7 @@ const AlSafwaProgram = () => {
               onClick={() => navigate("/book-appointment")}
               className="inline-flex items-center gap-2 text-muted-foreground font-body text-sm hover:text-foreground transition-colors mb-8"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <BackArrow className="w-4 h-4" />
               {isAr ? "العودة لحجز الموعد" : "Back to book appointment"}
             </button>
           )}

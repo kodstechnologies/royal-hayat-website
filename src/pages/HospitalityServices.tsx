@@ -10,43 +10,34 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
+import { renderColonHeading } from "@/utils/renderColonHeading";
 const PANOEE_IFRAME_ALLOW = "fullscreen; xr-spatial-tracking; xr; accelerometer; gyroscope; autoplay;";
 const PHONE_LINK_CLASS =
   "text-accent hover:underline font-semibold inline-block [direction:ltr] [unicode-bidi:isolate]";
 const LTR_ISOLATE_CLASS = "inline-block [direction:ltr] [unicode-bidi:isolate]";
 
 const renderSetupStyleLabel = (item: string, isAr: boolean) => {
-  if (isAr && item === "- حرف U") {
+  if (isAr && item === "حرف U") {
     return (
       <span dir="rtl">
-        {"- حرف "}
+        {"حرف "}
         <span dir="ltr" className={LTR_ISOLATE_CLASS}>
           U
         </span>
       </span>
     );
   }
-  return item;
-};
-
-const getColonIndex = (text: string) => {
-  const candidates = [text.indexOf(":"), text.indexOf("؛")].filter((index) => index !== -1);
-  return candidates.length ? Math.min(...candidates) : -1;
-};
-
-const renderColonHeading = (text: string) => {
-  const colonIndex = getColonIndex(text);
-  if (colonIndex === -1) {
-    return <span className="font-bold">{text}</span>;
+  if (isAr && item === "تنسيق") {
+    return (
+      <span dir="rtl">
+        {"تنسيق "}
+        <span dir="ltr" className={LTR_ISOLATE_CLASS}>
+          Cabaret
+        </span>
+      </span>
+    );
   }
-  const label = text.slice(0, colonIndex + 1);
-  const rest = text.slice(colonIndex + 1);
-  return (
-    <>
-      <span className="font-bold">{label}</span>
-      {rest}
-    </>
-  );
+  return item;
 };
 
 const SPA_AR_DESC =
@@ -73,10 +64,10 @@ const CAFE_AR_DESSERT =
   "واختتموا تجربتكم بقطعة من الكيك أو المخبوزات الطازجة، إلى جانب تشكيلة من القهوة المختصة وأنواع الشاي الفاخرة.";
 const CAFE_AR_HOURS =
   "يفتتح الليوان بيسترو أبوابه يوميًا من الساعة 8 صباحًا وحتى 11 مساءً، ليكون وجهتكم المثالية للإفطار، والغداء، والعشاء، أو للاستمتاع بوجبة خفيفة في أي وقت من اليوم.";
-const FIFTH_FLOOR_AR_TITLE = "مقهى الدور الخامس";
+const FIFTH_FLOOR_AR_TITLE = "كافيه الدور الخامس";
 const FIFTH_FLOOR_AR_SUBTITLE = "مساحة دافئة للوجبات الخفيفة والمشروبات المنعشة";
 const FIFTH_FLOOR_AR_INTRO =
-  "يوفر مقهى الدور الخامس أجواءً مريحة وهادئة تتيح للضيوف الاسترخاء أثناء انتظار المواعيد الطبية أو زيارة أحبائهم. وقد صُمم المقهى بعناية ليكون مساحة ترحيبية مناسبة للعائلات المنتظرة لاستقبال مولود جديد أو انتهاء أحد الإجراءات الطبية، ضمن بيئة تبعث على الطمأنينة والراحة.";
+  "يوفر كافيه الدور الخامس أجواءً مريحة وهادئة تتيح للضيوف الاسترخاء أثناء انتظار المواعيد الطبية أو زيارة أحبائهم. وقد صُمم الكافيه بعناية ليكون مساحة ترحيبية مناسبة للعائلات المنتظرة لاستقبال مولود جديد أو انتهاء أحد الإجراءات الطبية، ضمن بيئة تبعث على الطمأنينة والراحة.";
 const FIFTH_FLOOR_AR_MENU =
   "استمتعوا بتشكيلة مختارة من القهوة الطازجة، والسندويشات المتنوعة، والسلطات الطازجة، والحلويات الفاخرة، جميعها مقدمة ضمن أجواء تجمع بين الراحة والرُقي.";
 const FIFTH_FLOOR_AR_OFFERINGS = [
@@ -447,7 +438,7 @@ const HospitalityServices = ({
     <div className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107]">
       <Header />
       <section className="py-8 md:py-10 bg-primary/5">
-        <div className="container mx-auto px-6 text-center">
+        <div className={`container mx-auto px-6 ${isAr ? "text-right" : "text-center"}`}>
           <ScrollAnimationWrapper>
             <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3">{t("premiumExperience")}</p>
             <h1 className="text-4xl md:text-5xl font-serif text-foreground mb-4">
@@ -557,7 +548,7 @@ const HospitalityServices = ({
                     <h4 className="font-serif text-base text-foreground mb-3">{renderColonHeading(isAr ? "أنماط الترتيب المتوفرة:" : "Available Setup Styles:")}</h4>
                     <div className="space-y-2 mb-5">
                       {(isAr
-                        ? ["الديوانية", "المسرح", " - U حرف", "الصفوف الدراسية", "تنسيق الكاباريه", "الطاولات المستديرة"]
+                        ? ["الديوانية", "المسرح", "حرف U", "الصفوف الدراسية", "تنسيق", "الطاولات المستديرة"]
                         : ["Diwaniya", "Theatre", "U-Shape", "Classroom", "Cabaret", "Round Tables"]
                       ).map((item, i) => (
                         <div key={i} className="flex items-center gap-3">
@@ -771,8 +762,8 @@ const HospitalityServices = ({
           <ScrollAnimationWrapper>
             {showAll && (
               <>
-                {isAr && <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-2 text-center">تجربة استثنائية</p>}
-                <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-2 text-center">{isAr ? "الأجنحة الفاخرة" : "Exclusive Suites"}</h2>
+                {isAr && <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-2 text-right">تجربة استثنائية</p>}
+                <h2 className={`text-2xl md:text-3xl font-serif text-foreground mb-2 ${isAr ? "text-right" : "text-center"}`}>{isAr ? "الأجنحة الفاخرة" : "Exclusive Suites"}</h2>
               </>
             )}
             <p className="text-muted-foreground font-body text-sm text-justify mb-8 max-w-2xl mx-auto text-center">
@@ -1146,7 +1137,7 @@ const HospitalityServices = ({
                         },
                         {
                           icon: UserCheck,
-                          title: "خدمة كبير الخدم",
+                          title: "خدمة المضيفات",
                           desc: "يتواجد فريقنا المتخصص لخدمتكم والاهتمام بجميع التفاصيل طوال المناسبة، من استقبال الضيوف وحتى ترتيب وتنظيم الأجواء، لنضمن لكم تجربة سلسة ومريحة بكل احترافية وخصوصية.",
                         },
                       ].map((item, i) => (
@@ -1341,7 +1332,7 @@ const HospitalityServices = ({
       </section>}
       {showAll && <section className="py-6 bg-muted/10">
         <div className="container mx-auto px-6 max-w-6xl">
-          <div className="lg:hidden text-center mb-4">
+          <div className={`lg:hidden mb-4 ${isAr ? "text-right" : "text-center"}`}>
             <h2 className="text-2xl font-serif text-foreground mb-2">
               {isAr ? FIFTH_FLOOR_AR_TITLE : "The 5th Floor Café"}
             </h2>
@@ -1365,7 +1356,7 @@ const HospitalityServices = ({
             </div>
             <ScrollAnimationWrapper className="order-3 lg:order-2 min-w-0">
               <div className="text-justify min-w-0">
-                <div className="hidden lg:block text-center mb-4">
+                <div className={`hidden lg:block mb-4 ${isAr ? "text-right" : "text-center"}`}>
                   <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-2">
                     {isAr ? FIFTH_FLOOR_AR_TITLE : "The 5th Floor Café"}
                   </h2>
@@ -1389,21 +1380,24 @@ const HospitalityServices = ({
                     {FIFTH_FLOOR_AR_MENU}
                   </p>
                 )}
-                <h3 className="font-serif text-base text-foreground mb-3 text-left">
-                  {renderColonHeading(isAr ? "ما نقدمه" : "What We Offer:")}
+                <h3 className={`font-serif text-base text-foreground mb-3 ${isAr ? "text-right" : "text-left"}`}>
+                  {renderColonHeading(isAr ? "كافيه" : "What We Offer:")}
                 </h3>
-                <div className="space-y-2 mb-6 w-full text-justify">
+                <div className={`space-y-2 mb-6 w-full ${isAr ? "text-right" : "text-left"}`}>
                   {(isAr
                     ? FIFTH_FLOOR_AR_OFFERINGS
                     : ["Freshly brewed specialty coffee", "A selection of sandwiches", "Fresh salads", "Indulgent desserts"]
                   ).map((item, i) => (
-                    <div key={i} className="flex items-center gap-3">
+                    <div
+                      key={i}
+                      className={`flex items-center gap-3 ${isAr ? "flex-row-reverse justify-end" : ""}`}
+                    >
                       <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
                       <span className="font-body text-sm text-foreground">{item}</span>
                     </div>
                   ))}
                 </div>
-                <p className="font-body text-sm text-muted-foreground text-justify">
+                <p className={`font-body text-sm text-muted-foreground ${isAr ? "text-right" : "text-left"}`}>
                   {isAr ? FIFTH_FLOOR_AR_LOCATION : "5th Floor — Royale Hayat Hospital"}
                 </p>
               </div>

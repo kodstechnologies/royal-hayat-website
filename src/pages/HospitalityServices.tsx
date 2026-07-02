@@ -1383,15 +1383,15 @@ const HospitalityServices = ({
                 <h3 className={`font-serif text-base text-foreground mb-3 ${isAr ? "text-right" : "text-left"}`}>
                   {renderColonHeading(isAr ? "كافيه" : "What We Offer:")}
                 </h3>
-                <div className={`space-y-2 mb-6 w-full ${isAr ? "text-right" : "text-left"}`}>
+                <div
+                  className={`space-y-2 mb-6 w-full ${isAr ? "text-right" : "text-left"}`}
+                  dir={isAr ? "rtl" : "ltr"}
+                >
                   {(isAr
                     ? FIFTH_FLOOR_AR_OFFERINGS
                     : ["Freshly brewed specialty coffee", "A selection of sandwiches", "Fresh salads", "Indulgent desserts"]
                   ).map((item, i) => (
-                    <div
-                      key={i}
-                      className={`flex items-center gap-3 ${isAr ? "flex-row-reverse justify-end" : ""}`}
-                    >
+                    <div key={i} className="flex items-center gap-3">
                       <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
                       <span className="font-body text-sm text-foreground">{item}</span>
                     </div>

@@ -5,13 +5,13 @@ import ScrollAnimationWrapper from "@/components/ScrollAnimationWrapper";
 import ImageCarousel from "@/components/ImageCarousel";
 import { orchidSuiteCarouselImageClass } from "@/data/routeGalleryImages";
 import EventBookingModal from "@/components/EventBookingModal";
-import PanoeeTourEmbed from "@/components/PanoeeTourEmbed";
 import { Crown, Utensils, Sparkles, Flower2, Coffee, Phone, CheckCircle2, Baby, Image, Video, Bed, Star, X, Gift, UtensilsCrossed, UserCheck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { renderColonHeading } from "@/utils/renderColonHeading";
+const PANOEE_IFRAME_ALLOW = "fullscreen; xr-spatial-tracking; xr; accelerometer; gyroscope; autoplay;";
 const PHONE_LINK_CLASS =
   "text-accent hover:underline font-semibold inline-block [direction:ltr] [unicode-bidi:isolate]";
 const LTR_ISOLATE_CLASS = "inline-block [direction:ltr] [unicode-bidi:isolate]";
@@ -509,12 +509,22 @@ const HospitalityServices = ({
           {activeHall === "gardenia" && (
             <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} key="gardenia">
               <div className="grid lg:grid-cols-2 gap-10 items-start">
-                <PanoeeTourEmbed
-                  name="GARDENIA HALL"
-                  src="https://tour.panoee.net/iframe/6a1ff18fc6404495aa0daee6"
-                  title={isAr ? "جولة 360 لقاعة جاردينيا" : "Gardenia Banquet Hall 360 Tour"}
-                  isAr={isAr}
-                />
+                <div className="rounded-2xl overflow-hidden border border-border shadow-md h-[400px]">
+                  <iframe
+                    id="tour-embeded"
+                    name="GARDENIA HALL"
+                    src="https://tour.panoee.net/iframe/6a1ff18fc6404495aa0daee6"
+                    title={isAr ? "جولة 360 لقاعة جاردينيا" : "Gardenia Banquet Hall 360 Tour"}
+                    width="100%"
+                    height="400px"
+                    frameBorder="0"
+                    scrolling="no"
+                    allow={PANOEE_IFRAME_ALLOW}
+                    allowFullScreen
+                    className="w-full h-full"
+                    loading="eager"
+                  />
+                </div>
                 <ScrollAnimationWrapper>
                   <div>
                     <h3 className="text-xl font-serif text-foreground mb-4">{isAr ? "قاعة جاردينيا للاحتفالات" : "Gardenia Banquet Hall"}</h3>
@@ -579,12 +589,22 @@ const HospitalityServices = ({
           {activeHall === "aljouri" && (
             <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} key="aljouri">
               <div className="grid lg:grid-cols-2 gap-10 items-start">
-                <PanoeeTourEmbed
-                  name="AL JOURI HALL"
-                  src="https://tour.panoee.net/iframe/6a1fce16c64044079d0da91a"
-                  title={isAr ? "جولة 360 لقاعة الجوري" : "Al Jouri Banquet Hall 360 Tour"}
-                  isAr={isAr}
-                />
+                <div className="rounded-2xl overflow-hidden border border-border shadow-md h-[400px]">
+                  <iframe
+                    id="tour-embeded"
+                    name="AL JOURI HALL"
+                    src="https://tour.panoee.net/iframe/6a1fce16c64044079d0da91a"
+                    title={isAr ? "جولة 360 لقاعة الجوري" : "Al Jouri Banquet Hall 360 Tour"}
+                    width="100%"
+                    height="400px"
+                    frameBorder="0"
+                    scrolling="no"
+                    allow={PANOEE_IFRAME_ALLOW}
+                    allowFullScreen
+                    className="w-full h-full"
+                    loading="eager"
+                  />
+                </div>
                 <ScrollAnimationWrapper>
                   <div>
                     <h3 className="text-xl font-serif text-foreground mb-4">{isAr ? "قاعة الجوري للاحتفالات" : "Al Jouri Banquet Hall"}</h3>
@@ -838,12 +858,22 @@ const HospitalityServices = ({
             ) : activeSuite360Tour ? (
               <>
                 <div className="grid lg:grid-cols-2 gap-10 items-start">
-                  <PanoeeTourEmbed
-                    name={activeSuite360Tour.iframeName}
-                    src={activeSuite360Tour.src}
-                    title={isAr ? activeSuite360Tour.titleAr : activeSuite360Tour.titleEn}
-                    isAr={isAr}
-                  />
+                  <div className="rounded-2xl overflow-hidden border border-border shadow-md h-[400px]">
+                    <iframe
+                      id="tour-embeded"
+                      name={activeSuite360Tour.iframeName}
+                      src={activeSuite360Tour.src}
+                      title={isAr ? activeSuite360Tour.titleAr : activeSuite360Tour.titleEn}
+                      width="100%"
+                      height="400px"
+                      frameBorder="0"
+                      scrolling="no"
+                      allow={PANOEE_IFRAME_ALLOW}
+                      allowFullScreen
+                      className="w-full h-full"
+                      loading="eager"
+                    />
+                  </div>
                   <div>
                     <h3 className="text-xl font-serif text-foreground mb-2">{currentSuite.name}</h3>
                     <p className="font-body text-xs text-accent tracking-wide uppercase mb-4">{currentSuite.area}</p>
@@ -898,21 +928,23 @@ const HospitalityServices = ({
             ) : (
               <>
                 <div className="grid lg:grid-cols-2 gap-10 items-start">
-                  <div className="order-2 lg:order-2">
+                  <div className="rounded-2xl overflow-hidden border border-border shadow-md h-[340px] order-2 lg:order-2">
                     {activeSuite === 0 ? (
-                      <PanoeeTourEmbed
+                      <iframe
                         src="https://tour.panoee.net/iframe/royaleorchid"
-                        title={isAr ? "جولة 360 لجناح رويال أوركيد" : "Royale Orchid Suite 360 Tour"}
-                        heightClass="h-[340px]"
-                        isAr={isAr}
-                      />
+                        title="Royale Orchid Suite 360 Tour"
+                        width="100%"
+                        height="340px"
+                        frameBorder="0"
+                        allow={PANOEE_IFRAME_ALLOW}
+                        allowFullScreen
+                        className="w-full h-full"
+                      ></iframe>
                     ) : (
-                      <div className="rounded-2xl overflow-hidden border border-border shadow-md h-[340px]">
-                        <div className="w-full h-full bg-muted/30 flex items-center justify-center">
-                          <div className="text-center">
-                            <Image className="w-8 h-8 text-muted-foreground/50 mx-auto mb-2" />
-                            <p className="font-body text-xs text-muted-foreground text-justify">{isAr ? "صور الجناح قريباً" : `${currentSuite.name} images coming soon`}</p>
-                          </div>
+                      <div className="w-full h-full bg-muted/30 flex items-center justify-center">
+                        <div className="text-center">
+                          <Image className="w-8 h-8 text-muted-foreground/50 mx-auto mb-2" />
+                          <p className="font-body text-xs text-muted-foreground text-justify">{isAr ? "صور الجناح قريباً" : `${currentSuite.name} images coming soon`}</p>
                         </div>
                       </div>
                     )}

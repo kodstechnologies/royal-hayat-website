@@ -730,7 +730,7 @@ const PatientsVisitors = () => {
                   {renderBillRightsList(lang === "ar" ? BILL_OF_RIGHTS_AR_RIGHTS : PATIENT_RIGHTS_EN, !isAr)}
                 </div>
                 <div
-                  className={`relative bg-popover border border-border/50 rounded-2xl p-6 pb-24 mb-6 md:pb-28 ${!isAr ? "patients-justified-card" : ""}`}
+                  className={`bg-popover border border-border/50 rounded-2xl p-6 mb-6 ${!isAr ? "patients-justified-card" : ""}`}
                   lang={isAr ? "ar" : "en"}
                 >
                   <h3 className={`font-serif text-lg text-foreground mb-2 text-start ${isAr ? "!font-bold" : "font-bold"}`}>{lang === "ar" ? "ثانياً: مسؤوليات المريض" : "As a patient, it is your responsibility to:"}</h3>
@@ -738,11 +738,13 @@ const PatientsVisitors = () => {
                     <p className={`${billRightsProse} mb-4 text-start`}>بصفتك مريضًا، تقع عليك المسؤوليات التالية:</p>
                   )}
                   {renderBillRightsList(lang === "ar" ? BILL_OF_RIGHTS_AR_RESPONSIBILITIES : PATIENT_RESPONSIBILITIES_EN, !isAr)}
-                  <img
-                    src={PATIENT_PARTNERSHIP_VERIFIED_LOGO}
-                    alt={lang === "ar" ? "شراكة معتمدة مع المريض" : "Patient Partnership Verified"}
-                    className="absolute bottom-4 right-4 h-20 w-auto object-contain md:h-24"
-                  />
+                  <div className="mt-6 flex justify-end md:mt-4" dir="ltr">
+                    <img
+                      src={PATIENT_PARTNERSHIP_VERIFIED_LOGO}
+                      alt={lang === "ar" ? "شراكة معتمدة مع المريض" : "Patient Partnership Verified"}
+                      className="h-16 w-auto max-w-[45%] object-contain sm:h-20 sm:max-w-none md:h-24"
+                    />
+                  </div>
                 </div>
                 <div className="bg-accent/10 rounded-2xl p-6">
                   <div className={`flex items-start gap-3 ${isAr ? "flex-row-reverse" : ""}`}>

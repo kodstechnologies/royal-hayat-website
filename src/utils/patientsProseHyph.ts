@@ -137,7 +137,7 @@ export const PATIENT_RIGHTS_EN = [
     "Have a comfortable stay in a clean, safe environment, free from verbal or physical abuse, and enjoy personal privacy."
   ),
   hyphEn(
-    "Be informed of the process to raise complaints appropriately, either verbally or in writing, to the Manager on Duty (Mob: 66321214) or Patient Advocate (Mob: 67051626)."
+    "Be informed of the process to raise complaints appropriately, either verbally or in writing, to the Manager on Duty (Mob: 66321214)"
   ),
   hyphEn("Privacy and confidentiality of information regarding your condition."),
   hyphEn(

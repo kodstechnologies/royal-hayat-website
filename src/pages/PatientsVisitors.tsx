@@ -17,6 +17,8 @@ import {
 } from "@/utils/patientsProseHyph";
 import LazyViewportImage from "@/components/LazyViewportImage";
 import { getBirthingPackageImages } from "@/data/birthingPackageImages";
+const PATIENT_PARTNERSHIP_VERIFIED_LOGO =
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a46008fd340f44a57ec0d39/1782972583015-patient-verified.jpeg";
 const NURSING_AR_HERO_INTRO =
   "كل ما تحتاجون معرفته لضمان تجربة مريحة وواضحة خلال زيارتكم وإقامتكم في مستشفى رويال حياة.";
 const NURSING_AR_HERO_DETAIL =
@@ -147,7 +149,7 @@ const BILL_OF_RIGHTS_AR_RIGHTS = [
   "قبول أو رفض التوقيع على الموافقة لأي إجراء جراحي أو تشخيصي.",
   "تلقي رعاية صحية رحيمة ومحترمة في جميع الأوقات، بغض النظر عن العمر، أو الجنس، أو العرق، أو الثقافة، أو الجنسية، أو اللغة، أو التوجه، أو الوضع الاجتماعي والاقتصادي، أو القدرة الجسدية أو الذهنية، أو الدين، أو التشخيص.",
   "الحصول على إقامة مريحة في بيئة نظيفة وآمنة، خالية من أي إساءة لفظية أو جسدية، مع الحفاظ على الخصوصية الشخصية.",
-  "معرفة آلية تقديم الشكاوى بشكل مناسب، سواء شفهيًا أو كتابيًا، إلى المدير المناوب (هاتف: 66321214) أو محامي/ممثل المرضى (هاتف: 67051626).",
+  "معرفة آلية تقديم الشكاوى بشكل مناسب، سواء شفهيًا أو كتابيًا، إلى المدير المناوب (هاتف: 66321214) ",
   "الحفاظ على سرية وخصوصية المعلومات المتعلقة بحالتك الصحية.",
   "الحصول على أي معلومات أو مستندات طبية مثل التقرير الطبي، أو إجازة مرضية، أو ملخص الخروج.",
   "ضمان استمرارية الرعاية الصحية حتى الخروج والمتابعة.",
@@ -728,7 +730,7 @@ const PatientsVisitors = () => {
                   {renderBillRightsList(lang === "ar" ? BILL_OF_RIGHTS_AR_RIGHTS : PATIENT_RIGHTS_EN, !isAr)}
                 </div>
                 <div
-                  className={`bg-popover border border-border/50 rounded-2xl p-6 mb-6 ${!isAr ? "patients-justified-card" : ""}`}
+                  className={`relative bg-popover border border-border/50 rounded-2xl p-6 pb-24 mb-6 md:pb-28 ${!isAr ? "patients-justified-card" : ""}`}
                   lang={isAr ? "ar" : "en"}
                 >
                   <h3 className={`font-serif text-lg text-foreground mb-2 text-start ${isAr ? "!font-bold" : "font-bold"}`}>{lang === "ar" ? "ثانياً: مسؤوليات المريض" : "As a patient, it is your responsibility to:"}</h3>
@@ -736,6 +738,11 @@ const PatientsVisitors = () => {
                     <p className={`${billRightsProse} mb-4 text-start`}>بصفتك مريضًا، تقع عليك المسؤوليات التالية:</p>
                   )}
                   {renderBillRightsList(lang === "ar" ? BILL_OF_RIGHTS_AR_RESPONSIBILITIES : PATIENT_RESPONSIBILITIES_EN, !isAr)}
+                  <img
+                    src={PATIENT_PARTNERSHIP_VERIFIED_LOGO}
+                    alt={lang === "ar" ? "شراكة معتمدة مع المريض" : "Patient Partnership Verified"}
+                    className="absolute bottom-4 right-4 h-20 w-auto object-contain md:h-24"
+                  />
                 </div>
                 <div className="bg-accent/10 rounded-2xl p-6">
                   <div className={`flex items-start gap-3 ${isAr ? "flex-row-reverse" : ""}`}>

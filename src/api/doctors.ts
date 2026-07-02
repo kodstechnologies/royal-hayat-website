@@ -229,11 +229,14 @@ export function mapApiDoctorRowToBookingDoctor(
     }
   }
 
-  const staticDept = resolveStaticDepartment(base.department);
+  const staticDept =
+    resolveStaticDepartment(departmentNameEn) ?? resolveStaticDepartment(base.department);
   const rowClinicCode =
     typeof row.clinicCode === "string" && row.clinicCode.trim() ? row.clinicCode.trim() : undefined;
   const departmentClinicCode = staticDept?.clinicCode ?? apiClinicalCode;
-  const clinicCode = rowClinicCode || departmentClinicCode;
+  const clinicCode = contextDepartmentId
+    ? departmentClinicCode || rowClinicCode
+    : rowClinicCode || departmentClinicCode;
 
   const bookingDepartmentId =
     contextDepartmentId ??
@@ -334,11 +337,32 @@ export function isMongoDoctorId(id: string): boolean {
 }
 
 /** Single doctor profile from API (populated qualifications/expertise, flattened for UI). */
-export async function fetchDoctorProfileById(id: string): Promise<Doctor | null> {
+export async function fetchDoctorProfileById(
+  id: string,
+  context?: {
+    departmentId?: string;
+    departmentNameEn?: string;
+    departmentNameAr?: string;
+  },
+): Promise<Doctor | null> {
   try {
     const res = await getDoctorById(id);
     const row = res?.data as Record<string, unknown> | undefined;
     if (!row || typeof row !== "object") return null;
+
+    if (context?.departmentId) {
+      const parsed = parseDoctorDepartmentsFromApi(row.department);
+      const contextMatch = parsed.find((dept) => dept.id === context.departmentId);
+      const first = parsed[0];
+      const nameEn = context.departmentNameEn ?? contextMatch?.name ?? first?.name ?? "";
+      const nameAr =
+        context.departmentNameAr ??
+        contextMatch?.nameAr ??
+        first?.nameAr ??
+        first?.name ??
+        nameEn;
+      return mapApiDoctorRowToDoctor(row, nameEn, nameAr, context.departmentId);
+    }
 
     return mapDoctorRowWithDepartments(row, mapApiDoctorRowToDoctor);
   } catch {

@@ -277,7 +277,7 @@ const BookAppointment = () => {
           setProviderCode(doc.providerCode);
         }
         const clinicOverride = doc.clinicCode || doc.departmentClinicCode;
-        if (clinicOverride) {
+        if (clinicOverride && !selectedDept) {
           setSpecialityCode(clinicOverride);
         }
         if (!selectedDept && doc.departmentIds?.length === 1) {
@@ -318,8 +318,9 @@ const BookAppointment = () => {
         const doc =
           allApiDoctors.find((d) => d.id === selectedDoctor) ||
           deptDoctorList.find((d) => d.id === selectedDoctor);
-        const finalCode = doc?.clinicCode || doc?.departmentClinicCode || dept.specialityCode;
-        setSpecialityCode(finalCode);
+        const finalCode =
+          dept.specialityCode || doc?.clinicCode || doc?.departmentClinicCode;
+        if (finalCode) setSpecialityCode(finalCode);
       }
     }
   }, [selectedDept, departmentsList, selectedDoctor, allApiDoctors, deptDoctorList]);
@@ -764,16 +765,27 @@ const BookAppointment = () => {
         collectedSymptoms.length > 0
           ? collectedSymptoms
           : buildCollectedSymptoms(symptomChips, symptomText);
+      const deptForContext =
+        typeof overrides.selectedDept === "string"
+          ? departmentsList.find((d) => d.id === overrides.selectedDept)
+          : selectedDeptObj;
       return {
         fromBookAppointment: true,
         step,
         bookingPath: bookingPath ?? "primary",
         selectedDept,
+        ...(deptForContext
+          ? {
+              contextDepartmentId: deptForContext.id,
+              contextDepartmentName: deptForContext.name,
+              contextDepartmentNameAr: deptForContext.nameAr,
+            }
+          : {}),
         ...(symptoms.length > 0 ? { savedSymptoms: symptoms } : {}),
         ...overrides,
       };
     },
-    [bookingPath, collectedSymptoms, selectedDept, step, symptomChips, symptomText],
+    [bookingPath, collectedSymptoms, departmentsList, selectedDept, selectedDeptObj, step, symptomChips, symptomText],
   );
   useEffect(() => {
     const restored = (location.state as { savedSymptoms?: unknown })?.savedSymptoms;
@@ -2089,7 +2101,7 @@ Clinic Code:`;
                                 {getDoctorDepartmentLabel(doc)}
                               </p>
                               <h4 className="font-serif font-bold text-[1.2rem] text-foreground mb-0.5 leading-snug">{getDoctorDisplayName(doc, isAr ? "ar" : "en")}</h4>
-                              <p className="text-muted-foreground font-body text-[11px] mb-2 line-clamp-1">{isAr ? doc.specialtyAr : doc.specialty}</p>
+                              <p className="text-muted-foreground font-body text-[11px] mb-2 line-clamp-1">{isAr ? doc.titleAr : doc.title}</p>
                               {shouldShowDoctorBookingUI(doc) && (
                                 <div className="flex items-center gap-1.5 mb-3 text-green-600">
                                   <div className="w-1.5 h-1.5 rounded-full bg-green-500" />

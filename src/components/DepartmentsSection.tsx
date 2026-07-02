@@ -170,7 +170,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
       window.clearTimeout(timer);
     };
   }, [openIndex, departments]);
-  const openDoctorProfile = (docId: string, origIdx: number) => {
+  const openDoctorProfile = (docId: string, origIdx: number, dept: Department) => {
     navigate(`/doctors/${docId}`, {
       state: {
         fromDepartments: true,
@@ -178,6 +178,9 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
         restoreDeptOpenIndex: origIdx,
         restoreSelectedSubByDept: selectedSubByDept,
         restoreScrollY: window.scrollY,
+        contextDepartmentId: dept.mongoId,
+        contextDepartmentName: dept.name,
+        contextDepartmentNameAr: dept.nameAr,
       },
     });
   };
@@ -606,7 +609,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                             dir={lang === "ar" ? "rtl" : "ltr"}
                                             onClick={(e) => {
                                               e.preventDefault();
-                                              openDoctorProfile(doc.id, origIdx);
+                                              openDoctorProfile(doc.id, origIdx, dept);
                                             }}
                                             className="relative z-0 block w-[280px] shrink-0 snap-center md:snap-start hover:z-10"
                                           >

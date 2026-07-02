@@ -1,5 +1,30 @@
 const OID = /^[0-9a-fA-F]{24}$/i;
 
+export function resolveNavDepartmentContext(state: unknown): {
+  departmentId?: string;
+  departmentNameEn?: string;
+  departmentNameAr?: string;
+} {
+  const s = state as Record<string, unknown> | null;
+  if (!s) return {};
+
+  const pickMongoId = (value: unknown): string | undefined =>
+    typeof value === "string" && OID.test(value.trim()) ? value.trim() : undefined;
+
+  const departmentId =
+    pickMongoId(s.selectedDept) ??
+    pickMongoId(s.contextDepartmentId) ??
+    pickMongoId(s.departmentMongoId);
+
+  return {
+    departmentId,
+    departmentNameEn:
+      typeof s.contextDepartmentName === "string" ? s.contextDepartmentName.trim() : undefined,
+    departmentNameAr:
+      typeof s.contextDepartmentNameAr === "string" ? s.contextDepartmentNameAr.trim() : undefined,
+  };
+}
+
 export type ParsedDoctorDepartment = {
   id: string;
   name: string;

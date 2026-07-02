@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { departments, deptDoctorAliases, shouldShowDoctorBookingUI } from "@/data/departments";
 import { fetchDoctorProfileById, isMongoDoctorId } from "@/api/doctors";
+import { resolveNavDepartmentContext } from "@/utils/doctorDepartmentContext";
 import {
   createDoctorFeedbackByName,
   extractDoctorFeedbackRecord,
@@ -216,6 +217,7 @@ const DoctorProfile = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const bookingReturnState = (location.state as any) ?? {};
+  const navDepartmentContext = resolveNavDepartmentContext(bookingReturnState);
   const fromBooking = Boolean(bookingReturnState?.fromBookAppointment || bookingReturnState?.step != null);
   const [isTestimonialOpen, setIsTestimonialOpen] = useState(false);
   const [testimonials, setTestimonials] = useState<ProfileFeedback[]>(
@@ -255,10 +257,16 @@ const DoctorProfile = () => {
     }
   };
   const { data: doctor, isLoading } = useQuery({
-    queryKey: ["doctor-profile", id],
+    queryKey: ["doctor-profile", id, navDepartmentContext.departmentId],
     queryFn: async () => {
       if (!id || !isMongoDoctorId(id)) return null;
-      return (await fetchDoctorProfileById(id)) ?? null;
+      return (
+        (await fetchDoctorProfileById(id, {
+          departmentId: navDepartmentContext.departmentId,
+          departmentNameEn: navDepartmentContext.departmentNameEn,
+          departmentNameAr: navDepartmentContext.departmentNameAr,
+        })) ?? null
+      );
     },
     enabled: !!id,
   });
@@ -332,13 +340,29 @@ const DoctorProfile = () => {
     const aliases = deptDoctorAliases[d.name] || [d.name];
     return aliases.some((a) => doctor.department.includes(a) || doctor.specialty.includes(a));
   });
+  const profileDepartmentLabel =
+    lang === "ar"
+      ? navDepartmentContext.departmentNameAr ||
+        doctor.departmentAr ||
+        doctor.specialtyAr ||
+        doctor.department ||
+        doctor.specialty
+      : navDepartmentContext.departmentNameEn ||
+        doctor.department ||
+        doctor.specialty ||
+        doctor.departmentAr ||
+        doctor.specialtyAr;
   const goToBookAppointmentPatientInfo = () => {
     navigate("/book-appointment", {
       state: {
         ...bookingReturnState,
         fromBookAppointment: true,
         bookingPath: bookingReturnState?.bookingPath ?? "primary",
-        selectedDept: bookingReturnState?.selectedDept ?? doctor.departmentId ?? null,
+        selectedDept:
+          navDepartmentContext.departmentId ?? doctor.departmentId ?? null,
+        contextDepartmentId: navDepartmentContext.departmentId,
+        contextDepartmentName: navDepartmentContext.departmentNameEn,
+        contextDepartmentNameAr: navDepartmentContext.departmentNameAr,
         selectedDoctor: doctor.id,
         isRequestMode: isRequestOnlyDoctor,
         canBookSlot: !isRequestOnlyDoctor,
@@ -374,7 +398,7 @@ const DoctorProfile = () => {
                 </div>
                 <div className="p-6 text-center">
                   <p className="text-accent text-xs tracking-[0.2em] uppercase font-body mb-2">
-                    {lang === "ar" ? doctor.specialtyAr : doctor.specialty}
+                    {profileDepartmentLabel}
                   </p>
                   <h1 className="text-2xl font-serif font-bold text-foreground mb-1">{getDoctorDisplayName(doctor, lang)}</h1>
                   <p className="text-muted-foreground font-body text-sm mb-5 whitespace-pre-line text-start">{lang === "ar" ? doctor.titleAr : doctor.title}</p>

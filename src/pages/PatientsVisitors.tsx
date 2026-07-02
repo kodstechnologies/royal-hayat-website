@@ -14,11 +14,11 @@ import {
   INSURANCE_ASSISTANCE_EN,
   PATIENT_RIGHTS_EN,
   PATIENT_RESPONSIBILITIES_EN,
-} from "@/utils/patientsProseHyph";
+} from "@/utils/patientsProseHyph"; 
 import LazyViewportImage from "@/components/LazyViewportImage";
 import { getBirthingPackageImages } from "@/data/birthingPackageImages";
 const PATIENT_PARTNERSHIP_VERIFIED_LOGO =
-  "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a46008fd340f44a57ec0d39/1782975417539-Untitled_-_July_02%2C_2026_at_12.22.43.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIARFRUVJFHJ3JXMDQ3%2F20260702%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Date=20260702T065657Z&X-Amz-Expires=3600&X-Amz-Signature=3cacf1f9ac3738fb22f9729a3a9dd1de97f9b36dff53326478a9c851f6b02b7a&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject";
+  "https://royal-hayat.s3.eu-central-1.amazonaws.com/patient-visitors/Untitled+-+July+02%2C+2026+at+12.22.43.png";
 const NURSING_AR_HERO_INTRO =
   "كل ما تحتاجون معرفته لضمان تجربة مريحة وواضحة خلال زيارتكم وإقامتكم في مستشفى رويال حياة.";
 const NURSING_AR_HERO_DETAIL =

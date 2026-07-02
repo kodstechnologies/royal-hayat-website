@@ -80,18 +80,22 @@ const Header = () => {
     };
   }, []);
   useEffect(() => {
+    let rafId = 0;
     const updateHeaderHeight = () => {
-      if (headerRef.current) {
-        const fullHeight = headerRef.current.offsetHeight;
-        document.documentElement.style.setProperty('--header-height', `${fullHeight}px`);
-      }
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        if (headerRef.current) {
+          const fullHeight = headerRef.current.offsetHeight;
+          document.documentElement.style.setProperty("--header-height", `${fullHeight}px`);
+        }
+      });
     };
     updateHeaderHeight();
-    requestAnimationFrame(updateHeaderHeight);
     const observer = new ResizeObserver(updateHeaderHeight);
     if (headerRef.current) observer.observe(headerRef.current);
     window.addEventListener("resize", updateHeaderHeight);
     return () => {
+      cancelAnimationFrame(rafId);
       observer.disconnect();
       window.removeEventListener("resize", updateHeaderHeight);
     };
@@ -274,6 +278,8 @@ const Header = () => {
   };
   const isScrollableDropdown = (key: string) =>
     key === "about" || key === "hospitality" || key === "patients";
+  const mobileDropdownScrollClass =
+    "max-h-[min(60vh,16rem)] overflow-y-auto overscroll-y-contain pb-2 [-webkit-overflow-scrolling:touch]";
   const dropdownScrollListClass =
     "min-h-0 flex-1 overflow-y-auto overscroll-y-contain pe-1 pb-3 scroll-pb-3";
   const dropdownPanelMaxHeightClass =
@@ -600,14 +606,16 @@ const Header = () => {
         <AnimatePresence>
           {menuOpen && (
             <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="lg:hidden bg-popover border-t border-border overflow-hidden"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="lg:hidden bg-popover border-t border-border max-h-[calc(100dvh-7rem)] overflow-y-auto overscroll-y-contain [-webkit-overflow-scrolling:touch]"
             >
               <nav className="flex flex-col py-4 px-6">
                 {navItems.map((item) => {
                   const NavIcon = item.icon;
+                  const isExpanded = Boolean(item.hasDropdown && mobileExpanded === item.hasDropdown);
                   return (
                   <div key={item.label} className="border-b border-border/50 last:border-0">
                     <div className="flex items-center justify-between">
@@ -634,71 +642,71 @@ const Header = () => {
                         <button
                           onClick={() => setMobileExpanded(mobileExpanded === item.hasDropdown ? null : item.hasDropdown)}
                           className="p-3 text-muted-foreground hover:text-primary transition-colors"
-                          aria-label={mobileExpanded === item.hasDropdown ? "Collapse" : "Expand"}
+                          aria-label={isExpanded ? "Collapse" : "Expand"}
                         >
-                          <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${mobileExpanded === item.hasDropdown ? "rotate-180" : ""}`} />
+                          <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`} />
                         </button>
                       )}
                     </div>
-                    <AnimatePresence>
-                      {item.hasDropdown && mobileExpanded === item.hasDropdown && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.3, ease: "easeInOut" }}
-                          className="mb-2 overflow-hidden rounded-xl bg-muted/20"
-                        >
-                          <div
-                            dir={isAr ? "rtl" : "ltr"}
-                            className={`flex flex-col gap-1 px-4 py-2 ${
-                              item.hasDropdown && isScrollableDropdown(item.hasDropdown)
-                                ? "max-h-[min(calc(100dvh-var(--header-height,8rem)-1rem),20rem)] overflow-y-auto overscroll-y-contain pb-4 scroll-pb-4"
-                                : ""
-                            }`}
-                          >
-                            {getSubLinks(item.hasDropdown).map((sub) => (
-                              sub.href.startsWith("/") ? (
-                                <Link
-                                  key={sub.label}
-                                  to={sub.href}
-                                  onClick={(e) => {
-                                    const currentPath = window.location.pathname + window.location.search;
-                                    if (currentPath === sub.href) {
-                                      e.preventDefault();
-                                      window.location.href = sub.href;
-                                    }
-                                    setMenuOpen(false);
-                                  }}
-                                  className="flex items-center gap-3 py-2.5 px-3 rounded-lg hover:bg-background transition-colors group w-full"
-                                >
-                                  <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
-                                    <sub.icon className="w-3.5 h-3.5 text-primary" />
-                                  </div>
-                                  <span className="font-body text-xs font-medium text-foreground/80 group-hover:text-primary transition-colors text-start flex-1 min-w-0">
-                                    {sub.label}
-                                  </span>
-                                </Link>
-                              ) : (
-                                <a
-                                  key={sub.label}
-                                  href={sub.href}
-                                  className="flex items-center gap-3 py-2.5 px-3 rounded-lg hover:bg-background transition-colors group w-full"
-                                  onClick={() => setMenuOpen(false)}
-                                >
-                                  <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
-                                    <sub.icon className="w-3.5 h-3.5 text-primary" />
-                                  </div>
-                                  <span className="font-body text-xs font-medium text-foreground/80 group-hover:text-primary transition-colors text-start flex-1 min-w-0">
-                                    {sub.label}
-                                  </span>
-                                </a>
-                              )
-                            ))}
+                    {item.hasDropdown && (
+                      <div
+                        className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${
+                          isExpanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+                        }`}
+                      >
+                        <div className="overflow-hidden">
+                          <div className="mb-2 rounded-xl bg-muted/20">
+                            <div
+                              dir={isAr ? "rtl" : "ltr"}
+                              className={`flex flex-col gap-1 px-4 py-2 ${
+                                isScrollableDropdown(item.hasDropdown)
+                                  ? mobileDropdownScrollClass
+                                  : ""
+                              }`}
+                            >
+                              {getSubLinks(item.hasDropdown).map((sub) => (
+                                sub.href.startsWith("/") ? (
+                                  <Link
+                                    key={sub.label}
+                                    to={sub.href}
+                                    onClick={(e) => {
+                                      const currentPath = window.location.pathname + window.location.search;
+                                      if (currentPath === sub.href) {
+                                        e.preventDefault();
+                                        window.location.href = sub.href;
+                                      }
+                                      setMenuOpen(false);
+                                    }}
+                                    className="flex items-center gap-3 py-2.5 px-3 rounded-lg hover:bg-background transition-colors group w-full"
+                                  >
+                                    <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
+                                      <sub.icon className="w-3.5 h-3.5 text-primary" />
+                                    </div>
+                                    <span className="font-body text-xs font-medium text-foreground/80 group-hover:text-primary transition-colors text-start flex-1 min-w-0">
+                                      {sub.label}
+                                    </span>
+                                  </Link>
+                                ) : (
+                                  <a
+                                    key={sub.label}
+                                    href={sub.href}
+                                    className="flex items-center gap-3 py-2.5 px-3 rounded-lg hover:bg-background transition-colors group w-full"
+                                    onClick={() => setMenuOpen(false)}
+                                  >
+                                    <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
+                                      <sub.icon className="w-3.5 h-3.5 text-primary" />
+                                    </div>
+                                    <span className="font-body text-xs font-medium text-foreground/80 group-hover:text-primary transition-colors text-start flex-1 min-w-0">
+                                      {sub.label}
+                                    </span>
+                                  </a>
+                                )
+                              ))}
+                            </div>
                           </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 );
               })}

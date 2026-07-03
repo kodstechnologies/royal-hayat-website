@@ -5,6 +5,8 @@ const TITLE_PREFIX = /^(?:dr|prof|professor)\.?\s+/i;
 const ARABIC_TITLE_PREFIX = /^(?:د\.?\s*|الدكتور\s*|الدكتورة\s*|البروفيسور\s+د\.?\s*)/u;
 const DERMATOLOGY_DEPT = "Dermatology";
 const DERMATOLOGY_HEAD_DOCTOR_KEY = "suraj v davis";
+const DERMATOLOGY_HEAD_DOCTOR_ID = "dr-suraj-v-davis";
+const DERMATOLOGY_HEAD_PROVIDER_CODE = "CE118";
 
 export const stripDoctorTitlePrefix = (name: string): string => {
   let result = String(name ?? "").trim();
@@ -33,8 +35,29 @@ const normalizeDoctorNameKey = (name: string): string =>
     .replace(/\s+/g, " ")
     .trim();
 
-const isDermatologyHeadDoctor = (doc: Pick<Doctor, "name">): boolean =>
-  normalizeDoctorNameKey(doc.name) === DERMATOLOGY_HEAD_DOCTOR_KEY;
+const isDermatologyDepartment = (deptName: string): boolean =>
+  deptName.trim().toLowerCase() === DERMATOLOGY_DEPT.toLowerCase();
+
+const isDermatologyHeadDoctor = (
+  doc: Pick<Doctor, "name" | "nameAr" | "id" | "providerCode">,
+): boolean => {
+  const id = String(doc.id ?? "").toLowerCase();
+  if (id === DERMATOLOGY_HEAD_DOCTOR_ID) return true;
+
+  const providerCode = String(doc.providerCode ?? "").toUpperCase();
+  if (providerCode === DERMATOLOGY_HEAD_PROVIDER_CODE) return true;
+
+  const nameKey = normalizeDoctorNameKey(doc.name);
+  if (
+    nameKey === DERMATOLOGY_HEAD_DOCTOR_KEY ||
+    (nameKey.includes("suraj") && nameKey.includes("davis"))
+  ) {
+    return true;
+  }
+
+  const arName = stripArabicTitlePrefix(resolveDoctorArabicName(doc));
+  return /سوراج/.test(arName) && /دايفس|ديفس|دافيس|ديفيس/.test(arName);
+};
 
 export const getDoctorSortKey = (
   doc: Pick<Doctor, "name" | "nameAr">,
@@ -88,7 +111,7 @@ export const sortDoctorsInDepartment = (
     }),
   );
 
-  if (deptName !== DERMATOLOGY_DEPT) {
+  if (!isDermatologyDepartment(deptName)) {
     return sorted;
   }
 
@@ -105,7 +128,7 @@ export const sortDoctorsForBooking = (
   lang: "en" | "ar",
 ): Doctor[] => {
   const sorted = sortDoctorsByFirstName(docs, lang);
-  if (deptName !== DERMATOLOGY_DEPT) {
+  if (!isDermatologyDepartment(deptName)) {
     return sorted;
   }
   return pinDermatologyHeadDoctor(sorted);

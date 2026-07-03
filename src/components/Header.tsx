@@ -43,6 +43,8 @@ const Header = () => {
   const { lang, setLang, t } = useLanguage();
   const phoneDisplay = "+965 2536 0000";
   const phoneTextClass = "inline-block [direction:ltr] [unicode-bidi:isolate]";
+  const contactLinkClass =
+    "inline-flex items-center gap-1 hover:text-primary transition-colors whitespace-nowrap [direction:ltr]";
   const navigate = useNavigate();
   const location = useLocation();
   const dropdownTimeout = useRef<NodeJS.Timeout | null>(null);
@@ -410,10 +412,10 @@ const Header = () => {
             </Link>
             <div className="flex-1 flex items-center justify-end">
               <div className="flex flex-col lg:flex-row items-end justify-end gap-y-1 lg:gap-y-0 lg:gap-x-4 font-body text-xs lg:text-sm text-muted-foreground">
-                <a href="tel:+96525360000" className="inline-flex items-center gap-1 hover:text-primary transition-colors whitespace-nowrap">
+                <a href="tel:+96525360000" className={contactLinkClass}>
                   <Phone className="w-3.5 h-3.5 lg:w-4 lg:h-4" /> <span className={phoneTextClass}>{phoneDisplay}</span>
                 </a>
-                <a href="mailto:info@royalehayat.com" className="inline-flex items-center gap-1 hover:text-primary transition-colors whitespace-nowrap">
+                <a href="mailto:info@royalehayat.com" className={contactLinkClass}>
                   <Mail className="w-3.5 h-3.5 lg:w-4 lg:h-4" /> info@royalehayat.com
                 </a>
               </div>

@@ -26,7 +26,7 @@ import {
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
 import { resolveDoctorDepartmentLabel } from "@/utils/doctorDepartmentContext";
 import { sortDoctorsInDepartment } from "@/utils/sortDoctorsInDepartment";
-import { scrollDoctorCarousel } from "@/utils/doctorCarousel";
+import { scrollDoctorCarousel, scrollDoctorCarouselToStart } from "@/utils/doctorCarousel";
 type DepartmentsSectionProps = {
   showPageTitle?: boolean;
 };
@@ -364,7 +364,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
   ]);
   useEffect(() => {
     if (doctorScrollRef.current) {
-      doctorScrollRef.current.scrollTo({ left: 0, behavior: "auto" });
+      scrollDoctorCarouselToStart(doctorScrollRef.current);
     }
   }, [openIndex, selectedSubByDept, deptDoctors]);
   const getOriginalIndex = (dept: Department) =>
@@ -578,7 +578,15 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                       {t("departmentDoctors")}
                                     </h3>
                                   )}
-                                  <div className="relative mx-auto w-full lg:mt-6" dir="ltr">
+                                  <div
+                                    className="relative mx-auto w-full lg:mt-6"
+                                    dir={
+                                      lang === "ar" &&
+                                      dept.name.trim().toLowerCase() === "dermatology"
+                                        ? "rtl"
+                                        : "ltr"
+                                    }
+                                  >
                                     <div className="flex items-center justify-center gap-3">
                                       {deptDoctors.length > 1 && (
                                         <button
@@ -599,6 +607,12 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                       >
                                         <div
                                           ref={doctorScrollRef}
+                                          dir={
+                                            lang === "ar" &&
+                                            dept.name.trim().toLowerCase() === "dermatology"
+                                              ? "rtl"
+                                              : "ltr"
+                                          }
                                           className="dept-doctor-carousel flex gap-4 overflow-x-auto pt-2 pb-6 scroll-smooth snap-x snap-mandatory justify-start max-md:scroll-px-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
                                         >
                                         {deptDoctors.map((doc) => (

@@ -435,9 +435,7 @@ const HospitalityServices = ({
   ];
   const currentSuite = suitesData[activeSuite];
   return (
-    <div
-      className={`min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107] hospitality-prose${isAr ? " hospitality-prose--ar" : ""}`}
-    >
+    <div className="min-h-screen bg-background pt-[var(--header-height,56px)] [&_.text-accent]:text-[#816107]">
       <Header />
       <section className="py-8 md:py-10 bg-primary/5">
         <div className={`container mx-auto px-6 ${isAr ? "text-right" : "text-center"}`}>
@@ -750,7 +748,7 @@ const HospitalityServices = ({
                       ))}
                   </div>
                 </div>
-                <p className="font-body text-sm text-muted-foreground leading-relaxed text-start md:text-justify">
+                <p className="font-body tracking-normal [word-spacing:normal] text-sm text-muted-foreground leading-relaxed text-start md:text-justify">
                   {isAr ? "لمزيد من التفاصيل، يرجى زيارة: " : "For more details, please visit: "}
                   <a href="https://www.banyantreespa.com" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline font-semibold">www.banyantreespa.com</a>
                 </p>

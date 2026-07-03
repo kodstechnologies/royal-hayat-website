@@ -702,9 +702,8 @@ const WorkWithUs = ({
                             {isAr ? currentEmployee.nameAr : currentEmployee.name}
                           </h3>
                           <p
-                            className="font-body text-xs text-accent leadership-bio-prose"
+                            className={`font-body text-xs text-accent ${isAr ? "" : "justified-body-en"}`}
                             lang={isAr ? "ar" : "en"}
-                            dir={isAr ? "rtl" : undefined}
                           >
                             {isAr ? currentEmployee.roleAr : currentEmployee.role}
                           </p>
@@ -722,12 +721,7 @@ const WorkWithUs = ({
                               ? currentEmployee.achievementsAr
                               : currentEmployee.achievements
                             ).map((ach, idx) => (
-                              <p
-                                key={idx}
-                                className="leadership-bio-prose"
-                                lang={isAr ? "ar" : "en"}
-                                dir={isAr ? "rtl" : undefined}
-                              >
+                              <p key={idx} className={isAr ? "" : "justified-body-en"} lang={isAr ? "ar" : "en"}>
                                 {ach}
                               </p>
                             ))}
@@ -870,46 +864,48 @@ const WorkWithUs = ({
                     transition={{ duration: 0.4 }}
                     className="ios-flicker-fix bg-popover border border-border/50 rounded-2xl p-6 md:p-8 hover:shadow-lg transition-shadow"
                   >
-                    <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-                      <div className="flex-1">
-                        <h3 className="font-serif text-lg md:text-xl text-foreground mb-2">
-                          {pos.title}
-                        </h3>
-                        <div className="flex flex-wrap items-center gap-2 mb-3">
-                          <span className="inline-block px-3 py-1 bg-secondary/30 text-foreground text-[11px] font-body rounded tracking-wide">
-                            {pos.category.toUpperCase()}
-                          </span>
+                    <div className="flex flex-col gap-4">
+                      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-serif text-lg md:text-xl text-foreground mb-2">
+                            {pos.title}
+                          </h3>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="inline-block px-3 py-1 bg-secondary/30 text-foreground text-[11px] font-body rounded tracking-wide">
+                              {pos.category.toUpperCase()}
+                            </span>
+                          </div>
                         </div>
-                        <p
-                          className={`font-body text-sm text-muted-foreground leading-relaxed ${isAr ? "" : "justified-body-en"}`}
-                          lang={isAr ? "ar" : "en"}
-                        >
-                          {pos.desc}
-                        </p>
-                      </div>
-                      <div className="flex flex-col items-end gap-3 flex-shrink-0">
-                        <Link
-                          to={
-                            pos.id && /^[0-9a-fA-F]{24}$/.test(pos.id)
-                              ? `/job-application?jobId=${pos.id}`
-                              : `/job-application?job=${originalIndex}`
-                          }
-                          className="inline-flex items-center gap-1 text-accent font-body text-sm font-semibold hover:underline"
-                        >
-                          {isAr ? "تقدم الآن" : "Apply Now"}{" "}
-                          <ArrowUpRight className="w-4 h-4" />
-                        </Link>
-                        <div className="flex items-center gap-4 text-xs font-body text-muted-foreground">
-                          <span className="inline-flex items-center gap-1">
-                            <MapPin className="w-3.5 h-3.5" />{" "}
-                            {pos.location.toUpperCase()}
-                          </span>
-                          <span className="inline-flex items-center gap-1">
-                            <Clock className="w-3.5 h-3.5" />{" "}
-                            {pos.type.toUpperCase()}
-                          </span>
+                        <div className="flex flex-col items-start md:items-end gap-3 flex-shrink-0">
+                          <Link
+                            to={
+                              pos.id && /^[0-9a-fA-F]{24}$/.test(pos.id)
+                                ? `/job-application?jobId=${pos.id}`
+                                : `/job-application?job=${originalIndex}`
+                            }
+                            className="inline-flex items-center gap-1 text-accent font-body text-sm font-semibold hover:underline"
+                          >
+                            {isAr ? "تقدم الآن" : "Apply Now"}{" "}
+                            <ArrowUpRight className="w-4 h-4" />
+                          </Link>
+                          <div className="flex flex-wrap items-center gap-4 text-xs font-body text-muted-foreground md:justify-end">
+                            <span className="inline-flex items-center gap-1">
+                              <MapPin className="w-3.5 h-3.5" />{" "}
+                              {pos.location.toUpperCase()}
+                            </span>
+                            <span className="inline-flex items-center gap-1">
+                              <Clock className="w-3.5 h-3.5" />{" "}
+                              {pos.type.toUpperCase()}
+                            </span>
+                          </div>
                         </div>
                       </div>
+                      <p
+                        className={`w-full font-body text-sm text-muted-foreground leading-relaxed ${isAr ? "" : "justified-body-en"}`}
+                        lang={isAr ? "ar" : "en"}
+                      >
+                        {pos.desc}
+                      </p>
                     </div>
                   </motion.div>
                 );
@@ -971,25 +967,6 @@ const WorkWithUs = ({
           letter-spacing: normal !important;
           font-kerning: normal;
         }
-        #work-culture-page .leadership-bio-prose {
-          text-align: justify !important;
-          text-justify: auto;
-          text-align-last: start;
-          text-wrap: pretty;
-          hyphens: auto !important;
-          -webkit-hyphens: auto !important;
-          -ms-hyphens: auto !important;
-          hyphenate-character: "" !important;
-          -webkit-hyphenate-character: "" !important;
-          hyphenate-limit-chars: 6 3 3;
-          word-spacing: normal !important;
-          letter-spacing: normal !important;
-          word-break: normal !important;
-          overflow-wrap: normal !important;
-        }
-        #work-culture-page .leadership-bio-prose[dir="rtl"] {
-          text-align-last: end;
-        }
         @media (max-width: 767px) {
           #work-culture-page section .container {
             padding-left: 0.75rem;
@@ -1019,19 +996,6 @@ const WorkWithUs = ({
             -webkit-hyphens: auto !important;
             hyphens: auto !important;
             hyphenate-limit-chars: 6 3 3;
-          }
-          #work-culture-page .leadership-bio-prose {
-            text-align: justify !important;
-            text-justify: auto;
-            text-align-last: start;
-            hyphens: auto !important;
-            -webkit-hyphens: auto !important;
-            hyphenate-character: "" !important;
-            -webkit-hyphenate-character: "" !important;
-            word-spacing: normal !important;
-          }
-          #work-culture-page .leadership-bio-prose[dir="rtl"] {
-            text-align-last: end;
           }
         }
       `}</style>

@@ -3,7 +3,7 @@ import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 const ChairmanMessage = () => {
   const { lang, t } = useLanguage();
   const rtl = lang === "ar" ? "rtl-text" : "";
-  const bodyClass = `chairman-message-prose text-muted-foreground font-body text-sm md:text-base leading-relaxed ${rtl}`;
+  const bodyClass = `text-justify text-muted-foreground font-body text-sm md:text-base leading-relaxed ${rtl}`;
   const paragraphs = ["chairmanP1", "chairmanP2", "chairmanP3", "chairmanP4", "chairmanP5"] as const;
   return (
     <section className="py-12 md:py-16 bg-background">

@@ -3,7 +3,7 @@ import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 const ChairmanMessage = () => {
   const { lang, t } = useLanguage();
   const rtl = lang === "ar" ? "rtl-text" : "";
-  const bodyClass = `text-muted-foreground font-body text-sm md:text-base leading-relaxed text-justify ${rtl}`;
+  const bodyClass = `chairman-message-prose text-muted-foreground font-body text-sm md:text-base leading-relaxed ${rtl}`;
   const paragraphs = ["chairmanP1", "chairmanP2", "chairmanP3", "chairmanP4", "chairmanP5"] as const;
   return (
     <section className="py-12 md:py-16 bg-background">
@@ -33,12 +33,12 @@ const ChairmanMessage = () => {
                 </div>
               </div>
             </div>
-            <div className="flex-1 w-full min-w-0 space-y-4 md:space-y-5 lg:pt-1">
+            <div className="flex-1 w-full min-w-0 max-w-3xl space-y-4 md:space-y-5 lg:pt-1">
               <ScrollAnimationWrapper>
                 <div className="space-y-4 lg:space-y-3.5 mt-4 md:mt-6 lg:pt-1">
-                  <p className={bodyClass}>{t("chairmanGreeting")}</p>
+                  <p lang={lang} className={bodyClass}>{t("chairmanGreeting")}</p>
                   {paragraphs.map((key) => (
-                    <p key={key} className={bodyClass}>
+                    <p key={key} lang={lang} className={bodyClass}>
                       {t(key)}
                     </p>
                   ))}

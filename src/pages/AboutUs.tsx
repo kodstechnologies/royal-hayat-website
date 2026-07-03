@@ -264,7 +264,7 @@ const LeaderCard = ({ leader, lang }: { leader: LeaderDisplay; lang: string }) =
                 key={i}
                 lang={lang === "ar" ? "ar" : "en"}
                 dir={lang === "ar" ? "rtl" : "ltr"}
-                className="font-body text-sm text-muted-foreground leading-relaxed text-justify [text-align-last:start]"
+                className="leadership-bio-prose font-body text-sm text-muted-foreground leading-relaxed"
               >
                 {p}
               </p>
@@ -584,10 +584,6 @@ const AboutUs = () => {
         .rtl-text-center {
           direction: rtl;
           text-align: center;
-        }
-        #leadership [dir="rtl"].text-justify {
-          -webkit-hyphens: none;
-          hyphens: none;
         }
         @media (max-width: 767px) {
           .about-hero-intro p {

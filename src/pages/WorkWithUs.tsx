@@ -702,8 +702,9 @@ const WorkWithUs = ({
                             {isAr ? currentEmployee.nameAr : currentEmployee.name}
                           </h3>
                           <p
-                            className={`font-body text-xs text-accent ${isAr ? "" : "justified-body-en"}`}
+                            className="font-body text-xs text-accent leadership-bio-prose"
                             lang={isAr ? "ar" : "en"}
+                            dir={isAr ? "rtl" : undefined}
                           >
                             {isAr ? currentEmployee.roleAr : currentEmployee.role}
                           </p>
@@ -721,7 +722,12 @@ const WorkWithUs = ({
                               ? currentEmployee.achievementsAr
                               : currentEmployee.achievements
                             ).map((ach, idx) => (
-                              <p key={idx} className={isAr ? "" : "justified-body-en"} lang={isAr ? "ar" : "en"}>
+                              <p
+                                key={idx}
+                                className="leadership-bio-prose"
+                                lang={isAr ? "ar" : "en"}
+                                dir={isAr ? "rtl" : undefined}
+                              >
                                 {ach}
                               </p>
                             ))}
@@ -965,6 +971,25 @@ const WorkWithUs = ({
           letter-spacing: normal !important;
           font-kerning: normal;
         }
+        #work-culture-page .leadership-bio-prose {
+          text-align: justify !important;
+          text-justify: auto;
+          text-align-last: start;
+          text-wrap: pretty;
+          hyphens: auto !important;
+          -webkit-hyphens: auto !important;
+          -ms-hyphens: auto !important;
+          hyphenate-character: "" !important;
+          -webkit-hyphenate-character: "" !important;
+          hyphenate-limit-chars: 6 3 3;
+          word-spacing: normal !important;
+          letter-spacing: normal !important;
+          word-break: normal !important;
+          overflow-wrap: normal !important;
+        }
+        #work-culture-page .leadership-bio-prose[dir="rtl"] {
+          text-align-last: end;
+        }
         @media (max-width: 767px) {
           #work-culture-page section .container {
             padding-left: 0.75rem;
@@ -994,6 +1019,19 @@ const WorkWithUs = ({
             -webkit-hyphens: auto !important;
             hyphens: auto !important;
             hyphenate-limit-chars: 6 3 3;
+          }
+          #work-culture-page .leadership-bio-prose {
+            text-align: justify !important;
+            text-justify: auto;
+            text-align-last: start;
+            hyphens: auto !important;
+            -webkit-hyphens: auto !important;
+            hyphenate-character: "" !important;
+            -webkit-hyphenate-character: "" !important;
+            word-spacing: normal !important;
+          }
+          #work-culture-page .leadership-bio-prose[dir="rtl"] {
+            text-align-last: end;
           }
         }
       `}</style>

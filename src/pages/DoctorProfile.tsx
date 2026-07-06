@@ -16,7 +16,6 @@ import {
   type DoctorFeedbackRecord,
 } from "@/api/feedback";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
-import { patientTestimonials } from "@/data/patientTestimonials";
 import AddFeedbackModal from "@/components/AddFeedbackModal";
 import { useState, useEffect, type ReactNode } from "react";
 import axios from "axios";
@@ -200,17 +199,6 @@ const mapDoctorFeedbackToProfile = (
   date: formatFeedbackDate(record.createdAt),
 });
 
-const staticProfileFeedback: ProfileFeedback[] = patientTestimonials.map(
-  (item) => ({
-    name: item.name,
-    nameAr: item.nameAr,
-    rating: item.stars,
-    comment: item.text,
-    commentAr: item.textAr,
-    date: "",
-  }),
-);
-
 const DoctorProfile = () => {
   const { id } = useParams<{ id: string }>();
   const { lang, t } = useLanguage();
@@ -220,9 +208,7 @@ const DoctorProfile = () => {
   const navDepartmentContext = resolveNavDepartmentContext(bookingReturnState);
   const fromBooking = Boolean(bookingReturnState?.fromBookAppointment || bookingReturnState?.step != null);
   const [isTestimonialOpen, setIsTestimonialOpen] = useState(false);
-  const [testimonials, setTestimonials] = useState<ProfileFeedback[]>(
-    staticProfileFeedback,
-  );
+  const [testimonials, setTestimonials] = useState<ProfileFeedback[]>([]);
   const [feedbackLoading, setFeedbackLoading] = useState(false);
   const handleGoBack = () => {
     if (fromBooking) {
@@ -275,7 +261,7 @@ const DoctorProfile = () => {
     if (!doctor?.name) return;
 
     let cancelled = false;
-    setTestimonials(staticProfileFeedback);
+    setTestimonials([]);
     setFeedbackLoading(true);
 
     getDoctorFeedbacksByDoctorName(doctor.name)
@@ -287,12 +273,12 @@ const DoctorProfile = () => {
           .map(mapDoctorFeedbackToProfile)
           .filter((item) => item.comment || item.commentAr);
 
-        setTestimonials([...apiFeedbacks, ...staticProfileFeedback]);
+        setTestimonials(apiFeedbacks);
       })
       .catch((error) => {
         console.error("Failed to load doctor feedbacks:", error);
         if (!cancelled) {
-          setTestimonials(staticProfileFeedback);
+          setTestimonials([]);
         }
       })
       .finally(() => {

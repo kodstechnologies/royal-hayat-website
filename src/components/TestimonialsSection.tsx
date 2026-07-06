@@ -1,28 +1,18 @@
 import { Star, MessageCircleHeart } from "lucide-react";
 import { motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { type PatientTestimonial } from "@/data/patientTestimonials";
+import { filterPatientTestimonialsForLang, type PatientTestimonial } from "@/data/patientTestimonials";
 import AddFeedbackModal from "./AddFeedbackModal";
 import {
   createHospitalFeedback,
   extractHospitalFeedbackRecord,
   getAllHospitalFeedbacks,
-  type HospitalFeedbackRecord,
+  mapHospitalFeedbackToTestimonial,
 } from "@/api/feedback";
-
-const mapHospitalFeedbackToTestimonial = (
-  record: HospitalFeedbackRecord,
-): PatientTestimonial => ({
-  name: record.userName || record.arabicUserName || "",
-  nameAr: record.arabicUserName || record.userName || "",
-  text: record.feedback || record.arabicFeedback || "",
-  textAr: record.arabicFeedback || record.feedback || "",
-  stars: record.stars,
-});
 
 const TestimonialsSection = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -54,6 +44,11 @@ const TestimonialsSection = () => {
       cancelled = true;
     };
   }, []);
+
+  const displayFeedbacks = useMemo(
+    () => filterPatientTestimonialsForLang(hospitalFeedbacks, lang === "ar" ? "ar" : "en"),
+    [hospitalFeedbacks, lang],
+  );
 
   return (
     <section id="testimonials" className="py-24 bg-popover overflow-hidden">
@@ -98,16 +93,22 @@ const TestimonialsSection = () => {
           animate={{ x: lang === "ar" ? ["0%", "50%"] : ["0%", "-50%"] }}
           transition={{ x: { repeat: Infinity, repeatType: "loop", duration: 40, ease: "linear" } }}
           style={{ animationPlayState: isPaused ? "paused" : "running" }}>
-          {[...hospitalFeedbacks, ...hospitalFeedbacks].map((item, i) => (
-            <motion.div key={`${item.name}-${item.text.slice(0, 24)}-${i}`} whileHover={{ y: -6, boxShadow: "0 20px 40px -15px rgba(74,20,35,0.1)" }}
+          {[...displayFeedbacks, ...displayFeedbacks].map((item, i) => (
+            <motion.div
+              key={`${item.name}-${(lang === "ar" ? item.textAr : item.text).slice(0, 24)}-${i}`}
+              whileHover={{ y: -6, boxShadow: "0 20px 40px -15px rgba(74,20,35,0.1)" }}
               className="bg-background rounded-2xl p-6 md:p-8 border border-border/50 w-[300px] sm:w-[360px] flex-shrink-0">
               <div className="flex gap-1 mb-4">
                 {Array.from({ length: item.stars }).map((_, j) => (
                   <Star key={j} className="w-4 h-4 fill-accent text-accent" />
                 ))}
               </div>
-              <p className="text-foreground font-body leading-relaxed mb-6 text-sm">"{lang === "ar" ? item.textAr : item.text}"</p>
-              <p className="font-serif text-foreground text-sm">{lang === "ar" ? item.nameAr : item.name}</p>
+              <p className="text-foreground font-body leading-relaxed mb-6 text-sm">
+                "{lang === "ar" ? item.textAr : item.text}"
+              </p>
+              <p className="font-serif text-foreground text-sm">
+                {lang === "ar" ? item.nameAr || item.name : item.name || item.nameAr}
+              </p>
             </motion.div>
           ))}
         </motion.div>

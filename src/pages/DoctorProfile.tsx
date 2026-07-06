@@ -195,8 +195,8 @@ const mapDoctorFeedbackToProfile = (
   name: record.userName || record.arabicUserName || "",
   nameAr: record.arabicUserName || record.userName || "",
   rating: record.stars,
-  comment: record.feedback || record.arabicFeedback || "",
-  commentAr: record.arabicFeedback || record.feedback || "",
+  comment: String(record.feedback ?? "").trim(),
+  commentAr: String(record.arabicFeedback ?? "").trim(),
   date: formatFeedbackDate(record.createdAt),
 });
 

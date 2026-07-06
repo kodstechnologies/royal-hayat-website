@@ -1,4 +1,5 @@
 import api from "./axiosInstance";
+import type { PatientTestimonial } from "@/data/patientTestimonials";
 
 
 // ================= HOSPITAL FEEDBACK =================
@@ -78,6 +79,18 @@ export const getAllHospitalFeedbacks = async (): Promise<
   const response = await api.get("/api/v1/hospital-feedback/all");
   return normalizeHospitalFeedbackList(response.data);
 };
+
+export function mapHospitalFeedbackToTestimonial(
+  record: HospitalFeedbackRecord,
+): PatientTestimonial {
+  return {
+    name: String(record.userName ?? "").trim(),
+    nameAr: String(record.arabicUserName ?? "").trim(),
+    text: String(record.feedback ?? "").trim(),
+    textAr: String(record.arabicFeedback ?? "").trim(),
+    stars: record.stars,
+  };
+}
 
 // ================= DOCTOR FEEDBACK =================
 

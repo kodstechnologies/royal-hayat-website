@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { patientTestimonials, type PatientTestimonial } from "@/data/patientTestimonials";
+import { patientTestimonials, filterPatientTestimonialsForLang, type PatientTestimonial } from "@/data/patientTestimonials";
 import {
   getAllHospitalFeedbacks,
   type HospitalFeedbackRecord,
@@ -49,7 +49,8 @@ const VoicesFromOurPeople = () => {
     };
   }, []);
 
-  const duplicated = [...testimonials, ...testimonials];
+  const displayTestimonials = filterPatientTestimonialsForLang(testimonials, isAr ? "ar" : "en");
+  const duplicated = [...displayTestimonials, ...displayTestimonials];
 
   return (
     <section className="py-20 bg-popover overflow-hidden">
@@ -79,7 +80,7 @@ const VoicesFromOurPeople = () => {
         >
           {duplicated.map((item, i) => (
             <motion.div
-              key={`${item.name}-${item.text.slice(0, 24)}-${i}`}
+              key={`${item.name}-${(isAr ? item.textAr : item.text).slice(0, 24)}-${i}`}
               whileHover={{ y: -6 }}
               className="bg-background rounded-2xl p-6 md:p-8 border border-border/50 w-[300px] sm:w-[360px] flex-shrink-0"
             >

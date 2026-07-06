@@ -49,15 +49,23 @@ export const patientTestimonials: PatientTestimonial[] = [
     name: "Moudhi",
     nameAr: "موضي",
     stars: 5,
-    text: "The doctors were excellent",
+    text: "",
     textAr: "تميز الأطباء بخبرتهم وكفاءتهم العالية، مما عزز ثقتي بجودة الرعاية المقدمة",
   },
   {
     name: "Haya",
     nameAr: "هيا",
     stars: 5,
-    text: "The doctors explained everything clearly, and I could tell they genuinely cared about my well-being",
+    text: "",
     textAr:
       "شرح الأطباء كافة الإجراءات بشكل واضح ومطمئن، وشعرت باهتمامهم الصادق وحرصهم على تقديم أفضل رعاية ممكنة",
   },
 ];
+
+/** Arabic-only variants share English with an earlier entry; hide them in English UI. */
+export function filterPatientTestimonialsForLang(
+  items: PatientTestimonial[],
+  lang: "en" | "ar",
+): PatientTestimonial[] {
+  return items.filter((item) => (lang === "ar" ? item.textAr : item.text).trim());
+}

@@ -5,7 +5,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { patientTestimonials, type PatientTestimonial } from "@/data/patientTestimonials";
+import { type PatientTestimonial } from "@/data/patientTestimonials";
 import AddFeedbackModal from "./AddFeedbackModal";
 import {
   createHospitalFeedback,
@@ -28,7 +28,7 @@ const TestimonialsSection = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
   const { lang, t } = useLanguage();
-  const [hospitalFeedbacks, setHospitalFeedbacks] = useState(patientTestimonials);
+  const [hospitalFeedbacks, setHospitalFeedbacks] = useState<PatientTestimonial[]>([]);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -44,7 +44,7 @@ const TestimonialsSection = () => {
           .map(mapHospitalFeedbackToTestimonial)
           .filter((item) => item.text || item.textAr);
 
-        setHospitalFeedbacks([...visible, ...patientTestimonials]);
+        setHospitalFeedbacks(visible);
       })
       .catch((error) => {
         console.error("Failed to load hospital feedbacks:", error);

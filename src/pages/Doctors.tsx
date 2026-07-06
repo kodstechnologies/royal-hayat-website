@@ -19,6 +19,7 @@ import { sortDoctorsAlphabetically, sortDoctorsInDepartment } from "@/utils/sort
 import {
   compareDoctorsPageDepartments,
 } from "@/utils/doctorDepartmentOrder";
+import { groupDoctorsByDepartmentSections } from "@/utils/doctorDepartmentContext";
 import { getDoctorCarouselScrollState, scrollDoctorCarousel, scrollDoctorCarouselToDoctor, scrollDoctorCarouselToStart, syncDoctorCarouselIndex } from "@/utils/doctorCarousel";
 import { filterDoctorsBySearch } from "@/utils/doctorSearch";
 import {
@@ -287,7 +288,11 @@ const DepartmentRow = memo(({
             className="doctors-carousel-track flex w-full items-stretch gap-4 overflow-x-auto pb-8 snap-x snap-mandatory max-md:scroll-px-[calc(50%-140px)] max-md:px-[calc(50%-140px)] md:gap-6 md:px-0 md:scroll-px-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden [-webkit-overflow-scrolling:touch]"
           >
             {docs.map((doc) => (
-              <DoctorCard key={doc.id} doc={doc} onDoctorClick={onDoctorClick} />
+              <DoctorCard
+                key={`${department}-${doc.id}`}
+                doc={doc}
+                onDoctorClick={onDoctorClick}
+              />
             ))}
           </div>
         </div>
@@ -304,6 +309,9 @@ const Doctors = () => {
   const [catalogLoading, setCatalogLoading] = useState(true);
   const [catalogError, setCatalogError] = useState("");
   const [deptMetaByName, setDeptMetaByName] = useState<Record<string, DeptMeta>>({});
+  const [deptCatalogById, setDeptCatalogById] = useState<
+    Record<string, { name: string; nameAr: string }>
+  >({});
   const [restoreDoctorId, setRestoreDoctorId] = useState<string | null>(null);
   const restoreScrollYRef = useRef<number | null>(null);
   const restoreHandledRef = useRef(false);
@@ -375,10 +383,18 @@ const Doctors = () => {
         setDoctorCatalog(apiList);
         const mapped = mapApiDepartmentsToDisplay(deptRows);
         const metaByName: Record<string, DeptMeta> = {};
+        const catalogById: Record<string, { name: string; nameAr: string }> = {};
         mapped.forEach((dept, index) => {
           const row = deptRows.find(
             (item) => String(item.name ?? "").trim() === dept.name,
           );
+          const mongoId = String(row?._id ?? "").trim();
+          if (mongoId) {
+            catalogById[mongoId] = {
+              name: dept.name,
+              nameAr: dept.nameAr,
+            };
+          }
           const apiDoctorTagline = String(row?.doctorTagline ?? "").trim();
           const apiDoctorTaglineArabic = String(row?.doctorTaglineArabic ?? "").trim();
           const staticTaglines = resolveDoctorTaglines(dept.name);
@@ -406,6 +422,7 @@ const Doctors = () => {
           }
         });
         setDeptMetaByName(metaByName);
+        setDeptCatalogById(catalogById);
       } catch {
         if (!cancelled) {
           setDoctorCatalog([]);
@@ -430,20 +447,15 @@ const Doctors = () => {
     if (deptToMainCategory[dept]) return deptToMainCategory[dept];
     return "Clinical Speciality";
   }, [deptToMainCategory]);
-  const grouped = useMemo<Record<string, Doctor[]>>(() => {
-    return doctorCatalog.reduce<Record<string, Doctor[]>>((acc, doctor) => {
-      const key = doctor.department || "General";
-      if (!acc[key]) acc[key] = [];
-      acc[key].push(doctor);
-      return acc;
-    }, {});
-  }, [doctorCatalog]);
-  const allDoctors = useMemo(() => Object.values(grouped).flat(), [grouped]);
+  const grouped = useMemo<Record<string, Doctor[]>>(
+    () => groupDoctorsByDepartmentSections(doctorCatalog, deptCatalogById),
+    [doctorCatalog, deptCatalogById],
+  );
   const searchResults = useMemo(() => {
     const query = searchQuery.trim();
     if (!query) return [];
-    return sortDoctorsAlphabetically(filterDoctorsBySearch(allDoctors, query), lang);
-  }, [allDoctors, searchQuery, lang]);
+    return sortDoctorsAlphabetically(filterDoctorsBySearch(doctorCatalog, query), lang);
+  }, [doctorCatalog, searchQuery, lang]);
   const isSearching = searchQuery.trim().length > 0;
   const sortedGroupedEntries = useMemo(() => {
     const sortDocsWithinDept = (dept: string, docs: Doctor[]) =>

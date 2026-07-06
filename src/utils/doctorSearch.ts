@@ -5,6 +5,7 @@ export type DoctorSearchFields = {
   specialtyAr: string;
   department: string;
   departmentAr: string;
+  allDepartments?: { name: string; nameAr: string }[];
   title?: string;
   titleAr?: string;
   symptoms?: string[];
@@ -34,20 +35,26 @@ const tokenizeSearchQuery = (query: string): string[] => {
   return normalized.split(" ").filter(Boolean);
 };
 
-const buildDoctorSearchHaystack = (doctor: DoctorSearchFields): string =>
-  normalizeSearchText(
+const buildDoctorSearchHaystack = (doctor: DoctorSearchFields): string => {
+  const departmentTerms =
+    doctor.allDepartments?.flatMap((dept) => [dept.name, dept.nameAr]) ?? [
+      doctor.department,
+      doctor.departmentAr,
+    ];
+
+  return normalizeSearchText(
     [
       doctor.name,
       doctor.nameAr,
       doctor.specialty,
       doctor.specialtyAr,
-      doctor.department,
-      doctor.departmentAr,
+      ...departmentTerms,
       doctor.title,
       doctor.titleAr,
       ...(doctor.symptoms ?? []),
     ].join(" "),
   );
+};
 
 const extractCombinedInitials = (text: string): string =>
   text

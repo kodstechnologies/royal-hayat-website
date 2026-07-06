@@ -190,6 +190,7 @@ export function mapApiDoctorRowToDoctor(
     hideBooking: !isActive,
     ...(departmentId ? { departmentId } : {}),
     ...(departmentIds.length > 0 ? { departmentIds } : {}),
+    ...(parsedDepartments.length > 0 ? { allDepartments: parsedDepartments } : {}),
     providerCode,
   };
 }

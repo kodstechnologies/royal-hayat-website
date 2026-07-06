@@ -11,18 +11,23 @@ export type DoctorsProfileNavState = DoctorsPageRestore & {
   restoreScrollY: number;
   restoreDoctorId: string;
   restoreSearchQuery?: string;
+  contextDepartmentId?: string;
+  contextDepartmentName?: string;
+  contextDepartmentNameAr?: string;
 };
 
 type DoctorLike = {
   id: string;
   department?: string;
+  departmentAr?: string;
+  departmentId?: string;
   specialty?: string;
 };
 
 const STORAGE_KEY = "royale-hayat-doctors-restore";
 
 export const buildDoctorsProfileNavState = (
-  doctor: Pick<DoctorLike, "id" | "department" | "specialty">,
+  doctor: Pick<DoctorLike, "id" | "department" | "departmentAr" | "departmentId" | "specialty">,
   searchQuery = "",
 ): DoctorsProfileNavState => {
   const dept = doctor.department || doctor.specialty || "General";
@@ -39,6 +44,9 @@ export const buildDoctorsProfileNavState = (
     doctorId: doctor.id,
     dept,
     searchQuery: trimmedSearch || undefined,
+    ...(doctor.departmentId ? { contextDepartmentId: doctor.departmentId } : {}),
+    ...(doctor.department ? { contextDepartmentName: doctor.department } : {}),
+    ...(doctor.departmentAr ? { contextDepartmentNameAr: doctor.departmentAr } : {}),
   };
 };
 

@@ -160,6 +160,99 @@ export function resolveDoctorDepartmentLabel(
     : doc.department || doc.specialty || "";
 }
 
+export type DepartmentSectionMeta = {
+  id: string;
+  name: string;
+  nameAr: string;
+};
+
+export function resolveDoctorDepartmentSections(
+  doctor: {
+    department?: string;
+    departmentAr?: string;
+    departmentId?: string;
+    departmentIds?: string[];
+    allDepartments?: ParsedDoctorDepartment[];
+  },
+  deptCatalogById: Record<string, Pick<ParsedDoctorDepartment, "name" | "nameAr">>,
+): DepartmentSectionMeta[] {
+  const seen = new Set<string>();
+  const sections: DepartmentSectionMeta[] = [];
+
+  const push = (id: string, name: string, nameAr: string) => {
+    const key = id || name.trim().toLowerCase();
+    if (!key || seen.has(key)) return;
+    seen.add(key);
+    const resolvedName = name.trim() || "General";
+    sections.push({
+      id: id || key,
+      name: resolvedName,
+      nameAr: nameAr.trim() || resolvedName,
+    });
+  };
+
+  if (doctor.allDepartments?.length) {
+    for (const dept of doctor.allDepartments) {
+      const catalog = deptCatalogById[dept.id];
+      push(
+        dept.id,
+        dept.name || catalog?.name || "",
+        dept.nameAr || catalog?.nameAr || catalog?.name || "",
+      );
+    }
+  } else if (doctor.departmentIds?.length) {
+    for (const id of doctor.departmentIds) {
+      const catalog = deptCatalogById[id];
+      push(
+        id,
+        catalog?.name || doctor.department || "",
+        catalog?.nameAr || doctor.departmentAr || doctor.department || "",
+      );
+    }
+  } else if (doctor.department) {
+    push(
+      doctor.departmentId || doctor.department,
+      doctor.department,
+      doctor.departmentAr || doctor.department,
+    );
+  } else {
+    push("general", "General", "General");
+  }
+
+  return sections;
+}
+
+export function groupDoctorsByDepartmentSections<
+  T extends {
+    id: string;
+    department?: string;
+    departmentAr?: string;
+    departmentId?: string;
+    departmentIds?: string[];
+    allDepartments?: ParsedDoctorDepartment[];
+  },
+>(
+  doctors: T[],
+  deptCatalogById: Record<string, Pick<ParsedDoctorDepartment, "name" | "nameAr">>,
+): Record<string, T[]> {
+  const grouped: Record<string, T[]> = {};
+
+  for (const doctor of doctors) {
+    const sections = resolveDoctorDepartmentSections(doctor, deptCatalogById);
+    for (const section of sections) {
+      if (!grouped[section.name]) grouped[section.name] = [];
+      grouped[section.name].push({
+        ...doctor,
+        department: section.name,
+        departmentAr: section.nameAr,
+        departmentId: section.id,
+      });
+    }
+  }
+
+  return grouped;
+}
+
 export function resolveDoctorDepartmentId(
   doc: DoctorDepartmentLabelSource,
   contextDepartmentId?: string | null,

@@ -24,6 +24,8 @@ export interface Doctor {
   hideBooking?: boolean;
   departmentId?: string;
   departmentIds?: string[];
+  /** All departments from API (used for multi-department listing). */
+  allDepartments?: { id: string; name: string; nameAr: string }[];
   providerCode?: string;
   clinicCode?: string;
 }

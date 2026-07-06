@@ -610,7 +610,7 @@ const DoctorProfile = () => {
               return (
               <div
                 key={`${displayName}-${displayComment.slice(0, 24)}-${i}`}
-                className="w-[280px] h-[280px] flex-shrink-0 bg-popover rounded-2xl border border-border/40 p-5 flex flex-col justify-between hover:shadow-lg transition-shadow"
+                className="w-[280px] min-h-[280px] flex-shrink-0 bg-popover rounded-2xl border border-border/40 p-5 flex flex-col justify-between hover:shadow-lg transition-shadow"
               >
                 <div>
                   <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
@@ -624,7 +624,7 @@ const DoctorProfile = () => {
                       ) : null}
                     </div>
                   </div>
-                  <p className="text-muted-foreground font-body text-[11px] sm:text-xs leading-relaxed italic line-clamp-4 sm:line-clamp-5">
+                  <p className="text-muted-foreground font-body text-[11px] sm:text-xs leading-relaxed italic">
                     "{displayComment}"
                   </p>
                 </div>

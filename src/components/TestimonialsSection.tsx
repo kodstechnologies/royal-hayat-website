@@ -17,7 +17,7 @@ import {
 
 const TestimonialsSection = () => {
   const isMobile = useIsMobile();
-  const visibleCardCount = isMobile ? 1 : 4;
+  const visibleCardCount = isMobile ? 1 : 3;
   const { lang, t } = useLanguage();
   const [hospitalFeedbacks, setHospitalFeedbacks] = useState<PatientTestimonial[]>([]);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
@@ -106,7 +106,7 @@ const TestimonialsSection = () => {
           </p>
         ) : (
           <div
-            className={`flex gap-5 ${
+            className={`flex gap-6 ${
               shouldAnimateMarquee
                 ? `w-max hover:[animation-play-state:paused] ${lang === "ar" ? "animate-[feedbackMarqueeRtl_30s_linear_infinite]" : "animate-[feedbackMarquee_30s_linear_infinite]"}`
                 : "w-full justify-center"
@@ -116,7 +116,7 @@ const TestimonialsSection = () => {
               <motion.div
                 key={`${item.name}-${(lang === "ar" ? item.textAr : item.text).slice(0, 24)}-${i}`}
                 whileHover={{ y: -6, boxShadow: "0 20px 40px -15px rgba(74,20,35,0.1)" }}
-                className="w-[calc(min(1400px,100vw)-3rem)] md:w-[calc((min(1400px,100vw)-3rem-3*1.25rem)/4)] flex-shrink-0 bg-background rounded-2xl border border-border/50 p-6 md:p-8"
+                className="bg-background rounded-2xl p-6 md:p-8 border border-border/50 w-[360px] flex-shrink-0"
               >
                 <div className="flex gap-1 mb-4">
                   {Array.from({ length: item.stars }).map((_, j) => (

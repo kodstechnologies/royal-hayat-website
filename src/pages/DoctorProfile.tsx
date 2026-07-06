@@ -298,7 +298,7 @@ const DoctorProfile = () => {
   }, [doctor?.name]);
 
   const isMobile = useIsMobile();
-  const visibleCardCount = isMobile ? 1 : 4;
+  const visibleCardCount = isMobile ? 1 : 3;
 
   const visibleTestimonials = useMemo(
     () => filterProfileFeedbackForLang(testimonials, lang === "ar" ? "ar" : "en"),
@@ -610,7 +610,7 @@ const DoctorProfile = () => {
               return (
               <div
                 key={`${displayName}-${displayComment.slice(0, 24)}-${i}`}
-                className="w-[calc(min(1400px,100vw)-3rem)] md:w-[calc((min(1400px,100vw)-3rem-3*1.25rem)/4)] min-h-[200px] md:h-[280px] md:min-h-0 flex-shrink-0 bg-popover rounded-xl md:rounded-2xl border border-border/40 p-3.5 md:p-5 flex flex-col justify-between hover:shadow-lg transition-shadow"
+                className="w-[280px] h-[280px] flex-shrink-0 bg-popover rounded-2xl border border-border/40 p-5 flex flex-col justify-between hover:shadow-lg transition-shadow"
               >
                 <div>
                   <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">

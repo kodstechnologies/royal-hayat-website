@@ -17,9 +17,10 @@ import {
 } from "@/api/feedback";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
 import AddFeedbackModal from "@/components/AddFeedbackModal";
-import { useState, useEffect, type ReactNode } from "react";
+import { useState, useEffect, useMemo, type ReactNode } from "react";
 import axios from "axios";
 import { toast } from "sonner";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const ltrIsolateClass = "inline [unicode-bidi:isolate] [direction:ltr]";
 
@@ -191,13 +192,19 @@ const formatFeedbackDate = (createdAt?: string) => {
 const mapDoctorFeedbackToProfile = (
   record: DoctorFeedbackRecord,
 ): ProfileFeedback => ({
-  name: record.userName || record.arabicUserName || "",
-  nameAr: record.arabicUserName || record.userName || "",
+  name: String(record.userName ?? "").trim(),
+  nameAr: String(record.arabicUserName ?? "").trim(),
   rating: record.stars,
   comment: String(record.feedback ?? "").trim(),
   commentAr: String(record.arabicFeedback ?? "").trim(),
   date: formatFeedbackDate(record.createdAt),
 });
+
+const filterProfileFeedbackForLang = (
+  items: ProfileFeedback[],
+  lang: "en" | "ar",
+): ProfileFeedback[] =>
+  items.filter((fb) => (lang === "ar" ? fb.commentAr : fb.comment).trim());
 
 const DoctorProfile = () => {
   const { id } = useParams<{ id: string }>();
@@ -290,6 +297,23 @@ const DoctorProfile = () => {
     };
   }, [doctor?.name]);
 
+  const isMobile = useIsMobile();
+  const visibleCardCount = isMobile ? 1 : 4;
+
+  const visibleTestimonials = useMemo(
+    () => filterProfileFeedbackForLang(testimonials, lang === "ar" ? "ar" : "en"),
+    [testimonials, lang],
+  );
+
+  const shouldAnimateMarquee = visibleTestimonials.length > visibleCardCount;
+  const feedbackMarqueeItems = useMemo(
+    () =>
+      shouldAnimateMarquee
+        ? [...visibleTestimonials, ...visibleTestimonials]
+        : visibleTestimonials,
+    [visibleTestimonials, shouldAnimateMarquee],
+  );
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background pt-[var(--header-height,56px)]">
@@ -356,10 +380,6 @@ const DoctorProfile = () => {
       },
     });
   };
-  const visibleTestimonials = testimonials.filter((fb) =>
-    (lang === "ar" ? fb.commentAr : fb.comment).trim(),
-  );
-  const shouldAnimateMarquee = visibleTestimonials.length > 0;
   return (
     <div id="doctor-profile-page" className="min-h-screen bg-background pt-[var(--header-height,56px)]">
       <Header />
@@ -564,39 +584,48 @@ const DoctorProfile = () => {
             {lang === "ar" ? "إضافة تقييم" : "Add Feedback"}
           </motion.button>
         </div>
-        <div className="relative overflow-hidden">
+        <div className="container mx-auto px-6 overflow-hidden relative">
           {feedbackLoading ? (
             <div className="absolute right-6 top-0 z-10">
               <Loader2 className="w-5 h-5 text-primary animate-spin" />
             </div>
           ) : null}
           {visibleTestimonials.length === 0 ? (
-            <p className="px-6 text-center font-body text-sm text-muted-foreground">
+            <p className="text-center font-body text-sm text-muted-foreground">
               {lang === "ar"
                 ? "لا توجد آراء للمرضى بعد. كن أول من يشارك تجربته."
                 : "No patient feedback yet. Be the first to share your experience."}
             </p>
           ) : (
-          <div className={`flex gap-5 w-max hover:[animation-play-state:paused] ${lang === "ar" ? "animate-[feedbackMarqueeRtl_30s_linear_infinite]" : "animate-[feedbackMarquee_30s_linear_infinite]"}`}>
-            {[...visibleTestimonials, ...visibleTestimonials].map((fb, i) => (
+          <div
+            className={`flex gap-5 ${
+              shouldAnimateMarquee
+                ? `w-max hover:[animation-play-state:paused] ${lang === "ar" ? "animate-[feedbackMarqueeRtl_30s_linear_infinite]" : "animate-[feedbackMarquee_30s_linear_infinite]"}`
+                : "w-full justify-center"
+            }`}
+          >
+            {feedbackMarqueeItems.map((fb, i) => {
+              const displayComment = lang === "ar" ? fb.commentAr : fb.comment;
+              const displayName = lang === "ar" ? fb.nameAr || fb.name : fb.name || fb.nameAr;
+              return (
               <div
-                key={shouldAnimateMarquee ? `${fb.name}-${fb.date}-${i}` : `${fb.name}-${fb.date}`}
-                className="w-[220px] min-h-[200px] sm:w-[280px] sm:h-[280px] sm:min-h-0 flex-shrink-0 bg-popover rounded-xl sm:rounded-2xl border border-border/40 p-3.5 sm:p-5 flex flex-col justify-between hover:shadow-lg transition-shadow"
+                key={`${displayName}-${displayComment.slice(0, 24)}-${i}`}
+                className="w-[calc(min(1400px,100vw)-3rem)] md:w-[calc((min(1400px,100vw)-3rem-3*1.25rem)/4)] min-h-[200px] md:h-[280px] md:min-h-0 flex-shrink-0 bg-popover rounded-xl md:rounded-2xl border border-border/40 p-3.5 md:p-5 flex flex-col justify-between hover:shadow-lg transition-shadow"
               >
                 <div>
                   <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
                     <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                      <span className="text-xs sm:text-sm font-serif text-primary">{(lang === "ar" ? fb.nameAr : fb.name).charAt(0)}</span>
+                      <span className="text-xs sm:text-sm font-serif text-primary">{displayName.charAt(0)}</span>
                     </div>
                     <div>
-                      <p className="font-body text-sm font-medium text-foreground">{lang === "ar" ? fb.nameAr : fb.name}</p>
+                      <p className="font-body text-sm font-medium text-foreground">{displayName}</p>
                       {fb.date ? (
                         <p className="font-body text-[10px] text-muted-foreground">{fb.date}</p>
                       ) : null}
                     </div>
                   </div>
                   <p className="text-muted-foreground font-body text-[11px] sm:text-xs leading-relaxed italic line-clamp-4 sm:line-clamp-5">
-                    "{lang === "ar" ? fb.commentAr : fb.comment}"
+                    "{displayComment}"
                   </p>
                 </div>
                 <div className="flex items-center gap-0.5 mt-2 sm:mt-3">
@@ -605,7 +634,8 @@ const DoctorProfile = () => {
                   ))}
                 </div>
               </div>
-            ))}
+            );
+            })}
           </div>
           )}
         </div>
@@ -626,8 +656,7 @@ const DoctorProfile = () => {
                 doctorName: doctor.name,
                 userName: name,
                 arabicUserName: name,
-                feedback,
-                arabicFeedback: feedback,
+                ...(lang === "ar" ? { arabicFeedback: feedback } : { feedback }),
                 stars,
               },
               { addedBy: "patient" },

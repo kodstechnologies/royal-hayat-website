@@ -1,12 +1,13 @@
 import { Star, MessageCircleHeart } from "lucide-react";
 import { motion } from "framer-motion";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import ScrollAnimationWrapper from "./ScrollAnimationWrapper";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { filterPatientTestimonialsForLang, type PatientTestimonial } from "@/data/patientTestimonials";
 import AddFeedbackModal from "./AddFeedbackModal";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   createHospitalFeedback,
   extractHospitalFeedbackRecord,
@@ -15,12 +16,11 @@ import {
 } from "@/api/feedback";
 
 const TestimonialsSection = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [isPaused, setIsPaused] = useState(false);
+  const isMobile = useIsMobile();
+  const visibleCardCount = isMobile ? 1 : 4;
   const { lang, t } = useLanguage();
   const [hospitalFeedbacks, setHospitalFeedbacks] = useState<PatientTestimonial[]>([]);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -50,6 +50,15 @@ const TestimonialsSection = () => {
     [hospitalFeedbacks, lang],
   );
 
+  const shouldAnimateMarquee = displayFeedbacks.length > visibleCardCount;
+  const feedbackMarqueeItems = useMemo(
+    () =>
+      shouldAnimateMarquee
+        ? [...displayFeedbacks, ...displayFeedbacks]
+        : displayFeedbacks,
+    [displayFeedbacks, shouldAnimateMarquee],
+  );
+
   return (
     <section id="testimonials" className="py-24 bg-popover overflow-hidden">
       <div className="container mx-auto px-6">
@@ -60,7 +69,7 @@ const TestimonialsSection = () => {
           </div>
         </ScrollAnimationWrapper>
       </div>
-      <div className="flex justify-end mb-8 px-6">
+      <div className="container mx-auto px-6 mb-8 flex justify-end">
         <motion.button
           whileHover={{ scale: 1.04 }}
           whileTap={{ scale: 0.97 }}
@@ -88,30 +97,42 @@ const TestimonialsSection = () => {
           {lang === "ar" ? "إضافة تقييم" : "Add Feedback"}
         </motion.button>
       </div>
-      <div ref={containerRef} className="relative w-full" onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)}>
-        <motion.div className="flex gap-6 w-max px-6"
-          animate={{ x: lang === "ar" ? ["0%", "50%"] : ["0%", "-50%"] }}
-          transition={{ x: { repeat: Infinity, repeatType: "loop", duration: 40, ease: "linear" } }}
-          style={{ animationPlayState: isPaused ? "paused" : "running" }}>
-          {[...displayFeedbacks, ...displayFeedbacks].map((item, i) => (
-            <motion.div
-              key={`${item.name}-${(lang === "ar" ? item.textAr : item.text).slice(0, 24)}-${i}`}
-              whileHover={{ y: -6, boxShadow: "0 20px 40px -15px rgba(74,20,35,0.1)" }}
-              className="bg-background rounded-2xl p-6 md:p-8 border border-border/50 w-[300px] sm:w-[360px] flex-shrink-0">
-              <div className="flex gap-1 mb-4">
-                {Array.from({ length: item.stars }).map((_, j) => (
-                  <Star key={j} className="w-4 h-4 fill-accent text-accent" />
-                ))}
-              </div>
-              <p className="text-foreground font-body leading-relaxed mb-6 text-sm">
-                "{lang === "ar" ? item.textAr : item.text}"
-              </p>
-              <p className="font-serif text-foreground text-sm">
-                {lang === "ar" ? item.nameAr || item.name : item.name || item.nameAr}
-              </p>
-            </motion.div>
-          ))}
-        </motion.div>
+      <div className="container mx-auto px-6 overflow-hidden relative">
+        {displayFeedbacks.length === 0 ? (
+          <p className="text-center font-body text-sm text-muted-foreground">
+            {lang === "ar"
+              ? "لا توجد آراء للمرضى بعد. كن أول من يشارك تجربته."
+              : "No patient feedback yet. Be the first to share your experience."}
+          </p>
+        ) : (
+          <div
+            className={`flex gap-5 ${
+              shouldAnimateMarquee
+                ? `w-max hover:[animation-play-state:paused] ${lang === "ar" ? "animate-[feedbackMarqueeRtl_30s_linear_infinite]" : "animate-[feedbackMarquee_30s_linear_infinite]"}`
+                : "w-full justify-center"
+            }`}
+          >
+            {feedbackMarqueeItems.map((item, i) => (
+              <motion.div
+                key={`${item.name}-${(lang === "ar" ? item.textAr : item.text).slice(0, 24)}-${i}`}
+                whileHover={{ y: -6, boxShadow: "0 20px 40px -15px rgba(74,20,35,0.1)" }}
+                className="w-[calc(min(1400px,100vw)-3rem)] md:w-[calc((min(1400px,100vw)-3rem-3*1.25rem)/4)] flex-shrink-0 bg-background rounded-2xl border border-border/50 p-6 md:p-8"
+              >
+                <div className="flex gap-1 mb-4">
+                  {Array.from({ length: item.stars }).map((_, j) => (
+                    <Star key={j} className="w-4 h-4 fill-accent text-accent" />
+                  ))}
+                </div>
+                <p className="text-foreground font-body leading-relaxed mb-6 text-sm">
+                  "{lang === "ar" ? item.textAr : item.text}"
+                </p>
+                <p className="font-serif text-foreground text-sm">
+                  {lang === "ar" ? item.nameAr || item.name : item.name || item.nameAr}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
       <AddFeedbackModal
         isOpen={isFeedbackOpen}

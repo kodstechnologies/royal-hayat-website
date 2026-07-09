@@ -114,16 +114,19 @@ export function getActiveDoctorCarouselIndex(container: HTMLElement) {
   if (!cards.length) return 0;
 
   if (!usesIndexBasedNavigation(container)) {
-    const scrollLeft = container.scrollLeft;
-    let leadingIndex = 0;
+    const scrollLeft = getNormalizedScrollLeft(container);
+    let activeIndex = 0;
+    let minDistance = Number.POSITIVE_INFINITY;
+
     for (let i = 0; i < cards.length; i++) {
-      if (cards[i].offsetLeft <= scrollLeft + 8) {
-        leadingIndex = i;
-      } else {
-        break;
+      const distance = Math.abs(cards[i].offsetLeft - scrollLeft);
+      if (distance < minDistance) {
+        minDistance = distance;
+        activeIndex = i;
       }
     }
-    return leadingIndex;
+
+    return activeIndex;
   }
 
   const containerRect = container.getBoundingClientRect();
@@ -183,25 +186,10 @@ function getStepTargetIndex(
     return next;
   }
 
-  const scrollLeft = getNormalizedScrollLeft(container);
-  const viewportRight = scrollLeft + container.clientWidth;
-
-  if (direction === "right") {
-    for (let i = 0; i < cards.length; i++) {
-      const cardRight = cards[i].offsetLeft + cards[i].offsetWidth;
-      if (cardRight > viewportRight + 4) {
-        return i;
-      }
-    }
-    return null;
-  }
-
-  for (let i = cards.length - 1; i >= 0; i--) {
-    if (cards[i].offsetLeft < scrollLeft - 4) {
-      return i;
-    }
-  }
-  return null;
+  const current = getActiveDoctorCarouselIndex(container);
+  const next = direction === "right" ? current + 1 : current - 1;
+  if (next < 0 || next >= cards.length) return null;
+  return next;
 }
 
 function snapToIndex(container: HTMLElement, index: number, behavior: ScrollBehavior) {
@@ -436,9 +424,9 @@ export function getDoctorCarouselScrollState(container: HTMLElement) {
     };
   }
 
-  const scrollLeft = getNormalizedScrollLeft(container);
+  const activeIndex = getActiveDoctorCarouselIndex(container);
   return {
-    canScrollLeft: scrollLeft > 8,
-    canScrollRight: scrollLeft < maxScroll - 8,
+    canScrollLeft: activeIndex > 0,
+    canScrollRight: activeIndex < cards.length - 1,
   };
 }

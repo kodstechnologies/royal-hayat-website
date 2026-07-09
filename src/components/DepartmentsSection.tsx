@@ -240,21 +240,9 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
       }))
       .filter((section) => section.departments.length > 0);
   }, [categorySections, searchQuery]);
-  const isDermatologyDepartmentName = (deptName: string) =>
-    deptName.trim().toLowerCase() === "dermatology";
-
-  const scrollDoctors = (direction: "left" | "right", dept?: Department) => {
+  const scrollDoctors = (direction: "left" | "right") => {
     if (!doctorScrollRef.current) return;
-
-    const invertForArabicDermatology =
-      lang === "ar" && dept != null && isDermatologyDepartmentName(dept.name);
-    const resolvedDirection = invertForArabicDermatology
-      ? direction === "left"
-        ? "right"
-        : "left"
-      : direction;
-
-    scrollDoctorCarousel(doctorScrollRef.current, resolvedDirection);
+    scrollDoctorCarousel(doctorScrollRef.current, direction);
   };
   const handleToggle = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
@@ -340,11 +328,11 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
         const cacheKey = `${getDepartmentCardCacheKey(selectedDept)}:${selectedSub.subspecialityId}`;
         const subspecialityDoctors = subspecialityDoctorsCache[cacheKey];
         if (!subspecialityDoctors) return [];
-        return sortDoctorsInDepartment(subspecialityDoctors, selectedDept.name, lang);
+        return sortDoctorsInDepartment(subspecialityDoctors, selectedDept.name, "en");
       }
     }
 
-    return sortDoctorsInDepartment(allDeptDoctors, selectedDept.name, lang);
+    return sortDoctorsInDepartment(allDeptDoctors, selectedDept.name, "en");
   }, [
     selectedDept,
     selectedCardData,
@@ -352,7 +340,6 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
     openIndex,
     selectedSubByDept,
     subspecialityDoctorsCache,
-    lang,
   ]);
 
   const selectedSubspecialityLoading = useMemo(() => {
@@ -377,7 +364,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
     if (doctorScrollRef.current) {
       scrollDoctorCarouselToStart(doctorScrollRef.current);
     }
-  }, [openIndex, selectedSubByDept, deptDoctors]);
+  }, [openIndex, selectedSubByDept, deptDoctors, lang]);
   const getOriginalIndex = (dept: Department) =>
     departments.findIndex((d) => d.name === dept.name);
   return (
@@ -594,7 +581,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                       {deptDoctors.length > 1 && (
                                         <button
                                           type="button"
-                                          onClick={() => scrollDoctors("left", dept)}
+                                          onClick={() => scrollDoctors("left")}
                                           aria-label={lang === "ar" ? "التمرير لليسار" : "Scroll left"}
                                           className="hidden md:flex shrink-0 w-8 h-8 rounded-full border border-border bg-background/90 backdrop-blur-sm items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon"
                                         >
@@ -610,12 +597,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                       >
                                         <div
                                           ref={doctorScrollRef}
-                                          dir={
-                                            lang === "ar" &&
-                                            dept.name.trim().toLowerCase() === "dermatology"
-                                              ? "rtl"
-                                              : "ltr"
-                                          }
+                                          dir={lang === "ar" ? "rtl" : "ltr"}
                                           className="dept-doctor-carousel flex gap-4 overflow-x-auto pt-2 pb-6 scroll-smooth snap-x snap-mandatory justify-start max-md:scroll-px-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
                                         >
                                         {deptDoctors.map((doc) => (
@@ -656,7 +638,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                       {deptDoctors.length > 1 && (
                                         <button
                                           type="button"
-                                          onClick={() => scrollDoctors("right", dept)}
+                                          onClick={() => scrollDoctors("right")}
                                           aria-label={lang === "ar" ? "التمرير لليمين" : "Scroll right"}
                                           className="hidden md:flex shrink-0 w-8 h-8 rounded-full border border-border bg-background/90 backdrop-blur-sm items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon"
                                         >
@@ -668,7 +650,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                       <div className="mt-2 flex justify-center gap-3 md:hidden">
                                         <button
                                           type="button"
-                                          onClick={() => scrollDoctors("left", dept)}
+                                          onClick={() => scrollDoctors("left")}
                                           aria-label={lang === "ar" ? "التمرير لليسار" : "Scroll left"}
                                           className="w-8 h-8 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon"
                                         >
@@ -676,7 +658,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                         </button>
                                         <button
                                           type="button"
-                                          onClick={() => scrollDoctors("right", dept)}
+                                          onClick={() => scrollDoctors("right")}
                                           aria-label={lang === "ar" ? "التمرير لليمين" : "Scroll right"}
                                           className="w-8 h-8 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon"
                                         >

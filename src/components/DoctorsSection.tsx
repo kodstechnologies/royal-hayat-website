@@ -9,7 +9,7 @@ import type { Doctor } from "@/types/doctor";
 import { fetchFeaturedDoctors } from "@/api/doctors";
 import { shouldShowDoctorBookingUI } from "@/data/departments";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
-import { scrollDoctorCarousel, syncDoctorCarouselIndex } from "@/utils/doctorCarousel";
+import { getDoctorCarouselScrollState, scrollDoctorCarousel } from "@/utils/doctorCarousel";
 const DoctorCard = ({ doc }: { doc: Doctor }) => {
   const { lang } = useLanguage();
   const displayName = getDoctorDisplayName(doc, lang);
@@ -83,11 +83,9 @@ const DoctorsSection = () => {
   const checkScroll = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
-    syncDoctorCarouselIndex(el);
-    const { scrollLeft, scrollWidth, clientWidth } = el;
-    const maxScroll = Math.max(0, scrollWidth - clientWidth);
-    setCanScrollLeft(scrollLeft > 10);
-    setCanScrollRight(scrollLeft < maxScroll - 10);
+    const { canScrollLeft, canScrollRight } = getDoctorCarouselScrollState(el);
+    setCanScrollLeft(canScrollLeft);
+    setCanScrollRight(canScrollRight);
   }, []);
   useEffect(() => {
     checkScroll();
@@ -100,9 +98,13 @@ const DoctorsSection = () => {
     };
   }, [checkScroll, featuredDoctors]);
   const scroll = useCallback((dir: "left" | "right") => {
-    if (!scrollRef.current) return;
-    scrollDoctorCarousel(scrollRef.current, dir);
-    setTimeout(checkScroll, 400);
+    const el = scrollRef.current;
+    if (!el) return;
+
+    void scrollDoctorCarousel(el, dir).finally(() => {
+      checkScroll();
+      window.requestAnimationFrame(checkScroll);
+    });
   }, [checkScroll]);
   const handleManualInteraction = (dir: "left" | "right") => {
     setIsPaused(true);
@@ -162,8 +164,9 @@ const DoctorsSection = () => {
           <button
             type="button"
             onClick={() => handleManualInteraction("left")}
-            disabled={!canScrollLeft}
             aria-label={lang === "ar" ? "السابق" : "Previous"}
+            aria-hidden={!canScrollLeft}
+            tabIndex={canScrollLeft ? 0 : -1}
             className={`absolute left-0 sm:-left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground transition-all shadow-md ltr-icon pointer-events-auto ${!canScrollLeft ? "opacity-0 pointer-events-none" : "opacity-100 hover:bg-primary hover:text-primary-foreground hover:border-primary"}`}
           >
             <ChevronLeft className="w-5 h-5" />
@@ -171,8 +174,9 @@ const DoctorsSection = () => {
           <button
             type="button"
             onClick={() => handleManualInteraction("right")}
-            disabled={!canScrollRight}
             aria-label={lang === "ar" ? "التالي" : "Next"}
+            aria-hidden={!canScrollRight}
+            tabIndex={canScrollRight ? 0 : -1}
             className={`absolute right-0 sm:-right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground transition-all shadow-md ltr-icon pointer-events-auto ${!canScrollRight ? "opacity-0 pointer-events-none" : "opacity-100 hover:bg-primary hover:text-primary-foreground hover:border-primary"}`}
           >
             <ChevronRight className="w-5 h-5" />

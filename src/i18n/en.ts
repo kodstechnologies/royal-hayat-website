@@ -95,7 +95,7 @@ export const en = {
   "inRoomEventsDesc": "Create meaningful celebrations in the comfort and privacy of your own suite.",
   "elementsSpa": "Elements Spa",
   "elementsSpaByBanyanTree": "Elements Spa (by Banyan Tree)",
-  "fifthFloorCafe": "The 5th Floor Café",
+  "fifthFloorCafe": "5th cafe",
   "elementsSpaDesc": "Relaxation and wellness services to support recovery and well-being.",
   "alLiwanCafe": "Al Liwan Bistro",
   "alLiwanCafeDesc": "Fine dining and refreshments in an elegant setting.",

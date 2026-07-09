@@ -240,10 +240,21 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
       }))
       .filter((section) => section.departments.length > 0);
   }, [categorySections, searchQuery]);
-  const scrollDoctors = (direction: "left" | "right") => {
-    if (doctorScrollRef.current) {
-      scrollDoctorCarousel(doctorScrollRef.current, direction);
-    }
+  const isDermatologyDepartmentName = (deptName: string) =>
+    deptName.trim().toLowerCase() === "dermatology";
+
+  const scrollDoctors = (direction: "left" | "right", dept?: Department) => {
+    if (!doctorScrollRef.current) return;
+
+    const invertForArabicDermatology =
+      lang === "ar" && dept != null && isDermatologyDepartmentName(dept.name);
+    const resolvedDirection = invertForArabicDermatology
+      ? direction === "left"
+        ? "right"
+        : "left"
+      : direction;
+
+    scrollDoctorCarousel(doctorScrollRef.current, resolvedDirection);
   };
   const handleToggle = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
@@ -578,20 +589,12 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                       {t("departmentDoctors")}
                                     </h3>
                                   )}
-                                  <div
-                                    className="relative mx-auto w-full lg:mt-6"
-                                    dir={
-                                      lang === "ar" &&
-                                      dept.name.trim().toLowerCase() === "dermatology"
-                                        ? "rtl"
-                                        : "ltr"
-                                    }
-                                  >
+                                  <div className="relative mx-auto w-full lg:mt-6" dir="ltr">
                                     <div className="flex items-center justify-center gap-3">
                                       {deptDoctors.length > 1 && (
                                         <button
                                           type="button"
-                                          onClick={() => scrollDoctors("left")}
+                                          onClick={() => scrollDoctors("left", dept)}
                                           aria-label={lang === "ar" ? "التمرير لليسار" : "Scroll left"}
                                           className="hidden md:flex shrink-0 w-8 h-8 rounded-full border border-border bg-background/90 backdrop-blur-sm items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon"
                                         >
@@ -653,7 +656,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                       {deptDoctors.length > 1 && (
                                         <button
                                           type="button"
-                                          onClick={() => scrollDoctors("right")}
+                                          onClick={() => scrollDoctors("right", dept)}
                                           aria-label={lang === "ar" ? "التمرير لليمين" : "Scroll right"}
                                           className="hidden md:flex shrink-0 w-8 h-8 rounded-full border border-border bg-background/90 backdrop-blur-sm items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon"
                                         >
@@ -665,7 +668,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                       <div className="mt-2 flex justify-center gap-3 md:hidden">
                                         <button
                                           type="button"
-                                          onClick={() => scrollDoctors("left")}
+                                          onClick={() => scrollDoctors("left", dept)}
                                           aria-label={lang === "ar" ? "التمرير لليسار" : "Scroll left"}
                                           className="w-8 h-8 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon"
                                         >
@@ -673,7 +676,7 @@ const DepartmentsSection = ({ showPageTitle = false }: DepartmentsSectionProps) 
                                         </button>
                                         <button
                                           type="button"
-                                          onClick={() => scrollDoctors("right")}
+                                          onClick={() => scrollDoctors("right", dept)}
                                           aria-label={lang === "ar" ? "التمرير لليمين" : "Scroll right"}
                                           className="w-8 h-8 rounded-full border border-border bg-background/90 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-md ltr-icon"
                                         >

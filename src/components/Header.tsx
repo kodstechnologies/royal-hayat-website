@@ -120,7 +120,7 @@ const Header = () => {
     { label: lang === "ar" ? "المناسبات داخل الأجنحة" : "In-Suite Celebration Experiences", href: "/in-room-events", icon: Sparkles, desc: lang === "ar" ? "احتفالات مميزة في خصوصية جناحك" : "Create meaningful celebrations in the comfort and privacy of your own suite" },
     { label: lang === "ar" ? "إليمنتس سبا (بانيان تري)" : "Elements Spa (by Banyan Tree)", href: "/hospitality?section=spa", icon: Droplets, desc: lang === "ar" ? "ملاذ هادئ للاسترخاء والتجديد" : "A serene sanctuary for relaxation and renewal" },
     { label: lang === "ar" ? "الليوان بيسترو" : "Al Liwan Bistro", href: "/hospitality?section=cafe", icon: Coffee, desc: lang === "ar" ? "بيئة راقية لتجارب طعام استثنائية" : "A refined setting for exceptional dining experiences" },
-    { label: lang === "ar" ? "كافيه الطابق الخامس" : "The 5th Floor Café", href: "/fifth-floor-cafe", icon: Coffee, desc: lang === "ar" ? "مساحة مريحة للقهوة والمرطبات الخفيفة" : "A cozy space for light bites and refreshments" },
+    { label: lang === "ar" ? "كافيه الطابق الخامس" : "5th cafe", href: "/fifth-floor-cafe", icon: Coffee, desc: lang === "ar" ? "مساحة مريحة للقهوة والمرطبات الخفيفة" : "A cozy space for light bites and refreshments" },
     { label: lang === "ar" ? "خدمات تصوير المواليد" : "Newborn Photography Services", href: "/newborn-photography", icon: Baby, desc: lang === "ar" ? "التقط أثمن لحظات الحياة" : "Capture Life's Most Precious Moments" },
   ];
   const patientsSubLinks = [
@@ -136,7 +136,7 @@ const Header = () => {
   const workWithUsSubLinks = [
     { label: lang === "ar" ? "ثقافة العمل" : "Work Culture", href: "/work-with-us?section=culture", icon: Heart, desc: lang === "ar" ? "الحياة في مستشفى رويال حياة" : "Life at Royale Hayat Hospital" },
     { label: lang === "ar" ? "الوظائف المتاحة" : "Open Positions", href: "/work-with-us?section=positions", icon: Users, desc: lang === "ar" ? "تصفح جميع الفرص الوظيفية" : "Browse all career opportunities" },
-  ];
+  ]
   const navItems: {
     label: string;
     href: string;

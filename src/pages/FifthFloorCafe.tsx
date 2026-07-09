@@ -35,7 +35,7 @@ const FifthFloorCafe = () => {
               {isAr ? "خدمات الضيافة" : "Hospitality Services"}
             </p>
             <h1 className="text-4xl md:text-5xl font-serif text-foreground mb-2">
-              {isAr ? "كافيه الطابق الخامس" : "The 5th Floor Café"}
+              {isAr ? "كافيه الطابق الخامس" : "5th cafe"}
             </h1>
             <p className="font-body text-sm text-muted-foreground">
               {isAr ? "مساحة مريحة للقهوة والمرطبات" : "A cozy space for light bites and refreshments"}
@@ -52,7 +52,7 @@ const FifthFloorCafe = () => {
                 slide={activeSlide}
                 setSlide={setActiveSlide}
                 altForIndex={(i) =>
-                  isAr ? `كافيه الطابق الخامس ${i + 1}` : `The 5th Floor Cafe ${i + 1}`
+                  isAr ? `كافيه الطابق الخامس ${i + 1}` : `5th cafe ${i + 1}`
                 }
                 autoPlay={cafeCarouselImages.length > 1}
                 aspectClass="aspect-[16/10] md:aspect-[16/8]"

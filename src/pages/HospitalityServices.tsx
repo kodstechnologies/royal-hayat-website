@@ -64,6 +64,7 @@ const CAFE_AR_DESSERT =
   "واختتموا تجربتكم بقطعة من الكيك أو المخبوزات الطازجة، إلى جانب تشكيلة من القهوة المختصة وأنواع الشاي الفاخرة.";
 const CAFE_AR_HOURS =
   "يفتتح الليوان بيسترو أبوابه يوميًا من الساعة 8 صباحًا وحتى 11 مساءً، ليكون وجهتكم المثالية للإفطار، والغداء، والعشاء، أو للاستمتاع بوجبة خفيفة في أي وقت من اليوم.";
+const FIFTH_FLOOR_EN_TITLE = "5th cafe";
 const FIFTH_FLOOR_AR_TITLE = "كافيه الدور الخامس";
 const FIFTH_FLOOR_AR_SUBTITLE = "مساحة دافئة للوجبات الخفيفة والمشروبات المنعشة";
 const FIFTH_FLOOR_AR_INTRO =
@@ -1334,7 +1335,7 @@ const HospitalityServices = ({
         <div className="container mx-auto px-6 max-w-6xl">
           <div className={`lg:hidden mb-4 ${isAr ? "text-right" : "text-center"}`}>
             <h2 className="text-2xl font-serif text-foreground mb-2">
-              {isAr ? FIFTH_FLOOR_AR_TITLE : "The 5th Floor Café"}
+              {isAr ? FIFTH_FLOOR_AR_TITLE : FIFTH_FLOOR_EN_TITLE}
             </h2>
             {isAr && (
               <p className="font-body text-sm text-accent tracking-wide">
@@ -1348,7 +1349,7 @@ const HospitalityServices = ({
                 images={fifthFloorCafeImages}
                 slide={fifthCafeSlide}
                 setSlide={setFifthCafeSlide}
-                altForIndex={(i) => (isAr ? `${FIFTH_FLOOR_AR_TITLE} ${i + 1}` : `The 5th Floor Cafe image ${i + 1}`)}
+                altForIndex={(i) => (isAr ? `${FIFTH_FLOOR_AR_TITLE} ${i + 1}` : `${FIFTH_FLOOR_EN_TITLE} image ${i + 1}`)}
                 autoPlay
                 onImageClick={setLightboxImage}
                 isAr={isAr}
@@ -1358,7 +1359,7 @@ const HospitalityServices = ({
               <div className="text-justify min-w-0">
                 <div className={`hidden lg:block mb-4 ${isAr ? "text-right" : "text-center"}`}>
                   <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-2">
-                    {isAr ? FIFTH_FLOOR_AR_TITLE : "The 5th Floor Café"}
+                    {isAr ? FIFTH_FLOOR_AR_TITLE : FIFTH_FLOOR_EN_TITLE}
                   </h2>
                   {isAr && (
                     <p className="font-body text-sm text-accent tracking-wide">
@@ -1381,7 +1382,7 @@ const HospitalityServices = ({
                   </p>
                 )}
                 <h3 className={`font-serif text-base text-foreground mb-3 ${isAr ? "text-right" : "text-left"}`}>
-                  {renderColonHeading(isAr ? "كافيه" : "What We Offer:")}
+                  {renderColonHeading(isAr ? "خدمات الكافيه" : "What We Offer:")}
                 </h3>
                 <div
                   className={`space-y-2 mb-6 w-full ${isAr ? "text-right" : "text-left"}`}

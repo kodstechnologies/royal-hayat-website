@@ -73,6 +73,7 @@ export function shouldShowDepartmentDoctorsHeading(
   },
 ): boolean {
   if (deptName === "Clinical Pharmacy") return false;
+  if (deptName === "Royale Hayat Pharmacy") return false;
   if (isClinicalNutritionSubspecialityContext(deptName, opts)) return false;
   return true;
 }

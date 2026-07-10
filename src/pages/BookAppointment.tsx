@@ -1576,6 +1576,11 @@ const BookAppointment = () => {
       setBookingPath(null);
       return;
     }
+    if (step === 1 && bookingPath === "doctor") {
+      setBookingPath("primary");
+      setSelectedDoctor(null);
+      setDoctorSearch("");
+    }
     if (step === 4 && patientType === "new") {
       setStep(2);
       return;
@@ -2021,7 +2026,10 @@ Clinic Code:`;
                               onClick={() => {
                                 if (isAlSafwaDept(dept)) { navigate("/al-safwa", { state: { fromBookAppointment: true } }); return; }
                                 if (isHomeHealthDept(dept)) { navigate("/home-health", { state: { fromBookAppointment: true } }); return; }
+                                setBookingPath("primary");
                                 setSelectedDept(dept.id);
+                                setSelectedDoctor(null);
+                                setDoctorSearch("");
                                 setStep(1);
                               }}
                               className={`flex items-center gap-3 p-4 rounded-xl border transition-all text-left ${selectedDept === dept.id

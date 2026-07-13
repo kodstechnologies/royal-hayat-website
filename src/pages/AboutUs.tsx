@@ -264,7 +264,7 @@ const LeaderCard = ({ leader, lang }: { leader: LeaderDisplay; lang: string }) =
                 key={i}
                 lang={lang === "ar" ? "ar" : "en"}
                 dir={lang === "ar" ? "rtl" : "ltr"}
-                className="font-body text-sm text-muted-foreground leading-relaxed text-justify"
+                className={`font-body text-sm text-muted-foreground leading-relaxed ${lang === "ar" ? "rtl-text" : ""}`}
               >
                 {p}
               </p>

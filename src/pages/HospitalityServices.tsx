@@ -1374,7 +1374,7 @@ const HospitalityServices = ({
                       <span className="font-semibold text-foreground">{FIFTH_FLOOR_AR_TITLE}</span>
                       {FIFTH_FLOOR_AR_INTRO.replace(`يوفر ${FIFTH_FLOOR_AR_TITLE}`, "")}
                     </>
-                  ) : "The Fifth Café, located on the 5th floor, offers a welcoming and comfortable space for guests to relax while waiting for appointments or visiting loved ones. Thoughtfully designed for families awaiting the arrival of a newborn or the completion of a procedure, it provides a calm and reassuring environment. Guests can enjoy freshly brewed coffee, a selection of sandwiches, fresh salads, and indulgent desserts — all served in a cozy setting that blends comfort with convenience."}
+                  ) : "The 5th Cafe, located on the 5th floor, offers a welcoming and comfortable space for guests to relax while waiting for appointments or visiting loved ones. Thoughtfully designed for families awaiting the arrival of a newborn or the completion of a procedure, it provides a calm and reassuring environment. Guests can enjoy freshly brewed coffee, a selection of sandwiches, fresh salads, and indulgent desserts — all served in a cozy setting that blends comfort with convenience."}
                 </p>
                 {isAr && (
                   <p className="w-full font-body text-sm text-muted-foreground leading-relaxed text-justify mb-6">

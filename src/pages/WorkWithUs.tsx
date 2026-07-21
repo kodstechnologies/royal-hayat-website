@@ -816,6 +816,93 @@ const WorkWithUs = ({
                 </p>
               </div>
             </ScrollAnimationWrapper>
+            <ScrollAnimationWrapper>
+              <div
+                className="max-w-5xl mx-auto mb-10 rounded-2xl border border-primary/20 bg-popover p-6 md:p-8"
+                lang={isAr ? "ar" : "en"}
+                dir={isAr ? "rtl" : "ltr"}
+              >
+                {!isAr && (
+                  <p className="text-accent text-xs tracking-[0.2em] uppercase font-body mb-3">
+                    Notice to the Public
+                  </p>
+                )}
+                {isAr ? (
+                  <div className="font-body text-sm text-foreground leading-relaxed space-y-4">
+                    <p>
+                      يود مستشفى رويال حياة – دولة الكويت أن يعلن عن تعيين شركة{" "}
+                      <span className="font-semibold">LEADPEC FIRMA PVT. Ltd</span>{" "}
+                      في مدينة نيودلهي، الهند كوكيل التوظيف الرسمي والمعتمد لاستقطاب
+                      وتوظيف الكوادر التمريضية، والكوادر الطبية، والموظفين الإداريين
+                      للعمل لدى المستشفى.
+                    </p>
+                    <p>
+                      للاستفسارات المتعلقة بالتوظيف أو أي استفسارات أخرى، يرجى
+                      التواصل على الأرقام التالية:
+                    </p>
+                    <p className="flex flex-col gap-1 items-end" dir="ltr">
+                      <a
+                        href="tel:+96525360432"
+                        className="text-primary hover:text-accent transition-colors font-semibold"
+                      >
+                        +965 2536 0432
+                      </a>
+                      <a
+                        href="tel:+96525360433"
+                        className="text-primary hover:text-accent transition-colors font-semibold"
+                      >
+                        +965 2536 0433
+                      </a>
+                    </p>
+                    <p>
+                      ولمزيد من المعلومات، يرجى التواصل مع قسم الموارد البشرية عبر
+                      البريد الإلكتروني:{" "}
+                      <a
+                        href="mailto:hr@royalehayat.com"
+                        className="text-primary hover:text-accent transition-colors font-semibold"
+                        dir="ltr"
+                      >
+                        hr@royalehayat.com
+                      </a>
+                    </p>
+                  </div>
+                ) : (
+                  <div className="font-body text-sm text-foreground leading-relaxed space-y-4 justified-body-en">
+                    <p>
+                      Royale Hayat Hospital, Kuwait has officially appointed{" "}
+                      <span className="font-semibold">
+                        &quot;LEADPEC FIRMA PVT Ltd, Delhi, India&quot;
+                      </span>{" "}
+                      as the recruitment agency for recruiting Nurses, Medical staff
+                      or any Administrative Staff to our organization. For employment
+                      and any other inquiries please contact{" "}
+                      <a
+                        href="tel:+96525360432"
+                        className="text-primary hover:text-accent transition-colors font-semibold"
+                      >
+                        +965 2536 0432
+                      </a>{" "}
+                      or{" "}
+                      <a
+                        href="tel:+96525360433"
+                        className="text-primary hover:text-accent transition-colors font-semibold"
+                      >
+                        2536 0433
+                      </a>
+                      . For further information, please contact our Human Resources
+                      department at{" "}
+                      <a
+                        href="mailto:hr@royalehayat.com"
+                        className="text-primary hover:text-accent transition-colors font-semibold"
+                      >
+                        hr@royalehayat.com
+                      </a>
+                      .
+                    </p>
+                  </div>
+                )}
+              </div>
+            </ScrollAnimationWrapper>
             <div className="flex items-center gap-2 mb-8">
               <button
                 onClick={() => scrollCategories("left")}
@@ -911,93 +998,6 @@ const WorkWithUs = ({
                 );
               })}
             </div>
-            <ScrollAnimationWrapper>
-              <div
-                className="max-w-5xl mx-auto mt-10 mb-6 rounded-2xl border border-primary/20 bg-popover p-6 md:p-8"
-                lang={isAr ? "ar" : "en"}
-                dir={isAr ? "rtl" : "ltr"}
-              >
-                {!isAr && (
-                  <p className="text-accent text-xs tracking-[0.2em] uppercase font-body mb-3">
-                    Notice to the Public
-                  </p>
-                )}
-                {isAr ? (
-                  <div className="font-body text-sm text-foreground leading-relaxed space-y-4">
-                    <p>
-                      يود مستشفى رويال حياة – دولة الكويت أن يعلن عن تعيين شركة{" "}
-                      <span className="font-semibold">LEADPEC FIRMA PVT. Ltd</span>{" "}
-                      في مدينة نيودلهي، الهند كوكيل التوظيف الرسمي والمعتمد لاستقطاب
-                      وتوظيف الكوادر التمريضية، والكوادر الطبية، والموظفين الإداريين
-                      للعمل لدى المستشفى.
-                    </p>
-                    <p>
-                      للاستفسارات المتعلقة بالتوظيف أو أي استفسارات أخرى، يرجى
-                      التواصل على الأرقام التالية:
-                    </p>
-                    <p className="flex flex-col gap-1 items-end" dir="ltr">
-                      <a
-                        href="tel:+96525360432"
-                        className="text-primary hover:text-accent transition-colors font-semibold"
-                      >
-                        +965 2536 0432
-                      </a>
-                      <a
-                        href="tel:+96525360433"
-                        className="text-primary hover:text-accent transition-colors font-semibold"
-                      >
-                        +965 2536 0433
-                      </a>
-                    </p>
-                    <p>
-                      ولمزيد من المعلومات، يرجى التواصل مع قسم الموارد البشرية عبر
-                      البريد الإلكتروني:{" "}
-                      <a
-                        href="mailto:hr@royalehayat.com"
-                        className="text-primary hover:text-accent transition-colors font-semibold"
-                        dir="ltr"
-                      >
-                        hr@royalehayat.com
-                      </a>
-                    </p>
-                  </div>
-                ) : (
-                  <div className="font-body text-sm text-foreground leading-relaxed space-y-4 justified-body-en">
-                    <p>
-                      Royale Hayat Hospital, Kuwait has officially appointed{" "}
-                      <span className="font-semibold">
-                        &quot;LEADPEC FIRMA PVT Ltd, Delhi, India&quot;
-                      </span>{" "}
-                      as the recruitment agency for recruiting Nurses, Medical staff
-                      or any Administrative Staff to our organization. For employment
-                      and any other inquiries please contact{" "}
-                      <a
-                        href="tel:+96525360432"
-                        className="text-primary hover:text-accent transition-colors font-semibold"
-                      >
-                        +965 2536 0432
-                      </a>{" "}
-                      or{" "}
-                      <a
-                        href="tel:+96525360433"
-                        className="text-primary hover:text-accent transition-colors font-semibold"
-                      >
-                        2536 0433
-                      </a>
-                      . For further information, please contact our Human Resources
-                      department at{" "}
-                      <a
-                        href="mailto:hr@royalehayat.com"
-                        className="text-primary hover:text-accent transition-colors font-semibold"
-                      >
-                        hr@royalehayat.com
-                      </a>
-                      .
-                    </p>
-                  </div>
-                )}
-              </div>
-            </ScrollAnimationWrapper>
             <div className="text-center mt-10">
               <p className="font-body text-sm text-muted-foreground !text-center">
                 {isAr

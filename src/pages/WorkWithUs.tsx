@@ -801,7 +801,7 @@ const WorkWithUs = ({
             <ScrollAnimationWrapper>
               <div className="text-center mb-8">
                 <p className="text-accent text-xs tracking-[0.3em] uppercase font-body mb-3 !text-center">
-                  {isAr ? "انضم إلى فريقنا" : "Join Our Network!"}
+                  {isAr ? "انضم إلى فريقنا" : "Join Our Network"}
                 </p>
                 <h2 className="text-2xl md:text-3xl font-serif text-foreground">
                   {isAr ? "الوظائف الشاغرة" : "Open Positions"}

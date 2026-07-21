@@ -807,7 +807,7 @@ const WorkWithUs = ({
                   {isAr ? "الوظائف الشاغرة" : "Open Positions"}
                 </h2>
                 <p
-                  className={`text-muted-foreground font-body text-sm max-w-xl mx-auto mt-3 ${isAr ? "" : "!text-center"}`}
+                  className="text-muted-foreground font-body text-sm max-w-xl mx-auto mt-3 !text-center"
                   lang={isAr ? "ar" : "en"}
                 >
                   {isAr

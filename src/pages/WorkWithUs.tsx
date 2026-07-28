@@ -211,6 +211,7 @@ const staticEmployees = [
     image:
       "/images/ranga-tara.png",
     date: "2025-04-01T00:00:00.000Z",
+    achievementType: "month" as const,
     achievements: [
       "Rangaa has earned this recognition through his exceptional helpfulness and a consistently positive attitude. A dependable team member with an exemplary attendance record, he ensures that our guests’ first impression of Royale Hayat is one of comfort and high-standard hospitality.",
       "Dependable and dedicated team member who works harmoniously with others. He is reliable, always willing to extend his duty when needed, and completes tasks efficiently without complaint. Attentive in the lobby and consistently respectful, he is a valued part of the team.",
@@ -231,6 +232,7 @@ const staticEmployees = [
     image:
       "/images/mohammad-niyaz.png",
     date: "2025-04-01T00:00:00.000Z",
+    achievementType: "month" as const,
     achievements: [
       "Mohammad distinguishes himself through efficiency and a commitment to service excellence. His professional handling of guest inquiries, combined with his reliable attendance and disciplined work ethic, has been essential to the success of our Guest Services team.",
       "Highly reliable and flexible team member who always brings positive energy and support to the workplace. He consistently completes tasks on time and never hesitates to step in when needed, even covering shifts at short notice while maintaining excellent performance.",
@@ -254,6 +256,7 @@ const mapStaticEmployeeToDisplay = (
   roleAr: employee.roleAr,
   image: getEmployeeImageSrc(employee.image),
   date: employee.date,
+  achievementType: employee.achievementType ?? "month",
   achievements: employee.achievements,
   achievementsAr: employee.achievementsAr,
 });
@@ -392,9 +395,42 @@ const WorkWithUs = ({
   }, [apiEmployeesLoaded, apiEmployees]);
 
   const currentEmployee = displayEmployees[empIndex] ?? displayEmployees[0];
+  const formatEmployeeAchievementPeriod = (
+    dateStr: string | undefined,
+    achievementType: "month" | "quarter",
+  ): string => {
+    if (!dateStr) return "";
+    const date = new Date(dateStr);
+    if (Number.isNaN(date.getTime())) return "";
+
+    if (achievementType === "quarter") {
+      const locale = isAr ? "ar-KW" : "en-US";
+      const endDate = new Date(date.getFullYear(), date.getMonth() + 2, 1);
+      const startMonth = date.toLocaleDateString(locale, { month: "long" });
+      const endMonth = endDate.toLocaleDateString(locale, { month: "long" });
+      const startYear = date.toLocaleDateString(locale, { year: "numeric" });
+      const endYear = endDate.toLocaleDateString(locale, { year: "numeric" });
+
+      return startYear === endYear
+        ? `${startMonth} - ${endMonth} ${startYear}`
+        : `${startMonth} ${startYear} - ${endMonth} ${endYear}`;
+    }
+
+    return formatEmployeeMonthYear(dateStr, isAr);
+  };
+
+  const currentAchievementType = currentEmployee?.achievementType ?? "month";
   const employeeMonthYear = currentEmployee
-    ? formatEmployeeMonthYear(currentEmployee.date, isAr)
+    ? formatEmployeeAchievementPeriod(
+      currentEmployee.date,
+      currentEmployee.achievementType ?? "month",
+    )
     : "";
+  const employeeHeading = isAr
+    ? currentAchievementType === "quarter"
+      ? "موظفو الربع"
+      : "موظفو الشهر"
+    : `Employees of the ${currentAchievementType === "quarter" ? "Quarter" : "Month"}`;
 
   useEffect(() => {
     if (empIndex >= displayEmployees.length) {
@@ -651,7 +687,7 @@ const WorkWithUs = ({
               </p>
               <div className="mt-4 space-y-2">
                 <h3 className={`text-xl md:text-4xl font-serif text-foreground ${isAr ? "!font-bold" : "font-bold"}`}>
-                  {isAr ? "موظفو الشهر" : "Employees of the Month"}{" "}
+                  {employeeHeading}{" "}
                 </h3>
               </div>
             </div>

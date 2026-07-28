@@ -12,6 +12,7 @@ export type EmployeeRecognition = {
   arabicTitle?: string;
   achievements: string;
   arabicAchievements?: string;
+  achievementType?: "month" | "quarter";
   image?: string;
   date?: string;
   visibilityStatus: "show" | "hide";
@@ -77,6 +78,7 @@ export type EmployeeOfMonthDisplay = {
   roleAr: string;
   image: string;
   date?: string;
+  achievementType: "month" | "quarter";
   achievements: string[];
   achievementsAr: string[];
 };
@@ -94,6 +96,7 @@ export const mapEmployeeRecognitionToDisplay = (
   roleAr: item.arabicTitle ?? item.title,
   image: getEmployeeImageSrc(item.image),
   date: item.date ?? item.createdAt,
+  achievementType: item.achievementType ?? "month",
   achievements: achievementsTextToLines(item.achievements),
   achievementsAr: achievementsTextToLines(
     item.arabicAchievements ?? item.achievements,

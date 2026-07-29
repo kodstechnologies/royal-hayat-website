@@ -139,12 +139,16 @@ const ContactUs = () => {
             </motion.div>
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
               className="rounded-2xl overflow-hidden border border-border h-[250px]">
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3477.159!2d48.0469!3d29.3375!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3fcf9c7600000001%3A0x1234567890abcdef!2sRoyale%20Hayat%20Hospital!5e0!3m2!1sen!2skw!4v1700000000000"
-                width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="Royale Hayat Hospital Location"
-              />
+            <iframe
+  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3478.5053769590936!2d48.02646000000001!3d29.3261814!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3fcf9c5b8cf4e0f3%3A0xe764142703f54c31!2sRoyale%20Hayat%20hospital!5e0!3m2!1sen!2sin!4v1785320769784!5m2!1sen!2sin"
+  width="100%"
+  height="100%"
+  style={{ border: 0 }}
+  allowFullScreen
+  loading="lazy"
+  referrerPolicy="strict-origin-when-cross-origin"
+  title="Royale Hayat Hospital Location"
+/>
             </motion.div>
           </div>
           <div>

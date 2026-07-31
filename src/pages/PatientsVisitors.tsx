@@ -499,10 +499,15 @@ const PatientsVisitors = () => {
                           <button
                             type="button"
                             onClick={() => void downloadBirthingPackagePdf(item.pdfUrl)}
-                            className="absolute bottom-3 end-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-primary text-primary-foreground px-3.5 py-2 text-xs font-body shadow-md hover:bg-primary/90 transition-colors"
+                            aria-label={lang === "ar" ? "تحميل" : "Download"}
+                            className="absolute z-10 left-[27%] -translate-x-1/2 top-[67%] sm:top-[66%] md:top-[67%] w-[24%] sm:w-[26%] md:w-[26%] h-[3.5%] sm:h-[6%] min-h-[1.4rem] sm:min-h-[2.25rem] inline-flex items-center justify-center gap-0.5 sm:gap-1.5 rounded-full bg-primary text-primary-foreground px-1.5 sm:px-3 text-[6px] sm:text-xs md:text-sm font-body tracking-wider sm:tracking-widest uppercase shadow-md"
                           >
-                            <Download className="w-3.5 h-3.5" aria-hidden />
-                            {lang === "ar" ? "تحميل" : "Download"}
+                            <Download className="w-1.5 h-1.5 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 shrink-0" aria-hidden />
+                            {lang === "ar" ? (
+                              <span className="!text-[5px] sm:!text-xs md:!text-sm !normal-case !leading-none">تحميل</span>
+                            ) : (
+                              "Download"
+                            )}
                           </button>
                         ) : null}
                       </div>
@@ -533,10 +538,15 @@ const PatientsVisitors = () => {
                               getBirthingPackageImages(lang, "desktop")[0].pdfUrl,
                             )
                           }
-                          className="absolute bottom-3 end-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-primary text-primary-foreground px-3.5 py-2 text-xs font-body shadow-md hover:bg-primary/90 transition-colors"
+                          aria-label={lang === "ar" ? "تحميل" : "Download"}
+                          className="absolute z-10 left-[27%] -translate-x-1/2 top-[67%] sm:top-[66%] md:top-[67%] w-[24%] sm:w-[26%] md:w-[26%] h-[3.5%] sm:h-[6%] min-h-[1.4rem] sm:min-h-[2.25rem] inline-flex items-center justify-center gap-0.5 sm:gap-1.5 rounded-full bg-primary text-primary-foreground px-1.5 sm:px-3 text-[6px] sm:text-xs md:text-sm font-body tracking-wider sm:tracking-widest uppercase shadow-md"
                         >
-                          <Download className="w-3.5 h-3.5" aria-hidden />
-                          {lang === "ar" ? "تحميل" : "Download"}
+                          <Download className="w-1.5 h-1.5 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 shrink-0" aria-hidden />
+                          {lang === "ar" ? (
+                            <span className="!text-[5px] sm:!text-xs md:!text-sm !normal-case !leading-none">تحميل</span>
+                          ) : (
+                            "Download"
+                          )}
                         </button>
                       ) : null}
                     </div>

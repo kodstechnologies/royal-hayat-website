@@ -17,6 +17,31 @@ import {
 } from "@/utils/patientsProseHyph"; 
 import LazyViewportImage from "@/components/LazyViewportImage";
 import { getBirthingPackageImages } from "@/data/birthingPackageImages";
+import { buildRuntimePdfStreamUrl } from "@/utils/buildRuntimePdfUrl";
+
+async function downloadBirthingPackagePdf(pdfPath: string) {
+  const filename =
+    decodeURIComponent(pdfPath.split("/").pop() || "birthing-package.pdf") ||
+    "birthing-package.pdf";
+  const streamUrl = buildRuntimePdfStreamUrl(pdfPath);
+
+  try {
+    const response = await fetch(streamUrl);
+    if (!response.ok) throw new Error(`Download failed (${response.status})`);
+    const blob = await response.blob();
+    const objectUrl = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = objectUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(objectUrl);
+  } catch {
+    // Fallback if stream fetch fails
+    window.open(streamUrl, "_blank", "noopener,noreferrer");
+  }
+}
 const PATIENT_PARTNERSHIP_VERIFIED_LOGO =
   "https://royal-hayat.s3.eu-central-1.amazonaws.com/patient-visitors/Untitled+-+July+02%2C+2026+at+12.22.43.png";
 const NURSING_AR_HERO_INTRO =
@@ -200,8 +225,6 @@ const PatientsVisitors = () => {
     }
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, [tab, location.hash]);
-  const roomsPdfEn = "https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/RHHBirthingPackagesEng6Jan2026.pdf";
-  const roomsPdfAr = "https://royal-hayat.s3.eu-central-1.amazonaws.com/doctors/RHHBirthingPackagesArb6Jan2026.pdf";
   const sectionClass = "scroll-mt-[calc(var(--header-height,76px)+2rem)]";
   const isAr = lang === "ar";
   const [isDesktopView, setIsDesktopView] = useState(
@@ -460,15 +483,29 @@ const PatientsVisitors = () => {
             {show("rooms-package") && <div id="section-rooms-package" className={tab === "rooms-package" ? "flex-1 flex flex-col" : sectionClass}>
               {tab === "rooms-package" ? (
                   <div className={`w-full ${isDesktopView ? "space-y-6 px-6 py-6 bg-background" : ""}`}>
-                    {birthingPackageImages.map((src, i) => (
-                      <LazyViewportImage
-                        key={`${isDesktopView ? "desktop" : "mobile"}-${i}-${src}`}
-                        src={src}
-                        alt={lang === "ar" ? `باقات الغرف ${i + 1}` : `Birthing Suites Package ${i + 1}`}
-                        className={isDesktopView ? "w-full block rounded-2xl shadow-sm" : "w-full block"}
-                        rounded={isDesktopView}
-                        priority={i === 0}
-                      />
+                    {birthingPackageImages.map((item, i) => (
+                      <div
+                        key={`${isDesktopView ? "desktop" : "mobile"}-${i}-${item.image}`}
+                        className={isDesktopView ? "relative" : "relative mb-4 last:mb-0"}
+                      >
+                        <LazyViewportImage
+                          src={item.image}
+                          alt={lang === "ar" ? `باقات الغرف ${i + 1}` : `Birthing Suites Package ${i + 1}`}
+                          className={isDesktopView ? "w-full block rounded-2xl shadow-sm" : "w-full block"}
+                          rounded={isDesktopView}
+                          priority={i === 0}
+                        />
+                        {item.pdfUrl ? (
+                          <button
+                            type="button"
+                            onClick={() => void downloadBirthingPackagePdf(item.pdfUrl)}
+                            className="absolute bottom-3 end-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-primary text-primary-foreground px-3.5 py-2 text-xs font-body shadow-md hover:bg-primary/90 transition-colors"
+                          >
+                            <Download className="w-3.5 h-3.5" aria-hidden />
+                            {lang === "ar" ? "تحميل" : "Download"}
+                          </button>
+                        ) : null}
+                      </div>
                     ))}
                   </div>
               ) : (
@@ -480,14 +517,28 @@ const PatientsVisitors = () => {
                       </div>
                       <h2 className={`text-2xl md:text-3xl font-serif text-foreground ${isAr ? "!font-bold" : "font-bold"}`}>{lang === "ar" ? "باقات أجنحة الولادة" : "Birthing Suites Packages"}</h2>
                     </div>}
-                    <div className="w-full rounded-2xl shadow-lg bg-white border border-border/30 overflow-hidden mb-6">
+                    <div className="w-full rounded-2xl shadow-lg bg-white border border-border/30 overflow-hidden mb-6 relative">
                       <img
-                        src={getBirthingPackageImages(lang, "desktop")[0]}
+                        src={getBirthingPackageImages(lang, "desktop")[0]?.image}
                         alt={lang === "ar" ? "باقات أجنحة الولادة" : "Birthing Suites Packages"}
                         className="w-full block"
                         loading="lazy"
                         decoding="async"
                       />
+                      {getBirthingPackageImages(lang, "desktop")[0]?.pdfUrl ? (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            void downloadBirthingPackagePdf(
+                              getBirthingPackageImages(lang, "desktop")[0].pdfUrl,
+                            )
+                          }
+                          className="absolute bottom-3 end-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-primary text-primary-foreground px-3.5 py-2 text-xs font-body shadow-md hover:bg-primary/90 transition-colors"
+                        >
+                          <Download className="w-3.5 h-3.5" aria-hidden />
+                          {lang === "ar" ? "تحميل" : "Download"}
+                        </button>
+                      ) : null}
                     </div>
                     <div className="flex justify-center">
                       <Link

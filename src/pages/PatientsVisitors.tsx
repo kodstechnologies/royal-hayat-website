@@ -14,7 +14,7 @@ import {
   INSURANCE_ASSISTANCE_EN,
   PATIENT_RIGHTS_EN,
   PATIENT_RESPONSIBILITIES_EN,
-} from "@/utils/patientsProseHyph"; 
+} from "@/utils/patientsProseHyph";
 import LazyViewportImage from "@/components/LazyViewportImage";
 import { getBirthingPackageImages } from "@/data/birthingPackageImages";
 import { buildRuntimePdfStreamUrl } from "@/utils/buildRuntimePdfUrl";
@@ -134,13 +134,13 @@ const DURING_STAY_EN_INTRO =
 const DURING_STAY_AR_AMENITIES = [
   { icon: Wifi, title: "خدمة الإنترنت", desc: "ابقَ على اتصال من خلال خدمة الإنترنت عالية السرعة المجانية المتوفرة في جميع أنحاء المستشفى." },
   { icon: Phone, title: "الهواتف", desc: "استمتع بالمكالمات المحلية والداخلية المجانية. يمكنك استخدام هاتف الغرفة للتواصل مع خدمات الضيافة، أو قسم التدبير المنزلي، أو لطلب خدمة الطعام الخاصة." },
-  { icon: Tv, title: "الترفيه", desc: "استرخِ أمام شاشة التلفاز العريضة، والتي توفر إمكانية الوصول إلى شبكة أوربت-شوتايم، بالإضافة إلى خدمات خاصة بالمستشفى مثل كاميرا القبلة والعناق لمتابعة طفلك حديث الولادة في أي وقت." },
+  { icon: Tv, title: "الترفيه", desc:"استرخِ أمام شاشة التلفاز العريضة، والتي توفر إمكانية الوصول إلى شبكة OSN، بالإضافة إلى خدمات خاصة بالمستشفى مثل كاميرا القبلة والعناق لمتابعة طفلك حديث الولادة في أي وقت." },
   { icon: Newspaper, title: "مواد القراءة", desc: "نوفر مجموعة مختارة من أبرز الصحف والمجلات باللغة الإنجليزية والعربية لتستمتع بها خلال إقامتك." },
 ];
 const DURING_STAY_EN_AMENITIES = [
   { icon: Wifi, title: "Wi-Fi Access", desc: "Stay connected with high-speed, complimentary Wi-Fi throughout the hospital." },
   { icon: Phone, title: "Telephones", desc: "Enjoy free local and internal calls. Use your room telephone to contact Guest Services, Housekeeping, or place a private dining order." },
-  { icon: Tv, title: "Entertainment", desc: "Relax with your wide flat-screen TV, offering access to the Orbit-Showtime Network, as well as hospital-specific services like the Hugs & Kisses Baby Camera, allowing you to check in on your newborn anytime." },
+  { icon: Tv, title: "Entertainment", desc: "Relax with your wide flat-screen TV, offering access to the OSN, as well as hospital-specific services like the Infant Security System, and Baby Camera, allowing you to check in on your newborn anytime." },
   { icon: Newspaper, title: "Reading Material", desc: "We provide a selection of leading newspapers and magazines in both English and Arabic for your enjoyment." },
 ];
 const DURING_STAY_AR_ROOM_SERVICES = [
@@ -326,7 +326,7 @@ const PatientsVisitors = () => {
             {show("nursing") && <div id="section-nursing" className={sectionClass}>
               <ScrollAnimationWrapper>
                 {showAll && <div className="flex items-center gap-3 mb-6">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                     <Stethoscope className="w-6 h-6 text-primary" />
                   </div>
                   <h2 className={`text-2xl md:text-3xl font-serif text-foreground ${isAr ? "!font-bold" : "font-bold"}`}>{lang === "ar" ? "التمريض" : "Nursing"}</h2>
@@ -376,7 +376,7 @@ const PatientsVisitors = () => {
             {show("insurance") && <div id="section-insurance" className={sectionClass}>
               <ScrollAnimationWrapper>
                 {showAll && <div className="flex items-center gap-3 mb-6">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                     <Shield className="w-6 h-6 text-primary" />
                   </div>
                   <h2 className="text-2xl md:text-3xl font-serif text-foreground">{lang === "ar" ? "التأمين الصحي" : "Health Insurance"}</h2>
@@ -482,42 +482,47 @@ const PatientsVisitors = () => {
             )}
             {show("rooms-package") && <div id="section-rooms-package" className={tab === "rooms-package" ? "flex-1 flex flex-col" : sectionClass}>
               {tab === "rooms-package" ? (
-                  <div className={`w-full ${isDesktopView ? "space-y-6 px-6 py-6 bg-background" : ""}`}>
-                    {birthingPackageImages.map((item, i) => (
-                      <div
-                        key={`${isDesktopView ? "desktop" : "mobile"}-${i}-${item.image}`}
-                        className={isDesktopView ? "relative" : "relative mb-4 last:mb-0"}
-                      >
-                        <LazyViewportImage
-                          src={item.image}
-                          alt={lang === "ar" ? `باقات الغرف ${i + 1}` : `Birthing Suites Package ${i + 1}`}
-                          className={isDesktopView ? "w-full block rounded-2xl shadow-sm" : "w-full block"}
-                          rounded={isDesktopView}
-                          priority={i === 0}
-                        />
-                        {item.pdfUrl ? (
-                          <button
-                            type="button"
-                            onClick={() => void downloadBirthingPackagePdf(item.pdfUrl)}
-                            aria-label={lang === "ar" ? "تحميل" : "Download"}
-                            className="absolute z-10 left-[27%] -translate-x-1/2 top-[67%] sm:top-[66%] md:top-[67%] w-[24%] sm:w-[26%] md:w-[26%] h-[3.5%] sm:h-[6%] min-h-[1.4rem] sm:min-h-[2.25rem] inline-flex items-center justify-center gap-0.5 sm:gap-1.5 rounded-full bg-primary text-primary-foreground px-1.5 sm:px-3 text-[6px] sm:text-xs md:text-sm font-body tracking-wider sm:tracking-widest uppercase shadow-md"
-                          >
-                            <Download className="w-1.5 h-1.5 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 shrink-0" aria-hidden />
-                            {lang === "ar" ? (
-                              <span className="!text-[5px] sm:!text-xs md:!text-sm !normal-case !leading-none">تحميل</span>
-                            ) : (
-                              "Download"
-                            )}
-                          </button>
-                        ) : null}
-                      </div>
-                    ))}
-                  </div>
+                <div className={`w-full ${isDesktopView ? "space-y-6 px-6 py-6 bg-background" : ""}`}>
+                  {birthingPackageImages.map((item, i) => (
+                    <div
+                      key={`${isDesktopView ? "desktop" : "mobile"}-${i}-${item.image}`}
+                      className={isDesktopView ? "relative" : "relative mb-4 last:mb-0"}
+                    >
+                      <LazyViewportImage
+                        src={item.image}
+                        alt={lang === "ar" ? `باقات الغرف ${i + 1}` : `Birthing Suites Package ${i + 1}`}
+                        className={isDesktopView ? "w-full block rounded-2xl shadow-sm" : "w-full block"}
+                        rounded={isDesktopView}
+                        priority={i === 0}
+                      />
+                      {item.pdfUrl ? (
+                        <button
+                          type="button"
+                          onClick={() => void downloadBirthingPackagePdf(item.pdfUrl)}
+                          aria-label={lang === "ar" ? "تحميل" : "Download"}
+                          className="absolute z-10 left-[27%] -translate-x-1/2 top-[70%] sm:top-[69%] md:top-[70%] w-[16%] sm:w-[18%] md:w-[18%] h-[2.8%] sm:h-[4.8%] min-h-[1.1rem] sm:min-h-[1.8rem] inline-flex items-center justify-center gap-0.5 rounded-full bg-primary text-primary-foreground px-1 sm:px-2 text-[5px] sm:text-[10px] md:text-xs font-body tracking-wide uppercase shadow-md"
+                        >
+                          <Download
+                            className="w-1 h-1 sm:w-3 sm:h-3 md:w-3.5 md:h-3.5 shrink-0"
+                            aria-hidden
+                          />
+                          {lang === "ar" ? (
+                            <span className="font-arabic !text-[7px] sm:!text-base md:!text-lg !font-normal !normal-case !leading-none">
+                              تحميل
+                            </span>
+                          ) : (
+                            "Download"
+                          )}
+                        </button>
+                      ) : null}
+                    </div>
+                  ))}
+                </div>
               ) : (
                 <ScrollAnimationWrapper>
                   <div>
                     {showAll && <div className="flex items-center gap-3 mb-6">
-                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                         <Bed className="w-6 h-6 text-primary" />
                       </div>
                       <h2 className={`text-2xl md:text-3xl font-serif text-foreground ${isAr ? "!font-bold" : "font-bold"}`}>{lang === "ar" ? "باقات أجنحة الولادة" : "Birthing Suites Packages"}</h2>
@@ -543,7 +548,7 @@ const PatientsVisitors = () => {
                         >
                           <Download className="w-1.5 h-1.5 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 shrink-0" aria-hidden />
                           {lang === "ar" ? (
-                            <span className="!text-[5px] sm:!text-xs md:!text-sm !normal-case !leading-none">تحميل</span>
+                            <span className="font-arabic !text-[5px] sm:!text-xs md:!text-sm !normal-case !leading-none">تحميل</span>
                           ) : (
                             "Download"
                           )}
@@ -566,7 +571,7 @@ const PatientsVisitors = () => {
             {show("international") && <div id="section-international" className={sectionClass}>
               <ScrollAnimationWrapper>
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                     <Globe className="w-6 h-6 text-primary" />
                   </div>
                   <h2 className={`text-2xl md:text-3xl font-serif text-foreground ${isAr ? "!font-bold" : "font-bold"}`}>{lang === "ar" ? "مركز المرضى الدوليين" : "International Patient Center"}</h2>
@@ -598,7 +603,7 @@ const PatientsVisitors = () => {
             {show("admission") && <div id="section-admission" className={sectionClass}>
               <ScrollAnimationWrapper>
                 {showAll && <div className="flex items-center gap-3 mb-6">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                     <ClipboardList className="w-6 h-6 text-primary" />
                   </div>
                   <h2 className={`text-2xl md:text-3xl font-serif text-foreground ${isAr ? "!font-bold" : "font-bold"}`}>{lang === "ar" ? "معلومات الدخول إلى المستشفى" : "Admission Information"}</h2>
@@ -701,64 +706,64 @@ const PatientsVisitors = () => {
                   lang={isAr ? "ar" : "en"}
                   className="during-stay-prose"
                 >
-                <div className={`flex items-center gap-3 mb-6 ${isAr ? "flex-row-reverse" : ""}`}>
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                    <Bed className="w-6 h-6 text-primary" />
-                  </div>
-                  <h2 className={`text-2xl md:text-3xl font-serif text-foreground text-start flex-1 ${isAr ? "!font-bold" : "font-bold"}`}>{lang === "ar" ? "أثناء إقامتك في مستشفى رويال حياة" : "During Your Stay at Royale Hayat Hospital"}</h2>
-                </div>
-                <p className={`${mutedProse} mb-8`}>
-                  {lang === "ar" ? DURING_STAY_AR_INTRO : DURING_STAY_EN_INTRO}
-                </p>
-                <h3 className={`font-serif text-xl text-foreground mb-5 text-start ${isAr ? "!font-bold" : "font-bold"}`}>{lang === "ar" ? "المرافق المجانية" : "Complimentary Amenities"}</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
-                  {(lang === "ar" ? DURING_STAY_AR_AMENITIES : DURING_STAY_EN_AMENITIES).map((item, i) => (
-                    <motion.div key={i} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}
-                      className="bg-popover border border-border/50 rounded-2xl p-5">
-                      <div className={`flex items-center gap-3 mb-2 ${isAr ? "flex-row-reverse" : ""}`}>
-                        <div className="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
-                          <item.icon className="w-4 h-4 text-accent" />
-                        </div>
-                        <h4 className={`font-serif text-base text-foreground text-start flex-1 ${isAr ? "!font-bold" : "font-bold"}`}>{item.title}</h4>
-                      </div>
-                      <p className={mutedProse}>{item.desc}</p>
-                    </motion.div>
-                  ))}
-                </div>
-                <h3 className={`font-serif text-xl text-foreground mb-5 text-start ${isAr ? "!font-bold" : "font-bold"}`}>{lang === "ar" ? "خدمات الغرف" : "Room Services"}</h3>
-                <div className="space-y-4 mb-10">
-                  {(lang === "ar" ? DURING_STAY_AR_ROOM_SERVICES : DURING_STAY_EN_ROOM_SERVICES).map((item, i) => (
-                    <div
-                      key={i}
-                      className={`patients-justified-card bg-popover border border-border/50 rounded-2xl p-5 flex items-start gap-4 ${isAr ? "flex-row-reverse" : ""}`}
-                      lang={isAr ? "ar" : "en"}
-                    >
-                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <item.icon className="w-5 h-5 text-primary" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h4 className={`font-serif text-base text-foreground mb-1 text-start ${isAr ? "!font-bold" : "font-bold"}`}>{item.title}</h4>
-                        <p lang={isAr ? "ar" : "en"} className={isAr ? mutedProse : cardIntroProse}>
-                          {item.desc}
-                        </p>
-                      </div>
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                      <Bed className="w-6 h-6 text-primary" />
                     </div>
-                  ))}
-                </div>
-                <div className="bg-primary/5 rounded-2xl p-6">
-                  <h3 className={`font-serif text-lg text-foreground mb-3 text-start ${isAr ? "!font-bold" : "font-bold"}`}>{lang === "ar" ? "سياسة الزوار" : "Visitors Policy"}</h3>
-                  <p className={`${mutedProse} mb-4`}>
-                    {lang === "ar" ? DURING_STAY_AR_VISITORS_INTRO : DURING_STAY_EN_VISITORS_INTRO}
+                    <h2 className={`text-2xl md:text-3xl font-serif text-foreground text-start flex-1 ${isAr ? "!font-bold" : "font-bold"}`}>{lang === "ar" ? "أثناء إقامتك في مستشفى رويال حياة" : "During Your Stay at Royale Hayat Hospital"}</h2>
+                  </div>
+                  <p className={`${mutedProse} mb-8`}>
+                    {lang === "ar" ? DURING_STAY_AR_INTRO : DURING_STAY_EN_INTRO}
                   </p>
-                  <div className="space-y-2">
-                    {(lang === "ar" ? DURING_STAY_AR_VISITORS_RULES : DURING_STAY_EN_VISITORS_RULES).map((item, i) => (
-                      <div key={i} className={`flex items-start gap-3 ${isAr ? "flex-row-reverse" : ""}`}>
-                        <AlertTriangle className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
-                        <span className={`${bodyProse} min-w-0 flex-1`}>{item}</span>
+                  <h3 className={`font-serif text-xl text-foreground mb-5 text-start ${isAr ? "!font-bold" : "font-bold"}`}>{lang === "ar" ? "المرافق المجانية" : "Complimentary Amenities"}</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
+                    {(lang === "ar" ? DURING_STAY_AR_AMENITIES : DURING_STAY_EN_AMENITIES).map((item, i) => (
+                      <motion.div key={i} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}
+                        className="bg-popover border border-border/50 rounded-2xl p-5">
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
+                            <item.icon className="w-4 h-4 text-accent" />
+                          </div>
+                          <h4 className={`font-serif text-base text-foreground flex-1 ${isAr ? "!font-bold" : "font-bold"}`}>{item.title}</h4>
+                        </div>
+                        <p className={mutedProse}>{item.desc}</p>
+                      </motion.div>
+                    ))}
+                  </div>
+                  <h3 className={`font-serif text-xl text-foreground mb-5 text-start ${isAr ? "!font-bold" : "font-bold"}`}>{lang === "ar" ? "خدمات الغرف" : "Room Services"}</h3>
+                  <div className="space-y-4 mb-10">
+                    {(lang === "ar" ? DURING_STAY_AR_ROOM_SERVICES : DURING_STAY_EN_ROOM_SERVICES).map((item, i) => (
+                      <div
+                        key={i}
+                        className="patients-justified-card bg-popover border border-border/50 rounded-2xl p-5 flex items-start gap-4"
+                        lang={isAr ? "ar" : "en"}
+                      >
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                          <item.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <h4 className={`font-serif text-base text-foreground mb-1 text-start ${isAr ? "!font-bold" : "font-bold"}`}>{item.title}</h4>
+                          <p lang={isAr ? "ar" : "en"} className={isAr ? mutedProse : cardIntroProse}>
+                            {item.desc}
+                          </p>
+                        </div>
                       </div>
                     ))}
                   </div>
-                </div>
+                  <div className="bg-primary/5 rounded-2xl p-6">
+                    <h3 className={`font-serif text-lg text-foreground mb-3 text-start ${isAr ? "!font-bold" : "font-bold"}`}>{lang === "ar" ? "سياسة الزوار" : "Visitors Policy"}</h3>
+                    <p className={`${mutedProse} mb-4`}>
+                      {lang === "ar" ? DURING_STAY_AR_VISITORS_INTRO : DURING_STAY_EN_VISITORS_INTRO}
+                    </p>
+                    <div className="space-y-2">
+                      {(lang === "ar" ? DURING_STAY_AR_VISITORS_RULES : DURING_STAY_EN_VISITORS_RULES).map((item, i) => (
+                        <div key={i} className="flex items-start gap-3">
+                          <AlertTriangle className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
+                          <span className={`${bodyProse} min-w-0 flex-1`}>{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </ScrollAnimationWrapper>
             </div>}
@@ -769,59 +774,59 @@ const PatientsVisitors = () => {
                   lang={isAr ? "ar" : "en"}
                   className="bill-of-rights-prose"
                 >
-                <div className={`flex items-center gap-3 mb-6 ${isAr ? "flex-row-reverse" : ""}`}>
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                    <Scale className="w-6 h-6 text-primary" />
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                      <Scale className="w-6 h-6 text-primary" />
+                    </div>
+                    <h2 className={`text-2xl md:text-3xl font-serif text-foreground text-start flex-1 ${isAr ? "!font-bold" : "font-bold"}`}>{lang === "ar" ? "حقوق ومسؤوليات المريض" : "Patient Bill of Rights and Responsibilities"}</h2>
                   </div>
-                  <h2 className={`text-2xl md:text-3xl font-serif text-foreground text-start flex-1 ${isAr ? "!font-bold" : "font-bold"}`}>{lang === "ar" ? "حقوق ومسؤوليات المريض" : "Patient Bill of Rights and Responsibilities"}</h2>
-                </div>
-                {lang === "ar" && (
-                  <p className={billRightsIntro}>
-                    {BILL_OF_RIGHTS_AR_INTRO}
-                  </p>
-                )}
-                <div
-                  className={`bg-popover border border-border/50 rounded-2xl p-6 mb-6 ${!isAr ? "patients-justified-card" : ""}`}
-                  lang={isAr ? "ar" : "en"}
-                >
-                  <h3 className={`font-serif text-lg text-foreground mb-2 text-start ${isAr ? "!font-bold" : "font-bold"}`}>{lang === "ar" ? "أولاً: حقوق المريض" : "You have the right to:"}</h3>
                   {lang === "ar" && (
-                    <p className={`${billRightsProse} mb-4 text-start`}>يحق لك:</p>
-                  )}
-                  {renderBillRightsList(lang === "ar" ? BILL_OF_RIGHTS_AR_RIGHTS : PATIENT_RIGHTS_EN, !isAr)}
-                </div>
-                <div
-                  className={`bg-popover border border-border/50 rounded-2xl p-6 mb-6 ${!isAr ? "patients-justified-card" : ""}`}
-                  lang={isAr ? "ar" : "en"}
-                >
-                  <h3 className={`font-serif text-lg text-foreground mb-2 text-start ${isAr ? "!font-bold" : "font-bold"}`}>{lang === "ar" ? "ثانياً: مسؤوليات المريض" : "As a patient, it is your responsibility to:"}</h3>
-                  {lang === "ar" && (
-                    <p className={`${billRightsProse} mb-4 text-start`}>بصفتك مريضًا، تقع عليك المسؤوليات التالية:</p>
-                  )}
-                  {renderBillRightsList(lang === "ar" ? BILL_OF_RIGHTS_AR_RESPONSIBILITIES : PATIENT_RESPONSIBILITIES_EN, !isAr)}
-                  <div className="mt-6 flex justify-end md:mt-4" dir="ltr">
-                    <img
-                      src={PATIENT_PARTNERSHIP_VERIFIED_LOGO}
-                      alt={lang === "ar" ? "شراكة معتمدة مع المريض" : "Patient Partnership Verified"}
-                      className="h-16 w-auto max-w-[45%] object-contain sm:h-20 sm:max-w-none md:h-24"
-                    />
-                  </div>
-                </div>
-                <div className="bg-accent/10 rounded-2xl p-6">
-                  <div className={`flex items-start gap-3 ${isAr ? "flex-row-reverse" : ""}`}>
-                    <AlertTriangle className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
-                    <p className={billRightsProse}>
-                      <strong>{lang === "ar" ? "ملاحظة:" : "Note:"}</strong> {lang === "ar" ? BILL_OF_RIGHTS_AR_NOTE : "In case of a life-threatening situation, the Consultant will have the full right to decide and proceed with tests, procedures, and/or medications without seeking prior consent of the relatives or the guardian as part of the responsibility bestowed on a qualified medical professional."}
+                    <p className={billRightsIntro}>
+                      {BILL_OF_RIGHTS_AR_INTRO}
                     </p>
+                  )}
+                  <div
+                    className={`bg-popover border border-border/50 rounded-2xl p-6 mb-6 ${!isAr ? "patients-justified-card" : ""}`}
+                    lang={isAr ? "ar" : "en"}
+                  >
+                    <h3 className={`font-serif text-lg text-foreground mb-2 text-start ${isAr ? "!font-bold" : "font-bold"}`}>{lang === "ar" ? "أولاً: حقوق المريض" : "You have the right to:"}</h3>
+                    {lang === "ar" && (
+                      <p className={`${billRightsProse} mb-4 text-start`}>يحق لك:</p>
+                    )}
+                    {renderBillRightsList(lang === "ar" ? BILL_OF_RIGHTS_AR_RIGHTS : PATIENT_RIGHTS_EN, !isAr)}
                   </div>
-                </div>
+                  <div
+                    className={`bg-popover border border-border/50 rounded-2xl p-6 mb-6 ${!isAr ? "patients-justified-card" : ""}`}
+                    lang={isAr ? "ar" : "en"}
+                  >
+                    <h3 className={`font-serif text-lg text-foreground mb-2 text-start ${isAr ? "!font-bold" : "font-bold"}`}>{lang === "ar" ? "ثانياً: مسؤوليات المريض" : "As a patient, it is your responsibility to:"}</h3>
+                    {lang === "ar" && (
+                      <p className={`${billRightsProse} mb-4 text-start`}>بصفتك مريضًا، تقع عليك المسؤوليات التالية:</p>
+                    )}
+                    {renderBillRightsList(lang === "ar" ? BILL_OF_RIGHTS_AR_RESPONSIBILITIES : PATIENT_RESPONSIBILITIES_EN, !isAr)}
+                    <div className="mt-6 flex justify-end md:mt-4" dir="ltr">
+                      <img
+                        src={PATIENT_PARTNERSHIP_VERIFIED_LOGO}
+                        alt={lang === "ar" ? "شراكة معتمدة مع المريض" : "Patient Partnership Verified"}
+                        className="h-16 w-auto max-w-[45%] object-contain sm:h-20 sm:max-w-none md:h-24"
+                      />
+                    </div>
+                  </div>
+                  <div className="bg-accent/10 rounded-2xl p-6">
+                    <div className="flex items-start gap-3">
+                      <AlertTriangle className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
+                      <p className={billRightsProse}>
+                        <strong>{lang === "ar" ? "ملاحظة:" : "Note:"}</strong> {lang === "ar" ? BILL_OF_RIGHTS_AR_NOTE : "In case of a life-threatening situation, the Consultant will have the full right to decide and proceed with tests, procedures, and/or medications without seeking prior consent of the relatives or the guardian as part of the responsibility bestowed on a qualified medical professional."}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </ScrollAnimationWrapper>
             </div>}
             {show("trackerwave") && <div id="section-trackerwave" className={sectionClass}>
               <ScrollAnimationWrapper>
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                     <Baby className="w-6 h-6 text-primary" />
                   </div>
                   <h2 className="text-2xl md:text-3xl font-serif text-foreground">{lang === "ar" ? "نظام الحماية المتقدم لحديثي الولادة" : "Infant Security System"}</h2>
@@ -903,7 +908,7 @@ const PatientsVisitors = () => {
                         "Automatic alerts in case of any system mismatch",
                       ]
                     ).map((item, i) => (
-                      <div key={i} className={`flex items-start gap-3 ${isAr ? "flex-row-reverse" : ""}`}>
+                      <div key={i} className="flex items-start gap-3">
                         <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
                         <span className={`${mutedProse} text-xs min-w-0 flex-1`}>{item}</span>
                       </div>

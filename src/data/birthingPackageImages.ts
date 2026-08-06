@@ -7,19 +7,19 @@ export type BirthingPackageItem = {
 export const BIRTHING_PACKAGES_DESKTOP_EN: BirthingPackageItem[] = [
   {
     image:
-      "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a6c27a3c53f5bb0fba98edb/1785473012566-BIRTHING_PACKAGES_WEBSITE_3.jpg",
+      "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a6c27a3c53f5bb0fba98edb/1785991287318-BIRTHING_PACKAGES_WEBSITE_3.jpg",
     pdfUrl:
       "/Runtime/uploads/Birthing-Packages-for-Royale-Orchid-and-Orchid-Patients.pdf",
   },
   {
     image:
-      "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a6c27a3c53f5bb0fba98edb/1785473012201-BIRTHING_PACKAGES_WEBSITE_1.jpg",
+      "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a6c27a3c53f5bb0fba98edb/1785991285365-BIRTHING_PACKAGES_WEBSITE_1.jpg",
     pdfUrl:
       "/Runtime/uploads/Birthing-Packages-for-Visiting-Inhouse-Physicians-for-insurance-patients.pdf",
   },
   {
     image:
-      "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a6c27a3c53f5bb0fba98edb/1785473012396-BIRTHING_PACKAGES_WEBSITE_2.jpg",
+      "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a6c27a3c53f5bb0fba98edb/1785991286842-BIRTHING_PACKAGES_WEBSITE_2.jpg",
     pdfUrl:
       "/Runtime/uploads/Birthing-Packages-for-Visiting-Inhouse-Physicians-for-noninsurance-patients.pdf",
   },
@@ -28,40 +28,40 @@ export const BIRTHING_PACKAGES_DESKTOP_EN: BirthingPackageItem[] = [
 export const BIRTHING_PACKAGES_DESKTOP_AR: BirthingPackageItem[] = [
   {
     image:
-      "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a6c299c23c5a768a6380087/1785473479980-BIRTHING_PACKAGES_WEBSITE_6.jpg",
+      "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a6c299c23c5a768a6380087/1785990958895-BIRTHING_PACKAGES_WEBSITE_6.jpg",
     pdfUrl:
-      "/Runtime/uploads/Birthing-Packages-for-Royale-Orchid-and-Orchid-Patients.pdf",
+      "/Runtime/uploads/Birthing-Packages-for-Royale-Orchid-and-Orchid-Patients-AR.pdf",
   },
   {
     image:
-      "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a6c299c23c5a768a6380087/1785473477564-BIRTHING_PACKAGES_WEBSITE_4.jpg",
+      "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a6c299c23c5a768a6380087/1785990956996-BIRTHING_PACKAGES_WEBSITE_4.jpg",
     pdfUrl:
-      "/Runtime/uploads/Birthing-Packages-for-Visiting-Inhouse-Physicians-for-insurance-patients.pdf",
+      "/Runtime/uploads/Birthing-Packages-for-Royale-insured-AR.pdf",
   },
   {
     image:
-      "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a6c299c23c5a768a6380087/1785473479306-BIRTHING_PACKAGES_WEBSITE_5.jpg",
+      "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a6c299c23c5a768a6380087/1785990958460-BIRTHING_PACKAGES_WEBSITE_5.jpg",
     pdfUrl:
-      "/Runtime/uploads/Birthing-Packages-for-Visiting-Inhouse-Physicians-for-noninsurance-patients.pdf",
+      "/Runtime/uploads/Birthing-Packages-for-Royale-uninsured-AR.pdf",
   },
 ];
 
 export const BIRTHING_PACKAGES_MOBILE_EN: BirthingPackageItem[] = [
   {
     image:
-      "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a6c27a3c53f5bb0fba98edb/1785473012566-BIRTHING_PACKAGES_WEBSITE_3.jpg",
+      "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a6c27a3c53f5bb0fba98edb/1785991287318-BIRTHING_PACKAGES_WEBSITE_3.jpg",
     pdfUrl:
       "/Runtime/uploads/Birthing-Packages-for-Royale-Orchid-and-Orchid-Patients.pdf",
   },
   {
     image:
-      "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a6c27a3c53f5bb0fba98edb/1785473012201-BIRTHING_PACKAGES_WEBSITE_1.jpg",
+      "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a6c27a3c53f5bb0fba98edb/1785991285365-BIRTHING_PACKAGES_WEBSITE_1.jpg",
     pdfUrl:
       "/Runtime/uploads/Birthing-Packages-for-Visiting-Inhouse-Physicians-for-insurance-patients.pdf",
   },
   {
     image:
-      "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a6c27a3c53f5bb0fba98edb/1785473012396-BIRTHING_PACKAGES_WEBSITE_2.jpg",
+      "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a6c27a3c53f5bb0fba98edb/1785991286842-BIRTHING_PACKAGES_WEBSITE_2.jpg",
     pdfUrl:
       "/Runtime/uploads/Birthing-Packages-for-Visiting-Inhouse-Physicians-for-noninsurance-patients.pdf",
   },
@@ -70,21 +70,21 @@ export const BIRTHING_PACKAGES_MOBILE_EN: BirthingPackageItem[] = [
 export const BIRTHING_PACKAGES_MOBILE_AR: BirthingPackageItem[] = [
   {
     image:
-      "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a6c299c23c5a768a6380087/1785473479980-BIRTHING_PACKAGES_WEBSITE_6.jpg",
+      "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a6c299c23c5a768a6380087/1785990958895-BIRTHING_PACKAGES_WEBSITE_6.jpg",
     pdfUrl:
-      "/Runtime/uploads/Birthing-Packages-for-Royale-Orchid-and-Orchid-Patients.pdf",
+      "/Runtime/uploads/Birthing-Packages-for-Royale-Orchid-and-Orchid-Patients-AR.pdf",
   },
   {
     image:
-      "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a6c299c23c5a768a6380087/1785473477564-BIRTHING_PACKAGES_WEBSITE_4.jpg",
+      "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a6c299c23c5a768a6380087/1785990956996-BIRTHING_PACKAGES_WEBSITE_4.jpg",
     pdfUrl:
-      "/Runtime/uploads/Birthing-Packages-for-Visiting-Inhouse-Physicians-for-insurance-patients.pdf",
+      "/Runtime/uploads/Birthing-Packages-for-Royale-insured-AR.pdf",
   },
   {
     image:
-      "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a6c299c23c5a768a6380087/1785473479306-BIRTHING_PACKAGES_WEBSITE_5.jpg",
+      "https://royal-hayat.s3.eu-central-1.amazonaws.com/file-manager/6a6c299c23c5a768a6380087/1785990958460-BIRTHING_PACKAGES_WEBSITE_5.jpg",
     pdfUrl:
-      "/Runtime/uploads/Birthing-Packages-for-Visiting-Inhouse-Physicians-for-noninsurance-patients.pdf",
+      "/Runtime/uploads/Birthing-Packages-for-Royale-uninsured-AR.pdf",
   },
 ];
 

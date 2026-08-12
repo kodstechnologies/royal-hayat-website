@@ -175,7 +175,7 @@ const BILL_OF_RIGHTS_AR_RIGHTS = [
   "تلقي رعاية صحية رحيمة ومحترمة في جميع الأوقات، بغض النظر عن العمر، أو الجنس، أو العرق، أو الثقافة، أو الجنسية، أو اللغة، أو التوجه، أو الوضع الاجتماعي والاقتصادي، أو القدرة الجسدية أو الذهنية، أو الدين، أو التشخيص.",
   "الحصول على إقامة مريحة في بيئة نظيفة وآمنة، خالية من أي إساءة لفظية أو جسدية، مع الحفاظ على الخصوصية الشخصية.",
   "معرفة آلية تقديم الشكاوى بشكل مناسب، سواء شفهيًا أو كتابيًا، إلى المدير المناوب (هاتف: 66321214) ",
-  "الحفاظ على سرية وخصوصية المعلومات المتعلقة بحالتك الصحية.",
+  "يحق للمريض أو من يمثله قانونًا الحصول على تقرير طبي ، ونسخ من التقارير الطبية ونتائج الفحوصات والتحاليل والعلاجات، بالإضافة إلى الفواتير والرسوم الطبية الخاصة به، وذلك",
   "الحصول على أي معلومات أو مستندات طبية مثل التقرير الطبي، أو إجازة مرضية، أو ملخص الخروج.",
   "ضمان استمرارية الرعاية الصحية حتى الخروج والمتابعة.",
   "الحصول على رأي طبي ثانٍ من طبيب مرخص، سواء داخل مستشفى رويال حياة أو في أي مؤسسة صحية أخرى، على أن يتحمل المريض التكاليف الإضافية إن وجدت.",
@@ -207,7 +207,7 @@ const BILL_OF_RIGHTS_AR_RESPONSIBILITIES = [
   "المشاركة في الحفاظ على سلامة المريض ومنع أي ضرر أو إصابة كما أوضح مقدمو الخدمة",
 ];
 const BILL_OF_RIGHTS_AR_NOTE =
-  "الحالات الطبية الطارئة التي تهدد الحياة، يحق للطبيب الاستشاري اتخاذ القرار وإجراء الفحوصات أو الإجراءات أو إعطاء العلاج دون الحاجة إلى موافقة مسبقة من المريض أو ذويه، وذلك ضمن المسؤولية المهنية للطبيب المختص.";
+  "ملحوظة: ما لم يرد بشأنه نص في هذه الوثيقة، تُطبق أحكام القانون رقم (70) لسنة 2020 بشأن مزاولة مهنة الطب والمهن المساعدة لها وحقوق المرضى والمنشآت الصحية، واللوائح والقرارات ذات الصلة.";
 const PatientsVisitors = () => {
   const { lang, t } = useLanguage();
   const [searchParams] = useSearchParams();
@@ -816,7 +816,7 @@ const PatientsVisitors = () => {
                     <div className="flex items-start gap-3">
                       <AlertTriangle className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
                       <p className={billRightsProse}>
-                        <strong>{lang === "ar" ? "ملاحظة:" : "Note:"}</strong> {lang === "ar" ? BILL_OF_RIGHTS_AR_NOTE : "In case of a life-threatening situation, the Consultant will have the full right to decide and proceed with tests, procedures, and/or medications without seeking prior consent of the relatives or the guardian as part of the responsibility bestowed on a qualified medical professional."}
+                        <strong>{lang === "ar" ? "ملاحظة:" : "Note:"}</strong> {lang === "ar" ? BILL_OF_RIGHTS_AR_NOTE : "Any matters not expressly addressed herein shall be governed by the provisions of Law No. 70 of 2020 and the relevant applicable laws, regulations, and ministerial decisions"}
                       </p>
                     </div>
                   </div>

@@ -141,7 +141,7 @@ export const PATIENT_RIGHTS_EN = [
   ),
   hyphEn("Privacy and confidentiality of information regarding your condition."),
   hyphEn(
-    "Obtain any information or documents, such as Medical Report, Sick Leave, Discharge Summary, etc."
+    "The patient, or his/her legal representative, has the right to obtain a medical report, as well as copies of medical reports, investigations and laboratory results, treatment records, and medical bills and charges, in accordance with the applicable procedures."
   ),
   hyphEn("Expect continuity of care till discharge and follow-up."),
   hyphEn(

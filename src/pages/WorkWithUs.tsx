@@ -43,102 +43,6 @@ import {
   type WorkCultureItem,
   type WorkCultureSectionDisplay,
 } from "@/api/workCulture";
-const openPositions = [
-  {
-    title: "Registrar – Plastic Surgeon",
-    category: "La Cosmetique Royale",
-    location: "On-Site",
-    type: "Full-Time",
-    desc: "Candidates applying should have minimum Two years of experience as Plastic Surgery Registrar.",
-  },
-  {
-    title: "Floor Coordinator only Female, Bilingual (Arabic & English)",
-    category: "Hospitality / Guest Services",
-    location: "On-Site",
-    type: "Full-Time",
-    desc: "Royale Hayat Hospital have devoted considerable effort to applying established strategies for quality improvement thus they created a position of Floor coordinator.",
-  },
-  {
-    title:
-      "Birth Registration Assistant (Bilingual – Arabic & English, only local candidate)",
-    category: "Quality & Patient Safety",
-    location: "On-Site",
-    type: "Full-Time",
-    desc: "Birth Registration Clerk shall ensure complete documentation of Birth, Death, Sick Leave, Maternity Leave and other patient related records as per MOH guidelines and protocols.",
-  },
-  {
-    title: "Registered Nurse for Home Care Dept",
-    category: "Royale Home Health",
-    location: "On-Site",
-    type: "Full-Time",
-    desc: "To ensure the safe provision of nursing services in collaboration with the patient/family and the multidisciplinary health care team.",
-  },
-  {
-    title:
-      "Registered Nurse for Labor and Delivery Department – Local (Female with MOH Licence)",
-    category: "Nursing Support",
-    location: "On-Site",
-    type: "Full-Time",
-    desc: "Registered Nurse for Labor and Delivery Department - Local (Female with MOH Licence).",
-  },
-  {
-    title: "Anesthesia – Specialist",
-    category: "Specialist Doctors",
-    location: "On-Site",
-    type: "Full-Time",
-    desc: "Assesses and prepare patients for Anesthesia.",
-  },
-  {
-    title: "Registrar – Internal Medicine",
-    category: "Specialist Doctors",
-    location: "On-Site",
-    type: "Full-Time",
-    desc: "Active Listening, Critical Thinking, Active Learning, Monitoring, and Quality control Analysis.",
-  },
-  {
-    title: "Registrar – Obstetrician and Gynecologist",
-    category: "Specialist Doctors",
-    location: "On-Site",
-    type: "Full-Time",
-    desc: "To attend casualty cases and give emergency treatment, do the necessary admission procedures.",
-  },
-  {
-    title: "Consultant Pediatrician",
-    category: "Specialist Doctors",
-    location: "On-Site",
-    type: "Full-Time",
-    desc: "Contribution to the daytime weekly attending rota and covering clinic. Clinic will be both by appointment and emergency walk-ins.",
-  },
-  {
-    title:
-      "Registered Nurse for Cosmetic Center – Local (Female with MOH License & Laser Exp)",
-    category: "Nursing Support",
-    location: "On-Site",
-    type: "Full-Time",
-    desc: "Responsible for the nursing care of patients according to their scope of practice in liaison with Medical Staff and Allied Health Professionals.",
-  },
-  {
-    title: "Consultant Neonatologist",
-    category: "Specialist Doctors",
-    location: "On-Site",
-    type: "Full-Time",
-    desc: "Candidates applying should have minimum Five years of experience in SCBU/NICU.",
-  },
-  {
-    title: "Brand Manager",
-    category: "Marketing & Communications",
-    location: "On-Site",
-    type: "Full-Time",
-    desc: "The Brand Manager develops and executes strategies to enhance Royale Hayat Hospital's brand image. Responsibilities include managing social media campaigns, supervising team members, coordinating publicity for doctors.",
-  },
-  {
-    title: "Anesthesia Technician – Local (Female with MOH)",
-    category: "Surgical Services",
-    location: "On-Site",
-    type: "Full-Time",
-    desc: "Responsible for providing care to patients undergoing anesthesia in liaison with Medical Staff and Allied Health Professionals.",
-  },
-];
 type Position = MappedJobListItem;
 type WorkWithUsProps = {
   staffActivitiesImages: string[];
@@ -302,16 +206,7 @@ const WorkWithUs = ({
   const isAr = lang === "ar";
   const [activeCategory, setActiveCategory] = useState("View All");
   const [isIOSWebKit, setIsIOSWebKit] = useState(false);
-  const [positions, setPositions] = useState<Position[]>(() =>
-    openPositions.map((p, index) => ({
-      id: String(index),
-      title: p.title,
-      category: p.category,
-      location: p.location,
-      type: p.type,
-      desc: p.desc,
-    })),
-  );
+  const [positions, setPositions] = useState<Position[]>([]);
   const [apiJobs, setApiJobs] = useState<JobPosting[]>([]);
   const [empIndex, setEmpIndex] = useState(0);
   const [isEmpPaused, setIsEmpPaused] = useState(false);

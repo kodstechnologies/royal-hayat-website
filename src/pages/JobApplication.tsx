@@ -102,6 +102,7 @@ const JobApplication = () => {
   const [jobRecord, setJobRecord] = useState<JobPosting | null>(null);
   const [jobLoading, setJobLoading] = useState(Boolean(jobId));
   const [jobError, setJobError] = useState(false);
+  const [jobUnavailable, setJobUnavailable] = useState(false);
 
   const displayJob = useMemo(() => {
     if (jobRecord) {
@@ -136,11 +137,17 @@ const JobApplication = () => {
       if (jobId && /^[0-9a-fA-F]{24}$/.test(jobId)) {
         setJobLoading(true);
         setJobError(false);
+        setJobUnavailable(false);
         try {
-          const data = await getJobById(jobId);
+          const result = await getJobById(jobId);
           if (cancelled) return;
-          if (data) {
-            const posting = data as JobPosting;
+          if (!result.available) {
+            setJobRecord(null);
+            setJobUnavailable(true);
+            return;
+          }
+          if (result.job) {
+            const posting = result.job;
             setJobRecord(posting);
             setJob(mapJobPostingToDetail(posting, isAr));
           } else {
@@ -168,6 +175,7 @@ const JobApplication = () => {
         setJobRecord(null);
         setJob(mapFallbackToDetail(openPositions[idx] ?? openPositions[0]));
         setJobError(false);
+        setJobUnavailable(false);
         setJobLoading(false);
       }
     };
@@ -305,6 +313,25 @@ const JobApplication = () => {
             {jobLoading ? (
               <div className="lg:col-span-3 flex justify-center py-16">
                 <Loader2 className="w-8 h-8 animate-spin text-primary" />
+              </div>
+            ) : jobUnavailable ? (
+              <div className="lg:col-span-3 text-center py-16">
+                <div className="max-w-lg mx-auto bg-popover border border-border/50 rounded-2xl p-8 md:p-10">
+                  <p className="font-serif text-xl text-foreground mb-3">
+                    {isAr ? "الإعلان غير متاح" : "Job Post Unavailable"}
+                  </p>
+                  <p className="font-body text-muted-foreground leading-relaxed">
+                    {isAr
+                      ? "هذا الإعلان الوظيفي غير متاح حاليًا."
+                      : "This job post is currently unavailable."}
+                  </p>
+                  <Link
+                    to="/work-with-us?section=positions"
+                    className="text-primary hover:text-accent font-body text-sm underline underline-offset-4 inline-block mt-6"
+                  >
+                    {isAr ? "عرض الوظائف المتاحة" : "View available positions"}
+                  </Link>
+                </div>
               </div>
             ) : jobError || !displayJob ? (
               <div className="lg:col-span-3 text-center py-16">

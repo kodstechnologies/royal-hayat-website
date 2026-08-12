@@ -55,9 +55,31 @@ export const getAllJobs = async (params?: GetJobsParams) => {
   const data = response.data?.data;
   return Array.isArray(data) ? (data as JobPosting[]) : [];
 };
-export const getJobById = async (id: string) => {
+export type JobByIdResult = {
+  available: boolean;
+  job: JobPosting | null;
+  message?: string;
+};
+export const getJobById = async (id: string): Promise<JobByIdResult> => {
   const response = await api.get(`/api/v1/jobs/${id}`);
-  return response.data?.data ?? response.data?.job ?? response.data;
+  const body = response.data;
+
+  if (body?.available === false) {
+    return {
+      available: false,
+      job: null,
+      message:
+        body.message ?? "This job post is currently unavailable",
+    };
+  }
+
+  const job =
+    (body?.data ?? body?.job ?? body) as JobPosting | null;
+
+  return {
+    available: true,
+    job,
+  };
 };
 export const applyForJob = async (data: JobApplicationPayload) => {
   const formData = new FormData();

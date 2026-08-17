@@ -754,8 +754,8 @@ const WorkWithUs = ({
                 dir={isAr ? "rtl" : "ltr"}
               >
                 {isAr ? (
-                  <div className="font-body text-sm text-foreground leading-relaxed space-y-6 text-right">
-                    <div className="space-y-2">
+                  <div className="font-body text-sm text-foreground leading-relaxed space-y-6 text-right [&_li]:!text-right">
+                    <div className="space-y-2 text-right">
                       <p className="text-lg md:text-xl font-semibold">وظائف شاغرة</p>
                       <p className="text-lg md:text-xl font-semibold">يوم مفتوح</p>
                       <p className="text-base md:text-lg font-medium">
@@ -763,61 +763,65 @@ const WorkWithUs = ({
                       </p>
                     </div>
 
-                    <div className="space-y-3">
+                    <div className="space-y-3 text-right" dir="rtl">
                       <p className="font-semibold text-base">التخصصات المطلوبة</p>
-                      <ul className="space-y-2 pr-4">
-                        <li className="flex items-start gap-2 justify-end">
-                          <span>تمريض غرف العمليات</span>
+                      <ul className="space-y-2 list-none">
+                        <li className="flex items-start gap-2 w-full">
                           <span className="mt-2 h-1.5 w-1.5 rounded-full bg-foreground shrink-0" />
+                          <span className="flex-1 text-right">تمريض غرف العمليات</span>
                         </li>
-                        <li className="flex items-start gap-2 justify-end">
-                          <span>تمريض الإفاقة</span>
+                        <li className="flex items-start gap-2 w-full">
                           <span className="mt-2 h-1.5 w-1.5 rounded-full bg-foreground shrink-0" />
+                          <span className="flex-1 text-right">تمريض الإفاقة</span>
                         </li>
-                        <li className="flex items-start gap-2 justify-end">
-                          <span>تمريض قسم الأطفال</span>
+                        <li className="flex items-start gap-2 w-full">
                           <span className="mt-2 h-1.5 w-1.5 rounded-full bg-foreground shrink-0" />
+                          <span className="flex-1 text-right">تمريض قسم الأطفال</span>
                         </li>
-                        <li className="flex items-start gap-2 justify-end">
-                          <span>تمريض الولادة والنساء</span>
+                        <li className="flex items-start gap-2 w-full">
                           <span className="mt-2 h-1.5 w-1.5 rounded-full bg-foreground shrink-0" />
+                          <span className="flex-1 text-right">تمريض الولادة والنساء</span>
                         </li>
                       </ul>
                     </div>
 
-                    <div className="space-y-3">
+                    <div className="space-y-3 text-right" dir="rtl">
                       <p className="font-semibold text-base">الشروط</p>
-                      <ul className="space-y-2 pr-4">
-                        <li className="flex items-start gap-2 justify-end">
-                          <span>ترخيص تمريض ساري من وزارة الصحة الكويتية.</span>
+                      <ul className="space-y-2 list-none">
+                        <li className="flex items-start gap-2 w-full">
                           <span className="mt-2 h-1.5 w-1.5 rounded-full bg-foreground shrink-0" />
+                          <span className="flex-1 text-right">
+                            ترخيص تمريض ساري من وزارة الصحة الكويتية.
+                          </span>
                         </li>
-                        <li className="flex items-start gap-2 justify-end">
-                          <span>يجب أن يكون ترخيص الـ إقامة/التأشيرة قابلين للتحويل.</span>
+                        <li className="flex items-start gap-2 w-full">
                           <span className="mt-2 h-1.5 w-1.5 rounded-full bg-foreground shrink-0" />
+                          <span className="flex-1 text-right">
+                            يجب أن يكون ترخيص الـ إقامة/التأشيرة قابلين للتحويل.
+                          </span>
                         </li>
-                        <li className="flex items-start gap-2 justify-end">
-                          <span>شهادة بكالوريوس في التمريض.</span>
+                        <li className="flex items-start gap-2 w-full">
                           <span className="mt-2 h-1.5 w-1.5 rounded-full bg-foreground shrink-0" />
+                          <span className="flex-1 text-right">شهادة بكالوريوس في التمريض.</span>
                         </li>
-                        <li className="flex items-start gap-2 justify-end">
-                          <span>خبرة لا تقل عن 3 سنوات.</span>
+                        <li className="flex items-start gap-2 w-full">
                           <span className="mt-2 h-1.5 w-1.5 rounded-full bg-foreground shrink-0" />
+                          <span className="flex-1 text-right">خبرة لا تقل عن 3 سنوات.</span>
                         </li>
-                        <li className="flex items-start gap-2 justify-end">
-                          <span>العمر أقل من 45 سنة.</span>
+                        <li className="flex items-start gap-2 w-full">
                           <span className="mt-2 h-1.5 w-1.5 rounded-full bg-foreground shrink-0" />
+                          <span className="flex-1 text-right">العمر أقل من 45 سنة.</span>
                         </li>
-                        <li className="flex items-start gap-2 justify-end">
-                          <span>
+                        <li className="flex items-start gap-2 w-full">
+                          <span className="mt-2 h-1.5 w-1.5 rounded-full bg-foreground shrink-0" />
+                          <span className="flex-1 text-right">
                             يرجى إحضار نسخ من جميع المستندات المطلوبة مع السيرة الذاتية.
                           </span>
-                          <span className="mt-2 h-1.5 w-1.5 rounded-full bg-foreground shrink-0" />
                         </li>
                       </ul>
                     </div>
 
-                    <div className="space-y-2 pt-2">
+                    <div className="space-y-2 pt-2 text-right">
                       <p>
                         ندعوكم للانضمام إلينا في يوم التوظيف المفتوح والتعرف على الفرص
                         الوظيفية المتاحة.

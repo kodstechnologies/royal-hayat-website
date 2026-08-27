@@ -43,8 +43,6 @@ import {
   type WorkCultureItem,
   type WorkCultureSectionDisplay,
 } from "@/api/workCulture";
-import NurseOpenDayAnnouncement from "@/components/NurseOpenDayAnnouncement";
-import { useNurseOpenDaySectionVisible } from "@/hooks/useNurseOpenDaySectionVisible";
 type Position = MappedJobListItem;
 type WorkWithUsProps = {
   staffActivitiesImages: string[];
@@ -206,7 +204,6 @@ const WorkWithUs = ({
 }: WorkWithUsProps) => {
   const { lang } = useLanguage();
   const isAr = lang === "ar";
-  const showNurseOpenDaySection = useNurseOpenDaySectionVisible();
   const [activeCategory, setActiveCategory] = useState("View All");
   const [isIOSWebKit, setIsIOSWebKit] = useState(false);
   const [positions, setPositions] = useState<Position[]>([]);
@@ -750,9 +747,6 @@ const WorkWithUs = ({
                 </p>
               </div>
             </ScrollAnimationWrapper>
-            {showNurseOpenDaySection && (
-              <NurseOpenDayAnnouncement isAr={isAr} />
-            )}
             <ScrollAnimationWrapper>
               <div
                 className="max-w-5xl mx-auto mb-10 rounded-2xl border border-primary/20 bg-popover p-6 md:p-8"

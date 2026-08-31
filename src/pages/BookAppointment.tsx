@@ -1502,6 +1502,15 @@ const BookAppointment = () => {
         );
         return;
       }
+      const isNoMobileId = statusCode === 400 && typeof apiType === "string" && apiType.includes("no-mobile-id");
+      if (isNoMobileId) {
+        setNationalIdError(
+          isAr
+            ? "لم يتم العثور على جهاز نشط مسجل بهذا الرقم"
+            : "No active device found registered with this ID"
+        );
+        return;
+      }
       const isValidation400 = statusCode === 400 && !apiType.includes("too-many-requests");
       if (isValidation400) {
         setNationalIdError(

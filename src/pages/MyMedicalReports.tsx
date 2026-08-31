@@ -170,11 +170,18 @@ const MyMedicalReports = () => {
         const apiType =
           (err as { response?: { data?: { meta?: { type?: string } } } })?.response?.data?.meta?.type ?? "";
         const isTooMany = statusCode === 400 && apiType.includes("too-many-requests");
+        const isNoMobileId = statusCode === 400 && apiType.includes("no-mobile-id");
         if (isTooMany) {
           setError(
             isAr
               ? "طلبات مصادقة كثيرة جداً لهذا الرقم المدني، يرجى المحاولة لاحقاً."
               : "Too many concurrent authentication requests for this Civil ID. Please try again later.",
+          );
+        } else if (isNoMobileId) {
+          setError(
+            isAr
+              ? "لم يتم العثور على جهاز نشط مسجل بهذا الرقم"
+              : "No active device found registered with this ID",
           );
         } else if (statusCode === 400) {
           setError(

@@ -25,6 +25,7 @@ const MyMedicalReports = () => {
   const [error, setError] = useState("");
   const [phase, setPhase] = useState<Phase>("idle");
   const [operationId, setOperationId] = useState("");
+  const [isNoMobileIdError, setIsNoMobileIdError] = useState(false);
   const socketUnsubscribeRef = useRef<(() => void) | null>(null);
   const verificationDoneRef = useRef(false);
 
@@ -104,6 +105,7 @@ const MyMedicalReports = () => {
     setOperationId("");
     setPhase("idle");
     setError("");
+    setIsNoMobileIdError(false);
   };
 
   const onSubmit = (event: FormEvent) => {
@@ -183,6 +185,7 @@ const MyMedicalReports = () => {
               ? "لم يتم العثور على جهاز نشط مسجل بهذا الرقم"
               : "No active device found registered with this ID",
           );
+          setIsNoMobileIdError(true);
         } else if (statusCode === 400) {
           setError(
             isAr
@@ -302,23 +305,23 @@ const MyMedicalReports = () => {
             {(phase === "failed" || phase === "not_verified") && (
               <div className="bg-destructive/10 rounded-xl p-4 text-center border border-destructive/30">
                 <XCircle className="w-8 h-8 text-destructive mx-auto mb-2" />
-                {phase === "not_verified" ? (
+                {!isNoMobileIdError && (
                   <p className="font-body text-sm text-foreground">
-                    {isAr
-                      ? "لم يتم التحقق. يرجى المحاولة مرة أخرى."
-                      : "Verification was not completed. Please try again."}
-                  </p>
-                ) : error ? (
-                  <p className="font-body text-sm text-foreground">{error}</p>
-                ) : (
-                  <p className="font-body text-sm text-foreground">
-                    {isAr ? "حدث خطأ أثناء التحقق" : "Something went wrong during verification"}
+                    {phase === "not_verified"
+                      ? isAr
+                        ? "لم يتم التحقق. يرجى المحاولة مرة أخرى."
+                        : "Verification was not completed. Please try again."
+                      : error
+                        ? error
+                        : isAr
+                          ? "حدث خطأ أثناء التحقق"
+                          : "Something went wrong during verification"}
                   </p>
                 )}
                 <button
                   type="button"
                   onClick={resetVerification}
-                  className="mt-4 text-xs font-body uppercase tracking-wider text-primary hover:text-primary/80 transition-colors"
+                  className={`text-xs font-body uppercase tracking-wider text-primary hover:text-primary/80 transition-colors ${isNoMobileIdError ? "" : "mt-4"}`}
                 >
                   {isAr ? "حاول مرة أخرى" : "Try again"}
                 </button>

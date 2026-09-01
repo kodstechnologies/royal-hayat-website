@@ -2,7 +2,8 @@ import type { Doctor } from "@/data/loadDoctors";
 import { resolveDoctorArabicName } from "@/utils/doctorDisplayName";
 
 const TITLE_PREFIX = /^(?:dr|prof|professor)\.?\s+/i;
-const ARABIC_TITLE_PREFIX = /^(?:د\.?\s*|الدكتور\s*|الدكتورة\s*|البروفيسور\s+د\.?\s*)/u;
+// Require "." or whitespace after "د" so names like "ديبـاك" are not stripped.
+const ARABIC_TITLE_PREFIX = /^(?:د(?:\.|\s+)|الدكتور\s+|الدكتورة\s+|البروفيسور\s+د(?:\.|\s+))/u;
 const DERMATOLOGY_DEPT = "Dermatology";
 const DERMATOLOGY_HEAD_DOCTOR_KEY = "suraj v davis";
 const DERMATOLOGY_HEAD_DOCTOR_ID = "dr-suraj-v-davis";

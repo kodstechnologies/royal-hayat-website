@@ -22,7 +22,7 @@ import {
 } from "@/api/doctors";
 import { mapApiDepartmentsToDisplay } from "@/utils/mapApiDepartment";
 import { sortDepartmentsByDisplayOrder } from "@/utils/doctorDepartmentOrder";
-import { sortAllDoctorsForBooking, sortDoctorsForBooking } from "@/utils/sortDoctorsInDepartment";
+import { sortAllDoctorsForBooking, sortDoctorsInDepartment } from "@/utils/sortDoctorsInDepartment";
 import type { Department } from "@/types/department";
 import { MAIN_CATEGORIES } from "@/types/department";
 import { createAppointmentRequest } from "@/api/appointmentRequest";
@@ -722,7 +722,7 @@ const BookAppointment = () => {
       (d) => !isPharmacyNonBookableDoctor(d),
     );
     const deptName = departmentsList.find((d) => d.id === selectedDept)?.name ?? "";
-    return sortDoctorsForBooking(filtered, deptName, isAr ? "ar" : "en");
+    return sortDoctorsInDepartment(filtered, deptName, isAr ? "ar" : "en");
   }, [deptDoctorList, doctorSearch, isAr, selectedDept, departmentsList]);
   const filteredAllDoctors = useMemo(
     () =>

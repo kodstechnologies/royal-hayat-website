@@ -20,7 +20,10 @@ export const isDoctorWithDrTitle = (name: string) =>
   /^(dr|prof|professor)\.?\s/i.test(name.trim());
 
 const stripArabicDoctorPrefix = (nameAr: string) =>
-  nameAr.trim().replace(/^(?:د\.?\s*|الدكتور\s*|الدكتورة\s*|البروفيسور\s+د\.?\s*)/u, "").trim();
+  nameAr
+    .trim()
+    .replace(/^(?:د(?:\.|\s+)|الدكتور\s+|الدكتورة\s+|البروفيسور\s+د(?:\.|\s+))/u, "")
+    .trim();
 
 export const formatDoctorDisplayNameAr = (doc: DoctorNameFields) => {
   const override = getArabicNameOverride(doc);

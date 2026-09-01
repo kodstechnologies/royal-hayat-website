@@ -302,15 +302,19 @@ const MyMedicalReports = () => {
             {(phase === "failed" || phase === "not_verified") && (
               <div className="bg-destructive/10 rounded-xl p-4 text-center border border-destructive/30">
                 <XCircle className="w-8 h-8 text-destructive mx-auto mb-2" />
-                <p className="font-body text-sm text-foreground">
-                  {phase === "not_verified"
-                    ? isAr
+                {phase === "not_verified" ? (
+                  <p className="font-body text-sm text-foreground">
+                    {isAr
                       ? "لم يتم التحقق. يرجى المحاولة مرة أخرى."
-                      : "Verification was not completed. Please try again."
-                    : isAr
-                      ? "حدث خطأ أثناء التحقق"
-                      : "Something went wrong during verification"}
-                </p>
+                      : "Verification was not completed. Please try again."}
+                  </p>
+                ) : error ? (
+                  <p className="font-body text-sm text-foreground">{error}</p>
+                ) : (
+                  <p className="font-body text-sm text-foreground">
+                    {isAr ? "حدث خطأ أثناء التحقق" : "Something went wrong during verification"}
+                  </p>
+                )}
                 <button
                   type="button"
                   onClick={resetVerification}

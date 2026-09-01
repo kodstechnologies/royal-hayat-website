@@ -94,6 +94,16 @@ export function mapHospitalFeedbackToTestimonial(
 
 // ================= DOCTOR FEEDBACK =================
 
+export type CreateDoctorFeedbackByIdPayload = {
+  doctorId: string;
+  userName?: string;
+  arabicUserName?: string;
+  feedback?: string;
+  arabicFeedback?: string;
+  stars: number;
+  shownOnWebsite?: boolean;
+};
+
 export type CreateDoctorFeedbackPayload = {
   doctorName: string;
   userName?: string;
@@ -164,6 +174,31 @@ export const createDoctorFeedbackByName = async (
   return response.data;
 };
 
+/** Create doctor feedback by doctor ID (POST /api/v1/doctor-feedback/create/by-id). */
+export const createDoctorFeedbackById = async (
+  data: CreateDoctorFeedbackByIdPayload,
+  options?: { addedBy?: "patient" | "admin" },
+): Promise<CreateDoctorFeedbackResponse> => {
+  const query = new URLSearchParams();
+  if (options?.addedBy) query.append("addedBy", options.addedBy);
+  const qs = query.toString();
+
+  const response = await api.post<CreateDoctorFeedbackResponse>(
+    `/api/v1/doctor-feedback/create/by-id${qs ? `?${qs}` : ""}`,
+    {
+      doctor: data.doctorId,
+      userName: data.userName,
+      arabicUserName: data.arabicUserName,
+      feedback: data.feedback,
+      arabicFeedback: data.arabicFeedback,
+      stars: data.stars,
+      shownOnWebsite: data.shownOnWebsite,
+    },
+  );
+
+  return response.data;
+};
+
 /** Fetch doctor feedbacks by doctor name (GET /api/v1/doctor-feedback/by-name). */
 export const getDoctorFeedbacksByDoctorName = async (
   doctorName: string,
@@ -171,6 +206,16 @@ export const getDoctorFeedbacksByDoctorName = async (
   const query = new URLSearchParams({ doctorName });
   const response = await api.get(
     `/api/v1/doctor-feedback/by-name?${query.toString()}`,
+  );
+  return normalizeDoctorFeedbackList(response.data);
+};
+
+/** Fetch doctor feedbacks by doctor ID (GET /api/v1/doctor-feedback/by-id/:doctorId). */
+export const getDoctorFeedbacksByDoctorId = async (
+  doctorId: string,
+): Promise<DoctorFeedbackRecord[]> => {
+  const response = await api.get(
+    `/api/v1/doctor-feedback/by-id/${encodeURIComponent(doctorId)}`,
   );
   return normalizeDoctorFeedbackList(response.data);
 };

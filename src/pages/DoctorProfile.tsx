@@ -10,9 +10,9 @@ import { departments, deptDoctorAliases, shouldShowDoctorBookingUI } from "@/dat
 import { fetchDoctorProfileById, isMongoDoctorId } from "@/api/doctors";
 import { resolveNavDepartmentContext } from "@/utils/doctorDepartmentContext";
 import {
-  createDoctorFeedbackByName,
+  createDoctorFeedbackById,
   extractDoctorFeedbackRecord,
-  getDoctorFeedbacksByDoctorName,
+  getDoctorFeedbacksByDoctorId,
   type DoctorFeedbackRecord,
 } from "@/api/feedback";
 import { getDoctorDisplayName } from "@/utils/doctorDisplayName";
@@ -265,13 +265,13 @@ const DoctorProfile = () => {
   });
 
   useEffect(() => {
-    if (!doctor?.name) return;
+    if (!doctor?.id) return;
 
     let cancelled = false;
     setTestimonials([]);
     setFeedbackLoading(true);
 
-    getDoctorFeedbacksByDoctorName(doctor.name)
+    getDoctorFeedbacksByDoctorId(doctor.id)
       .then((feedbacks) => {
         if (cancelled) return;
 
@@ -295,7 +295,7 @@ const DoctorProfile = () => {
     return () => {
       cancelled = true;
     };
-  }, [doctor?.name]);
+  }, [doctor?.id]);
 
   const isMobile = useIsMobile();
   const visibleCardCount = isMobile ? 1 : 3;
@@ -648,12 +648,12 @@ const DoctorProfile = () => {
         feedbackPlaceholderEn="Write your feedback about the doctor"
         feedbackPlaceholderAr="اكتب رأيك عن الطبيب"
         onSubmit={async ({ name, feedback, stars }) => {
-          if (!doctor?.name) return;
+          if (!doctor?.id) return;
 
           try {
-            const response = await createDoctorFeedbackByName(
+            const response = await createDoctorFeedbackById(
               {
-                doctorName: doctor.name,
+                doctorId: doctor.id,
                 userName: name,
                 arabicUserName: name,
                 ...(lang === "ar" ? { arabicFeedback: feedback } : { feedback }),

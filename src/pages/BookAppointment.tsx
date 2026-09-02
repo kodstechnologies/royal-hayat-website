@@ -2484,12 +2484,12 @@ Clinic Code:`;
                   className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 disabled:opacity-60 ${nationalIdError || isNoMobileIdError ? "border-destructive" : "border-border"}`}
                 />
                 {(nationalIdError || isNoMobileIdError) && (
-                  <div
-                    role="alert"
-                    className="mt-3 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 flex gap-3 text-start"
-                  >
-                    <AlertCircle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
-                    {isNoMobileIdError ? (
+                  isNoMobileIdError ? (
+                    <div
+                      role="alert"
+                      className="mt-3 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-center"
+                    >
+                      <AlertCircle className="w-5 h-5 text-destructive mx-auto mb-2" />
                       <div className="font-body text-sm text-destructive leading-relaxed">
                         <p className="font-semibold">
                           {isAr ? "فشل عملية المصادقة" : "Authentication Unsuccessful"}
@@ -2515,10 +2515,16 @@ Clinic Code:`;
                           )}
                         </p>
                       </div>
-                    ) : (
+                    </div>
+                  ) : (
+                    <div
+                      role="alert"
+                      className="mt-3 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 flex gap-3 text-start"
+                    >
+                      <AlertCircle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
                       <p className="font-body text-sm text-destructive leading-relaxed">{nationalIdError}</p>
-                    )}
-                  </div>
+                    </div>
+                  )
                 )}
                 {patientLookupShowGoBack && !isWaitingForApproval && !isConfirmingPatientRecord && (
                   <button

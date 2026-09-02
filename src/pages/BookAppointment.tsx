@@ -507,6 +507,7 @@ const BookAppointment = () => {
   const [showReturningPatientModal, setShowReturningPatientModal] = useState(false);
   const [nationalId, setNationalId] = useState("");
   const [nationalIdError, setNationalIdError] = useState("");
+  const [isNoMobileIdError, setIsNoMobileIdError] = useState(false);
   const [isVerifyingNationalId, setIsVerifyingNationalId] = useState(false);
   const [verifiedPersonName, setVerifiedPersonName] = useState<{ english: string; arabic: string } | null>(null);
   const [verifyOperationId, setVerifyOperationId] = useState<string | null>(null);
@@ -1437,6 +1438,7 @@ const BookAppointment = () => {
     }
     setIsVerifyingNationalId(true);
     setNationalIdError("");
+    setIsNoMobileIdError(false);
     setPatientLookupShowGoBack(false);
     setVerifiedPersonName(null);
     setVerifyOperationId(null);
@@ -1504,11 +1506,8 @@ const BookAppointment = () => {
       }
       const isNoMobileId = statusCode === 400 && typeof apiType === "string" && apiType.includes("no-mobile-id");
       if (isNoMobileId) {
-        setNationalIdError(
-          isAr
-            ? "لم يتم العثور على جهاز نشط مسجل بهذا الرقم"
-            : "No active device found registered with this ID"
-        );
+        setIsNoMobileIdError(true);
+        setNationalIdError(isAr ? "فشل عملية المصادقة" : "Authentication Unsuccessful");
         return;
       }
       const isValidation400 = statusCode === 400 && !apiType.includes("too-many-requests");
@@ -1569,6 +1568,7 @@ const BookAppointment = () => {
     setPatientDobIso("");
     setNationalId("");
     setNationalIdError("");
+    setIsNoMobileIdError(false);
     setVerifiedPersonName(null);
     setVerifiedIdentityDetails(null);
     setPatientPhone("");
@@ -2475,20 +2475,49 @@ Clinic Code:`;
                     if (digits.length > 0 && digits[0] !== "2" && digits[0] !== "3") return;
                     setNationalId(digits);
                     setNationalIdError("");
+                    setIsNoMobileIdError(false);
                     setPatientLookupShowGoBack(false);
                     setVerifiedPersonName(null);
                     setVerifiedIdentityDetails(null);
                   }}
                   placeholder={isAr ? "أدخل 12 رقمًا" : "Enter 12 digits"}
-                  className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 disabled:opacity-60 ${nationalIdError ? "border-destructive" : "border-border"}`}
+                  className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 disabled:opacity-60 ${nationalIdError || isNoMobileIdError ? "border-destructive" : "border-border"}`}
                 />
-                {nationalIdError && (
+                {(nationalIdError || isNoMobileIdError) && (
                   <div
                     role="alert"
                     className="mt-3 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 flex gap-3 text-start"
                   >
                     <AlertCircle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
-                    <p className="font-body text-sm text-destructive leading-relaxed">{nationalIdError}</p>
+                    {isNoMobileIdError ? (
+                      <div className="font-body text-sm text-destructive leading-relaxed">
+                        <p className="font-semibold">
+                          {isAr ? "فشل عملية المصادقة" : "Authentication Unsuccessful"}
+                        </p>
+                        <p className="mt-2">
+                          {isAr ? (
+                            <>
+                              تعذر مصادقة طلبك عبر نظام الهيئة العامة للمعلومات المدنية (تطبيق هويتي).
+                              <br />
+                              <br />
+                              يرجى التفضل بزيارة مستشفى رويال حياة، أو التواصل مع فريق الدعم الفني على الرقم{" "}
+                              <span className="inline-block [direction:ltr] [unicode-bidi:isolate]">25360000</span>{" "}
+                              للحصول على المساعدة.
+                            </>
+                          ) : (
+                            <>
+                              PACI Kuwait was unable to authenticate your request through Kuwait Mobile ID.
+                              <br />
+                              Please visit Royale Hayat Hospital or contact our Support Team at{" "}
+                              <span className="inline-block [direction:ltr] [unicode-bidi:isolate]">2536 0000</span>{" "}
+                              for assistance.
+                            </>
+                          )}
+                        </p>
+                      </div>
+                    ) : (
+                      <p className="font-body text-sm text-destructive leading-relaxed">{nationalIdError}</p>
+                    )}
                   </div>
                 )}
                 {patientLookupShowGoBack && !isWaitingForApproval && !isConfirmingPatientRecord && (

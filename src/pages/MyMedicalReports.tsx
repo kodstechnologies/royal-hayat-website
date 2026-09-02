@@ -180,11 +180,7 @@ const MyMedicalReports = () => {
               : "Too many concurrent authentication requests for this Civil ID. Please try again later.",
           );
         } else if (isNoMobileId) {
-          setError(
-            isAr
-              ? "لم يتم العثور على جهاز نشط مسجل بهذا الرقم"
-              : "No active device found registered with this ID",
-          );
+          setError(isAr ? "فشل عملية المصادقة" : "Authentication Unsuccessful");
           setIsNoMobileIdError(true);
         } else if (statusCode === 400) {
           setError(
@@ -305,26 +301,47 @@ const MyMedicalReports = () => {
             {(phase === "failed" || phase === "not_verified") && (
               <div className="bg-destructive/10 rounded-xl p-4 text-center border border-destructive/30">
                 <XCircle className="w-8 h-8 text-destructive mx-auto mb-2" />
-                {!isNoMobileIdError && (
-                  <p className="font-body text-sm text-foreground">
-                    {phase === "not_verified"
-                      ? isAr
-                        ? "لم يتم التحقق. يرجى المحاولة مرة أخرى."
-                        : "Verification was not completed. Please try again."
-                      : error
-                        ? error
-                        : isAr
-                          ? "حدث خطأ أثناء التحقق"
-                          : "Something went wrong during verification"}
+                {isNoMobileIdError ? (
+                  <p className="font-body text-sm text-foreground leading-relaxed text-start">
+                    {isAr ? (
+                      <>
+                        تعذر مصادقة طلبك عبر نظام الهيئة العامة للمعلومات المدنية (تطبيق هويتي).
+                        <br />
+                        <br />
+                        يرجى التفضل بزيارة مستشفى رويال حياة، أو التواصل مع فريق الدعم الفني على الرقم{" "}
+                        <span className={PHONE_TEXT_CLASS}>25360000</span> للحصول على المساعدة.
+                      </>
+                    ) : (
+                      <>
+                        PACI Kuwait was unable to authenticate your request through Kuwait Mobile ID.
+                        <br />
+                        Please visit Royale Hayat Hospital or contact our Support Team at{" "}
+                        <span className={PHONE_TEXT_CLASS}>2536 0000</span> for assistance.
+                      </>
+                    )}
                   </p>
+                ) : (
+                  <>
+                    <p className="font-body text-sm text-foreground">
+                      {phase === "not_verified"
+                        ? isAr
+                          ? "لم يتم التحقق. يرجى المحاولة مرة أخرى."
+                          : "Verification was not completed. Please try again."
+                        : error
+                          ? error
+                          : isAr
+                            ? "حدث خطأ أثناء التحقق"
+                            : "Something went wrong during verification"}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={resetVerification}
+                      className="mt-4 text-xs font-body uppercase tracking-wider text-primary hover:text-primary/80 transition-colors"
+                    >
+                      {isAr ? "حاول مرة أخرى" : "Try again"}
+                    </button>
+                  </>
                 )}
-                <button
-                  type="button"
-                  onClick={resetVerification}
-                  className={`text-xs font-body uppercase tracking-wider text-primary hover:text-primary/80 transition-colors ${isNoMobileIdError ? "" : "mt-4"}`}
-                >
-                  {isAr ? "حاول مرة أخرى" : "Try again"}
-                </button>
               </div>
             )}
           </form>

@@ -1,4 +1,7 @@
 import { useState, useEffect } from "react";
+import PhoneInput from "react-phone-input-2";
+import type { CountryData } from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 import { createAppointmentRequest } from "@/api/appointmentRequest";
 import { motion } from "framer-motion";
 import {
@@ -137,7 +140,38 @@ const AppointmentRequest = () => {
     preferredDate: "",
     message: "",
   });
+  const [mobileCountry, setMobileCountry] = useState<{ countryCode: string; dialCode: string }>({
+    countryCode: "kw",
+    dialCode: "965",
+  });
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const handleMobileChange = (value: string, country: CountryData | {}) => {
+    const data = country as CountryData;
+    const countryCode = data.countryCode || mobileCountry.countryCode;
+    const dialCode = data.dialCode || mobileCountry.dialCode;
+    setMobileCountry({ countryCode, dialCode });
+
+    const digits = value.replace(/\D/g, "");
+    let localDigits = "";
+    if (countryCode === "kw") {
+      const localDigitsRaw = digits.startsWith(dialCode)
+        ? digits.slice(dialCode.length)
+        : digits;
+      localDigits = localDigitsRaw.replace(/\D/g, "").slice(0, 8);
+    } else {
+      localDigits = digits.startsWith(dialCode)
+        ? digits.slice(dialCode.length)
+        : digits;
+    }
+
+    setForm((prev) => ({
+      ...prev,
+      countryCode: `+${dialCode}`,
+      phone: localDigits,
+    }));
+    setErrors((prev) => ({ ...prev, phone: "" }));
+  };
 
   useEffect(() => {
     const times = buildPreferredSlotFromPicker(manualSlotHour, manualSlotMinute, manualSlotAmPm);
@@ -177,7 +211,7 @@ const AppointmentRequest = () => {
     const e: Record<string, string> = {};
     if (!form.fullName.trim()) e.fullName = isAr ? "الاسم مطلوب" : "Full name is required";
     if (!form.phone.trim()) e.phone = isAr ? "رقم الهاتف مطلوب" : "Phone number is required";
-    else if (!/^\d{8}$/.test(form.phone.trim())) {
+    else if (mobileCountry.countryCode === "kw" && !/^\d{8}$/.test(form.phone.trim())) {
       e.phone = isAr ? "أدخل رقم هاتف مكون من 8 أرقام" : "Enter an 8-digit phone number";
     }
     if (!form.email.trim()) e.email = isAr ? "البريد الإلكتروني مطلوب" : "Email is required";
@@ -541,36 +575,39 @@ const AppointmentRequest = () => {
               <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
                 {t("phoneNumber")} <span className="text-destructive">*</span>
               </label>
-              <div className="flex gap-2">
-                <select
-                  value={form.countryCode}
-                  onChange={(e) => updateField("countryCode", e.target.value)}
-                  className="w-24 px-3 py-3 rounded-xl border border-border bg-background font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30"
-                >
-                  <option value="+965">+965</option>
-                  <option value="+966">+966</option>
-                  <option value="+971">+971</option>
-                  <option value="+973">+973</option>
-                  <option value="+968">+968</option>
-                  <option value="+974">+974</option>
-                  <option value="+20">+20</option>
-                  <option value="+91">+91</option>
-                  <option value="+44">+44</option>
-                  <option value="+1">+1</option>
-                </select>
-                <input
-                  type="tel"
-                  value={form.phone}
-                  onChange={(e) =>
-                    updateField("phone", e.target.value.replace(/\D/g, "").slice(0, 8))
-                  }
-                  inputMode="numeric"
-                  maxLength={8}
-                  pattern="\d{8}"
-                  placeholder={t("phonePlaceholder")}
-                  className={`flex-1 px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 ${errors.phone ? "border-destructive" : "border-border"}`}
+              {isAr ? (
+                <div className="international-patient-phone-input" dir="rtl">
+                  <PhoneInput
+                    country="kw"
+                    value={`${form.countryCode.replace(/\D/g, "")}${form.phone}`}
+                    onChange={handleMobileChange}
+                    placeholder="أدخل الرقم"
+                    masks={{ kw: "........" }}
+                    enableLongNumbers
+                    inputClass="!w-full !h-10 !rounded-lg !border !border-border !bg-background !text-sm !font-body !text-foreground focus:!ring-2 focus:!ring-primary/30"
+                    buttonClass="!h-10 !border-border !bg-background"
+                    containerClass="!w-full"
+                    dropdownClass="!text-sm"
+                    enableSearch
+                    countryCodeEditable={false}
+                  />
+                </div>
+              ) : (
+                <PhoneInput
+                  country="kw"
+                  value={`${form.countryCode.replace(/\D/g, "")}${form.phone}`}
+                  onChange={handleMobileChange}
+                  placeholder="Enter mobile number"
+                  masks={{ kw: "........" }}
+                  enableLongNumbers
+                  inputClass="!w-full !h-10 !rounded-lg !border !border-border !bg-background !px-12 !text-sm !font-body !text-foreground focus:!ring-2 focus:!ring-primary/30"
+                  buttonClass="!border-border !bg-background"
+                  containerClass="!w-full"
+                  dropdownClass="!text-sm"
+                  enableSearch
+                  countryCodeEditable={false}
                 />
-              </div>
+              )}
               {errors.phone && (
                 <p className="font-body text-xs text-destructive mt-1">{errors.phone}</p>
               )}

@@ -84,7 +84,7 @@ const InternationalPatient = () => {
           ? "يرجى إدخال رقم جوال صحيح."
           : "Please enter a valid mobile number.",
       );
-      return;
+      return false;
     }
 
     return true;
@@ -98,7 +98,7 @@ const InternationalPatient = () => {
         firstName: form.firstName,
         lastName: form.lastName,
         email: form.email,
-        mobile: mobileDigits,
+        mobile: form.mobile,
         address: form.address,
         country: form.country,
         comments: form.comments,

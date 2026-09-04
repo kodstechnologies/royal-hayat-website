@@ -270,10 +270,10 @@ const AppointmentRequest = () => {
         slot_to_time: preferredSlotTo || undefined,
         timeSlot: preferredSlotFrom
           ? {
-              period: getAppointmentSlotPeriod(preferredSlotFrom),
-              slot_from_time: preferredSlotFrom,
-              slot_to_time: preferredSlotTo || "",
-            }
+            period: getAppointmentSlotPeriod(preferredSlotFrom),
+            slot_from_time: preferredSlotFrom,
+            slot_to_time: preferredSlotTo || "",
+          }
           : undefined,
         additionalNotes: [
           prefill.civilId ? `Civil ID: ${prefill.civilId}` : "",

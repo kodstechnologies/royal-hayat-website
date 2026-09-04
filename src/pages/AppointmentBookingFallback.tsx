@@ -13,6 +13,7 @@ import {
   ArrowRight,
   Loader2,
   Phone,
+  Mail,
   Calendar,
 } from "lucide-react";
 import Header from "@/components/Header";
@@ -32,6 +33,7 @@ const AppointmentBookingFallback = () => {
   const fallbackState = location.state as AppointmentBookingFallbackState | null;
 
   const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState(fallbackState?.suggestedEmail?.trim() ?? "");
   const [countryCode, setCountryCode] = useState("+965");
   const [dateOfBirth, setDateOfBirth] = useState(fallbackState?.suggestedDob ?? "");
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -88,6 +90,10 @@ const AppointmentBookingFallback = () => {
     else if (!/^\d{8}$/.test(phone.trim())) {
       e.phone = isAr ? "أدخل رقم هاتف مكون من 8 أرقام" : "Enter an 8-digit phone number";
     }
+    if (!email.trim()) e.email = isAr ? "البريد الإلكتروني مطلوب" : "Email is required";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      e.email = isAr ? "أدخل بريداً إلكترونياً صحيحاً" : "Enter a valid email address";
+    }
     if (!dateOfBirth) e.dateOfBirth = isAr ? "تاريخ الميلاد مطلوب" : "Date of birth is required";
     else if (new Date(dateOfBirth) > new Date()) {
       e.dateOfBirth = isAr ? "أدخل تاريخ ميلاد صحيحاً" : "Enter a valid date of birth";
@@ -116,6 +122,7 @@ const AppointmentBookingFallback = () => {
       await createAppointmentRequest({
         fullname: fallbackState.fullname.trim(),
         phone: `${countryCode}${phone.trim()}`,
+        email: email.trim(),
         dob: dateOfBirth,
         gender: fallbackState.gender,
         doctor: isAr ? fallbackState.doctorNameAr || fallbackState.doctorName : fallbackState.doctorName,
@@ -206,6 +213,15 @@ const AppointmentBookingFallback = () => {
                   <p className="text-foreground font-medium">
                     {countryCode} {phone}
                   </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3 py-2">
+                <Mail className="w-4 h-4 text-accent mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider">
+                    {isAr ? "البريد الإلكتروني" : "Email"}
+                  </p>
+                  <p className="text-foreground font-medium break-all">{email.trim()}</p>
                 </div>
               </div>
               <div className="flex items-start gap-3 py-2">
@@ -326,6 +342,27 @@ const AppointmentBookingFallback = () => {
                 </div>
                 {errors.phone && (
                   <p className="font-body text-xs text-destructive mt-1">{errors.phone}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
+                  {isAr ? "البريد الإلكتروني" : "Email"} <span className="text-destructive">*</span>
+                </label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setErrors((prev) => ({ ...prev, email: "" }));
+                  }}
+                  autoComplete="email"
+                  required
+                  placeholder={isAr ? "أدخل بريدك الإلكتروني" : "Enter your email"}
+                  className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 ${errors.email ? "border-destructive" : "border-border"}`}
+                />
+                {errors.email && (
+                  <p className="font-body text-xs text-destructive mt-1">{errors.email}</p>
                 )}
               </div>
 

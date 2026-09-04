@@ -17,4 +17,5 @@ export type AppointmentBookingFallbackState = {
   symptoms?: string[];
   bookingError?: string;
   suggestedDob?: string;
+  suggestedEmail?: string;
 };

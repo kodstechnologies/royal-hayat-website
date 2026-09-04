@@ -7,6 +7,7 @@ import {
   ArrowRight,
   User,
   Phone,
+  Mail,
   Calendar,
   Clock,
 } from "lucide-react";
@@ -129,6 +130,7 @@ const AppointmentRequest = () => {
   const [form, setForm] = useState({
     fullName: prefill.fullName?.trim() || "",
     phone: "",
+    email: "",
     countryCode: "+965",
     dateOfBirth: prefill.dateOfBirth || "",
     gender: prefill.gender || "",
@@ -178,6 +180,10 @@ const AppointmentRequest = () => {
     else if (!/^\d{8}$/.test(form.phone.trim())) {
       e.phone = isAr ? "أدخل رقم هاتف مكون من 8 أرقام" : "Enter an 8-digit phone number";
     }
+    if (!form.email.trim()) e.email = isAr ? "البريد الإلكتروني مطلوب" : "Email is required";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
+      e.email = isAr ? "أدخل بريداً إلكترونياً صحيحاً" : "Enter a valid email address";
+    }
     if (!form.dateOfBirth) e.dateOfBirth = isAr ? "تاريخ الميلاد مطلوب" : "Date of birth is required";
     else if (new Date(form.dateOfBirth) > new Date()) {
       e.dateOfBirth = isAr ? "أدخل تاريخ ميلاد صحيحاً" : "Enter a valid date of birth";
@@ -218,6 +224,7 @@ const AppointmentRequest = () => {
       await createAppointmentRequest({
         fullname: form.fullName.trim(),
         phone: `${form.countryCode}${form.phone.trim()}`,
+        email: form.email.trim(),
         requestType,
         dob: form.dateOfBirth,
         gender: form.gender,
@@ -318,6 +325,11 @@ const AppointmentRequest = () => {
               {[
                 { label: t("patient"), value: form.fullName, icon: User },
                 { label: t("phone number"), value: `${form.countryCode} ${form.phone}`, icon: Phone },
+                {
+                  label: isAr ? "البريد الإلكتروني" : "Email",
+                  value: form.email.trim(),
+                  icon: Mail,
+                },
                 {
                   label: isAr ? "تاريخ الميلاد" : "Date of Birth",
                   value: formattedDob || (isAr ? "غير متوفر" : "Not provided"),
@@ -561,6 +573,23 @@ const AppointmentRequest = () => {
               </div>
               {errors.phone && (
                 <p className="font-body text-xs text-destructive mt-1">{errors.phone}</p>
+              )}
+            </div>
+            <div>
+              <label className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-1.5 block">
+                {isAr ? "البريد الإلكتروني" : "Email"} <span className="text-destructive">*</span>
+              </label>
+              <input
+                type="email"
+                value={form.email}
+                onChange={(e) => updateField("email", e.target.value)}
+                autoComplete="email"
+                required
+                placeholder={isAr ? "أدخل بريدك الإلكتروني" : "Enter your email"}
+                className={`w-full px-4 py-3 rounded-xl border bg-background font-body text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 ${errors.email ? "border-destructive" : "border-border"}`}
+              />
+              {errors.email && (
+                <p className="font-body text-xs text-destructive mt-1">{errors.email}</p>
               )}
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

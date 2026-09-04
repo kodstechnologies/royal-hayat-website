@@ -945,6 +945,7 @@ const BookAppointment = () => {
               symptoms: collectedSymptoms.length > 0 ? collectedSymptoms : undefined,
               bookingError: formatBookingErrorMessage(apiMessage),
               suggestedDob: patientDobIso || undefined,
+              suggestedEmail: registeredPatientHmsDetails?.email || undefined,
             };
             navigate("/appointment-request/fallback", { state: fallbackState });
             return;

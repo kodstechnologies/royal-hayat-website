@@ -376,7 +376,7 @@ export const en = {
   "chatBookAppt": "Book Appointment",
   "chatAlSafwa": "Al Safwa HealthCare",
   "chatJobs": "Jobs",
-  "chatRoyalHomeHealth": "Royal Home Health",
+  "chatRoyalHomeHealth": "Royale Home Health",
   "chatGuidedSteps": "Quick steps",
   "chatNeedHelp": "Need help?",
   "chatNeedMoreHelp": "Chat with our agent",

@@ -21,6 +21,7 @@ export interface DepartmentDetail {
   nameAr: string;
   intro: string;
   introAr?: string;
+  mongoId?: string;
   sections: DepartmentDetailSection[];
   subDepartments?: {
     slug: string;

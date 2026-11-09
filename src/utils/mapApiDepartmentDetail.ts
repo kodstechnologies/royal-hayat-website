@@ -121,6 +121,7 @@ export function mapApiDepartmentDetailResponse(
       nameAr,
       intro,
       introAr: introAr || undefined,
+      mongoId: mongoId || undefined,
       sections,
       subDepartments: subDepartments.length > 0 ? subDepartments : undefined,
     },

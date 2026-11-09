@@ -220,6 +220,16 @@ const DoctorProfile = () => {
   const handleGoBack = () => {
     if (fromBooking) {
       navigate("/book-appointment", { state: bookingReturnState });
+    } else if (bookingReturnState?.fromDepartmentDetail && bookingReturnState?.departmentSlug) {
+      const subspecialityPath = bookingReturnState.subspecialitySlug 
+        ? `/${bookingReturnState.subspecialitySlug}` 
+        : '';
+      navigate(`/medical-services/${bookingReturnState.departmentSlug}${subspecialityPath}`, {
+        state: {
+          fromDoctorProfile: true,
+          scrollToSubspeciality: !!bookingReturnState.subspecialitySlug,
+        },
+      });
     } else if (bookingReturnState?.fromDepartments && bookingReturnState?.returnPath) {
       navigate(bookingReturnState.returnPath, {
         state: {

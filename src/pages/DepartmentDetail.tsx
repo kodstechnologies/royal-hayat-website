@@ -103,10 +103,20 @@ const DepartmentDoctors = memo(({
   doctors,
   lang,
   showDepartmentDoctorsTitle = true,
+  departmentName,
+  departmentNameAr,
+  departmentSlug,
+  departmentMongoId,
+  subspecialitySlug,
 }: {
   doctors: Doctor[];
-  lang: string;
+  lang: "en" | "ar";
   showDepartmentDoctorsTitle?: boolean;
+  departmentName?: string;
+  departmentNameAr?: string;
+  departmentSlug?: string;
+  departmentMongoId?: string;
+  subspecialitySlug?: string | null;
 }) => {
   const { t } = useLanguage();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -210,6 +220,14 @@ const DepartmentDoctors = memo(({
               <Link
                 key={doc.id}
                 to={`/doctors/${doc.id}`}
+                state={{
+                  fromDepartmentDetail: true,
+                  departmentSlug,
+                  contextDepartmentName: departmentName,
+                  contextDepartmentNameAr: departmentNameAr,
+                  contextDepartmentId: departmentMongoId,
+                  subspecialitySlug,
+                }}
                 data-doctor-carousel-card
                 className="w-[280px] md:w-[280px] bg-popover border border-border/50 rounded-2xl overflow-hidden hover:border-primary/30 hover:shadow-md transition-all group flex-shrink-0 snap-center md:snap-start"
               >
@@ -230,7 +248,12 @@ const DepartmentDoctors = memo(({
                   </div>
                 </div>
                 <div className="p-4">
-                  <p className="text-accent text-[10px] tracking-[0.2em] uppercase font-body mb-1">{lang === "ar" ? doc.specialtyAr : doc.specialty}</p>
+                  <p className="text-accent text-[10px] tracking-[0.2em] uppercase font-body mb-1">
+                    {departmentName 
+                      ? (lang === "ar" ? (departmentNameAr || departmentName) : departmentName)
+                      : (lang === "ar" ? doc.specialtyAr : doc.specialty)
+                    }
+                  </p>
                   <p className="font-serif text-sm font-bold text-foreground group-hover:text-primary transition-colors">{getDoctorDisplayName(doc, lang)}</p>
                   <p className="font-body text-xs text-muted-foreground mt-1 line-clamp-1">{lang === "ar" ? doc.titleAr : doc.title}</p>
                   <span className="inline-flex items-center gap-1 text-primary font-body text-xs tracking-wide mt-2">
@@ -393,7 +416,20 @@ const DepartmentDetail = () => {
       dept.nameAr ?? dept.name,
     )
       .then((doctors) => {
-        if (!cancelled) setSubspecialityDoctors(doctors);
+        if (!cancelled) {
+          // Filter doctors to only show those from the current department
+          const filteredDoctors = doctors.filter((doctor) => {
+            // Check if doctor's departmentIds array includes the current department's mongoId
+            if (Array.isArray(doctor.departmentIds) && dept.mongoId) {
+              return doctor.departmentIds.includes(dept.mongoId);
+            }
+            // Fallback: check if doctor's department name matches
+            const doctorDept = doctor.department?.toLowerCase().trim();
+            const currentDept = dept.name.toLowerCase().trim();
+            return doctorDept === currentDept;
+          });
+          setSubspecialityDoctors(filteredDoctors);
+        }
       })
       .catch(() => {
         if (!cancelled) setSubspecialityDoctors([]);
@@ -832,6 +868,11 @@ const DepartmentDetail = () => {
           doctors={deptDoctors}
           lang={lang}
           showDepartmentDoctorsTitle={shouldShowDepartmentDoctorsHeading(dept.name, doctorsHeadingOpts)}
+          departmentName={dept.name}
+          departmentNameAr={dept.nameAr}
+          departmentSlug={dept.slug}
+          departmentMongoId={dept.mongoId}
+          subspecialitySlug={activeSub?.slug || null}
         />
       ) : null}
       {dept.slug === "home-health" && !activeSub && (

@@ -323,7 +323,7 @@ const WorkWithUs = ({
     : "";
   const employeeHeading = isAr
     ? currentAchievementType === "quarter"
-      ? "موظفو الربع"
+      ? "موظفو الربع السنوي"
       : "موظفو الشهر"
     : `Employees of the ${currentAchievementType === "quarter" ? "Quarter" : "Month"}`;
 

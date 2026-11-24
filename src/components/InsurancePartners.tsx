@@ -21,11 +21,6 @@ const partners = [
     logo: `${S3_BASE}/1780484706169-Next_care.png`,
   },
   {
-    name: "National Life & General Insurance",
-    nameAr: "الوطنية للتأمين على الحياة والعام",
-    logo: `${S3_BASE}/1780484856314-National_life-General_insurance.png`,
-  },
-  {
     name: "NAS Insurance",
     nameAr: "ناس للتأمين",
     logo: `${S3_BASE}/1780484794375-NAS.png`,
